@@ -2,7 +2,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const diensten = [

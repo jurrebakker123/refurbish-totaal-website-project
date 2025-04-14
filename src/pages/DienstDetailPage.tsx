@@ -1,9 +1,8 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useParams, Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check } from 'lucide-react';
-import { useEffect } from 'react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Phone, Mail } from 'lucide-react';
+import React, { useEffect } from 'react';
 
 const diensten = {
   'schilderwerk': {
