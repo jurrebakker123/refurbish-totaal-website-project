@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -22,7 +21,7 @@ const projects = [
   },
   {
     id: 3,
-    title: 'Dakrenovatie jaren '30 woning',
+    title: 'Dakrenovatie jaren \'30 woning',
     location: 'Rotterdam',
     category: 'Dakrenovatie',
     imageUrl: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
