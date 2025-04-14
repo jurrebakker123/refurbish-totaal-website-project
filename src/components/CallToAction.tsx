@@ -26,7 +26,7 @@ const CallToAction = () => {
       <div className="container relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
-          <div>
+          <div className="animate-fade-in">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Klaar om uw project te starten?</h2>
             <p className="text-lg mb-8 text-gray-300">
               Of u nu een klein renovatieproject of een complete verbouwing plant, 
@@ -36,8 +36,8 @@ const CallToAction = () => {
             
             <ul className="mb-8 space-y-3">
               {benefits.map((benefit, index) => (
-                <li key={index} className="flex items-start">
-                  <Check className="h-5 w-5 text-brand-orange mr-2 mt-1 flex-shrink-0" />
+                <li key={index} className="flex items-start animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <Check className="h-5 w-5 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
                   <span>{benefit}</span>
                 </li>
               ))}
@@ -45,13 +45,13 @@ const CallToAction = () => {
             
             <Link 
               to="/offerte" 
-              className="btn-primary inline-block"
+              className="btn-primary hover:animate-pulse inline-block"
             >
               Vrijblijvende Offerte Aanvragen
             </Link>
           </div>
           
-          <div className="bg-white rounded-lg shadow-xl p-8 text-brand-blue">
+          <div className="bg-white rounded-lg shadow-xl p-8 text-brand-darkGreen animate-fade-in hover-lift">
             <h3 className="text-2xl font-bold mb-6">Neem Direct Contact Op</h3>
             <form>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -60,7 +60,7 @@ const CallToAction = () => {
                   <input 
                     type="text" 
                     id="name" 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                     placeholder="Uw naam"
                   />
                 </div>
@@ -69,7 +69,7 @@ const CallToAction = () => {
                   <input 
                     type="email" 
                     id="email" 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                     placeholder="uw@email.nl"
                   />
                 </div>
@@ -79,7 +79,7 @@ const CallToAction = () => {
                 <input 
                   type="tel" 
                   id="phone" 
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                   placeholder="06-12345678"
                 />
               </div>
@@ -87,7 +87,7 @@ const CallToAction = () => {
                 <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">Dienst</label>
                 <select 
                   id="service"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                 >
                   <option value="">Selecteer een dienst</option>
                   <option value="schilderwerk">Schilderwerk</option>
@@ -104,13 +104,13 @@ const CallToAction = () => {
                 <textarea 
                   id="message" 
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                   placeholder="Vertel ons over uw project..."
                 ></textarea>
               </div>
               <button 
                 type="submit" 
-                className="w-full bg-brand-orange text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
+                className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
               >
                 Verstuur Aanvraag
               </button>
