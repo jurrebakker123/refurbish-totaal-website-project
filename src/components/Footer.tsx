@@ -1,0 +1,125 @@
+
+import { Link } from 'react-router-dom';
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="bg-brand-blue text-white pt-16 pb-8">
+      <div className="container">
+        {/* Top Footer Area */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {/* Company Info */}
+          <div>
+            <h3 className="text-xl font-bold mb-4 flex items-center">
+              <span>Refurbish Totaal</span>
+              <span className="text-brand-orange ml-1">Nederland</span>
+            </h3>
+            <p className="mb-4 text-gray-300">
+              Wij zijn uw betrouwbare partner voor al uw verbouwings- en renovatieprojecten in heel Nederland.
+            </p>
+            <div className="flex space-x-4">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" 
+                className="hover:text-brand-orange transition-colors">
+                <Facebook size={20} />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+                className="hover:text-brand-orange transition-colors">
+                <Instagram size={20} />
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                className="hover:text-brand-orange transition-colors">
+                <Linkedin size={20} />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-xl font-bold mb-4">Snelle Links</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="hover:text-brand-orange transition-colors">Home</Link>
+              </li>
+              <li>
+                <Link to="/diensten" className="hover:text-brand-orange transition-colors">Onze Diensten</Link>
+              </li>
+              <li>
+                <Link to="/over-ons" className="hover:text-brand-orange transition-colors">Over Ons</Link>
+              </li>
+              <li>
+                <Link to="/projecten" className="hover:text-brand-orange transition-colors">Projecten</Link>
+              </li>
+              <li>
+                <Link to="/offerte" className="hover:text-brand-orange transition-colors">Offerte Aanvragen</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-brand-orange transition-colors">Contact</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="text-xl font-bold mb-4">Onze Diensten</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/diensten/schilderwerk" className="hover:text-brand-orange transition-colors">Schilderwerk</Link>
+              </li>
+              <li>
+                <Link to="/diensten/dakrenovatie" className="hover:text-brand-orange transition-colors">Dakrenovatie</Link>
+              </li>
+              <li>
+                <Link to="/diensten/stucadoren" className="hover:text-brand-orange transition-colors">Stucadoren</Link>
+              </li>
+              <li>
+                <Link to="/diensten/installatietechniek" className="hover:text-brand-orange transition-colors">Installatietechniek</Link>
+              </li>
+              <li>
+                <Link to="/diensten/aan-en-verbouw" className="hover:text-brand-orange transition-colors">Aan- en verbouw</Link>
+              </li>
+              <li>
+                <Link to="/diensten/pvc-vloeren" className="hover:text-brand-orange transition-colors">PVC Vloeren</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-xl font-bold mb-4">Contact Informatie</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start">
+                <Phone className="h-5 w-5 mr-2 mt-0.5 text-brand-orange" />
+                <span>020-123 4567</span>
+              </li>
+              <li className="flex items-start">
+                <Mail className="h-5 w-5 mr-2 mt-0.5 text-brand-orange" />
+                <span>info@refurbishtotaal.nl</span>
+              </li>
+              <li className="flex items-start">
+                <MapPin className="h-5 w-5 mr-2 mt-0.5 text-brand-orange" />
+                <span>Exempelstraat 123, 1234 AB Amsterdam</span>
+              </li>
+              <li className="flex items-start">
+                <Clock className="h-5 w-5 mr-2 mt-0.5 text-brand-orange" />
+                <span>Maandag-Vrijdag: 08:00-17:00</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Footer */}
+        <div className="pt-8 border-t border-gray-700 text-center md:flex md:justify-between md:text-left text-sm text-gray-300">
+          <p>© {currentYear} Refurbish Totaal Nederland. Alle rechten voorbehouden.</p>
+          <div className="mt-2 md:mt-0">
+            <Link to="/privacy" className="hover:text-brand-orange transition-colors mr-4">Privacybeleid</Link>
+            <Link to="/voorwaarden" className="hover:text-brand-orange transition-colors">Algemene Voorwaarden</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
