@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, BuildingPlusDot, SquareGanttChart } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart } from 'lucide-react';
 
 const services = [
   {
@@ -33,7 +33,7 @@ const services = [
   },
   {
     id: 'aan-en-verbouw',
-    icon: <BuildingPlusDot className="h-12 w-12 text-brand-orange mb-4" />,
+    icon: <Building className="h-12 w-12 text-brand-orange mb-4" />,
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
