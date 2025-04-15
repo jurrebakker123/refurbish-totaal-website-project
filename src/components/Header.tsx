@@ -156,7 +156,7 @@ const Header = () => {
       <div className="container py-4">
         <nav className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <img alt="Refurbish Totaal Nederland" className="h-12 w-auto object-none" src="/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png" />
+            <img alt="Refurbish Totaal Nederland" className="h-12 w-auto object-none" src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
           </Link>
           
           {/* Desktop Navigation */}
