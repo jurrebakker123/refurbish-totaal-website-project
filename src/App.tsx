@@ -16,6 +16,8 @@ import ProjectenPage from "./pages/ProjectenPage";
 import NotFound from "./pages/NotFound";
 import ChatBot from "./components/ChatBot";
 import { CursorEffects } from "./components/CursorEffects";
+import CookieConsent from "./components/CookieConsent";
+import LeaveSiteNotification from "./components/LeaveSiteNotification";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
         </Routes>
         <ChatBot />
         <CursorEffects />
+        <CookieConsent />
+        <LeaveSiteNotification />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
