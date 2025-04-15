@@ -18,6 +18,7 @@ import ChatBot from "./components/ChatBot";
 import { CursorEffects } from "./components/CursorEffects";
 import CookieConsent from "./components/CookieConsent";
 import LeaveSiteNotification from "./components/LeaveSiteNotification";
+import SEOStructuredData from "./components/SEOStructuredData";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <SEOStructuredData />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/diensten" element={<DienstenPage />} />

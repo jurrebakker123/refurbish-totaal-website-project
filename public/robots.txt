@@ -1,7 +1,25 @@
+
+# robots.txt for Refurbish Totaal Nederland
+User-agent: *
+Allow: /
+
+# Allow all search engines
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Yandex
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +28,9 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemap location
+Sitemap: https://www.refurbishtotaal.nl/sitemap.xml
+
+# Disallow non-public content if needed
+# Disallow: /admin/
+# Disallow: /wp-admin/
