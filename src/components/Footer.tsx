@@ -12,10 +12,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Company Info */}
           <div className="animate-fade-in">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              <span>Refurbish Totaal</span>
-              <span className="text-brand-lightGreen ml-1">Nederland</span>
-            </h3>
+            <div className="mb-6">
+              <img 
+                src="/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png" 
+                alt="Refurbish Totaal Nederland" 
+                className="h-24 w-auto"
+              />
+            </div>
             <p className="mb-4 text-gray-300">
               Wij zijn uw betrouwbare partner voor al uw verbouwings- en renovatieprojecten in heel Nederland.
             </p>
@@ -91,7 +94,7 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start hover:text-brand-lightGreen transition-colors">
                 <Phone className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>020-123 4567</span>
+                <span>+31 6 30136079</span>
               </li>
               <li className="flex items-start hover:text-brand-lightGreen transition-colors">
                 <Mail className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
@@ -99,7 +102,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>Exempelstraat 123, 1234 AB Amsterdam</span>
+                <span>Niersweg 27, 6591 CT Gennep</span>
               </li>
               <li className="flex items-start">
                 <Clock className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
@@ -111,7 +114,20 @@ const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="pt-8 border-t border-gray-700 text-center md:flex md:justify-between md:text-left text-sm text-gray-300">
-          <p>© {currentYear} Refurbish Totaal Nederland. Alle rechten voorbehouden.</p>
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+            <p>© {currentYear} Refurbish Totaal Nederland. Alle rechten voorbehouden.</p>
+            <p>
+              Ontworpen door{" "}
+              <a 
+                href="https://www.jbe-commerce.nl" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-brand-lightGreen hover:underline"
+              >
+                JBEcommerce
+              </a>
+            </p>
+          </div>
           <div className="mt-2 md:mt-0">
             <Link to="/privacy" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Privacybeleid</Link>
             <Link to="/voorwaarden" className="hover:text-brand-lightGreen transition-colors hover-underline">Algemene Voorwaarden</Link>

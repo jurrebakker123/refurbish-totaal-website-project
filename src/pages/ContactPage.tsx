@@ -2,6 +2,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import CallToActionSection from '@/components/CallToActionSection';
 
 const ContactPage = () => {
   return (
@@ -9,8 +10,16 @@ const ContactPage = () => {
       <Header />
       <main className="flex-grow pt-32">
         {/* Hero Section */}
-        <section className="bg-brand-darkGreen text-white py-16">
-          <div className="container">
+        <section className="relative text-white py-16">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ 
+              backgroundImage: `url('https://images.unsplash.com/photo-1596524430615-b46475ddff6e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+            }}
+          >
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+          </div>
+          <div className="container relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Neem Contact Met Ons Op</h1>
               <p className="text-xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -39,7 +48,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Telefoonnummer</h3>
-                      <p className="text-gray-700">020-123 4567</p>
+                      <p className="text-gray-700">+31 6 30136079</p>
                     </div>
                   </div>
 
@@ -59,7 +68,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Adres</h3>
-                      <p className="text-gray-700">Exempelstraat 123<br />1234 AB Amsterdam</p>
+                      <p className="text-gray-700">Niersweg 27<br />6591 CT Gennep</p>
                     </div>
                   </div>
 
@@ -77,7 +86,7 @@ const ContactPage = () => {
                 {/* Google Maps */}
                 <div className="rounded-lg overflow-hidden shadow-md h-80 hover-lift">
                   <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d155959.1524697383!2d4.763875!3d52.354951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c63fb5949a7755%3A0x6600fd4cb7c0af8d!2sAmsterdam!5e0!3m2!1sen!2snl!4v1694078711567!5m2!1sen!2snl" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2470.2752784461224!2d5.9729919!3d51.6982938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7744f85c553a7%3A0xdd1324f3f9e03ea1!2sNiersweg%2027%2C%206591%20CT%20Gennep!5e0!3m2!1snl!2snl!4v1615306629171!5m2!1snl!2snl" 
                     width="100%" 
                     height="100%" 
                     style={{ border: 0 }} 
@@ -122,7 +131,7 @@ const ContactPage = () => {
                         type="tel" 
                         id="phone" 
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                        placeholder="06-12345678"
+                        placeholder="+31 6 12345678"
                       />
                     </div>
                     <div className="mb-4">

@@ -1,8 +1,10 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useParams, Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Phone, Mail } from 'lucide-react';
 import React, { useEffect } from 'react';
+import CallToActionSection from '@/components/CallToActionSection';
 
 const diensten = {
   'schilderwerk': {
@@ -259,8 +261,14 @@ const DienstDetailPage = () => {
       <Header />
       <main className="flex-grow pt-32">
         {/* Hero Section */}
-        <section className="bg-brand-darkGreen text-white py-16">
-          <div className="container">
+        <section className="relative text-white py-16">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ backgroundImage: `url(${dienst.image})` }}
+          >
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+          </div>
+          <div className="container relative z-10">
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 mb-8 md:mb-0 animate-fade-in">
                 <div className="flex items-center mb-4">
@@ -358,7 +366,7 @@ const DienstDetailPage = () => {
                     <div className="space-y-3">
                       <div className="flex items-center">
                         <Phone className="h-5 w-5 mr-2" />
-                        <span>020-123 4567</span>
+                        <span>+31 6 30136079</span>
                       </div>
                       <div className="flex items-center">
                         <Mail className="h-5 w-5 mr-2" />
@@ -391,28 +399,7 @@ const DienstDetailPage = () => {
         </section>
 
         {/* Call to Action */}
-        <section className="py-12 bg-brand-darkGreen text-white">
-          <div className="container text-center">
-            <h2 className="text-3xl font-bold mb-6 animate-fade-in">Klaar voor uw {dienst.title.toLowerCase()} project?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Neem vandaag nog contact met ons op voor een vrijblijvende offerte of adviesgesprek.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <Link 
-                to="/contact" 
-                className="btn-outline border-white text-white hover:bg-white hover:text-brand-darkGreen"
-              >
-                Contact Opnemen
-              </Link>
-              <Link 
-                to="/offerte" 
-                className="btn-primary hover:animate-pulse"
-              >
-                Offerte Aanvragen
-              </Link>
-            </div>
-          </div>
-        </section>
+        <CallToActionSection />
       </main>
       <Footer />
     </div>

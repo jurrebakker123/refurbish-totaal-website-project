@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { Progress } from "@/components/ui/progress";
 import { Shield, ThumbsUp, Clock, Users, Award, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import CallToActionSection from '@/components/CallToActionSection';
 
 const OverOnsPage = () => {
   return (
@@ -11,8 +12,16 @@ const OverOnsPage = () => {
       <Header />
       <main className="flex-grow pt-32">
         {/* Hero Section */}
-        <section className="bg-brand-darkGreen text-white py-16">
-          <div className="container">
+        <section className="relative text-white py-16">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ 
+              backgroundImage: `url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+            }}
+          >
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+          </div>
+          <div className="container relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Over Refurbish Totaal Nederland</h1>
               <p className="text-xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -38,11 +47,11 @@ const OverOnsPage = () => {
                   Vandaag de dag staat Refurbish Totaal Nederland bekend om zijn betrouwbare service, vakkundig personeel en het vermogen om projecten netjes, op tijd en binnen budget af te ronden.
                 </p>
               </div>
-              <div className="rounded-lg overflow-hidden shadow-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <div className="rounded-lg overflow-hidden shadow-lg animate-fade-in flex justify-center items-center bg-white p-8" style={{ animationDelay: '0.2s' }}>
                 <img
-                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
-                  alt="Team Refurbish Totaal Nederland"
-                  className="w-full h-auto"
+                  src="/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png"
+                  alt="Refurbish Totaal Nederland Logo"
+                  className="w-auto h-80"
                 />
               </div>
             </div>
@@ -190,28 +199,7 @@ const OverOnsPage = () => {
         </section>
 
         {/* Call to Action */}
-        <section className="py-16 bg-brand-darkGreen text-white">
-          <div className="container text-center">
-            <h2 className="text-3xl font-bold mb-6 animate-fade-in">Klaar om met ons samen te werken?</h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Wij staan klaar om uw project tot een succes te maken. Neem vrijblijvend contact met ons op om uw wensen te bespreken.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <Link 
-                to="/contact" 
-                className="btn-outline border-white text-white hover:bg-white hover:text-brand-darkGreen"
-              >
-                Contact Opnemen
-              </Link>
-              <Link 
-                to="/offerte" 
-                className="btn-primary hover:animate-pulse"
-              >
-                Offerte Aanvragen
-              </Link>
-            </div>
-          </div>
-        </section>
+        <CallToActionSection />
       </main>
       <Footer />
     </div>

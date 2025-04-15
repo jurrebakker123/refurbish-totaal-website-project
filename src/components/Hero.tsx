@@ -8,7 +8,7 @@ const Hero = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center z-0" 
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
         }}
       >
         <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
@@ -32,10 +32,10 @@ const Hero = () => {
               Vrijblijvende Offerte Aanvragen
             </Link>
             <Link 
-              to="/projecten" 
+              to="/diensten" 
               className="btn-outline border-white text-white hover:bg-white hover:text-brand-darkGreen text-center"
             >
-              Bekijk Onze Projecten
+              Bekijk Onze Diensten
             </Link>
           </div>
         </div>

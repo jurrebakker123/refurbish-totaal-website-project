@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import CallToActionSection from '@/components/CallToActionSection';
 
 const diensten = [
   {
@@ -104,8 +105,16 @@ const DienstenPage = () => {
       <Header />
       <main className="flex-grow pt-32">
         {/* Hero Section */}
-        <section className="bg-brand-darkGreen text-white py-16">
-          <div className="container text-center">
+        <section className="relative text-white py-16">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ 
+              backgroundImage: `url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
+            }}
+          >
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+          </div>
+          <div className="container text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Onze Diensten</h1>
             <p className="text-xl max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
               Bij Refurbish Totaal Nederland bieden wij een breed scala aan renovatie- en verbouwdiensten,
@@ -145,8 +154,14 @@ const DienstenPage = () => {
                     </ul>
                     
                     <Link 
+                      to={`/diensten/${dienst.id}`}
+                      className="btn-primary hover:animate-pulse inline-block mr-4"
+                    >
+                      Meer Informatie
+                    </Link>
+                    <Link 
                       to="/offerte" 
-                      className="btn-primary hover:animate-pulse inline-block"
+                      className="btn-outline border-brand-darkGreen text-brand-darkGreen hover:bg-brand-darkGreen hover:text-white inline-block"
                     >
                       Offerte Aanvragen
                     </Link>
@@ -159,6 +174,9 @@ const DienstenPage = () => {
             ))}
           </div>
         </section>
+
+        {/* Call to Action Section */}
+        <CallToActionSection />
       </main>
       <Footer />
     </div>
