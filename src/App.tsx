@@ -27,7 +27,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner position="top-right" />
       <BrowserRouter>
         <SEOStructuredData />
         <Routes>
@@ -44,10 +44,10 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <LeaveSiteNotification />
         <ChatBot />
         <CursorEffects />
         <CookieConsent />
-        <LeaveSiteNotification />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

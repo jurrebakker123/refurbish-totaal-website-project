@@ -6,8 +6,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 const testimonials = [
@@ -49,19 +47,16 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
-  const [autoPlay, setAutoPlay] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Auto-play functionality
   useEffect(() => {
-    if (!autoPlay) return;
-    
     const interval = setInterval(() => {
       setActiveIndex((current) => (current + 1) % testimonials.length);
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [autoPlay]);
+  }, []);
 
   return (
     <section className="py-16 md:py-24 bg-white">
@@ -82,8 +77,12 @@ const Testimonials = () => {
         <div className="px-4 sm:px-8 md:px-16 lg:px-24">
           <Carousel 
             className="w-full"
-            onMouseEnter={() => setAutoPlay(false)}
-            onMouseLeave={() => setAutoPlay(true)}
+            opts={{
+              align: "start",
+              loop: true,
+              skipSnaps: false,
+              startIndex: activeIndex,
+            }}
           >
             <CarouselContent>
               {testimonials.map((testimonial) => (
@@ -113,10 +112,6 @@ const Testimonials = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex justify-center mt-8 gap-4">
-              <CarouselPrevious className="relative inset-0 translate-y-0" />
-              <CarouselNext className="relative inset-0 translate-y-0" />
-            </div>
           </Carousel>
         </div>
       </div>

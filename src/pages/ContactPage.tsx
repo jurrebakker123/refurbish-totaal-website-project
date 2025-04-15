@@ -9,19 +9,19 @@ const ContactPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section */}
+        {/* Hero Section met aangepaste achtergrond en titel */}
         <section className="relative text-white py-16">
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1596524430615-b46475ddff6e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1587614297882-0943c9700ef8?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
             }}
           >
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
           </div>
           <div className="container relative z-10">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Neem Contact Met Ons Op</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Contact</h1>
               <p className="text-xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 Heeft u vragen of wilt u een afspraak maken? Neem gerust contact met ons op. Wij staan voor u klaar.
               </p>
@@ -48,7 +48,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Telefoonnummer</h3>
-                      <p className="text-gray-700">+31 6 30136079</p>
+                      <a href="tel:+31630136079" className="text-gray-700 hover:text-brand-darkGreen">+31 6 30136079</a>
                     </div>
                   </div>
 
@@ -58,7 +58,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">E-mailadres</h3>
-                      <p className="text-gray-700">info@refurbishtotaal.nl</p>
+                      <a href="mailto:info@refurbishtotaal.nl" className="text-gray-700 hover:text-brand-darkGreen">info@refurbishtotaal.nl</a>
                     </div>
                   </div>
 
@@ -68,7 +68,9 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Adres</h3>
-                      <p className="text-gray-700">Niersweg 27<br />6591 CT Gennep</p>
+                      <a href="https://maps.google.com/?q=Niersweg+27,+6591+CT+Gennep" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-brand-darkGreen">
+                        Niersweg 27<br />6591 CT Gennep
+                      </a>
                     </div>
                   </div>
 
@@ -102,13 +104,14 @@ const ContactPage = () => {
               <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="bg-white p-8 rounded-lg shadow-lg hover-lift">
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Stuur ons een bericht</h2>
-                  <form>
+                  <form action="mailto:info@refurbishtotaal.nl" method="post" encType="text/plain">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>
                         <input 
                           type="text" 
                           id="name" 
+                          name="name"
                           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                           placeholder="Uw naam"
                           required
@@ -119,6 +122,7 @@ const ContactPage = () => {
                         <input 
                           type="email" 
                           id="email" 
+                          name="email"
                           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                           placeholder="uw@email.nl"
                           required
@@ -130,6 +134,7 @@ const ContactPage = () => {
                       <input 
                         type="tel" 
                         id="phone" 
+                        name="phone"
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                         placeholder="+31 6 12345678"
                       />
@@ -139,6 +144,7 @@ const ContactPage = () => {
                       <input 
                         type="text" 
                         id="subject" 
+                        name="subject"
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                         placeholder="Onderwerp van uw bericht"
                         required
@@ -148,6 +154,7 @@ const ContactPage = () => {
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Bericht *</label>
                       <textarea 
                         id="message" 
+                        name="message"
                         rows={6}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                         placeholder="Typ hier uw bericht..."
@@ -182,14 +189,14 @@ const ContactPage = () => {
               <div className="bg-white p-6 rounded-lg shadow-md hover-lift animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Hoe vraag ik een offerte aan?</h3>
                 <p className="text-gray-700">
-                  U kunt een offerte aanvragen via onze website door naar de pagina 'Offerte Aanvragen' te gaan, of door direct contact met ons op te nemen via telefoon of e-mail. Wij zullen binnen 24 uur contact met u opnemen om uw wensen te bespreken.
+                  U kunt een offerte aanvragen via onze website door naar de pagina <a href="/offerte" className="text-brand-darkGreen hover:underline">Offerte Aanvragen</a> te gaan, of door direct contact met ons op te nemen via telefoon of e-mail. Wij zullen binnen 24 uur contact met u opnemen om uw wensen te bespreken.
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-lg shadow-md hover-lift animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Werken jullie door heel Nederland?</h3>
                 <p className="text-gray-700">
-                  Ja, wij voeren projecten uit door heel Nederland. Voor sommige kleinere projecten kan er wel een minimumbedrag gelden voor regio's buiten de Randstad. Neem contact met ons op voor meer informatie.
+                  Ja, wij voeren projecten uit door heel Nederland. Voor sommige kleinere projecten kan er wel een minimumbedrag gelden voor regio's buiten de Randstad. Neem <a href="/contact" className="text-brand-darkGreen hover:underline">contact</a> met ons op voor meer informatie.
                 </p>
               </div>
 

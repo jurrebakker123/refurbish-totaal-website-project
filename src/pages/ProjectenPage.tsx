@@ -79,14 +79,15 @@ const ProjectenPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section */}
-        <section className="relative bg-gray-900 text-white py-24">
+        {/* Hero Section met aantrekkelijke afbeelding */}
+        <section className="relative text-white py-24">
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-40" 
+            className="absolute inset-0 bg-cover bg-center opacity-70" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1581084677826-8769355a69ef?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1541123437800-1bb1317badc2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
             }}
           ></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-darkGreen/90 to-brand-darkGreen/70"></div>
           <div className="container relative z-10">
             <motion.div 
               className="max-w-3xl"
