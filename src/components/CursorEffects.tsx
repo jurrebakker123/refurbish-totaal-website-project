@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 export const CursorEffects = () => {
   const [position, setPosition] = useState({ x: -100, y: -100 });
@@ -50,22 +51,35 @@ export const CursorEffects = () => {
 
   return (
     <>
-      <div 
-        className="cursor-dot"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          opacity: isVisible ? 0.7 : 0
+      <motion.div 
+        className="fixed w-3 h-3 bg-brand-lightGreen rounded-full pointer-events-none z-50"
+        animate={{ 
+          x: position.x - 6,
+          y: position.y - 6,
+          scale: cursorType === 'hover' ? 1.5 : 1,
+          opacity: 0.7
+        }}
+        transition={{ 
+          x: { duration: 0.1, ease: "linear" },
+          y: { duration: 0.1, ease: "linear" },
+          scale: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
+          opacity: { duration: 0.2 }
         }}
       />
-      <div 
-        className="cursor-outline"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          transform: `translate(-50%, -50%) scale(${cursorType === 'hover' ? 1.5 : 1})`,
+      <motion.div 
+        className="fixed w-8 h-8 border-2 border-brand-darkGreen rounded-full pointer-events-none z-40"
+        animate={{
+          x: position.x - 16,
+          y: position.y - 16,
+          scale: cursorType === 'hover' ? 1.5 : 1,
           borderColor: cursorType === 'hover' ? 'var(--brand-lightGreen)' : 'var(--brand-darkGreen)',
-          opacity: isVisible ? 0.7 : 0
+          opacity: 0.7
+        }}
+        transition={{ 
+          x: { duration: 0.15, ease: "linear" },
+          y: { duration: 0.15, ease: "linear" },
+          scale: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+          opacity: { duration: 0.2 }
         }}
       />
     </>

@@ -12,6 +12,7 @@ import ContactPage from "./pages/ContactPage";
 import OffertePage from "./pages/OffertePage";
 import PrivacyPage from "./pages/PrivacyPage";
 import VoorwaardenPage from "./pages/VoorwaardenPage";
+import ProjectenPage from "./pages/ProjectenPage";
 import NotFound from "./pages/NotFound";
 import ChatBot from "./components/ChatBot";
 import { CursorEffects } from "./components/CursorEffects";
@@ -30,7 +31,7 @@ const App = () => (
           <Route path="/diensten" element={<DienstenPage />} />
           <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
           <Route path="/over-ons" element={<OverOnsPage />} />
-          <Route path="/projecten" element={<Index />} />
+          <Route path="/projecten" element={<ProjectenPage />} />
           <Route path="/projecten/:projectId" element={<Index />} />
           <Route path="/offerte" element={<OffertePage />} />
           <Route path="/contact" element={<ContactPage />} />

@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const benefits = [
   'Gratis en vrijblijvende offerte',
@@ -11,9 +12,25 @@ const benefits = [
   'Garantie op al onze werkzaamheden'
 ];
 
+// Animation variants
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
 const CallToAction = () => {
   return (
-    <section className="py-16 md:py-24 bg-gray-900 text-white relative overflow-hidden">
+    <section className="py-16 bg-gray-900 text-white relative overflow-hidden">
       {/* Background overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-20" 
@@ -26,32 +43,63 @@ const CallToAction = () => {
       <div className="container relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
-          <div className="animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Klaar om uw project te starten?</h2>
-            <p className="text-lg mb-8 text-gray-300">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.h2 
+              className="text-3xl md:text-4xl font-bold mb-6"
+              variants={fadeIn}
+            >
+              Klaar om uw project te starten?
+            </motion.h2>
+            <motion.p 
+              className="text-lg mb-8 text-gray-300"
+              variants={fadeIn}
+            >
               Of u nu een klein renovatieproject of een complete verbouwing plant, 
               Refurbish Totaal Nederland staat voor u klaar met deskundig advies en 
               professionele uitvoering.
-            </p>
+            </motion.p>
             
-            <ul className="mb-8 space-y-3">
+            <motion.ul className="mb-8 space-y-3" variants={staggerContainer}>
               {benefits.map((benefit, index) => (
-                <li key={index} className="flex items-start animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <motion.li 
+                  key={index} 
+                  className="flex items-start"
+                  variants={fadeIn}
+                  transition={{ delay: index * 0.1 }}
+                >
                   <Check className="h-5 w-5 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
                   <span>{benefit}</span>
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
             
-            <Link 
-              to="/offerte" 
-              className="btn-primary hover:animate-pulse inline-block"
+            <motion.div
+              variants={fadeIn}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              Vrijblijvende Offerte Aanvragen
-            </Link>
-          </div>
+              <Link 
+                to="/offerte" 
+                className="btn-primary hover:animate-pulse inline-flex items-center"
+              >
+                Vrijblijvende Offerte Aanvragen
+                <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1"/>
+              </Link>
+            </motion.div>
+          </motion.div>
           
-          <div className="bg-white rounded-lg shadow-xl p-8 text-brand-darkGreen animate-fade-in hover-lift">
+          <motion.div 
+            className="bg-white rounded-lg shadow-xl p-8 text-brand-darkGreen hover-lift"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
             <h3 className="text-2xl font-bold mb-6">Neem Direct Contact Op</h3>
             <form>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -80,7 +128,7 @@ const CallToAction = () => {
                   type="tel" 
                   id="phone" 
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                  placeholder="06-12345678"
+                  placeholder="+31 6 30136079"
                 />
               </div>
               <div className="mb-4">
@@ -108,14 +156,16 @@ const CallToAction = () => {
                   placeholder="Vertel ons over uw project..."
                 ></textarea>
               </div>
-              <button 
+              <motion.button 
                 type="submit" 
                 className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Verstuur Aanvraag
-              </button>
+              </motion.button>
             </form>
-          </div>
+          </motion.div>
           
         </div>
       </div>

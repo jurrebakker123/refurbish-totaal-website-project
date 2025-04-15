@@ -1,18 +1,10 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Mail, Clock, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, Mail, Clock, ChevronDown, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const dienstenItems = [
   { title: 'Schilderwerk', path: '/diensten/schilderwerk' },
@@ -26,6 +18,7 @@ const dienstenItems = [
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isDienstenHovered, setIsDienstenHovered] = useState(false);
   const location = useLocation();
 
   const toggleMenu = () => {
@@ -57,6 +50,49 @@ const Header = () => {
     return location.pathname === path;
   };
 
+  // Animation variants
+  const menuItemVariants = {
+    hidden: { opacity: 0, y: -5 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: -10, height: 0 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      height: 'auto',
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.05
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -10, 
+      height: 0,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const mobileMenuVariants = {
+    hidden: { opacity: 0, height: 0 },
+    visible: { 
+      opacity: 1, 
+      height: 'auto',
+      transition: {
+        duration: 0.3,
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      height: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
   return (
     <header className={cn(
       "fixed w-full z-50 transition-all duration-300",
@@ -66,18 +102,41 @@ const Header = () => {
       <div className="bg-brand-darkGreen text-white py-2">
         <div className="container flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-6 mb-2 md:mb-0">
-            <div className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors">
+            <motion.a 
+              href="tel:+31630136079" 
+              className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Phone className="h-4 w-4" />
-              <a href="tel:+31630136079" className="text-sm">+31 6 30136079</a>
-            </div>
-            <div className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors">
+              <span className="text-sm">+31 6 30136079</span>
+            </motion.a>
+            <motion.a 
+              href="mailto:info@refurbishtotaal.nl" 
+              className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Mail className="h-4 w-4" />
-              <a href="mailto:info@refurbishtotaal.nl" className="text-sm">info@refurbishtotaal.nl</a>
-            </div>
+              <span className="text-sm">info@refurbishtotaal.nl</span>
+            </motion.a>
           </div>
-          <div className="flex items-center space-x-1">
-            <Clock className="h-4 w-4" />
-            <span className="text-sm">Ma-Vr: 08:00-17:00</span>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <Clock className="h-4 w-4" />
+              <span className="text-sm">Ma-Vr: 08:00-17:00</span>
+            </div>
+            <motion.a 
+              href="https://maps.google.com/?q=Niersweg+27,+6591+CT+Gennep"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm">Niersweg 27, Gennep</span>
+            </motion.a>
           </div>
         </div>
       </div>
@@ -86,8 +145,11 @@ const Header = () => {
       <div className="container py-4">
         <nav className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-brand-darkGreen">Refurbish Totaal</span>
-            <span className="text-brand-lightGreen ml-1 text-2xl font-bold">Nederland</span>
+            <img 
+              src="/logo.png" 
+              alt="Refurbish Totaal Nederland" 
+              className="h-12 w-auto"
+            />
           </Link>
           
           {/* Desktop Navigation */}
@@ -102,7 +164,11 @@ const Header = () => {
               Home
             </Link>
 
-            <div className="relative group">
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsDienstenHovered(true)}
+              onMouseLeave={() => setIsDienstenHovered(false)}
+            >
               <Link 
                 to="/diensten" 
                 className={cn(
@@ -110,21 +176,36 @@ const Header = () => {
                   isActive('/diensten') ? "text-brand-lightGreen" : "hover:text-brand-lightGreen"
                 )}
               >
-                Diensten <ChevronDown className="ml-1 h-4 w-4" />
+                Diensten <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${isDienstenHovered ? 'rotate-180' : ''}`} />
               </Link>
-              <div className="absolute left-0 mt-2 w-56 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <div className="py-1">
-                  {dienstenItems.map((dienst) => (
-                    <Link
-                      key={dienst.path}
-                      to={dienst.path}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand-darkGreen"
-                    >
-                      {dienst.title}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              
+              <AnimatePresence>
+                {isDienstenHovered && (
+                  <motion.div 
+                    className="absolute left-0 mt-2 w-60 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden"
+                    variants={dropdownVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <div className="py-1">
+                      {dienstenItems.map((dienst) => (
+                        <motion.div key={dienst.path} variants={menuItemVariants}>
+                          <Link
+                            to={dienst.path}
+                            className={cn(
+                              "block px-4 py-2 text-sm hover:bg-gray-100 hover:text-brand-darkGreen",
+                              location.pathname === dienst.path ? "text-brand-lightGreen bg-gray-50" : "text-gray-700"
+                            )}
+                          >
+                            {dienst.title}
+                          </Link>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <Link 
@@ -154,100 +235,130 @@ const Header = () => {
             >
               Contact
             </Link>
-            <Button asChild className="bg-brand-lightGreen hover:bg-opacity-90">
-              <Link to="/offerte">Offerte Aanvragen</Link>
-            </Button>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button asChild className="bg-brand-lightGreen hover:bg-opacity-90">
+                <Link to="/offerte">Offerte Aanvragen</Link>
+              </Button>
+            </motion.div>
           </div>
           
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button 
+            <motion.button 
               onClick={toggleMenu} 
               className="p-2 rounded-md text-gray-600 hover:text-brand-lightGreen hover:bg-gray-100"
+              whileTap={{ scale: 0.9 }}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            </motion.button>
           </div>
         </nav>
       </div>
       
       {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t animate-slide-in">
-          <div className="container py-4 flex flex-col space-y-3">
-            <Link 
-              to="/" 
-              className={cn(
-                "font-medium px-3 py-2 rounded-md hover:bg-gray-100",
-                isActive('/') ? "text-brand-lightGreen" : ""
-              )} 
-              onClick={toggleMenu}
-            >
-              Home
-            </Link>
-            <div>
-              <Link 
-                to="/diensten" 
-                className={cn(
-                  "font-medium px-3 py-2 rounded-md hover:bg-gray-100 block",
-                  isActive('/diensten') ? "text-brand-lightGreen" : ""
-                )} 
-                onClick={() => {}}
-              >
-                Diensten
-              </Link>
-              <div className="pl-6 space-y-1 mt-1">
-                {dienstenItems.map((dienst) => (
-                  <Link
-                    key={dienst.path}
-                    to={dienst.path}
-                    className={cn(
-                      "block px-3 py-1 rounded-md text-sm hover:bg-gray-100",
-                      location.pathname === dienst.path ? "text-brand-lightGreen" : ""
-                    )}
-                    onClick={toggleMenu}
-                  >
-                    {dienst.title}
-                  </Link>
-                ))}
-              </div>
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            className="md:hidden bg-white border-t overflow-hidden"
+            variants={mobileMenuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <div className="container py-4 flex flex-col space-y-3">
+              <motion.div variants={menuItemVariants}>
+                <Link 
+                  to="/" 
+                  className={cn(
+                    "font-medium px-3 py-2 rounded-md hover:bg-gray-100 block",
+                    isActive('/') ? "text-brand-lightGreen" : ""
+                  )} 
+                  onClick={toggleMenu}
+                >
+                  Home
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={menuItemVariants}>
+                <Link 
+                  to="/diensten" 
+                  className={cn(
+                    "font-medium px-3 py-2 rounded-md hover:bg-gray-100 block",
+                    isActive('/diensten') ? "text-brand-lightGreen" : ""
+                  )} 
+                  onClick={() => {}}
+                >
+                  Diensten
+                </Link>
+                <div className="pl-6 space-y-1 mt-1">
+                  {dienstenItems.map((dienst) => (
+                    <motion.div key={dienst.path} variants={menuItemVariants}>
+                      <Link
+                        to={dienst.path}
+                        className={cn(
+                          "block px-3 py-1 rounded-md text-sm hover:bg-gray-100",
+                          location.pathname === dienst.path ? "text-brand-lightGreen" : ""
+                        )}
+                        onClick={toggleMenu}
+                      >
+                        {dienst.title}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+              
+              <motion.div variants={menuItemVariants}>
+                <Link 
+                  to="/over-ons" 
+                  className={cn(
+                    "font-medium px-3 py-2 rounded-md hover:bg-gray-100 block",
+                    isActive('/over-ons') ? "text-brand-lightGreen" : ""
+                  )} 
+                  onClick={toggleMenu}
+                >
+                  Over Ons
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={menuItemVariants}>
+                <Link 
+                  to="/projecten" 
+                  className={cn(
+                    "font-medium px-3 py-2 rounded-md hover:bg-gray-100 block",
+                    isActive('/projecten') ? "text-brand-lightGreen" : ""
+                  )} 
+                  onClick={toggleMenu}
+                >
+                  Projecten
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={menuItemVariants}>
+                <Link 
+                  to="/contact" 
+                  className={cn(
+                    "font-medium px-3 py-2 rounded-md hover:bg-gray-100 block",
+                    isActive('/contact') ? "text-brand-lightGreen" : ""
+                  )} 
+                  onClick={toggleMenu}
+                >
+                  Contact
+                </Link>
+              </motion.div>
+              
+              <motion.div variants={menuItemVariants}>
+                <Button asChild className="bg-brand-lightGreen hover:bg-opacity-90 w-full">
+                  <Link to="/offerte" onClick={toggleMenu}>Offerte Aanvragen</Link>
+                </Button>
+              </motion.div>
             </div>
-            <Link 
-              to="/over-ons" 
-              className={cn(
-                "font-medium px-3 py-2 rounded-md hover:bg-gray-100",
-                isActive('/over-ons') ? "text-brand-lightGreen" : ""
-              )} 
-              onClick={toggleMenu}
-            >
-              Over Ons
-            </Link>
-            <Link 
-              to="/projecten" 
-              className={cn(
-                "font-medium px-3 py-2 rounded-md hover:bg-gray-100",
-                isActive('/projecten') ? "text-brand-lightGreen" : ""
-              )} 
-              onClick={toggleMenu}
-            >
-              Projecten
-            </Link>
-            <Link 
-              to="/contact" 
-              className={cn(
-                "font-medium px-3 py-2 rounded-md hover:bg-gray-100",
-                isActive('/contact') ? "text-brand-lightGreen" : ""
-              )} 
-              onClick={toggleMenu}
-            >
-              Contact
-            </Link>
-            <Button asChild className="bg-brand-lightGreen hover:bg-opacity-90 w-full">
-              <Link to="/offerte" onClick={toggleMenu}>Offerte Aanvragen</Link>
-            </Button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
