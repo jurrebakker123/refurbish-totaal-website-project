@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/sonner';
-import { MessageCircle, Coffee } from 'lucide-react';
+import { Coffee } from 'lucide-react';
 
 const LeaveSiteNotification = () => {
   const [hasShown, setHasShown] = useState(false);
