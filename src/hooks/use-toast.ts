@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import type {
@@ -74,10 +75,12 @@ const addToRemoveQueue = (toastId: string) => {
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
-      return {
+      // Only add toast if it has a title or description
+      const isValidToast = action.toast.title || action.toast.description;
+      return isValidToast ? {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
-      }
+      } : state;
 
     case "UPDATE_TOAST":
       return {
@@ -90,8 +93,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
