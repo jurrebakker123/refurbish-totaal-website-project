@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useParams, Link } from 'react-router-dom';
@@ -40,7 +41,7 @@ const diensten = {
         answer: 'Ja, wij geven garantie op al ons schilderwerk. De exacte garantieperiode is afhankelijk van het type schilderwerk en wordt vooraf in de offerte vermeld.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'dakrenovatie': {
     title: 'Dakrenovatie',
@@ -76,7 +77,7 @@ const diensten = {
         answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1632759145351-1d170f2a9ddd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'stucadoren': {
     title: 'Stucadoren',
@@ -112,7 +113,7 @@ const diensten = {
         answer: 'Ja, wij gebruiken speciale vochtbestendige stucmortel voor badkamers en andere vochtige ruimtes. Ook kunnen we waterafstotende afwerkingen toepassen.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1601689058311-6e9cab08654c?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'installatietechniek': {
     title: 'Installatietechniek',

@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -20,7 +19,7 @@ const diensten = [
       'Graffiti verwijdering',
       'Behang- en spuitwerk'
     ],
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'dakrenovatie',
@@ -104,7 +103,6 @@ const DienstenPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section - reduced green opacity */}
         <section className="relative text-white py-16">
           <div 
             className="absolute inset-0 bg-cover bg-center" 
@@ -123,7 +121,6 @@ const DienstenPage = () => {
           </div>
         </section>
 
-        {/* Diensten Overzicht */}
         <section className="py-16 bg-gray-50">
           <div className="container">
             {diensten.map((dienst, index) => (
@@ -175,7 +172,6 @@ const DienstenPage = () => {
           </div>
         </section>
 
-        {/* Call to Action Section */}
         <CallToActionSection />
       </main>
       <Footer />
