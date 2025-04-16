@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 220 20% 30%;  // More neutral foreground
+    --foreground: 220 20% 30%;  /* More neutral foreground */
 
     --card: 0 0% 100%;
     --card-foreground: 220 20% 30%;
@@ -13,10 +13,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 30%;
 
-    --primary: 220 50% 40%;     // More neutral primary color
+    --primary: 220 50% 40%;     /* More neutral primary color */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 70%;   // More neutral secondary
+    --secondary: 220 30% 70%;   /* More neutral secondary */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 20% 96%;
