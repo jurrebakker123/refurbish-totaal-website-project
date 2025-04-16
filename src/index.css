@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +6,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 220 20% 30%;  /* More neutral foreground */
+    --foreground: 220 20% 30%; /* More neutral foreground */
 
     --card: 0 0% 100%;
     --card-foreground: 220 20% 30%;
@@ -13,10 +14,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 30%;
 
-    --primary: 220 50% 40%;     /* More neutral primary color */
+    --primary: 142 71% 45%; /* Restored green color */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 70%;   /* More neutral secondary */
+    --secondary: 142 65% 88%; /* Lighter green */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 20% 96%;
@@ -34,8 +35,8 @@
 
     --radius: 0.5rem;
     
-    --brand-darkGreen: #4A4A4A;
-    --brand-lightGreen: #8E9196;
+    --brand-darkGreen: #00783E;
+    --brand-lightGreen: #46B67B;
   }
 
   .dark {
@@ -48,10 +49,10 @@
     --popover: 220 20% 30%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 220 50% 40%;
+    --primary: 142 71% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 70%;
+    --secondary: 142 65% 88%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 20% 96%;
