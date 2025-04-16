@@ -27,12 +27,11 @@ const ContactPage = () => {
             </div>
           </div>
         </section>
-
-        {/* Contact Info & Form */}
+        
         <section className="py-16">
           <div className="container">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Contact Info */}
+              
               <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Contactgegevens</h2>
                 <p className="text-lg text-gray-700 mb-8">
@@ -57,7 +56,7 @@ const ContactPage = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">E-mailadres</h3>
-                      <a href="mailto:info@refurbishtotaal.nl" className="text-gray-700 hover:text-brand-darkGreen">info@refurbishtotaal.nl</a>
+                      <a href="mailto:info@refurbishtotaalnederland.nl" className="text-gray-700 hover:text-brand-darkGreen">info@refurbishtotaalnederland.nl</a>
                     </div>
                   </div>
 
@@ -96,12 +95,11 @@ const ContactPage = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Contact Form */}
+              
               <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="bg-white p-8 rounded-lg shadow-lg hover-lift">
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Stuur ons een bericht</h2>
-                  <form action="mailto:info@refurbishtotaal.nl" method="post" encType="text/plain">
+                  <form action="mailto:info@refurbishtotaalnederland.nl" method="post" encType="text/plain">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>

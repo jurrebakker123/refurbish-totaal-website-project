@@ -126,13 +126,13 @@ const Header = () => {
               <Phone className="h-4 w-4" />
               <span className="text-sm">085 4444 255</span>
             </motion.a>
-            <motion.a href="mailto:info@refurbishtotaal.nl" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
+            <motion.a href="mailto:info@refurbishtotaalnederland.nl" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
               scale: 1.05
             }} whileTap={{
               scale: 0.95
             }}>
               <Mail className="h-4 w-4" />
-              <span className="text-sm">info@refurbishtotaal.nl</span>
+              <span className="text-sm">info@refurbishtotaalnederland.nl</span>
             </motion.a>
           </div>
           <div className="flex items-center space-x-4">
