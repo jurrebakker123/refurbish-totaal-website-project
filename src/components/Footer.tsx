@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
 
@@ -6,7 +5,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-brand-darkGreen text-white pt-16 pb-8">
+    <footer className="bg-brand-gray text-white pt-16 pb-8">
       <div className="container">
         {/* Top Footer Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -94,7 +93,7 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start hover:text-brand-lightGreen transition-colors">
                 <Phone className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>+31 6 30136079</span>
+                <span>085 4444 255</span>
               </li>
               <li className="flex items-start hover:text-brand-lightGreen transition-colors">
                 <Mail className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
@@ -102,7 +101,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>Niersweg 27, 6591 CT Gennep</span>
+                <span>Niersweg 27, 6591 CT Gennep<br />Postbus 61, 6650 AB Druten</span>
               </li>
               <li className="flex items-start">
                 <Clock className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />

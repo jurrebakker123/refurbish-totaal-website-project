@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
@@ -41,14 +40,14 @@ const ContactPage = () => {
                   Wij streven ernaar binnen 24 uur te reageren op uw bericht.
                 </p>
 
-                <div className="space-y-6 mb-8">
-                  <div className="flex items-start">
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-start hover:text-brand-darkGreen transition-colors">
                     <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
                       <Phone className="h-5 w-5 text-brand-darkGreen" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Telefoonnummer</h3>
-                      <a href="tel:+31630136079" className="text-gray-700 hover:text-brand-darkGreen">+31 6 30136079</a>
+                      <a href="tel:+31630136079" className="text-gray-700">085 4444 255</a>
                     </div>
                   </div>
 
@@ -83,20 +82,18 @@ const ContactPage = () => {
                       <p className="text-gray-700">Maandag t/m vrijdag: 08:00 - 17:00<br />Zaterdag & zondag: gesloten</p>
                     </div>
                   </div>
-                </div>
-
-                {/* Google Maps */}
-                <div className="rounded-lg overflow-hidden shadow-md h-80 hover-lift">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2470.2752784461224!2d5.9729919!3d51.6982938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7744f85c553a7%3A0xdd1324f3f9e03ea1!2sNiersweg%2027%2C%206591%20CT%20Gennep!5e0!3m2!1snl!2snl!4v1615306629171!5m2!1snl!2snl" 
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0 }} 
-                    allowFullScreen 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Locatie Refurbish Totaal Nederland"
-                  ></iframe>
+                  
+                  <div className="flex items-start">
+                    <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
+                      <MapPin className="h-5 w-5 text-brand-darkGreen" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-xl mb-1">Locatie</h3>
+                      <p className="text-gray-700">
+                        Niersweg 27<br />6591 CT Gennep<br />Postbus 61, 6650 AB Druten
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 

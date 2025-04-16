@@ -4,6 +4,7 @@ import { Menu, X, Phone, Mail, Clock, ChevronDown, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+
 const dienstenItems = [{
   title: 'Schilderwerk',
   path: '/diensten/schilderwerk'
@@ -23,16 +24,17 @@ const dienstenItems = [{
   title: 'PVC Vloeren',
   path: '/diensten/pvc-vloeren'
 }];
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isDienstenHovered, setIsDienstenHovered] = useState(false);
   const location = useLocation();
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Effect voor scroll animatie
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -47,16 +49,13 @@ const Header = () => {
     };
   }, []);
 
-  // Helper to check if the current link is active
   const isActive = (path: string) => {
-    // Check if path is exactly the current path or if it's a subpath
     if (path === '/diensten' && (location.pathname === '/diensten' || location.pathname.startsWith('/diensten/'))) {
       return true;
     }
     return location.pathname === path;
   };
 
-  // Animation variants
   const menuItemVariants = {
     hidden: {
       opacity: 0,
@@ -113,24 +112,25 @@ const Header = () => {
       }
     }
   };
-  return <header className={cn("fixed w-full z-50 transition-all duration-300", scrolled ? "bg-white shadow-md" : "bg-white/95")}>
-      {/* Top bar with contact info */}
+
+  return (
+    <header className={cn("fixed w-full z-50 transition-all duration-300", scrolled ? "bg-white shadow-md" : "bg-white/95")}>
       <div className="bg-brand-darkGreen text-white py-2">
         <div className="container flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-6 mb-2 md:mb-0">
             <motion.a href="tel:+31630136079" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }}>
+              scale: 1.05
+            }} whileTap={{
+              scale: 0.95
+            }}>
               <Phone className="h-4 w-4" />
-              <span className="text-sm">+31 6 30136079</span>
+              <span className="text-sm">085 4444 255</span>
             </motion.a>
             <motion.a href="mailto:info@refurbishtotaal.nl" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }}>
+              scale: 1.05
+            }} whileTap={{
+              scale: 0.95
+            }}>
               <Mail className="h-4 w-4" />
               <span className="text-sm">info@refurbishtotaal.nl</span>
             </motion.a>
@@ -141,10 +141,10 @@ const Header = () => {
               <span className="text-sm">Ma-Vr: 08:00-17:00</span>
             </div>
             <motion.a href="https://maps.google.com/?q=Niersweg+27,+6591+CT+Gennep" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }}>
+              scale: 1.05
+            }} whileTap={{
+              scale: 0.95
+            }}>
               <MapPin className="h-4 w-4" />
               <span className="text-sm">Niersweg 27, Gennep</span>
             </motion.a>
@@ -152,14 +152,12 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Main navigation */}
       <div className="container py-4">
         <nav className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
             <img alt="Refurbish Totaal Nederland" className="h-12 w-auto object-none" src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
           </Link>
           
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className={cn("font-medium transition-colors hover-underline", isActive('/') ? "text-brand-lightGreen" : "hover:text-brand-lightGreen")}>
               Home
@@ -193,28 +191,26 @@ const Header = () => {
               Contact
             </Link>
             <motion.div whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }}>
+              scale: 1.05
+            }} whileTap={{
+              scale: 0.95
+            }}>
               <Button asChild className="bg-brand-lightGreen hover:bg-opacity-90">
                 <Link to="/offerte">Offerte Aanvragen</Link>
               </Button>
             </motion.div>
           </div>
           
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <motion.button onClick={toggleMenu} className="p-2 rounded-md text-gray-600 hover:text-brand-lightGreen hover:bg-gray-100" whileTap={{
-            scale: 0.9
-          }}>
+              scale: 0.9
+            }}>
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </motion.button>
           </div>
         </nav>
       </div>
       
-      {/* Mobile Navigation */}
       <AnimatePresence>
         {isMenuOpen && <motion.div className="md:hidden bg-white border-t overflow-hidden" variants={mobileMenuVariants} initial="hidden" animate="visible" exit="exit">
             <div className="container py-4 flex flex-col space-y-3">
@@ -263,6 +259,8 @@ const Header = () => {
             </div>
           </motion.div>}
       </AnimatePresence>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;

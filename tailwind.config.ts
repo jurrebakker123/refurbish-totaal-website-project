@@ -53,10 +53,10 @@ export default {
           foreground: 'hsl(var(--card-foreground))'
         },
         brand: {
-          darkGreen: '#4A4A4A',     // Replaced with a neutral gray
-          lightGreen: '#8E9196',    // Replaced with a soft neutral gray
-          gray: '#333333',          // Dark gray
-          lightGray: '#F1F1F1'      // Light gray
+          darkGreen: '#4A4A4A',     // Neutral Gray
+          lightGreen: '#8E9196',    // Soft Neutral Gray
+          gray: '#222222',          // Dark Gray for footer
+          lightGray: '#F1F1F1'      // Light Gray
         }
       },
       borderRadius: {
