@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet';
 
@@ -10,7 +11,7 @@ const SEOStructuredData: React.FC = () => {
     "logo": "https://www.refurbishtotaal.nl/logo.png",
     "image": "https://lovable.dev/opengraph-image-p98pqg.png",
     "description": "Refurbish Totaal Nederland is uw betrouwbare partner voor professionele verbouwing en renovatie. Schilderwerk, dakrenovatie, stucwerk en meer.",
-    "telephone": "+31630136079",
+    "telephone": "+31854444255",
     "email": "info@refurbishtotaalnederland.nl",
     "address": {
       "@type": "PostalAddress",

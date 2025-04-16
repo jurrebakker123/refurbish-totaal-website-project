@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Mail, Clock, ChevronDown, MapPin } from 'lucide-react';
@@ -118,7 +119,7 @@ const Header = () => {
       <div className="bg-brand-darkGreen text-white py-2">
         <div className="container flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-6 mb-2 md:mb-0">
-            <motion.a href="tel:+31630136079" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
+            <motion.a href="tel:+31854444255" className="flex items-center space-x-1 hover:text-brand-lightGreen transition-colors" whileHover={{
               scale: 1.05
             }} whileTap={{
               scale: 0.95
@@ -155,7 +156,9 @@ const Header = () => {
       <div className="container py-4">
         <nav className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <img alt="Refurbish Totaal Nederland" className="h-12 w-auto object-none" src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
+            <div className="bg-brand-darkGreen p-2 rounded-md">
+              <img alt="Refurbish Totaal Nederland" className="h-12 w-auto object-contain" src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
+            </div>
           </Link>
           
           <div className="hidden md:flex items-center space-x-8">

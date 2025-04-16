@@ -104,7 +104,7 @@ const DienstenPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section */}
+        {/* Hero Section - reduced green opacity */}
         <section className="relative text-white py-16">
           <div 
             className="absolute inset-0 bg-cover bg-center" 
@@ -112,7 +112,7 @@ const DienstenPage = () => {
               backgroundImage: `url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
             }}
           >
-            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
           <div className="container text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Onze Diensten</h1>

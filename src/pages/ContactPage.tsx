@@ -1,30 +1,62 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, User, MessageSquare, Send } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import CallToActionSection from '@/components/CallToActionSection';
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    console.log("Email would be sent to: info@refurbishtotaalnederland.nl");
+    
+    toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      subject: '',
+      message: ''
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section met aangepaste achtergrond en titel */}
+        {/* Hero Section - reduced green opacity */}
         <section className="relative text-white py-16">
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1587614297882-0943c9700ef8?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?ixlib=rb-4.0.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2153&q=80')`,
             }}
           >
-            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
-          <div className="container relative z-10">
-            <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Contact</h1>
-              <p className="text-xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                Heeft u vragen of wilt u een afspraak maken? Neem gerust contact met ons op. Wij staan voor u klaar.
-              </p>
-            </div>
+          <div className="container text-center relative z-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Contact</h1>
+            <p className="text-xl max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              Heeft u vragen of wilt u een offerte aanvragen? Neem gerust contact met ons op.
+              Wij staan voor u klaar.
+            </p>
           </div>
         </section>
         
@@ -35,24 +67,23 @@ const ContactPage = () => {
               <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Contactgegevens</h2>
                 <p className="text-lg text-gray-700 mb-8">
-                  U kunt contact met ons opnemen via onderstaande gegevens of door het contactformulier in te vullen. 
-                  Wij streven ernaar binnen 24 uur te reageren op uw bericht.
+                  U kunt ons bereiken via onderstaande contactgegevens. Wij streven ernaar om binnen 24 uur te reageren op uw bericht.
                 </p>
 
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-start hover:text-brand-darkGreen transition-colors">
-                    <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
-                      <Phone className="h-5 w-5 text-brand-darkGreen" />
+                <div className="space-y-8">
+                  <div className="flex items-start">
+                    <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
+                      <Phone className="h-6 w-6 text-brand-darkGreen" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Telefoonnummer</h3>
-                      <a href="tel:+31630136079" className="text-gray-700">085 4444 255</a>
+                      <a href="tel:+31854444255" className="text-gray-700 hover:text-brand-darkGreen">085 4444 255</a>
                     </div>
                   </div>
 
                   <div className="flex items-start">
-                    <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
-                      <Mail className="h-5 w-5 text-brand-darkGreen" />
+                    <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
+                      <Mail className="h-6 w-6 text-brand-darkGreen" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">E-mailadres</h3>
@@ -61,35 +92,32 @@ const ContactPage = () => {
                   </div>
 
                   <div className="flex items-start">
-                    <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
-                      <MapPin className="h-5 w-5 text-brand-darkGreen" />
+                    <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
+                      <MapPin className="h-6 w-6 text-brand-darkGreen" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Adres</h3>
-                      <a href="https://maps.google.com/?q=Niersweg+27,+6591+CT+Gennep" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-brand-darkGreen">
-                        Niersweg 27<br />6591 CT Gennep
+                      <a 
+                        href="https://maps.google.com/?q=Niersweg+27,+6591+CT+Gennep" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-gray-700 hover:text-brand-darkGreen"
+                      >
+                        Niersweg 27<br />
+                        6591 CT Gennep
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-start">
-                    <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
-                      <Clock className="h-5 w-5 text-brand-darkGreen" />
+                    <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
+                      <Clock className="h-6 w-6 text-brand-darkGreen" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Openingstijden</h3>
-                      <p className="text-gray-700">Maandag t/m vrijdag: 08:00 - 17:00<br />Zaterdag & zondag: gesloten</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="rounded-full bg-brand-lightGreen/10 p-4 w-12 h-12 flex items-center justify-center mr-4">
-                      <MapPin className="h-5 w-5 text-brand-darkGreen" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-xl mb-1">Locatie</h3>
                       <p className="text-gray-700">
-                        Niersweg 27<br />6591 CT Gennep<br />Postbus 61, 6650 AB Druten
+                        Maandag - Vrijdag: 08:00 - 17:00<br />
+                        Zaterdag - Zondag: Gesloten
                       </p>
                     </div>
                   </div>
@@ -99,69 +127,97 @@ const ContactPage = () => {
               <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="bg-white p-8 rounded-lg shadow-lg hover-lift">
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Stuur ons een bericht</h2>
-                  <form action="mailto:info@refurbishtotaalnederland.nl" method="post" encType="text/plain">
+                  <form action="mailto:info@refurbishtotaalnederland.nl" method="post" encType="text/plain" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>
-                        <input 
-                          type="text" 
-                          id="name" 
-                          name="name"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                          placeholder="Uw naam"
-                          required
-                        />
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 text-gray-400" size={18} />
+                          <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
+                            required
+                          />
+                        </div>
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mailadres *</label>
-                        <input 
-                          type="email" 
-                          id="email" 
-                          name="email"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                          placeholder="uw@email.nl"
-                          required
-                        />
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
+                            required
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="mb-4">
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
-                      <input 
-                        type="tel" 
-                        id="phone" 
-                        name="phone"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                        placeholder="+31 6 12345678"
-                      />
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 text-gray-400" size={18} />
+                          <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Onderwerp *</label>
+                        <select
+                          id="subject"
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleChange}
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
+                          required
+                        >
+                          <option value="" disabled>Selecteer een onderwerp</option>
+                          <option value="Offerte">Offerte aanvragen</option>
+                          <option value="Informatie">Informatie aanvragen</option>
+                          <option value="Planning">Planning en afspraken</option>
+                          <option value="Klacht">Klacht of suggestie</option>
+                          <option value="Anders">Anders</option>
+                        </select>
+                      </div>
                     </div>
-                    <div className="mb-4">
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Onderwerp *</label>
-                      <input 
-                        type="text" 
-                        id="subject" 
-                        name="subject"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                        placeholder="Onderwerp van uw bericht"
-                        required
-                      />
-                    </div>
+                    
                     <div className="mb-6">
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Bericht *</label>
-                      <textarea 
-                        id="message" 
-                        name="message"
-                        rows={6}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                        placeholder="Typ hier uw bericht..."
-                        required
-                      ></textarea>
+                      <div className="relative">
+                        <MessageSquare className="absolute left-3 top-3 text-gray-400" size={18} />
+                        <textarea
+                          id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          rows={5}
+                          className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
+                          required
+                        ></textarea>
+                      </div>
                     </div>
+                    
                     <button 
                       type="submit" 
-                      className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-all flex items-center justify-center"
+                      className="btn-primary w-full flex items-center justify-center"
                     >
-                      <Send className="mr-2 h-5 w-5" />
-                      Verstuur Bericht
+                      <span>Verstuur Bericht</span>
+                      <Send className="ml-2 h-5 w-5" />
                     </button>
                   </form>
                 </div>
@@ -170,47 +226,26 @@ const ContactPage = () => {
           </div>
         </section>
 
-        {/* FAQ Section */}
+        {/* Map Section */}
         <section className="py-16 bg-gray-50">
           <div className="container">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen animate-fade-in">Veelgestelde Vragen</h2>
-              <p className="text-lg text-gray-700 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                Hieronder vindt u antwoorden op de meest gestelde vragen. Staat uw vraag er niet tussen? Neem dan gerust contact met ons op.
-              </p>
-            </div>
-
-            <div className="max-w-3xl mx-auto space-y-6">
-              <div className="bg-white p-6 rounded-lg shadow-md hover-lift animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Hoe vraag ik een offerte aan?</h3>
-                <p className="text-gray-700">
-                  U kunt een offerte aanvragen via onze website door naar de pagina <a href="/offerte" className="text-brand-darkGreen hover:underline">Offerte Aanvragen</a> te gaan, of door direct contact met ons op te nemen via telefoon of e-mail. Wij zullen binnen 24 uur contact met u opnemen om uw wensen te bespreken.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md hover-lift animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Werken jullie door heel Nederland?</h3>
-                <p className="text-gray-700">
-                  Ja, wij voeren projecten uit door heel Nederland. Voor sommige kleinere projecten kan er wel een minimumbedrag gelden voor regio's buiten de Randstad. Neem <a href="/contact" className="text-brand-darkGreen hover:underline">contact</a> met ons op voor meer informatie.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md hover-lift animate-fade-in" style={{ animationDelay: '0.5s' }}>
-                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Bieden jullie garantie op de werkzaamheden?</h3>
-                <p className="text-gray-700">
-                  Zeker! Wij bieden garantie op al onze werkzaamheden. De exacte garantietermijn is afhankelijk van het type project en de gebruikte materialen. Dit wordt vooraf duidelijk vermeld in onze offerte.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md hover-lift animate-fade-in" style={{ animationDelay: '0.6s' }}>
-                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Kan ik zelf materialen aanschaffen of werken jullie alleen met eigen materialen?</h3>
-                <p className="text-gray-700">
-                  Wij zijn flexibel hierin. U kunt ervoor kiezen om zelf materialen aan te schaffen, of wij kunnen dit voor u verzorgen. Bij eigen aanschaf van materialen kunnen wij uiteraard advies geven over de benodigde kwaliteit en hoeveelheden.
-                </p>
-              </div>
+            <h2 className="text-3xl font-bold mb-8 text-center text-brand-darkGreen">Onze Locatie</h2>
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2470.2752784461224!2d5.9729919!3d51.6982938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7744f85c553a7%3A0xdd1324f3f9e03ea1!2sNiersweg%2027%2C%206591%20CT%20Gennep!5e0!3m2!1snl!2snl!4v1615306629171!5m2!1snl!2snl" 
+                width="100%" 
+                height="450" 
+                style={{ border: 0 }} 
+                allowFullScreen 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Kaart locatie Refurbish Totaal Nederland"
+              ></iframe>
             </div>
           </div>
         </section>
+
+        <CallToActionSection />
       </main>
       <Footer />
     </div>

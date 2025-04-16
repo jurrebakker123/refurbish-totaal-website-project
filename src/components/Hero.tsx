@@ -24,6 +24,12 @@ const Hero = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
+    
+    // Send email - this would typically be handled by a backend service
+    // For now we'll just simulate this with a console log
+    console.log("Form submitted:", formData);
+    console.log("Email would be sent to: info@refurbishtotaalnederland.nl");
+    
     setFormData({
       name: '',
       email: '',
@@ -51,14 +57,14 @@ const Hero = () => {
 
   return (
     <section className="relative bg-gray-900 text-white min-h-screen flex items-center pt-20">
-      {/* Background image with overlay */}
+      {/* Background image with overlay - reduced opacity */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0" 
         style={{ 
           backgroundImage: `url('https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
         }}
       >
-        <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+        <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
       </div>
       
       {/* Content */}
@@ -105,7 +111,7 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* New contact form block */}
+          {/* Contact form block */}
           <motion.div 
             className="bg-white text-gray-800 rounded-lg shadow-2xl p-6 md:p-8"
             initial={{ opacity: 0, scale: 0.9 }}

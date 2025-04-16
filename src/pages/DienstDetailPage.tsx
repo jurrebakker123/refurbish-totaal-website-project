@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useParams, Link } from 'react-router-dom';
@@ -77,7 +76,7 @@ const diensten = {
         answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1632759145351-1d170f2a9ddd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'stucadoren': {
     title: 'Stucadoren',
@@ -256,17 +255,20 @@ const DienstDetailPage = () => {
     );
   }
 
+  // Adjust height for PVC vloeren page
+  const heroHeight = serviceId === 'pvc-vloeren' ? 'py-12' : 'py-16';
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section */}
-        <section className="relative text-white py-16">
+        {/* Hero Section - reduced green opacity */}
+        <section className={`relative text-white ${heroHeight}`}>
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ backgroundImage: `url(${dienst.image})` }}
           >
-            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-80"></div>
+            <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-50"></div>
           </div>
           <div className="container relative z-10">
             <div className="flex flex-col md:flex-row items-center">
@@ -342,7 +344,7 @@ const DienstDetailPage = () => {
                 </div>
               </div>
 
-              {/* Sidebar */}
+              {/* Sidebar - updated contact info */}
               <div className="lg:col-span-1">
                 <div className="sticky top-32">
                   <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
@@ -366,11 +368,11 @@ const DienstDetailPage = () => {
                     <div className="space-y-3">
                       <div className="flex items-center">
                         <Phone className="h-5 w-5 mr-2" />
-                        <span>+31 6 30136079</span>
+                        <span>085 4444 255</span>
                       </div>
                       <div className="flex items-center">
                         <Mail className="h-5 w-5 mr-2" />
-                        <span>info@refurbishtotaal.nl</span>
+                        <span>info@refurbishtotaalnederland.nl</span>
                       </div>
                     </div>
                   </div>
