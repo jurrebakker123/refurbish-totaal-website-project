@@ -39,7 +39,7 @@ const App = () => {
   // Functie om te controleren of het huidige domein de coming soon pagina moet tonen
   const shouldShowComingSoon = () => {
     const hostname = window.location.hostname;
-    return hostname === 'refurbishtotaalnederland.nl';
+    return hostname === 'refurbishtotaalnederland.nl' || hostname === 'www.refurbishtotaalnederland.nl';
   };
 
   // Als het coming soon domein is, toon alleen de coming soon pagina
