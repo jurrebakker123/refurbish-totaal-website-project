@@ -9,4 +9,3 @@ export const SERVICES = [
   'PVC Vloeren',
   'Anders'
 ] as const;
-
