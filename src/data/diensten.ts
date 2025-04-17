@@ -27,7 +27,7 @@ const diensten: DienstenRecord = {
     title: 'Schilderwerk',
     description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
     longDescription: 'Ons team van ervaren schilders zorgt voor een vakkundige en duurzame verfafwerking voor zowel binnen- als buitenschilderwerk. Wij gebruiken alleen hoogwaardige verfproducten die zorgen voor een langdurig mooi resultaat en bescherming van uw hout- en muurwerk.',
-    icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(Brush, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Buitenschilderwerk voor gevels, kozijnen en deuren',
       'Binnenschilderwerk voor wanden, plafonds en trappen',
@@ -63,7 +63,7 @@ const diensten: DienstenRecord = {
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     longDescription: 'Een goed onderhouden dak is essentieel voor de bescherming van uw woning. Ons ervaren team voert alle soorten dakrenovaties uit, van het vervangen van enkele dakpannen tot complete dakvernieuwing inclusief isolatie.',
-    icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(Home, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Vernieuwen van dakbedekking (pannen, leien, bitumen)',
       'Isolatie van hellende en platte daken',
@@ -99,7 +99,7 @@ const diensten: DienstenRecord = {
     title: 'Stucadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     longDescription: 'Onze stucadoors zorgen voor perfect geëgaliseerde wanden en plafonds die de basis vormen voor een mooie afwerking van uw interieur. Wij verzorgen zowel traditioneel stucwerk als decoratieve technieken.',
-    icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(Construction, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Gladpleisterwerk voor wanden en plafonds',
       'Renovatiestucwerk bij scheuren en beschadigingen',
@@ -135,7 +135,7 @@ const diensten: DienstenRecord = {
     title: 'Installatietechniek',
     description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
     longDescription: 'Onze gecertificeerde installateurs zorgen voor veilige en betrouwbare elektra- en loodgietersinstallaties voor zowel nieuwbouw als renovatieprojecten. Wij werken volgens de laatste normen en veiligheidsvoorschriften.',
-    icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(Wrench, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Elektra aanleggen of vernieuwen',
       'Groepenkast vervangen of uitbreiden',
@@ -171,7 +171,7 @@ const diensten: DienstenRecord = {
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     longDescription: 'Ons team van ervaren bouwvakkers, timmerlieden en projectleiders zorgt voor een zorgeloze aan- of verbouwing van uw woning. Van het eerste ontwerp tot de laatste afwerking, wij nemen alle zorgen uit handen.',
-    icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(Building, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Uitbouwen en aanbouwen realiseren',
       'Dakkapellen en dakopbouwen',
@@ -207,7 +207,7 @@ const diensten: DienstenRecord = {
     title: 'Behangen',
     description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
     longDescription: 'Ons team van ervaren behangers zorgt ervoor dat uw wanden een prachtige afwerking krijgen met behang naar keuze. Van klassiek tot modern, van effen tot met patroon - wij zorgen voor een perfect eindresultaat.',
-    icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(Wallpaper, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Behang verwijderen en ondergrond voorbereiden',
       'Aanbrengen van luxe behang en wandbekleding',
@@ -243,7 +243,7 @@ const diensten: DienstenRecord = {
     title: 'PVC Vloeren',
     description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
     longDescription: 'PVC vloeren zijn niet alleen mooi en stijlvol, maar ook duurzaam en onderhoudsvriendelijk. Ons team van specialisten zorgt voor perfect geplaatste PVC vloeren in elke ruimte van uw woning of bedrijfspand.',
-    icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
+    icon: React.createElement(SquareGanttChart, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'PVC vloeren in diverse dessins en kwaliteiten',
       'Egaliseren van ondervloeren',
