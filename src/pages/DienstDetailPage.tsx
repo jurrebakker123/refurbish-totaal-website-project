@@ -27,6 +27,13 @@ const DienstDetailPage = () => {
     }
   }, [dienst, serviceId]);
 
+  // Handle redirect from old "stucadoren" URL to new "stukadoren" URL
+  useEffect(() => {
+    if (serviceId === 'stucadoren') {
+      window.location.replace('/diensten/stukadoren');
+    }
+  }, [serviceId]);
+
   if (!dienst) {
     return <DienstNotFound />;
   }

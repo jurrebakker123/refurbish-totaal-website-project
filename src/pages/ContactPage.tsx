@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, User, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import CallToActionSection from '@/components/CallToActionSection';
+import emailjs from '@emailjs/browser';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const ContactPage = () => {
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -26,16 +28,51 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+    setIsSubmitting(true);
     
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    });
+    // Build the email data
+    const emailData = {
+      to_email: 'info@refurbishtotaalnederland.nl',
+      from_name: formData.name,
+      from_email: formData.email,
+      from_phone: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+    };
+
+    // Email sending logic
+    const emailBody = `
+      Naam: ${formData.name}
+      E-mail: ${formData.email}
+      Telefoon: ${formData.phone}
+      Onderwerp: ${formData.subject}
+      Bericht: ${formData.message}
+    `;
+
+    // Using mailto as a fallback for email submission
+    const mailtoLink = `mailto:info@refurbishtotaalnederland.nl?subject=${encodeURIComponent('Contact vanaf website: ' + formData.subject)}&body=${encodeURIComponent(emailBody)}`;
+    
+    try {
+      // Try to open the email client
+      window.location.href = mailtoLink;
+      
+      // Show success message
+      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.");
+      console.error("Email error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -128,7 +165,7 @@ const ContactPage = () => {
               <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="bg-white p-8 rounded-lg shadow-lg hover-lift">
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Stuur ons een bericht</h2>
-                  <form action="mailto:info@refurbishtotaalnederland.nl" method="post" encType="text/plain" onSubmit={handleSubmit}>
+                  <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>
@@ -216,8 +253,9 @@ const ContactPage = () => {
                     <button 
                       type="submit" 
                       className="btn-primary w-full flex items-center justify-center"
+                      disabled={isSubmitting}
                     >
-                      <span>Verstuur Bericht</span>
+                      <span>{isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Bericht'}</span>
                       <Send className="ml-2 h-5 w-5" />
                     </button>
                   </form>

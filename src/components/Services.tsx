@@ -18,11 +18,11 @@ const services = [
     link: '/diensten/dakrenovatie',
   },
   {
-    id: 'stucadoren',
+    id: 'stukadoren',
     icon: <Construction className="h-12 w-12 text-brand-lightGreen mb-4" />,
-    title: 'Stucadoren',
+    title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
-    link: '/diensten/stucadoren',
+    link: '/diensten/stukadoren',
   },
   {
     id: 'installatietechniek',

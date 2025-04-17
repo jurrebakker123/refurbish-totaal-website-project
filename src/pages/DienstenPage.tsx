@@ -35,12 +35,12 @@ const diensten = [
       'Lood- en zinkwerk vernieuwen',
       'Velux dakramen plaatsen'
     ],
-    image: '/lovable-uploads/23ea1730-4a8e-4c3a-b832-c6c4878f82e3.png'
+    image: '/lovable-uploads/0c3102cd-42c6-4e5a-81fc-63376819f153.png'
   },
   {
-    id: 'stucadoren',
+    id: 'stukadoren',
     icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Stucadoren',
+    title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     features: [
       'Gladpleisterwerk voor wanden en plafonds',
@@ -50,7 +50,7 @@ const diensten = [
       'Venetiaans stucwerk en tadelakt',
       'Betonlook wanden en vloeren'
     ],
-    image: '/lovable-uploads/8c54543b-978f-45d5-a04c-8a3cce82bcb8.png'
+    image: '/lovable-uploads/2976ead9-61cf-4a8d-b766-7c5df9b68cf1.png'
   },
   {
     id: 'installatietechniek',
@@ -95,7 +95,7 @@ const diensten = [
       'Textiel- en vinylbehang',
       'Reparatie van bestaand behangwerk'
     ],
-    image: '/lovable-uploads/c63f7bae-2344-4cea-af89-c90768d9261c.png'
+    image: '/lovable-uploads/9bf66d83-2f81-43a8-b69d-eb70cb65b7ef.png'
   },
   {
     id: 'pvc-vloeren',

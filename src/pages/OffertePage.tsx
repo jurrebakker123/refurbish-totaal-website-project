@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
@@ -7,7 +8,7 @@ import { toast } from 'sonner';
 const services = [
   'Schilderwerk',
   'Dakrenovatie',
-  'Stucadoren',
+  'Stukadoren',
   'Installatietechniek',
   'Aan- en verbouw',
   'Behangen',
@@ -26,6 +27,7 @@ const OffertePage = () => {
     message: '',
     terms: false
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
@@ -44,19 +46,45 @@ const OffertePage = () => {
       return;
     }
     
-    toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
+    setIsSubmitting(true);
     
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      location: '',
-      preferredDate: '',
-      service: '',
-      message: '',
-      terms: false
-    });
+    // Create email body content
+    const emailBody = `
+      Naam: ${formData.name}
+      E-mail: ${formData.email}
+      Telefoon: ${formData.phone}
+      Locatie: ${formData.location}
+      Voorkeursdatum: ${formData.preferredDate || 'Niet opgegeven'}
+      Dienst: ${formData.service}
+      Bericht: ${formData.message || 'Geen bericht'}
+    `;
+
+    // Using mailto as a fallback for email submission
+    const mailtoLink = `mailto:info@refurbishtotaalnederland.nl?subject=${encodeURIComponent('Offerte aanvraag voor ' + formData.service)}&body=${encodeURIComponent(emailBody)}`;
+    
+    try {
+      // Try to open the email client
+      window.location.href = mailtoLink;
+      
+      toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        location: '',
+        preferredDate: '',
+        service: '',
+        message: '',
+        terms: false
+      });
+    } catch (error) {
+      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.");
+      console.error("Email error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -222,8 +250,9 @@ const OffertePage = () => {
                 <button
                   type="submit"
                   className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
+                  disabled={isSubmitting}
                 >
-                  Verstuur Aanvraag
+                  {isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Aanvraag'}
                 </button>
               </form>
             </div>

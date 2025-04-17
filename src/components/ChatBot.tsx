@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Send, X, MessageSquare } from 'lucide-react';
@@ -31,8 +30,8 @@ const ChatBot = () => {
         response = 'Onze schilderdiensten omvatten zowel binnen- als buitenschilderwerk met hoogwaardige materialen. We kunnen u adviseren over de beste verfsoorten voor uw specifieke situatie, of het nu gaat om houtwerk, muren of speciale oppervlakken. Wilt u meer weten over onze binnen- of buitenschilderwerken?';
       } else if (lowerMsg.includes('dak') || lowerMsg.includes('renovatie')) {
         response = 'Onze dakrenovatie diensten bieden complete oplossingen voor lekkages, isolatie en vernieuwing van uw dak. We werken met verschillende dakbedekkingsmaterialen zoals pannen, leien en bitumen. Heeft u een specifieke vraag over dakrenovatie?';
-      } else if (lowerMsg.includes('stucadoor') || lowerMsg.includes('stuc')) {
-        response = 'Onze stucadoors zorgen voor perfect afgewerkte wanden en plafonds. We bieden diverse technieken aan, van gladpleisterwerk tot sierlijsten en decoratieve toepassingen. Bent u geïnteresseerd in een bepaalde stuctechniek?';
+      } else if (lowerMsg.includes('stukadoor') || lowerMsg.includes('stuc')) {
+        response = 'Onze stukadoors zorgen voor perfect afgewerkte wanden en plafonds. We bieden diverse technieken aan, van gladpleisterwerk tot sierlijsten en decoratieve toepassingen. Bent u geïnteresseerd in een bepaalde stuctechniek?';
       } else if (lowerMsg.includes('installatie') || lowerMsg.includes('elektra') || lowerMsg.includes('loodgieter')) {
         response = 'Onze installatietechniek omvat elektra, loodgieterswerk en klimaatbeheersing. We kunnen complete installaties verzorgen voor nieuwbouw of renovatie. Welk type installatiewerk heeft uw interesse?';
       } else if (lowerMsg.includes('verbouw') || lowerMsg.includes('aanbouw')) {
@@ -56,9 +55,9 @@ const ChatBot = () => {
       } else if (lowerMsg.includes('dank') || lowerMsg.includes('bedankt')) {
         response = 'Graag gedaan! Als u nog andere vragen heeft, hoor ik het graag. Wij staan voor u klaar.';
       } else if (lowerMsg.includes('hallo') || lowerMsg.includes('hoi') || lowerMsg.includes('goedemorgen') || lowerMsg.includes('goedemiddag')) {
-        response = 'Hallo! Fijn dat u contact opneemt. Waarmee kan ik u helpen? U kunt me vragen stellen over onze diensten zoals schilderwerk, dakrenovatie, stucadoren, installatietechniek, behangen, aan- en verbouw of PVC vloeren.';
+        response = 'Hallo! Fijn dat u contact opneemt. Waarmee kan ik u helpen? U kunt me vragen stellen over onze diensten zoals schilderwerk, dakrenovatie, stukadoren, installatietechniek, behangen, aan- en verbouw of PVC vloeren.';
       } else {
-        response = 'Bedankt voor uw bericht. Ik kan u informatie geven over onze diensten zoals schilderwerk, dakrenovatie, stucadoren, installatietechniek, behangen, aan- en verbouw en PVC vloeren. Of wilt u weten hoe u contact met ons kunt opnemen of een offerte kunt aanvragen?';
+        response = 'Bedankt voor uw bericht. Ik kan u informatie geven over onze diensten zoals schilderwerk, dakrenovatie, stukadoren, installatietechniek, behangen, aan- en verbouw en PVC vloeren. Of wilt u weten hoe u contact met ons kunt opnemen of een offerte kunt aanvragen?';
       }
       
       setMessages(prev => [...prev, {type: 'bot', content: response}]);

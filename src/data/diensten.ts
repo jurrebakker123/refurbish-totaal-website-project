@@ -93,12 +93,12 @@ const diensten: DienstenRecord = {
         answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
       }
     ],
-    image: '/lovable-uploads/ad8c8e3c-2907-4b81-b6bc-0cc94d9cf1e0.png'
+    image: '/lovable-uploads/0c3102cd-42c6-4e5a-81fc-63376819f153.png'
   },
-  'stucadoren': {
-    title: 'Stucadoren',
+  'stukadoren': {
+    title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
-    longDescription: 'Onze stucadoors zorgen voor perfect geëgaliseerde wanden en plafonds die de basis vormen voor een mooie afwerking van uw interieur. Wij verzorgen zowel traditioneel stucwerk als decoratieve technieken.',
+    longDescription: 'Onze stukadoors zorgen voor perfect geëgaliseerde wanden en plafonds die de basis vormen voor een mooie afwerking van uw interieur. Wij verzorgen zowel traditioneel stucwerk als decoratieve technieken.',
     icon: React.createElement(Construction, { size: 48, className: "text-brand-lightGreen mb-6" }),
     features: [
       'Gladpleisterwerk voor wanden en plafonds',
@@ -129,7 +129,7 @@ const diensten: DienstenRecord = {
         answer: 'Ja, wij gebruiken speciale vochtbestendige stucmortel voor badkamers en andere vochtige ruimtes. Ook kunnen we waterafstotende afwerkingen toepassen.' 
       }
     ],
-    image: '/lovable-uploads/021fe3bd-a1fe-4022-abad-070ce97b29e8.png'
+    image: '/lovable-uploads/2976ead9-61cf-4a8d-b766-7c5df9b68cf1.png'
   },
   'installatietechniek': {
     title: 'Installatietechniek',
@@ -237,7 +237,7 @@ const diensten: DienstenRecord = {
         answer: 'Voor een gemiddelde kamer (circa 4x4 meter) moet u rekenen op ongeveer één werkdag voor het complete behangwerk, inclusief de voorbereidingen. Bij complexe patronen of een moeilijke ondergrond kan dit iets langer duren.' 
       }
     ],
-    image: '/lovable-uploads/bde19c7f-fd57-41c4-99d8-2138e8be56c9.png'
+    image: '/lovable-uploads/9bf66d83-2f81-43a8-b69d-eb70cb65b7ef.png'
   },
   'pvc-vloeren': {
     title: 'PVC Vloeren',
