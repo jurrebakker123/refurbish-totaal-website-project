@@ -1,136 +1,74 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
-
-const diensten = [
-  {
-    id: 'schilderwerk',
-    icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Schilderwerk',
-    description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
-    features: [
-      'Buitenschilderwerk voor gevels, kozijnen en deuren',
-      'Binnenschilderwerk voor wanden, plafonds en trappen',
-      'Kleuradvies en verfkeuze op maat',
-      'Houtrotherstel en reparaties',
-      'Graffiti verwijdering',
-      'Behang- en spuitwerk'
-    ],
-    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
-  },
-  {
-    id: 'dakrenovatie',
-    icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Dakrenovatie',
-    description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
-    features: [
-      'Vernieuwen van dakbedekking (pannen, leien, bitumen)',
-      'Isolatie van hellende en platte daken',
-      'Dakkapellen plaatsen of renoveren',
-      'Dakgoten repareren of vervangen',
-      'Lood- en zinkwerk vernieuwen',
-      'Velux dakramen plaatsen'
-    ],
-    image: '/lovable-uploads/0c3102cd-42c6-4e5a-81fc-63376819f153.png'
-  },
-  {
-    id: 'stukadoren',
-    icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Stukadoren',
-    description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
-    features: [
-      'Gladpleisterwerk voor wanden en plafonds',
-      'Renovatiestucwerk bij scheuren en beschadigingen',
-      'Sierlijsten en ornamenten aanbrengen',
-      'Spachtelputz en structuurwerk',
-      'Venetiaans stucwerk en tadelakt',
-      'Betonlook wanden en vloeren'
-    ],
-    image: '/lovable-uploads/2976ead9-61cf-4a8d-b766-7c5df9b68cf1.png'
-  },
-  {
-    id: 'installatietechniek',
-    icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Installatietechniek',
-    description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
-    features: [
-      'Elektra aanleggen of vernieuwen',
-      'Groepenkast vervangen of uitbreiden',
-      'Water- en gasleidingen aanleggen of vervangen',
-      'Badkamer en toilet installaties',
-      'Vloerverwarming aanleggen',
-      'Domotica en slimme huisinstallaties'
-    ],
-    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
-  },
-  {
-    id: 'aan-en-verbouw',
-    icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Aan- en verbouw',
-    description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
-    features: [
-      'Uitbouwen en aanbouwen realiseren',
-      'Dakkapellen en dakopbouwen',
-      'Muren doorbreken en dragende constructies',
-      'Garage ombouwen tot woonruimte',
-      'Indeling van woning wijzigen',
-      'Funderingsherstel'
-    ],
-    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
-  },
-  {
-    id: 'behangen',
-    icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Behangen',
-    description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
-    features: [
-      'Behang verwijderen en ondergrond voorbereiden',
-      'Aanbrengen van luxe behang en wandbekleding',
-      'Fotobehang op maat',
-      'Vliesbehang en traditioneel behang',
-      'Textiel- en vinylbehang',
-      'Reparatie van bestaand behangwerk'
-    ],
-    image: '/lovable-uploads/9bf66d83-2f81-43a8-b69d-eb70cb65b7ef.png'
-  },
-  {
-    id: 'pvc-vloeren',
-    icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'PVC Vloeren',
-    description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
-    features: [
-      'PVC vloeren in diverse dessins en kwaliteiten',
-      'Egaliseren van ondervloeren',
-      'Vloerverwarming geschikte PVC vloeren',
-      'Click PVC en vaste PVC vloeren',
-      'Onderhoud en reparatie van PVC vloeren',
-      'Verwijderen van oude vloerbedekking'
-    ],
-    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
-  }
-];
-
+const diensten = [{
+  id: 'schilderwerk',
+  icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Schilderwerk',
+  description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
+  features: ['Buitenschilderwerk voor gevels, kozijnen en deuren', 'Binnenschilderwerk voor wanden, plafonds en trappen', 'Kleuradvies en verfkeuze op maat', 'Houtrotherstel en reparaties', 'Graffiti verwijdering', 'Behang- en spuitwerk'],
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+}, {
+  id: 'dakrenovatie',
+  icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Dakrenovatie',
+  description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
+  features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
+  image: '/lovable-uploads/0c3102cd-42c6-4e5a-81fc-63376819f153.png'
+}, {
+  id: 'stukadoren',
+  icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Stukadoren',
+  description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
+  features: ['Gladpleisterwerk voor wanden en plafonds', 'Renovatiestucwerk bij scheuren en beschadigingen', 'Sierlijsten en ornamenten aanbrengen', 'Spachtelputz en structuurwerk', 'Venetiaans stucwerk en tadelakt', 'Betonlook wanden en vloeren'],
+  image: '/lovable-uploads/2976ead9-61cf-4a8d-b766-7c5df9b68cf1.png'
+}, {
+  id: 'installatietechniek',
+  icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Installatietechniek',
+  description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
+  features: ['Elektra aanleggen of vernieuwen', 'Groepenkast vervangen of uitbreiden', 'Water- en gasleidingen aanleggen of vervangen', 'Badkamer en toilet installaties', 'Vloerverwarming aanleggen', 'Domotica en slimme huisinstallaties'],
+  image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
+}, {
+  id: 'aan-en-verbouw',
+  icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Aan- en verbouw',
+  description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
+  features: ['Uitbouwen en aanbouwen realiseren', 'Dakkapellen en dakopbouwen', 'Muren doorbreken en dragende constructies', 'Garage ombouwen tot woonruimte', 'Indeling van woning wijzigen', 'Funderingsherstel'],
+  image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
+}, {
+  id: 'behangen',
+  icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Behangen',
+  description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
+  features: ['Behang verwijderen en ondergrond voorbereiden', 'Aanbrengen van luxe behang en wandbekleding', 'Fotobehang op maat', 'Vliesbehang en traditioneel behang', 'Textiel- en vinylbehang', 'Reparatie van bestaand behangwerk'],
+  image: '/lovable-uploads/9bf66d83-2f81-43a8-b69d-eb70cb65b7ef.png'
+}, {
+  id: 'pvc-vloeren',
+  icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'PVC Vloeren',
+  description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
+  features: ['PVC vloeren in diverse dessins en kwaliteiten', 'Egaliseren van ondervloeren', 'Vloerverwarming geschikte PVC vloeren', 'Click PVC en vaste PVC vloeren', 'Onderhoud en reparatie van PVC vloeren', 'Verwijderen van oude vloerbedekking'],
+  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+}];
 const DienstenPage = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
         <section className="relative text-white py-16">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
-            }}
-          >
+          <div className="absolute inset-0 bg-cover bg-center" style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`
+        }}>
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
           <div className="container text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Onze Diensten</h1>
-            <p className="text-xl max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <p className="text-xl max-w-3xl mx-auto animate-fade-in" style={{
+            animationDelay: '0.2s'
+          }}>
               Bij Refurbish Totaal Nederland bieden wij een breed scala aan renovatie- en verbouwdiensten,
               uitgevoerd door ervaren vakmensen met oog voor detail.
             </p>
@@ -139,17 +77,16 @@ const DienstenPage = () => {
 
         <section className="py-16 bg-gray-50">
           <div className="container">
-            {diensten.map((dienst, index) => (
-              <div key={dienst.id} id={dienst.id} className="mb-24 last:mb-0">
+            {diensten.map((dienst, index) => <div key={dienst.id} id={dienst.id} className="mb-24 last:mb-0">
                 <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-12`}>
-                  <div className="lg:w-1/2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                    <img 
-                      src={dienst.image} 
-                      alt={dienst.title} 
-                      className="rounded-lg shadow-lg object-cover w-full h-96 hover-lift"
-                    />
+                  <div className="lg:w-1/2 animate-fade-in" style={{
+                animationDelay: '0.2s'
+              }}>
+                    <img src={dienst.image} alt={dienst.title} className="rounded-lg shadow-lg w-full h-96 hover-lift object-cover" />
                   </div>
-                  <div className="lg:w-1/2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                  <div className="lg:w-1/2 animate-fade-in" style={{
+                animationDelay: '0.3s'
+              }}>
                     <div className="flex items-center mb-4">
                       <div className="animate-float">{dienst.icon}</div>
                     </div>
@@ -158,41 +95,30 @@ const DienstenPage = () => {
                     
                     <h3 className="text-xl font-semibold mb-4 text-brand-darkGreen">Wat wij bieden:</h3>
                     <ul className="space-y-3 mb-8">
-                      {dienst.features.map((feature, i) => (
-                        <li key={i} className="flex items-start animate-fade-in" style={{ animationDelay: `${i * 0.1 + 0.4}s` }}>
+                      {dienst.features.map((feature, i) => <li key={i} className="flex items-start animate-fade-in" style={{
+                    animationDelay: `${i * 0.1 + 0.4}s`
+                  }}>
                           <Check className="h-5 w-5 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
                           <span>{feature}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                     
-                    <Link 
-                      to={`/diensten/${dienst.id}`}
-                      className="btn-primary hover:animate-pulse inline-block mr-4"
-                    >
+                    <Link to={`/diensten/${dienst.id}`} className="btn-primary hover:animate-pulse inline-block mr-4">
                       Meer Informatie
                     </Link>
-                    <Link 
-                      to="/offerte" 
-                      className="btn-outline border-brand-darkGreen text-brand-darkGreen hover:bg-brand-darkGreen hover:text-white inline-block"
-                    >
+                    <Link to="/offerte" className="btn-outline border-brand-darkGreen text-brand-darkGreen hover:bg-brand-darkGreen hover:text-white inline-block">
                       Offerte Aanvragen
                     </Link>
                   </div>
                 </div>
-                {index < diensten.length - 1 && (
-                  <Separator className="my-12 bg-gray-200" />
-                )}
-              </div>
-            ))}
+                {index < diensten.length - 1 && <Separator className="my-12 bg-gray-200" />}
+              </div>)}
           </div>
         </section>
 
         <CallToActionSection />
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default DienstenPage;
