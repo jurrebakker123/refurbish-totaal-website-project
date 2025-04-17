@@ -14,8 +14,8 @@ import { motion } from 'framer-motion';
 const Index = () => {
   const benefits = [
     {
-      title: "20+ Jaar Ervaring",
-      description: "Met meer dan twee decennia ervaring hebben wij expertise in alle facetten van renovatie en verbouwing.",
+      title: "10+ Jaar Ervaring",
+      description: "Met meer dan een decennium ervaring hebben wij expertise in alle facetten van renovatie en verbouwing.",
       icon: <Check className="h-10 w-10 text-brand-lightGreen" />
     },
     {
@@ -42,7 +42,6 @@ const Index = () => {
         <Hero />
         <Services />
         
-        {/* Waarom Voor Ons Kiezen */}
         <section className="py-16 bg-gray-50">
           <div className="container">
             <motion.div 
@@ -101,7 +100,6 @@ const Index = () => {
         <ProjectsPreview />
         <Testimonials />
         
-        {/* Werkgebied */}
         <section className="py-16">
           <div className="container">
             <motion.div 
@@ -159,7 +157,6 @@ const Index = () => {
         </section>
         
         <CallToActionSection />
-        {/* Remove duplicate CallToAction on homepage */}
       </main>
       <Footer />
     </div>

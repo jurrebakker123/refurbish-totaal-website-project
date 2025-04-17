@@ -1,122 +1,34 @@
 
 import { Link } from 'react-router-dom';
-import { Check, Phone, Mail } from 'lucide-react';
-
-const benefits = [
-  'Gratis en vrijblijvende offerte',
-  'Vakkundig advies op maat',
-  'Ervaren en gediplomeerde vakmensen',
-  'Kwaliteitsmaterialen van A-merken',
-  'Nette en tijdige oplevering',
-  'Garantie op al onze werkzaamheden'
-];
 
 const CallToActionSection = () => {
   return (
-    <section className="py-16 md:py-24 bg-gray-900 text-white relative overflow-hidden">
-      {/* Background overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20" 
-        style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
-        }}
-      ></div>
-      
-      {/* Content */}
+    <section className="relative py-16 md:py-24 text-white">
+      <div className="absolute inset-0 bg-cover bg-center" style={{ 
+        backgroundImage: 'url("https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80")', 
+        filter: 'brightness(0.5)'
+      }}></div>
       <div className="container relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
-          <div className="animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Klaar om uw project te starten?</h2>
-            <p className="text-lg mb-8 text-gray-300">
-              Of u nu een klein renovatieproject of een complete verbouwing plant, 
-              Refurbish Totaal Nederland staat voor u klaar met deskundig advies en 
-              professionele uitvoering.
-            </p>
-            
-            <ul className="mb-8 space-y-3">
-              {benefits.map((benefit, index) => (
-                <li key={index} className="flex items-start animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <Check className="h-5 w-5 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
-                  <span>{benefit}</span>
-                </li>
-              ))}
-            </ul>
-            
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 animate-fade-in">Klaar om uw project te starten?</h2>
+          <p className="text-lg md:text-xl mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            Neem contact met ons op voor een vrijblijvende offerte of om uw wensen te bespreken. 
+            Ons team staat voor u klaar om uw droomproject te realiseren.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <Link 
               to="/offerte" 
-              className="btn-primary hover:animate-pulse inline-block"
+              className="btn-primary hover:animate-pulse"
             >
-              Vrijblijvende Offerte Aanvragen
+              Vrijblijvende Offerte
+            </Link>
+            <Link 
+              to="/contact" 
+              className="btn-outline border-white text-white hover:bg-white hover:text-brand-darkGreen"
+            >
+              Contact Opnemen
             </Link>
           </div>
-          
-          <div className="bg-white rounded-lg shadow-xl p-8 text-brand-darkGreen animate-fade-in hover-lift">
-            <h3 className="text-2xl font-bold mb-6">Neem Direct Contact Op</h3>
-            <form>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                    placeholder="Uw naam"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mailadres</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                    placeholder="uw@email.nl"
-                  />
-                </div>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
-                <input 
-                  type="tel" 
-                  id="phone" 
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                  placeholder="+31 6 30136079"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">Dienst</label>
-                <select 
-                  id="service"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                >
-                  <option value="">Selecteer een dienst</option>
-                  <option value="schilderwerk">Schilderwerk</option>
-                  <option value="dakrenovatie">Dakrenovatie</option>
-                  <option value="stucadoren">Stucadoren</option>
-                  <option value="installatietechniek">Installatietechniek</option>
-                  <option value="aan-en-verbouw">Aan- en verbouw</option>
-                  <option value="pvc-vloeren">PVC Vloeren</option>
-                  <option value="anders">Anders</option>
-                </select>
-              </div>
-              <div className="mb-6">
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Bericht</label>
-                <textarea 
-                  id="message" 
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
-                  placeholder="Vertel ons over uw project..."
-                ></textarea>
-              </div>
-              <button 
-                type="submit" 
-                className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
-              >
-                Verstuur Aanvraag
-              </button>
-            </form>
-          </div>
-          
         </div>
       </div>
     </section>

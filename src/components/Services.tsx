@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 
 const services = [
   {
@@ -23,6 +23,13 @@ const services = [
     title: 'Stucadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stucadoren',
+  },
+  {
+    id: 'behangen',
+    icon: <Wallpaper className="h-12 w-12 text-brand-lightGreen mb-4" />,
+    title: 'Behangen',
+    description: 'Professioneel behangwerk met een ruime keuze aan patronen, texturen en hoogwaardige materialen.',
+    link: '/diensten/behangen',
   },
   {
     id: 'installatietechniek',
