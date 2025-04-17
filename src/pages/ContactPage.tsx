@@ -1,8 +1,10 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, User, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import CallToActionSection from '@/components/CallToActionSection';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +15,9 @@ const ContactPage = () => {
     message: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
