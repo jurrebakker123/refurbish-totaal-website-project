@@ -1,10 +1,8 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { MapPin, Phone, Mail, Clock, User, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
+import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import CallToActionSection from '@/components/CallToActionSection';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +13,7 @@ const ContactPage = () => {
     message: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -24,10 +22,9 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    console.log("Email would be sent to: info@refurbishtotaalnederland.nl");
-    
     toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+    
+    // Reset form
     setFormData({
       name: '',
       email: '',
@@ -41,21 +38,21 @@ const ContactPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
-        {/* Hero Section - reduced green opacity */}
-        <section className="relative text-white py-16">
+        {/* Hero Section - Updated with a neutral background */}
+        <section className="relative py-16">
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?ixlib=rb-4.0.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2153&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
             }}
           >
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
-          <div className="container text-center relative z-10">
+          <div className="container relative z-10 text-white">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Contact</h1>
-            <p className="text-xl max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Heeft u vragen of wilt u een offerte aanvragen? Neem gerust contact met ons op.
-              Wij staan voor u klaar.
+            <p className="text-xl max-w-3xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              Heeft u vragen over onze diensten of wilt u een offerte aanvragen? 
+              Neem contact met ons op en we helpen u graag verder.
             </p>
           </div>
         </section>

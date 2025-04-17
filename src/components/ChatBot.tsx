@@ -37,10 +37,12 @@ const ChatBot = () => {
         response = 'Onze installatietechniek omvat elektra, loodgieterswerk en klimaatbeheersing. We kunnen complete installaties verzorgen voor nieuwbouw of renovatie. Welk type installatiewerk heeft uw interesse?';
       } else if (lowerMsg.includes('verbouw') || lowerMsg.includes('aanbouw')) {
         response = 'Voor aan- en verbouwprojecten bieden we complete oplossingen, van kleine verbouwingen tot complete uitbreidingen. Onze ervaren vaklieden verzorgen het gehele traject. Heeft u specifieke wensen voor uw verbouwing?';
+      } else if (lowerMsg.includes('behang') || lowerMsg.includes('behangen')) {
+        response = 'Onze behangdiensten omvatten het verwijderen van oud behang, voorbereiden van de ondergrond en het aanbrengen van nieuwe wandbekleding. We werken met verschillende soorten behang, van traditioneel tot vliesbehang en fotobehang op maat. Wilt u meer weten over onze behangmogelijkheden?';
       } else if (lowerMsg.includes('pvc') || lowerMsg.includes('vloer')) {
         response = 'Wij leveren en installeren hoogwaardige PVC vloeren in diverse dessins en kwaliteiten. Onze vloeren zijn duurzaam, waterbestendig en onderhoudsvriendelijk. Wilt u meer informatie over een specifiek type PVC vloer?';
       } else if (lowerMsg.includes('binnen')) {
-        response = 'Voor binnenwerkzaamheden verzorgen we onder andere schilderwerk, stucwerk, vloeren leggen en complete verbouwingen. We werken altijd netjes en met minimale overlast. Welke specifieke binnenwerkzaamheden heeft u in gedachten?';
+        response = 'Voor binnenwerkzaamheden verzorgen we onder andere schilderwerk, stucwerk, behangen, vloeren leggen en complete verbouwingen. We werken altijd netjes en met minimale overlast. Welke specifieke binnenwerkzaamheden heeft u in gedachten?';
       } else if (lowerMsg.includes('buiten')) {
         response = 'Onze buitenwerkzaamheden omvatten buitenschilderwerk, dakrenovatie, gevelbekleding en aanbouw. Al onze materialen zijn weerbestendig en duurzaam. Heeft u een specifiek buitenproject in gedachten?';
       } else if (lowerMsg.includes('offerte')) {
@@ -54,9 +56,9 @@ const ChatBot = () => {
       } else if (lowerMsg.includes('dank') || lowerMsg.includes('bedankt')) {
         response = 'Graag gedaan! Als u nog andere vragen heeft, hoor ik het graag. Wij staan voor u klaar.';
       } else if (lowerMsg.includes('hallo') || lowerMsg.includes('hoi') || lowerMsg.includes('goedemorgen') || lowerMsg.includes('goedemiddag')) {
-        response = 'Hallo! Fijn dat u contact opneemt. Waarmee kan ik u helpen? U kunt me vragen stellen over onze diensten zoals schilderwerk, dakrenovatie, stucadoren, installatietechniek, aan- en verbouw of PVC vloeren.';
+        response = 'Hallo! Fijn dat u contact opneemt. Waarmee kan ik u helpen? U kunt me vragen stellen over onze diensten zoals schilderwerk, dakrenovatie, stucadoren, installatietechniek, behangen, aan- en verbouw of PVC vloeren.';
       } else {
-        response = 'Bedankt voor uw bericht. Ik kan u informatie geven over onze diensten zoals schilderwerk, dakrenovatie, stucadoren, installatietechniek, aan- en verbouw en PVC vloeren. Of wilt u weten hoe u contact met ons kunt opnemen of een offerte kunt aanvragen?';
+        response = 'Bedankt voor uw bericht. Ik kan u informatie geven over onze diensten zoals schilderwerk, dakrenovatie, stucadoren, installatietechniek, behangen, aan- en verbouw en PVC vloeren. Of wilt u weten hoe u contact met ons kunt opnemen of een offerte kunt aanvragen?';
       }
       
       setMessages(prev => [...prev, {type: 'bot', content: response}]);

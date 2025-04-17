@@ -35,7 +35,7 @@ const diensten = [
       'Lood- en zinkwerk vernieuwen',
       'Velux dakramen plaatsen'
     ],
-    image: 'https://images.unsplash.com/photo-1632759145351-1d170f2a9ddd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1631950723990-a12642a1d615?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'stucadoren',
@@ -50,7 +50,7 @@ const diensten = [
       'Venetiaans stucwerk en tadelakt',
       'Betonlook wanden en vloeren'
     ],
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1616041042832-24543864c127?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'installatietechniek',
@@ -95,7 +95,7 @@ const diensten = [
       'Textiel- en vinylbehang',
       'Reparatie van bestaand behangwerk'
     ],
-    image: 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1517925035435-7976539b920d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'pvc-vloeren',
@@ -110,7 +110,7 @@ const diensten = [
       'Onderhoud en reparatie van PVC vloeren',
       'Verwijderen van oude vloerbedekking'
     ],
-    image: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2787&q=80'
+    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   }
 ];
 

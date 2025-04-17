@@ -2,7 +2,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useParams, Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Phone, Mail } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Phone, Mail, Wallpaper } from 'lucide-react';
 import React, { useEffect } from 'react';
 import CallToActionSection from '@/components/CallToActionSection';
 
@@ -77,7 +77,7 @@ const diensten = {
         answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1632759145351-1d170f2a9ddd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1631950723990-a12642a1d615?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'stucadoren': {
     title: 'Stucadoren',
@@ -113,7 +113,7 @@ const diensten = {
         answer: 'Ja, wij gebruiken speciale vochtbestendige stucmortel voor badkamers en andere vochtige ruimtes. Ook kunnen we waterafstotende afwerkingen toepassen.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1601689058311-6e9cab08654c?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1616041042832-24543864c127?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'installatietechniek': {
     title: 'Installatietechniek',
@@ -187,6 +187,42 @@ const diensten = {
     ],
     image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
   },
+  'behangen': {
+    title: 'Behangen',
+    description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
+    longDescription: 'Ons team van ervaren behangers zorgt ervoor dat uw wanden een prachtige afwerking krijgen met behang naar keuze. Van klassiek tot modern, van effen tot met patroon - wij zorgen voor een perfect eindresultaat.',
+    icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
+    features: [
+      'Behang verwijderen en ondergrond voorbereiden',
+      'Aanbrengen van luxe behang en wandbekleding',
+      'Fotobehang op maat',
+      'Vliesbehang en traditioneel behang',
+      'Textiel- en vinylbehang',
+      'Reparatie van bestaand behangwerk'
+    ],
+    benefits: [
+      'Snelle en effectieve woningmetamorfose',
+      'Breed assortiment aan designs en materialen',
+      'Perfect strakke afwerking',
+      'Professioneel advies over materiaal en design',
+      'Duurzame en hoogwaardige resultaten'
+    ],
+    faqs: [
+      { 
+        question: 'Hoe lang gaat behang gemiddeld mee?', 
+        answer: 'Dit hangt sterk af van het type behang en de ruimte waarin het is aangebracht. Kwaliteitsbehang in een normaal gebruikte woonkamer gaat gemiddeld 7-10 jaar mee voordat het aan vervanging toe is.' 
+      },
+      { 
+        question: 'Moet de oude behang altijd eerst verwijderd worden?', 
+        answer: 'Voor het beste resultaat is het altijd aan te raden om oud behang te verwijderen. In sommige gevallen kan er over bestaand behang geplakt worden, maar dit is afhankelijk van de conditie van het oude behang en het type nieuw behang.' 
+      },
+      { 
+        question: 'Hoe lang duurt het behangen van een gemiddelde kamer?', 
+        answer: 'Voor een gemiddelde kamer (circa 4x4 meter) moet u rekenen op ongeveer één werkdag voor het complete behangwerk, inclusief de voorbereidingen. Bij complexe patronen of een moeilijke ondergrond kan dit iets langer duren.' 
+      }
+    ],
+    image: 'https://images.unsplash.com/photo-1517925035435-7976539b920d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  },
   'pvc-vloeren': {
     title: 'PVC Vloeren',
     description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
@@ -221,7 +257,7 @@ const diensten = {
         answer: 'Bij normaal gebruik en goed onderhoud gaat een kwaliteits-PVC vloer minstens 10-15 jaar mee. De slijtlaag is bepalend voor de levensduur.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2787&q=80'
+    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   }
 };
 
