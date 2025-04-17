@@ -2,7 +2,7 @@
 import React from 'react';
 import { Phone, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { DienstenRecord } from '@/data/diensten';
+import { DienstenRecord } from '@/data/types/dienst';
 
 interface DienstSidebarProps {
   currentServiceId: string;

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DienstFAQ } from '@/data/diensten';
+import { DienstFAQ } from '@/data/types/dienst';
 
 interface DienstFAQsProps {
   faqs: DienstFAQ[];

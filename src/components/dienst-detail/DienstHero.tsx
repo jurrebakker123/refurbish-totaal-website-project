@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DienstData } from '@/data/diensten';
+import { DienstData } from '@/data/types/dienst';
 
 interface DienstHeroProps {
   dienst: DienstData;
