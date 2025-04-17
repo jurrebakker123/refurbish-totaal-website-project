@@ -77,7 +77,7 @@ const diensten = {
         answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1631950723990-a12642a1d615?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/ad8c8e3c-2907-4b81-b6bc-0cc94d9cf1e0.png'
   },
   'stucadoren': {
     title: 'Stucadoren',
@@ -113,7 +113,7 @@ const diensten = {
         answer: 'Ja, wij gebruiken speciale vochtbestendige stucmortel voor badkamers en andere vochtige ruimtes. Ook kunnen we waterafstotende afwerkingen toepassen.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1616041042832-24543864c127?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/021fe3bd-a1fe-4022-abad-070ce97b29e8.png'
   },
   'installatietechniek': {
     title: 'Installatietechniek',
@@ -221,7 +221,7 @@ const diensten = {
         answer: 'Voor een gemiddelde kamer (circa 4x4 meter) moet u rekenen op ongeveer één werkdag voor het complete behangwerk, inclusief de voorbereidingen. Bij complexe patronen of een moeilijke ondergrond kan dit iets langer duren.' 
       }
     ],
-    image: 'https://images.unsplash.com/photo-1517925035435-7976539b920d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/bde19c7f-fd57-41c4-99d8-2138e8be56c9.png'
   },
   'pvc-vloeren': {
     title: 'PVC Vloeren',

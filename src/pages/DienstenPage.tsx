@@ -35,7 +35,7 @@ const diensten = [
       'Lood- en zinkwerk vernieuwen',
       'Velux dakramen plaatsen'
     ],
-    image: 'https://images.unsplash.com/photo-1631950723990-a12642a1d615?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/23ea1730-4a8e-4c3a-b832-c6c4878f82e3.png'
   },
   {
     id: 'stucadoren',
@@ -50,7 +50,7 @@ const diensten = [
       'Venetiaans stucwerk en tadelakt',
       'Betonlook wanden en vloeren'
     ],
-    image: 'https://images.unsplash.com/photo-1616041042832-24543864c127?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/8c54543b-978f-45d5-a04c-8a3cce82bcb8.png'
   },
   {
     id: 'installatietechniek',
@@ -95,7 +95,7 @@ const diensten = [
       'Textiel- en vinylbehang',
       'Reparatie van bestaand behangwerk'
     ],
-    image: 'https://images.unsplash.com/photo-1517925035435-7976539b920d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/c63f7bae-2344-4cea-af89-c90768d9261c.png'
   },
   {
     id: 'pvc-vloeren',
