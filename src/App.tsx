@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import VoorwaardenPage from "./pages/VoorwaardenPage";
 import ProjectenPage from "./pages/ProjectenPage";
 import NotFound from "./pages/NotFound";
+import ComingSoon from "./pages/ComingSoon";
 import ChatBot from "./components/ChatBot";
 import { CursorEffects } from "./components/CursorEffects";
 import CookieConsent from "./components/CookieConsent";
@@ -35,11 +35,22 @@ const ScrollToTop = () => {
 // Create a client
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner position="top-right" />
+const App = () => {
+  // Functie om te controleren of het huidige domein de coming soon pagina moet tonen
+  const shouldShowComingSoon = () => {
+    const hostname = window.location.hostname;
+    return hostname === 'refurbishtotaalnederland.nl';
+  };
+
+  // Als het coming soon domein is, toon alleen de coming soon pagina
+  if (shouldShowComingSoon()) {
+    return (
+      <ComingSoon />
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ScrollToTop />
         <SEOStructuredData />
@@ -62,8 +73,8 @@ const App = () => (
         <CursorEffects />
         <CookieConsent />
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
