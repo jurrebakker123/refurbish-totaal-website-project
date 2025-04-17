@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CallToActionSection from '@/components/CallToActionSection';
@@ -16,6 +16,7 @@ import DienstNotFound from '@/components/dienst-detail/DienstNotFound';
 
 const DienstDetailPage = () => {
   const { serviceId } = useParams<{serviceId: string}>();
+  const navigate = useNavigate();
   const dienst = serviceId && diensten[serviceId as keyof typeof diensten];
 
   useEffect(() => {
@@ -30,9 +31,9 @@ const DienstDetailPage = () => {
   // Handle redirect from old "stucadoren" URL to new "stukadoren" URL
   useEffect(() => {
     if (serviceId === 'stucadoren') {
-      window.location.replace('/diensten/stukadoren');
+      navigate('/diensten/stukadoren', { replace: true });
     }
-  }, [serviceId]);
+  }, [serviceId, navigate]);
 
   if (!dienst) {
     return <DienstNotFound />;
