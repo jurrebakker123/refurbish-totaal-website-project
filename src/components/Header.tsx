@@ -22,6 +22,9 @@ const dienstenItems = [{
   title: 'Aan- en verbouw',
   path: '/diensten/aan-en-verbouw'
 }, {
+  title: 'Behangen',
+  path: '/diensten/behangen'
+}, {
   title: 'PVC Vloeren',
   path: '/diensten/pvc-vloeren'
 }];

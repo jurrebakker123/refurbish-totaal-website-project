@@ -1,7 +1,8 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
 
@@ -80,6 +81,21 @@ const diensten = [
       'Funderingsherstel'
     ],
     image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
+  },
+  {
+    id: 'behangen',
+    icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
+    title: 'Behangen',
+    description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
+    features: [
+      'Behang verwijderen en ondergrond voorbereiden',
+      'Aanbrengen van luxe behang en wandbekleding',
+      'Fotobehang op maat',
+      'Vliesbehang en traditioneel behang',
+      'Textiel- en vinylbehang',
+      'Reparatie van bestaand behangwerk'
+    ],
+    image: 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'pvc-vloeren',

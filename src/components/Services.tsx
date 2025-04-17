@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 
 const services = [
   {
@@ -37,6 +37,13 @@ const services = [
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
+  },
+  {
+    id: 'behangen',
+    icon: <Wallpaper className="h-12 w-12 text-brand-lightGreen mb-4" />,
+    title: 'Behangen',
+    description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
+    link: '/diensten/behangen',
   },
   {
     id: 'pvc-vloeren',

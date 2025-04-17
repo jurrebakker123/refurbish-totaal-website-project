@@ -82,6 +82,9 @@ const Footer = () => {
                 <Link to="/diensten/aan-en-verbouw" className="hover:text-brand-lightGreen transition-colors hover-underline">Aan- en verbouw</Link>
               </li>
               <li>
+                <Link to="/diensten/behangen" className="hover:text-brand-lightGreen transition-colors hover-underline">Behangen</Link>
+              </li>
+              <li>
                 <Link to="/diensten/pvc-vloeren" className="hover:text-brand-lightGreen transition-colors hover-underline">PVC Vloeren</Link>
               </li>
             </ul>

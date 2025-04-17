@@ -1,4 +1,3 @@
-
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import ProjectsPreview from '@/components/ProjectsPreview';
@@ -14,8 +13,8 @@ import { motion } from 'framer-motion';
 const Index = () => {
   const benefits = [
     {
-      title: "20+ Jaar Ervaring",
-      description: "Met meer dan twee decennia ervaring hebben wij expertise in alle facetten van renovatie en verbouwing.",
+      title: "10+ Jaar Ervaring",
+      description: "Met meer dan tien jaar ervaring hebben wij expertise in alle facetten van renovatie en verbouwing.",
       icon: <Check className="h-10 w-10 text-brand-lightGreen" />
     },
     {
@@ -159,7 +158,6 @@ const Index = () => {
         </section>
         
         <CallToActionSection />
-        {/* Remove duplicate CallToAction on homepage */}
       </main>
       <Footer />
     </div>
