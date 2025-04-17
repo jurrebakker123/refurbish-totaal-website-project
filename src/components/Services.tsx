@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 
@@ -61,7 +62,7 @@ const Services = () => {
           <h2 className="section-title">Onze Diensten</h2>
           <p className="text-lg text-gray-600">
             Bij Refurbish Totaal Nederland bieden wij een compleet pakket aan renovatie- en verbouwdiensten. 
-            Al onze werkzaamheden worden uitgevoerd door ervaren vakmensen.
+            Al onze werkzaamheden worden uitgevoerd door ervaren vakmensen met oog voor detail.
           </p>
         </div>
         
