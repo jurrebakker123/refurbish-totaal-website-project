@@ -1,8 +1,7 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
 
@@ -50,22 +49,7 @@ const diensten = [
       'Venetiaans stucwerk en tadelakt',
       'Betonlook wanden en vloeren'
     ],
-    image: 'https://images.unsplash.com/photo-1601689058311-6e9cab08654c?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
-  },
-  {
-    id: 'behangen',
-    icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
-    title: 'Behangen',
-    description: 'Professioneel behangwerk met een ruime keuze aan patronen, texturen en hoogwaardige materialen.',
-    features: [
-      'Plaatsen van verschillende soorten behang',
-      'Verwijderen van oud behang',
-      'Voorbereiden van muren en egaliseren',
-      'Advies over behangkeuze en -patronen',
-      'Fotobehang en muurschilderingen',
-      'Vliesbehang en textielbehang'
-    ],
-    image: 'https://images.unsplash.com/photo-1604709490317-0a3d2c85af90?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'installatietechniek',

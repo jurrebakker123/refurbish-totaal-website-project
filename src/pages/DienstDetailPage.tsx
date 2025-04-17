@@ -1,8 +1,8 @@
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useParams, Link, useLocation } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Phone, Mail, Wallpaper } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Phone, Mail } from 'lucide-react';
 import React, { useEffect } from 'react';
 import CallToActionSection from '@/components/CallToActionSection';
 
@@ -114,42 +114,6 @@ const diensten = {
       }
     ],
     image: 'https://images.unsplash.com/photo-1601689058311-6e9cab08654c?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
-  },
-  'behangen': {
-    title: 'Behangen',
-    description: 'Professioneel behangwerk met een ruime keuze aan patronen, texturen en hoogwaardige materialen.',
-    longDescription: 'Ons team van ervaren behangers zorgt voor een perfecte afwerking van uw wanden. Wij adviseren u graag over de mogelijkheden qua designs, materialen en toepassingen voor elk interieur.',
-    icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
-    features: [
-      'Plaatsen van verschillende soorten behang',
-      'Verwijderen van oud behang',
-      'Voorbereiden van muren en egaliseren',
-      'Advies over behangkeuze en -patronen',
-      'Fotobehang en muurschilderingen',
-      'Vliesbehang en textielbehang'
-    ],
-    benefits: [
-      'Snelle transformatie van uw interieur',
-      'Eindeloze design mogelijkheden',
-      'Camouflage van oneffenheden in de muur',
-      'Verbeterde akoestiek in uw ruimte',
-      'Moderne of klassieke uitstraling naar wens'
-    ],
-    faqs: [
-      { 
-        question: 'Hoelang gaat behang mee?', 
-        answer: 'Bij normaal gebruik en met de juiste verzorging gaat kwalitatief behang gemiddeld 7-10 jaar mee. Natuurlijk is dit afhankelijk van het type behang en de ruimte waarin het is toegepast.' 
-      },
-      { 
-        question: 'Kan behang in vochtige ruimtes worden toegepast?', 
-        answer: 'Er zijn speciale vochtbestendige behangsoorten die geschikt zijn voor keukens en badkamers. We adviseren u graag over de mogelijkheden voor uw specifieke situatie.' 
-      },
-      { 
-        question: 'Hoe lang duurt het behangen van een gemiddelde kamer?', 
-        answer: 'Voor een gemiddelde woonkamer moet u rekenen op 1-2 dagen, afhankelijk van het type behang, de staat van de muren en eventuele voorbereidende werkzaamheden.' 
-      }
-    ],
-    image: 'https://images.unsplash.com/photo-1604709490317-0a3d2c85af90?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   'installatietechniek': {
     title: 'Installatietechniek',
@@ -264,12 +228,15 @@ const diensten = {
 const DienstDetailPage = () => {
   const { serviceId } = useParams<{serviceId: string}>();
   const dienst = serviceId && diensten[serviceId as keyof typeof diensten];
-  const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top when component mounts or location changes
-    window.scrollTo(0, 0);
-  }, [location]);
+    if (!dienst) {
+      console.error(`Dienst met ID ${serviceId} bestaat niet.`);
+    } else {
+      // Scroll naar boven bij het laden van een nieuwe dienst
+      window.scrollTo(0, 0);
+    }
+  }, [dienst, serviceId]);
 
   if (!dienst) {
     return (
@@ -296,6 +263,7 @@ const DienstDetailPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
+        {/* Hero Section - reduced green opacity */}
         <section className={`relative text-white ${heroHeight}`}>
           <div 
             className="absolute inset-0 bg-cover bg-center" 
@@ -325,9 +293,11 @@ const DienstDetailPage = () => {
           </div>
         </section>
 
+        {/* Main Content */}
         <section className="py-16">
           <div className="container">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {/* Main Content */}
               <div className="lg:col-span-2">
                 <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Over onze {dienst.title.toLowerCase()}</h2>
@@ -375,6 +345,7 @@ const DienstDetailPage = () => {
                 </div>
               </div>
 
+              {/* Sidebar - updated contact info */}
               <div className="lg:col-span-1">
                 <div className="sticky top-32">
                   <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
@@ -430,6 +401,7 @@ const DienstDetailPage = () => {
           </div>
         </section>
 
+        {/* Call to Action */}
         <CallToActionSection />
       </main>
       <Footer />

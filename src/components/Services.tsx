@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart } from 'lucide-react';
 
 const services = [
   {
@@ -23,13 +23,6 @@ const services = [
     title: 'Stucadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stucadoren',
-  },
-  {
-    id: 'behangen',
-    icon: <Wallpaper className="h-12 w-12 text-brand-lightGreen mb-4" />,
-    title: 'Behangen',
-    description: 'Professioneel behangwerk met een ruime keuze aan patronen, texturen en hoogwaardige materialen.',
-    link: '/diensten/behangen',
   },
   {
     id: 'installatietechniek',
@@ -62,7 +55,7 @@ const Services = () => {
           <h2 className="section-title">Onze Diensten</h2>
           <p className="text-lg text-gray-600">
             Bij Refurbish Totaal Nederland bieden wij een compleet pakket aan renovatie- en verbouwdiensten. 
-            Al onze werkzaamheden worden uitgevoerd door ervaren vakmensen met oog voor detail.
+            Al onze werkzaamheden worden uitgevoerd door ervaren vakmensen.
           </p>
         </div>
         
