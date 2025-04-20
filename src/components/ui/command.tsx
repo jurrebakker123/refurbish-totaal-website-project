@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
@@ -40,7 +41,11 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
-    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+    <img 
+      src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" 
+      alt="Refurbish Totaal Nederland" 
+      className="mr-2 h-6 w-auto"
+    />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
