@@ -38,7 +38,11 @@ const queryClient = new QueryClient();
 const App = () => {
   const shouldShowComingSoon = () => {
     const hostname = window.location.hostname;
-    return hostname === 'refurbishtotaalnederland.nl' || hostname === 'www.refurbishtotaalnederland.nl';
+    const comingSoonDomains = [
+      'refurbishtotaalnederland.nl', 
+      'www.refurbishtotaalnederland.nl'
+    ];
+    return false; // Always show full site
   };
 
   if (shouldShowComingSoon()) {
