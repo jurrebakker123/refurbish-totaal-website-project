@@ -18,7 +18,7 @@ const diensten = [{
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
   features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
-  image: '/lovable-uploads/7a76c236-aae4-4eb2-82ca-df4ed5cd2c3a.png'
+  image: '/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png'
 }, {
   id: 'stukadoren',
   icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
