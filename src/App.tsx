@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,7 @@ import VoorwaardenPage from "./pages/VoorwaardenPage";
 import ProjectenPage from "./pages/ProjectenPage";
 import NotFound from "./pages/NotFound";
 import ComingSoon from "./pages/ComingSoon";
+import CertificaatPage from "./pages/CertificaatPage";
 import ChatBot from "./components/ChatBot";
 import { CursorEffects } from "./components/CursorEffects";
 import CookieConsent from "./components/CookieConsent";
