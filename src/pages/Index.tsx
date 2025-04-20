@@ -1,14 +1,14 @@
+import { useState } from 'react';
+import { ShieldCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import ProjectsPreview from '@/components/ProjectsPreview';
 import Testimonials from '@/components/Testimonials';
-import CallToAction from '@/components/CallToAction';
 import CallToActionSection from '@/components/CallToActionSection';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 const Index = () => {
   const benefits = [
@@ -34,6 +34,14 @@ const Index = () => {
     },
   ];
 
+  const certifications = [
+    { name: 'VCA', description: 'Veiligheid voor uitvoerenden en leidinggevenden' },
+    { name: 'ISO 9001', description: 'Kwaliteitsmanagement' },
+    { name: 'ISO 14001', description: 'Milieumanagement' },
+    { name: 'KOMO/BRL', description: 'Certificering voor isolatie- en installatiewerkzaamheden' },
+    { name: 'BouwGarant', description: 'Kwaliteitswaarborg bij particuliere projecten' }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -41,7 +49,6 @@ const Index = () => {
         <Hero />
         <Services />
         
-        {/* Waarom Voor Ons Kiezen */}
         <section className="py-16 bg-gray-50">
           <div className="container">
             <motion.div 
@@ -100,7 +107,6 @@ const Index = () => {
         <ProjectsPreview />
         <Testimonials />
         
-        {/* Werkgebied */}
         <section className="py-16">
           <div className="container">
             <motion.div 
@@ -156,7 +162,57 @@ const Index = () => {
             </motion.div>
           </div>
         </section>
-        
+
+        <section className="py-16 bg-gray-50">
+          <div className="container">
+            <motion.div 
+              className="text-center max-w-3xl mx-auto mb-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Onze Certificeringen</h2>
+              <p className="text-lg text-gray-700">
+                Wij streven naar de hoogste kwaliteits- en veiligheidsnormen in onze werkzaamheden.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {certifications.map((cert, index) => (
+                <motion.div 
+                  key={cert.name} 
+                  className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
+                  <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{cert.name}</h3>
+                  <p className="text-gray-600">{cert.description}</p>
+                </motion.div>
+              ))}
+            </div>
+            
+            <motion.div 
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Link 
+                to="/certificaat" 
+                className="btn-primary hover:animate-pulse inline-flex items-center"
+              >
+                Meer Over Onze Kwaliteitssystemen
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+
         <CallToActionSection />
       </main>
       <Footer />
