@@ -14,8 +14,11 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
   return (
     <section className={`relative text-white ${heroHeight}`}>
       <div 
-        className="absolute inset-0 bg-cover bg-center" 
-        style={{ backgroundImage: `url(${dienst.image})` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+        style={{ 
+          backgroundImage: `url('/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png')`,
+          backgroundPosition: 'center 25%'
+        }}
       >
         <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-50"></div>
       </div>
