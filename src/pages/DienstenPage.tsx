@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -57,6 +58,12 @@ const diensten = [{
 }];
 
 const DienstenPage = () => {
+  // Handle image errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = '/placeholder.svg';
+  };
+  
   return <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
@@ -84,7 +91,12 @@ const DienstenPage = () => {
                   <div className="lg:w-1/2 animate-fade-in" style={{
                 animationDelay: '0.2s'
               }}>
-                    <img src={dienst.image} alt={dienst.title} className="rounded-lg shadow-lg w-full h-96 hover-lift object-cover" />
+                    <img 
+                      src={dienst.image} 
+                      alt={dienst.title} 
+                      className="rounded-lg shadow-lg w-full h-96 hover-lift object-cover" 
+                      onError={handleImageError}
+                    />
                   </div>
                   <div className="lg:w-1/2 animate-fade-in" style={{
                 animationDelay: '0.3s'

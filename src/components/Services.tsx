@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
+import React from 'react';
 
 const services = [
   {
@@ -9,6 +10,7 @@ const services = [
     title: 'Schilderwerk',
     description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
     link: '/diensten/schilderwerk',
+    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'dakrenovatie',
@@ -16,6 +18,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
+    image: '/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png'
   },
   {
     id: 'stukadoren',
@@ -23,6 +26,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
+    image: '/lovable-uploads/54349b4b-f813-4e06-94ac-24e75ad931ba.png'
   },
   {
     id: 'installatietechniek',
@@ -30,6 +34,7 @@ const services = [
     title: 'Installatietechniek',
     description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
     link: '/diensten/installatietechniek',
+    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
   },
   {
     id: 'aan-en-verbouw',
@@ -37,6 +42,7 @@ const services = [
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
+    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
   },
   {
     id: 'behangen',
@@ -44,6 +50,7 @@ const services = [
     title: 'Behangen',
     description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
     link: '/diensten/behangen',
+    image: '/lovable-uploads/7e14e714-4164-419a-a09a-263050a60360.png'
   },
   {
     id: 'pvc-vloeren',
@@ -51,10 +58,17 @@ const services = [
     title: 'PVC Vloeren',
     description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
     link: '/diensten/pvc-vloeren',
+    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   }
 ];
 
 const Services = () => {
+  // Handle image errors for service cards 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = '/placeholder.svg';
+  };
+
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="container">
