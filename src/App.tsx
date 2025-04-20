@@ -21,7 +21,6 @@ import CookieConsent from "./components/CookieConsent";
 import LeaveSiteNotification from "./components/LeaveSiteNotification";
 import SEOStructuredData from "./components/SEOStructuredData";
 
-// ScrollToTop component to reset scroll position when navigating
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   
@@ -32,17 +31,14 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Create a client
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Functie om te controleren of het huidige domein de coming soon pagina moet tonen
   const shouldShowComingSoon = () => {
     const hostname = window.location.hostname;
     return hostname === 'refurbishtotaalnederland.nl' || hostname === 'www.refurbishtotaalnederland.nl';
   };
 
-  // Als het coming soon domein is, toon alleen de coming soon pagina
   if (shouldShowComingSoon()) {
     return (
       <ComingSoon />
@@ -65,7 +61,7 @@ const App = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/voorwaarden" element={<VoorwaardenPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/certificaat" element={<CertificaatPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <LeaveSiteNotification />
