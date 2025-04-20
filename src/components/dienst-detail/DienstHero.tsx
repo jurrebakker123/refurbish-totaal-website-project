@@ -16,7 +16,7 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
         style={{ 
-          backgroundImage: `url('/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png')`,
+          backgroundImage: `url('${dienst.image}')`,
           backgroundPosition: 'center 25%'
         }}
       >
