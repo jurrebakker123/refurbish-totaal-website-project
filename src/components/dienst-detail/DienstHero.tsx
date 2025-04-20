@@ -10,15 +10,25 @@ interface DienstHeroProps {
 const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
   // Adjust height for PVC vloeren page
   const heroHeight = serviceId === 'pvc-vloeren' ? 'py-12' : 'py-16';
+  
+  // Check if the image URL is valid and exists
+  const imageUrl = dienst.image || '/placeholder.svg';
+  
+  // Use a backup image if the current one fails to load
+  const handleImageError = (e: React.SyntheticEvent<HTMLDivElement, Event>) => {
+    const element = e.target as HTMLDivElement;
+    element.style.backgroundImage = "url('/placeholder.svg')";
+  };
 
   return (
     <section className={`relative text-white ${heroHeight}`}>
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
         style={{ 
-          backgroundImage: `url('${dienst.image}')`,
+          backgroundImage: `url('${imageUrl}')`,
           backgroundPosition: 'center 25%'
         }}
+        onError={handleImageError}
       >
         <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-50"></div>
       </div>
@@ -34,9 +44,13 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
           <div className="md:w-1/2 md:pl-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="rounded-lg overflow-hidden shadow-lg hover-lift">
               <img 
-                src={dienst.image} 
+                src={imageUrl} 
                 alt={dienst.title} 
                 className="w-full h-auto"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.svg';
+                }}
               />
             </div>
           </div>
