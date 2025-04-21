@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { ShieldCheck, Check, ArrowRight, Certificate } from 'lucide-react';
+import { ShieldCheck, Check, ArrowRight, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -179,7 +180,7 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Voor Wie is Refurbish Ideaal?</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-brand-darkGreen">Voor Wie is Refurbish Ideaal?</h2>
               <p className="text-lg text-gray-700">
                 Onze integrale aanpak is perfect voor:
               </p>
@@ -252,7 +253,7 @@ const Index = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -5 }}
                 >
-                  <Certificate className="h-12 w-12 text-brand-lightGreen mb-4" />
+                  <Award className="h-12 w-12 text-brand-lightGreen mb-4" />
                   <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{cert.name}</h3>
                   <p className="text-gray-600">{cert.description}</p>
                 </motion.div>
