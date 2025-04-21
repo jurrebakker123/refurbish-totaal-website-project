@@ -15,7 +15,6 @@ import PrivacyPage from "./pages/PrivacyPage";
 import VoorwaardenPage from "./pages/VoorwaardenPage";
 import ProjectenPage from "./pages/ProjectenPage";
 import NotFound from "./pages/NotFound";
-import ComingSoon from "./pages/ComingSoon";
 import CertificaatPage from "./pages/CertificaatPage";
 import ChatBot from "./components/ChatBot";
 import { CursorEffects } from "./components/CursorEffects";
@@ -36,21 +35,6 @@ const ScrollToTop = () => {
 const queryClient = new QueryClient();
 
 const App = () => {
-  const shouldShowComingSoon = () => {
-    const hostname = window.location.hostname;
-    const comingSoonDomains = [
-      'refurbishtotaalnederland.nl', 
-      'www.refurbishtotaalnederland.nl'
-    ];
-    return comingSoonDomains.includes(hostname);
-  };
-
-  if (shouldShowComingSoon()) {
-    return (
-      <ComingSoon />
-    );
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -80,3 +64,4 @@ const App = () => {
 };
 
 export default App;
+
