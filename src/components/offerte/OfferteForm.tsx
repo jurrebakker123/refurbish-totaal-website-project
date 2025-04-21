@@ -1,13 +1,12 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { OfferteFormData, offerteFormSchema } from "./schema";
-import { SERVICES } from "./constants";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import emailjs from '@emailjs/browser';
 
 export function OfferteForm() {
   const form = useForm<OfferteFormData>({
@@ -30,25 +29,27 @@ export function OfferteForm() {
       return;
     }
     
-    // Create email body content
-    const emailBody = `
-      Naam: ${data.name}
-      E-mail: ${data.email}
-      Telefoon: ${data.phone}
-      Locatie: ${data.location}
-      Voorkeursdatum: ${data.preferredDate || 'Niet opgegeven'}
-      Dienst: ${data.service}
-      Bericht: ${data.message || 'Geen bericht'}
-    `;
-
-    const mailtoLink = `mailto:info@refurbishtotaalnederland.nl?subject=${encodeURIComponent('Offerte aanvraag voor ' + data.service)}&body=${encodeURIComponent(emailBody)}`;
-    
     try {
-      window.location.href = mailtoLink;
+      await emailjs.send(
+        'YOUR_SERVICE_ID', // You'll need to replace this with your EmailJS service ID
+        'YOUR_TEMPLATE_ID', // You'll need to replace this with your EmailJS template ID
+        {
+          from_name: data.name,
+          to_name: "Refurbish Totaal Nederland",
+          from_email: data.email,
+          phone: data.phone,
+          location: data.location,
+          preferred_date: data.preferredDate,
+          service: data.service,
+          message: data.message,
+        },
+        'YOUR_PUBLIC_KEY' // You'll need to replace this with your EmailJS public key
+      );
+
       toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
       form.reset();
     } catch (error) {
-      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw.");
       console.error("Email error:", error);
     }
   };
@@ -168,4 +169,3 @@ export function OfferteForm() {
     </Form>
   );
 }
-
