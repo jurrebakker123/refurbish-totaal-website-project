@@ -1,5 +1,6 @@
+
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -104,11 +105,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>Niersweg 27, 6591 CT Gennep<br />Postbus 61, 6650 AB Druten</span>
-              </li>
-              <li className="flex items-start">
-                <Clock className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>Maandag-Vrijdag: 08:00-17:00</span>
+                <span>Postbus 61, 6650 AB Druten</span>
               </li>
             </ul>
           </div>
@@ -142,3 +139,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

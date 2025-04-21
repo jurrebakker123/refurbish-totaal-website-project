@@ -2,7 +2,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, User, MessageSquare } from 'lucide-react';
+import { MapPin, Phone, Mail, Send, User, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import CallToActionSection from '@/components/CallToActionSection';
 import emailjs from '@emailjs/browser';
@@ -29,8 +29,7 @@ const ContactPage = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Build the email data
+
     const emailData = {
       to_email: 'info@refurbishtotaalnederland.nl',
       from_name: formData.name,
@@ -40,7 +39,6 @@ const ContactPage = () => {
       message: formData.message,
     };
 
-    // Email sending logic
     const emailBody = `
       Naam: ${formData.name}
       E-mail: ${formData.email}
@@ -48,18 +46,11 @@ const ContactPage = () => {
       Onderwerp: ${formData.subject}
       Bericht: ${formData.message}
     `;
-
-    // Using mailto as a fallback for email submission
     const mailtoLink = `mailto:info@refurbishtotaalnederland.nl?subject=${encodeURIComponent('Contact vanaf website: ' + formData.subject)}&body=${encodeURIComponent(emailBody)}`;
-    
+
     try {
-      // Try to open the email client
       window.location.href = mailtoLink;
-      
-      // Show success message
       toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
-      
-      // Reset form
       setFormData({
         name: '',
         email: '',
@@ -97,17 +88,14 @@ const ContactPage = () => {
             </p>
           </div>
         </section>
-        
         <section className="py-16">
           <div className="container">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              
               <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Contactgegevens</h2>
                 <p className="text-lg text-gray-700 mb-8">
                   U kunt ons bereiken via onderstaande contactgegevens. Wij streven ernaar om binnen 24 uur te reageren op uw bericht.
                 </p>
-
                 <div className="space-y-8">
                   <div className="flex items-start">
                     <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
@@ -118,7 +106,6 @@ const ContactPage = () => {
                       <a href="tel:+31854444255" className="text-gray-700 hover:text-brand-darkGreen">085 4444 255</a>
                     </div>
                   </div>
-
                   <div className="flex items-start">
                     <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
                       <Mail className="h-6 w-6 text-brand-darkGreen" />
@@ -128,7 +115,6 @@ const ContactPage = () => {
                       <a href="mailto:info@refurbishtotaalnederland.nl" className="text-gray-700 hover:text-brand-darkGreen">info@refurbishtotaalnederland.nl</a>
                     </div>
                   </div>
-
                   <div className="flex items-start">
                     <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
                       <MapPin className="h-6 w-6 text-brand-darkGreen" />
@@ -136,32 +122,18 @@ const ContactPage = () => {
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Adres</h3>
                       <a 
-                        href="https://maps.google.com/?q=Niersweg+27,+6591+CT+Gennep" 
+                        href="https://maps.google.com/?q=Postbus+61,+6650+AB+Druten" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="text-gray-700 hover:text-brand-darkGreen"
                       >
-                        Niersweg 27<br />
-                        6591 CT Gennep
+                        Postbus 61<br />
+                        6650 AB Druten
                       </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
-                      <Clock className="h-6 w-6 text-brand-darkGreen" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-xl mb-1">Openingstijden</h3>
-                      <p className="text-gray-700">
-                        Maandag - Vrijdag: 08:00 - 17:00<br />
-                        Zaterdag - Zondag: Gesloten
-                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
               <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="bg-white p-8 rounded-lg shadow-lg hover-lift">
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Stuur ons een bericht</h2>
@@ -198,7 +170,6 @@ const ContactPage = () => {
                         </div>
                       </div>
                     </div>
-                    
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
@@ -233,7 +204,6 @@ const ContactPage = () => {
                         </select>
                       </div>
                     </div>
-                    
                     <div className="mb-6">
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Bericht *</label>
                       <div className="relative">
@@ -249,7 +219,6 @@ const ContactPage = () => {
                         ></textarea>
                       </div>
                     </div>
-                    
                     <button 
                       type="submit" 
                       className="btn-primary w-full flex items-center justify-center"
@@ -271,9 +240,9 @@ const ContactPage = () => {
             <h2 className="text-3xl font-bold mb-8 text-center text-brand-darkGreen">Onze Locatie</h2>
             <div className="rounded-lg overflow-hidden shadow-lg">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2470.2752784461224!2d5.9729919!3d51.6982938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7744f85c553a7%3A0xdd1324f3f9e03ea1!2sNiersweg%2027%2C%206591%20CT%20Gennep!5e0!3m2!1snl!2snl!4v1615306629171!5m2!1snl!2snl" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2435.627583012478!2d5.6000662!3d51.8926512!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7f8a3c360349f%3A0x27f8c114d6c94a8!2sPostbus%2061%2C%206650%20AB%20Druten%2C%20Nederland!5e0!3m2!1snl!2snl!4v1713705571890!5m2!1snl!2snl"
                 width="100%" 
-                height="450" 
+                height="350"
                 style={{ border: 0 }} 
                 allowFullScreen 
                 loading="lazy" 
@@ -283,7 +252,6 @@ const ContactPage = () => {
             </div>
           </div>
         </section>
-
         <CallToActionSection />
       </main>
       <Footer />

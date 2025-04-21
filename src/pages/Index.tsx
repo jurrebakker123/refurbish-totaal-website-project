@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ShieldCheck, Check, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -120,10 +119,9 @@ const Index = () => {
               <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Ons Werkgebied</h2>
               <p className="text-lg text-gray-700">
                 Refurbish Totaal Nederland voert projecten uit door heel Nederland. 
-                Onze hoofdvestiging bevindt zich in Gennep, van waaruit we klanten in het hele land bedienen.
+                Onze hoofdvestiging bevindt zich in Druten, van waaruit we klanten in het hele land bedienen.
               </p>
             </motion.div>
-            
             <motion.div 
               className="bg-white p-8 rounded-lg shadow-lg"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -133,7 +131,7 @@ const Index = () => {
             >
               <div className="aspect-video relative rounded-lg overflow-hidden">
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2470.2752784461224!2d5.9729919!3d51.6982938!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7744f85c553a7%3A0xdd1324f3f9e03ea1!2sNiersweg%2027%2C%206591%20CT%20Gennep!5e0!3m2!1snl!2snl!4v1615306629171!5m2!1snl!2snl" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2435.627583012478!2d5.6000662!3d51.8926512!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7f8a3c360349f%3A0x27f8c114d6c94a8!2sPostbus%2061%2C%206650%20AB%20Druten%2C%20Nederland!5e0!3m2!1snl!2snl!4v1713705571890!5m2!1snl!2snl"
                   width="100%" 
                   height="100%" 
                   style={{ border: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} 
@@ -151,7 +149,7 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <p className="text-lg text-gray-700">
-                  <strong>Hoofdvestiging:</strong> Niersweg 27, 6591 CT Gennep
+                  <strong>Vestigingsadres:</strong> Postbus 61, 6650 AB Druten
                 </p>
                 <Link 
                   to="/contact" 
