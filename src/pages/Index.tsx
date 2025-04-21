@@ -46,21 +46,27 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">
-        <Hero />
+        <section className="relative">
+          <div className="pt-6 md:pt-0">
+            <Hero />
+          </div>
+        </section>
         <Services />
         
         <section className="py-16 bg-gray-50">
           <div className="container">
             <motion.div 
-              className="text-center max-w-3xl mx-auto mb-16"
+              className="text-center max-w-3xl mx-auto mb-16 mt-4 md:mt-0"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Waarom Voor Ons Kiezen</h2>
-              <p className="text-lg text-gray-700">
-                Bij Refurbish Totaal Nederland staan kwaliteit, betrouwbaarheid en klanttevredenheid voorop. 
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-brand-darkGreen leading-tight md:leading-snug">
+                Waarom Voor Ons Kiezen
+              </h2>
+              <p className="text-base md:text-lg text-gray-700">
+                Bij Refurbish Totaal Nederland staan kwaliteit, betrouwbaarheid en klanttevredenheid voorop.
                 Ontdek waarom honderden klanten jaarlijks kiezen voor onze diensten.
               </p>
             </motion.div>
@@ -107,23 +113,25 @@ const Index = () => {
         <ProjectsPreview />
         <Testimonials />
         
-        <section className="py-16">
+        <section className="py-10 md:py-16">
           <div className="container">
             <motion.div 
-              className="text-center max-w-3xl mx-auto mb-16"
+              className="text-center max-w-3xl mx-auto mb-8 md:mb-16"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Ons Werkgebied</h2>
-              <p className="text-lg text-gray-700">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-brand-darkGreen leading-tight">
+                Ons Werkgebied
+              </h2>
+              <p className="text-base md:text-lg text-gray-700">
                 Refurbish Totaal Nederland voert projecten uit door heel Nederland. 
                 Onze hoofdvestiging bevindt zich in Druten, van waaruit we klanten in het hele land bedienen.
               </p>
             </motion.div>
-            <motion.div 
-              className="bg-white p-8 rounded-lg shadow-lg"
+            <motion.div
+              className="bg-white p-4 md:p-8 rounded-lg shadow-lg"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -141,14 +149,14 @@ const Index = () => {
                   title="Werkgebied Refurbish Totaal Nederland"
                 ></iframe>
               </div>
-              <motion.div 
-                className="mt-6 text-center"
+              <motion.div
+                className="mt-3 md:mt-6 text-center"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <p className="text-lg text-gray-700">
+                <p className="text-base md:text-lg text-gray-700">
                   <strong>Vestigingsadres:</strong> Postbus 61, 6650 AB Druten
                 </p>
                 <Link 
