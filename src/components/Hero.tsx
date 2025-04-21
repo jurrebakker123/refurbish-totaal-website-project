@@ -80,15 +80,15 @@ const Hero = () => {
               className="text-4xl md:text-5xl font-bold mb-6 leading-tight"
               variants={item}
             >
-              Uw partner voor professionele renovatie en verbouwing
+              Slimmer dan Renoveren: Wonen in de Toekomst Begint Nu
             </motion.h1>
             
             <motion.p 
               className="text-lg md:text-xl mb-8 text-gray-200"
               variants={item}
             >
-              Met meer dan 20 jaar ervaring zorgen wij voor vakkundig en betrouwbaar schilderwerk, 
-              dakrenovatie, stucwerk en meer. Voor zowel particuliere als zakelijke klanten.
+              Waar een gewone renovatie vaak stopt bij herstel of vervanging, kijken wij verder. 
+              Met onze integrale refurbish-aanpak maken we uw woning comfortabeler, zuiniger én mooier.
             </motion.p>
             
             <motion.div 

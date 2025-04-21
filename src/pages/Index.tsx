@@ -14,23 +14,23 @@ import { Link } from 'react-router-dom';
 const Index = () => {
   const benefits = [
     {
-      title: "10+ Jaar Ervaring",
-      description: "Met meer dan tien jaar ervaring hebben wij expertise in alle facetten van renovatie en verbouwing.",
+      title: "Slimmer dan Renoveren",
+      description: "Wij kijken verder dan gewone renovatie. Refurbish betekent: verbeteren, vernieuwen én verduurzamen – in één slimme aanpak.",
       icon: <Check className="h-10 w-10 text-brand-lightGreen" />
     },
     {
-      title: "Gediplomeerde Vakmensen",
-      description: "Al onze medewerkers zijn gediplomeerde professionals met ruime ervaring in hun vakgebied.",
+      title: "Integrale Totaaloplossing",
+      description: "We pakken alles in samenhang aan: bouwkundige verbeteringen, moderne isolatietechniek en energiezuinige installaties.",
       icon: <Check className="h-10 w-10 text-brand-lightGreen" />
     },
     {
-      title: "Garantie op Alle Werkzaamheden",
-      description: "Wij bieden uitgebreide garantie op al onze werkzaamheden voor uw gemoedsrust.",
+      title: "Één Aanspreekpunt",
+      description: "Geen losse schakels, maar één team met één resultaatgerichte aanpak voor efficiënte uitvoering en korte doorlooptijd.",
       icon: <Check className="h-10 w-10 text-brand-lightGreen" />
     },
     {
-      title: "Van Kleine tot Grote Projecten",
-      description: "Of het nu gaat om een kleine renovatie of een complete verbouwing, wij staan voor u klaar.",
+      title: "Toekomstgericht",
+      description: "Een woning die niet alleen weer jaren mee kan, maar ook comfortabeler, zuiniger én mooier is.",
       icon: <Check className="h-10 w-10 text-brand-lightGreen" />
     },
   ];
@@ -47,7 +47,6 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">
-        {/* Extra top marge onder header voor mobiel */}
         <section className="relative">
           <div className="pt-6 md:pt-0">
             <Hero />
@@ -65,11 +64,11 @@ const Index = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-2xl md:text-3xl font-bold mb-6 text-brand-darkGreen leading-tight md:leading-snug">
-                Waarom Voor Ons Kiezen
+                Waarom Refurbish Totaal Nederland anders is
               </h2>
               <p className="text-base md:text-lg text-gray-700">
-                Bij Refurbish Totaal Nederland staan kwaliteit, betrouwbaarheid en klanttevredenheid voorop.
-                Ontdek waarom honderden klanten jaarlijks kiezen voor onze diensten.
+                Refurbish is geen renovatie. Het is een herstart van uw woning, helemaal klaar voor de toekomst.
+                Wij denken niet alleen in werk, maar in waarde: voor bewoners, gebruikers én de toekomst van het gebouw.
               </p>
             </motion.div>
 
@@ -181,44 +180,50 @@ const Index = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Onze Certificeringen</h2>
+              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Voor Wie is Refurbish Ideaal?</h2>
               <p className="text-lg text-gray-700">
-                Wij streven naar de hoogste kwaliteits- en veiligheidsnormen in onze werkzaamheden.
+                Onze integrale aanpak is perfect voor:
               </p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {certifications.map((cert, index) => (
-                <motion.div 
-                  key={cert.name} 
-                  className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                >
-                  <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
-                  <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{cert.name}</h3>
-                  <p className="text-gray-600">{cert.description}</p>
-                </motion.div>
-              ))}
-            </div>
-            
-            <motion.div 
-              className="text-center mt-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <Link 
-                to="/certificaat" 
-                className="btn-primary hover:animate-pulse inline-flex items-center"
+              <motion.div 
+                className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                whileHover={{ y: -5 }}
               >
-                Meer Over Onze Kwaliteitssystemen
-              </Link>
-            </motion.div>
+                <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Particuliere Woningen</h3>
+                <p className="text-gray-600">Vrijstaand of 2-onder-1-kap, wij maken uw woning klaar voor de toekomst</p>
+              </motion.div>
+              <motion.div 
+                className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Kleinschalige Utiliteitsbouw</h3>
+                <p className="text-gray-600">Strategisch vernieuwen voor optimaal resultaat</p>
+              </motion.div>
+              <motion.div 
+                className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                whileHover={{ y: -5 }}
+              >
+                <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Verduurzamingsprojecten</h3>
+                <p className="text-gray-600">Slimme integratie van bouw, techniek en energie</p>
+              </motion.div>
+            </div>
           </div>
         </section>
 
