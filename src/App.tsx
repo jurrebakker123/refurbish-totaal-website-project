@@ -42,7 +42,7 @@ const App = () => {
       'refurbishtotaalnederland.nl', 
       'www.refurbishtotaalnederland.nl'
     ];
-    return false; // Always show full site
+    return comingSoonDomains.includes(hostname);
   };
 
   if (shouldShowComingSoon()) {
