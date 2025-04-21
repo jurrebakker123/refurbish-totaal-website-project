@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ShieldCheck, Check, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -46,6 +47,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">
+        {/* Extra top marge onder header voor mobiel */}
         <section className="relative">
           <div className="pt-6 md:pt-0">
             <Hero />

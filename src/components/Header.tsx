@@ -81,8 +81,17 @@ const Header = () => {
     exit: { opacity: 0, height: 0, transition: { duration: 0.3 } }
   };
 
+  // Responsive sticky header: alleen sticky vanaf "md", op mobiel relative (niet sticky)
+  const headerClass = cn(
+    "w-full transition-all duration-300 z-50",
+    "md:fixed", // Sticky alleen op md en groter
+    "md:top-0",
+    scrolled ? "md:bg-white md:shadow-md" : "md:bg-white/95",
+    "relative md:static", // Op mobiel relative zodat menu niet voor content blijft staan
+  );
+
   return (
-    <header className={cn("fixed w-full z-50 transition-all duration-300", scrolled ? "bg-white shadow-md" : "bg-white/95")}>
+    <header className={headerClass}>
       <div className="bg-brand-darkGreen text-white py-2">
         <div className="container flex flex-col md:flex-row justify-between items-center space-y-1 md:space-y-0">
           <div className="flex items-center space-x-4 mb-2 md:mb-0">
@@ -103,7 +112,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="container py-2 md:py-4"> {/* Minder padding voor mobiel */}
+      <div className="container py-2 md:py-4">
         <nav className="flex justify-between items-center min-h-[48px]">
           <Link to="/" className="flex items-center">
             <div className="bg-brand-darkGreen p-2 rounded-md">
@@ -216,4 +225,3 @@ const Header = () => {
 };
 
 export default Header;
-
