@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { ShieldCheck, Check, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Check, ArrowRight, Certificate } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -224,6 +223,56 @@ const Index = () => {
                 <p className="text-gray-600">Slimme integratie van bouw, techniek en energie</p>
               </motion.div>
             </div>
+          </div>
+        </section>
+
+        <section className="py-16 bg-gray-50">
+          <div className="container">
+            <motion.div 
+              className="text-center max-w-3xl mx-auto mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Onze Certificeringen</h2>
+              <p className="text-lg text-gray-700">
+                Onze kwaliteit en expertise worden onderstreept door gerenommeerde certificeringen die onze vakmanschap en toewijding garanderen.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {certifications.map((cert, index) => (
+                <motion.div 
+                  key={cert.name}
+                  className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <Certificate className="h-12 w-12 text-brand-lightGreen mb-4" />
+                  <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{cert.name}</h3>
+                  <p className="text-gray-600">{cert.description}</p>
+                </motion.div>
+              ))}
+            </div>
+            
+            <motion.div 
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Link 
+                to="/certificaat" 
+                className="btn-primary hover:animate-pulse inline-flex items-center"
+              >
+                Onze Certificeringen <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </motion.div>
           </div>
         </section>
 
