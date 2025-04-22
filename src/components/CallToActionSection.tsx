@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Check, Phone, Mail } from 'lucide-react';
+import { emailConfig } from '@/config/email';
 
 const benefits = [
   'Gratis en vrijblijvende offerte',

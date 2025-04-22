@@ -1,4 +1,5 @@
 
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -55,6 +56,7 @@ export function OfferteForm() {
           preferred_date: data.preferredDate,
           service: data.service,
           message: data.message,
+          to_email: emailConfig.contactEmail,  // Gebruik de geconfigureerde e-mail
         },
         emailConfig.publicKey
       );

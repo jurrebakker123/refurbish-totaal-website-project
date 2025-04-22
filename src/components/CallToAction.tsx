@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Check, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { emailConfig } from '@/config/email';
 
 const benefits = [
   'Gratis en vrijblijvende offerte',

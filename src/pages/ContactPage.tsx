@@ -6,6 +6,7 @@ import { MapPin, Phone, Mail, Send, User, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import CallToActionSection from '@/components/CallToActionSection';
 import emailjs from '@emailjs/browser';
+import { emailConfig } from '@/config/email';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ const ContactPage = () => {
     setIsSubmitting(true);
 
     const emailData = {
-      to_email: 'info@refurbishtotaalnederland.nl',
+      to_email: emailConfig.contactEmail,
       from_name: formData.name,
       from_email: formData.email,
       from_phone: formData.phone,
@@ -46,7 +47,7 @@ const ContactPage = () => {
       Onderwerp: ${formData.subject}
       Bericht: ${formData.message}
     `;
-    const mailtoLink = `mailto:info@refurbishtotaalnederland.nl?subject=${encodeURIComponent('Contact vanaf website: ' + formData.subject)}&body=${encodeURIComponent(emailBody)}`;
+    const mailtoLink = `mailto:${emailConfig.contactEmail}?subject=${encodeURIComponent('Contact vanaf website: ' + formData.subject)}&body=${encodeURIComponent(emailBody)}`;
 
     try {
       window.location.href = mailtoLink;

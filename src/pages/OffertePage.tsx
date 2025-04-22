@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { useState } from 'react';
 import { Check, User, Mail, Phone, MapPin, Calendar, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import { emailConfig } from '@/config/email';
 
 const services = [
   'Schilderwerk',
@@ -60,7 +61,7 @@ const OffertePage = () => {
     `;
 
     // Using mailto as a fallback for email submission
-    const mailtoLink = `mailto:info@refurbishtotaalnederland.nl?subject=${encodeURIComponent('Offerte aanvraag voor ' + formData.service)}&body=${encodeURIComponent(emailBody)}`;
+    const mailtoLink = `mailto:${emailConfig.contactEmail}?subject=${encodeURIComponent('Offerte aanvraag voor ' + formData.service)}&body=${encodeURIComponent(emailBody)}`;
     
     try {
       // Try to open the email client

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { emailConfig } from '@/config/email';
 
 const Hero = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const Hero = () => {
     // Send email - this would typically be handled by a backend service
     // For now we'll just simulate this with a console log
     console.log("Form submitted:", formData);
-    console.log("Email would be sent to: info@refurbishtotaalnederland.nl");
+    console.log(`Email would be sent to: ${emailConfig.contactEmail}`);
     
     setFormData({
       name: '',
