@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
@@ -37,31 +37,28 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ScrollToTop />
-        <SEOStructuredData />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/diensten" element={<DienstenPage />} />
-          <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
-          <Route path="/over-ons" element={<OverOnsPage />} />
-          <Route path="/projecten" element={<ProjectenPage />} />
-          <Route path="/projecten/:projectId" element={<Index />} />
-          <Route path="/offerte" element={<OffertePage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/voorwaarden" element={<VoorwaardenPage />} />
-          <Route path="/certificaat" element={<CertificaatPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <LeaveSiteNotification />
-        <ChatBot />
-        <CursorEffects />
-        <CookieConsent />
-      </BrowserRouter>
+      <ScrollToTop />
+      <SEOStructuredData />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/diensten" element={<DienstenPage />} />
+        <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
+        <Route path="/over-ons" element={<OverOnsPage />} />
+        <Route path="/projecten" element={<ProjectenPage />} />
+        <Route path="/projecten/:projectId" element={<Index />} />
+        <Route path="/offerte" element={<OffertePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/voorwaarden" element={<VoorwaardenPage />} />
+        <Route path="/certificaat" element={<CertificaatPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <LeaveSiteNotification />
+      <ChatBot />
+      <CursorEffects />
+      <CookieConsent />
     </QueryClientProvider>
   );
 };
 
 export default App;
-
