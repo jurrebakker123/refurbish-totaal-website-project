@@ -128,13 +128,14 @@ const ProjectenPage = () => {
                         src={project.imageUrl} 
                         alt={project.title} 
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-brand-darkGreen text-xs font-bold px-2 py-1 rounded">
                         Na
                       </div>
                     </div>
                   </div>
-                  
                   {/* Project Details */}
                   <div className="w-full md:w-1/2">
                     <Badge className="mb-4 bg-brand-lightGreen hover:bg-brand-lightGreen/90">{project.category}</Badge>
@@ -142,7 +143,6 @@ const ProjectenPage = () => {
                     <p className="text-sm text-gray-500 mb-4">{project.location}</p>
                     <p className="text-gray-700 mb-6">{project.description}</p>
                     <p className="italic text-gray-600">{project.challenges}</p>
-                    
                     {/* Before/After Comparison Button */}
                     <div className="mt-6 flex items-center gap-3">
                       <div className="relative overflow-hidden w-16 h-16 rounded">
@@ -150,6 +150,8 @@ const ProjectenPage = () => {
                           src={project.beforeImageUrl} 
                           alt="Voor" 
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-xs font-medium">
                           Voor
@@ -160,6 +162,8 @@ const ProjectenPage = () => {
                           src={project.imageUrl} 
                           alt="Na" 
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-xs font-medium">
                           Na
@@ -172,8 +176,6 @@ const ProjectenPage = () => {
             </motion.div>
           </div>
         </section>
-
-        {/* Call To Action Section */}
         <CallToActionSection />
       </main>
       <Footer />

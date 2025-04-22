@@ -124,12 +124,13 @@ const ProjectsPreview = () => {
                       src={project.imageUrl} 
                       alt={project.title} 
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-brand-darkGreen text-xs font-bold px-2 py-1 rounded">
                       Na
                     </div>
                   </motion.div>
-                  
                   <motion.div
                     animate={{
                       opacity: hoveredIndex === index ? 1 : 0,
@@ -141,6 +142,8 @@ const ProjectsPreview = () => {
                       src={project.beforeImageUrl} 
                       alt={`Voor - ${project.title}`} 
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-brand-darkGreen text-xs font-bold px-2 py-1 rounded">
                       Voor

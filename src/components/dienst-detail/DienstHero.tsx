@@ -51,6 +51,8 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
                   const target = e.target as HTMLImageElement;
                   target.src = '/placeholder.svg';
                 }}
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>

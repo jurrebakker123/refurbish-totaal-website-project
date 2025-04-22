@@ -90,6 +90,14 @@ const Services = () => {
               <div className="animate-float">{service.icon}</div>
               <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{service.title}</h3>
               <p className="text-gray-600 mb-6 flex-grow">{service.description}</p>
+              <img
+                src={service.image}
+                alt={service.title}
+                className="w-full h-48 object-cover rounded mb-4"
+                loading="lazy"
+                decoding="async"
+                onError={handleImageError}
+              />
               <Link 
                 to={service.link} 
                 className="text-brand-lightGreen font-medium hover-underline inline-flex items-center"
