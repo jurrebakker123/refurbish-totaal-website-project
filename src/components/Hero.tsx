@@ -1,6 +1,9 @@
+
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 import { emailConfig } from '@/config/email';
 import emailjs from '@emailjs/browser';
 
