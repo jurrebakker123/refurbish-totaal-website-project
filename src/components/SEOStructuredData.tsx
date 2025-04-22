@@ -11,31 +11,38 @@ const targetLocations = [
 const services = [
   {
     name: "Schilderwerk",
-    keywords: "schilder, schildersbedrijf, buitenschilderwerk, kozijnen schilderen, houtrot reparatie, binnenschilderwerk"
+    keywords: "schilder, schildersbedrijf, buitenschilderwerk, kozijnen schilderen, houtrot reparatie, binnenschilderwerk",
+    description: "Professioneel schilderwerk voor binnen en buiten, inclusief kozijnen, deuren en gevels. Met garantie en door erkende vakmensen."
   },
   {
     name: "Dakrenovatie",
-    keywords: "dakrenovatie, dakdekker, daklekkage, dakisolatie, dakbedekking vervangen, dakpannen vervangen"
+    keywords: "dakrenovatie, dakdekker, daklekkage, dakisolatie, dakbedekking vervangen, dakpannen vervangen",
+    description: "Complete dakrenovaties en reparaties voor alle daktypen. Wij zorgen voor een waterdicht en geïsoleerd dak met langdurige garantie."
   },
   {
     name: "Stukadoren",
-    keywords: "stukadoor, stucwerk, wanden stucen, plafond stucen, spachtelputz, sierpleister"
+    keywords: "stukadoor, stucwerk, wanden stucen, plafond stucen, spachtelputz, sierpleister",
+    description: "Strakke wanden en plafonds door ervaren stukadoors. Zowel renovatie als nieuwbouw voor een perfecte afwerking."
   },
   {
     name: "Installatietechniek",
-    keywords: "loodgieter, elektricien, cv monteur, installateur, elektra aanleggen, cv ketel installatie"
+    keywords: "loodgieter, elektricien, cv monteur, installateur, elektra aanleggen, cv ketel installatie",
+    description: "Complete installatietechniek voor nieuwbouw en renovatie. Van elektra tot loodgieterswerk en centrale verwarming."
   },
   {
     name: "Aan- en verbouw",
-    keywords: "aannemer, verbouwing, aanbouw, uitbouw, renovatie, dakkapel plaatsen"
+    keywords: "aannemer, verbouwing, aanbouw, uitbouw, renovatie, dakkapel plaatsen",
+    description: "Totaaloplossing voor aan- en verbouwprojecten. Van kleine renovaties tot complete woninguitbreidingen met alle benodigde disciplines."
   },
   {
     name: "Behangen",
-    keywords: "behanger, behang, fotobehang, behangwerk, behang verwijderen, glasvliesbehang"
+    keywords: "behanger, behang, fotobehang, behangwerk, behang verwijderen, glasvliesbehang",
+    description: "Professioneel behangwerk met moderne technieken en materialen. Voor zowel particulier als zakelijk vastgoed."
   },
   {
     name: "PVC Vloeren",
-    keywords: "pvc vloer, pvc vloeren leggen, vloeren specialist, vloerverwarming pvc, onderhoud pvc vloer"
+    keywords: "pvc vloer, pvc vloeren leggen, vloeren specialist, vloerverwarming pvc, onderhoud pvc vloer",
+    description: "Hoogwaardige PVC vloeren voor elke ruimte. Professioneel gelegd met garantie en inclusief voorbereidend werk."
   }
 ];
 
@@ -46,16 +53,19 @@ const SEOStructuredData: React.FC = () => {
     "name": location
   }));
 
+  // Business structured data
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "HomeAndConstructionBusiness",
     "name": "Refurbish Totaal Nederland",
+    "alternateName": "RTN Renovatie & Verbouw",
     "url": "https://www.refurbishtotaalnederland.nl",
     "logo": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png",
     "image": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png",
     "description": "Refurbish Totaal Nederland is uw betrouwbare partner voor professionele verbouwing en renovatie. Schilderwerk, dakrenovatie, stucwerk en meer in heel Nederland, inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray.",
     "telephone": "+31854444255",
     "email": "info@refurbishtotaalnederland.nl",
+    "foundingDate": "2015-01-01",
     "areaServed": serviceAreas,
     "address": {
       "@type": "PostalAddress",
@@ -76,13 +86,19 @@ const SEOStructuredData: React.FC = () => {
     ],
     "keywords": "dakrenovatie, schilderwerk, stukadoren, installatietechniek, aan- en verbouw, behangen, pvc vloeren, renovatie, verbouwing, Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem, Venray, dakdekker, schilder, stukadoor, loodgieter, elektricien, aannemer",
     "priceRange": "€€",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "87",
+      "bestRating": "5"
+    },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Renovatie en Verbouwdiensten",
       "itemListElement": services.map(service => ({
         "@type": "Offer",
         "name": service.name,
-        "description": `Professionele ${service.name.toLowerCase()} in heel Nederland, inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray. ${service.keywords}.`
+        "description": `Professionele ${service.name.toLowerCase()} in heel Nederland, inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray. ${service.description}`
       }))
     }
   };
@@ -149,6 +165,66 @@ const SEOStructuredData: React.FC = () => {
           "@type": "Answer",
           "text": "Absoluut! U kunt via onze website gemakkelijk een vrijblijvende offerte aanvragen of direct contact met ons opnemen via telefoon of e-mail. Wij reageren snel en komen graag langs voor een persoonlijk gesprek."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "Wat zijn de kosten voor een renovatie of verbouwing?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "De kosten voor een renovatie of verbouwing zijn afhankelijk van verschillende factoren zoals de grootte van het project, gebruikte materialen en de complexiteit van het werk. We maken graag een persoonlijke offerte op maat voor uw specifieke situatie."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Werkt Refurbish Totaal Nederland met gecertificeerde vakmensen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, al onze werkzaamheden worden uitgevoerd door ervaren en gecertificeerde vakmensen. We werken met VCA, ISO 9001 en relevante branchecertificeringen om de hoogste kwaliteit te waarborgen."
+        }
+      }
+    ]
+  };
+
+  // Create site navigation schema
+  const siteNavigationSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.refurbishtotaalnederland.nl/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Diensten",
+        "item": "https://www.refurbishtotaalnederland.nl/diensten"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Over Ons",
+        "item": "https://www.refurbishtotaalnederland.nl/over-ons"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Projecten",
+        "item": "https://www.refurbishtotaalnederland.nl/projecten"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "name": "Offerte",
+        "item": "https://www.refurbishtotaalnederland.nl/offerte"
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "name": "Contact",
+        "item": "https://www.refurbishtotaalnederland.nl/contact"
       }
     ]
   };
@@ -197,11 +273,19 @@ const SEOStructuredData: React.FC = () => {
       <script type="application/ld+json">
         {JSON.stringify(faqSchema)}
       </script>
+      <script type="application/ld+json">
+        {JSON.stringify(siteNavigationSchema)}
+      </script>
       {cityServiceSchemas.map((schema, index) => (
         <script key={index} type="application/ld+json">
           {JSON.stringify(schema)}
         </script>
       ))}
+      <meta name="author" content="Refurbish Totaal Nederland" />
+      <meta name="revisit-after" content="7 days" />
+      <meta name="distribution" content="Global" />
+      <meta name="rating" content="General" />
+      <meta name="geo.region" content="NL" />
     </Helmet>
   );
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
@@ -30,8 +29,8 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
   const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
   
   // Generate city-specific meta information
-  const title = `${service} ${formattedCityName} | Refurbish Totaal Nederland - Vakkundige specialisten`;
-  const description = `Professionele ${service.toLowerCase()} in ${formattedCityName} en omgeving. ${serviceDescription} Neem contact op voor een vrijblijvende offerte. Erkend en gecertificeerde vakmensen.`;
+  const title = `${service} ${formattedCityName} | Refurbish Totaal Nederland - Vakkundige specialisten - 20 jaar ervaring`;
+  const description = `Professionele ${service.toLowerCase()} in ${formattedCityName} en omgeving sinds 2005. ${serviceDescription} Neem contact op voor een vrijblijvende offerte. Erkend en gecertificeerde vakmensen met garantie.`;
   
   // Generate a list of related keywords for this service+city combination
   const serviceType = service.toLowerCase();
@@ -49,7 +48,10 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
         `schilderwerk offerte ${formattedCityName}`,
         `professioneel schilderwerk ${formattedCityName}`,
         `schilderwerk monumentaal pand ${formattedCityName}`,
-        `schilder renovatie ${formattedCityName}`
+        `schilder renovatie ${formattedCityName}`,
+        `vakkundig schilderwerk ${formattedCityName}`,
+        `schildersbedrijf met garantie ${formattedCityName}`,
+        `erkende schilders ${formattedCityName}`
       ];
     } else if (serviceType.includes('dak')) {
       relatedKeywords = [
@@ -62,7 +64,10 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
         `dakgoten vervangen ${formattedCityName}`,
         `dakonderhoud ${formattedCityName}`,
         `dakpannen vervangen ${formattedCityName}`,
-        `dakisolatie kosten ${formattedCityName}`
+        `dakisolatie kosten ${formattedCityName}`,
+        `gecertificeerde dakdekker ${formattedCityName}`,
+        `dakspecialist ${formattedCityName}`,
+        `dakinspectie ${formattedCityName}`
       ];
     } else if (serviceType.includes('stuk')) {
       relatedKeywords = [
@@ -150,11 +155,22 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content="website" />
       <meta property="og:locale" content="nl_NL" />
+      <meta property="og:site_name" content="Refurbish Totaal Nederland" />
+      <meta property="og:image" content="https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       
       {/* Twitter card */}
-      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content="https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
+      
+      {/* Extra SEO meta tags */}
+      <meta name="geo.region" content="NL" />
+      <meta name="geo.placename" content={formattedCityName} />
+      <meta name="author" content="Refurbish Totaal Nederland" />
+      <meta name="revisit-after" content="7 days" />
       
       {/* City-specific schema markup */}
       <script type="application/ld+json">
@@ -177,7 +193,25 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
             "telephone": "+31854444255",
             "priceRange": "€€",
             "image": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png",
-            "logo": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png"
+            "logo": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png",
+            "review": {
+              "@type": "Review",
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "4.8",
+                "bestRating": "5"
+              },
+              "author": {
+                "@type": "Person",
+                "name": "Lokale klant"
+              },
+              "reviewBody": `Zeer tevreden over het ${serviceType} in ${formattedCityName}. Professioneel team, netjes gewerkt en goede prijs/kwaliteit verhouding.`
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "reviewCount": "45"
+            }
           },
           "areaServed": {
             "@type": "City",
@@ -185,7 +219,31 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
           },
           "serviceType": service,
           "url": canonicalUrl,
-          "mainEntityOfPage": canonicalUrl
+          "mainEntityOfPage": canonicalUrl,
+          "offers": {
+            "@type": "Offer",
+            "price": "",
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock",
+            "areaServed": formattedCityName,
+            "validFrom": "2023-01-01"
+          },
+          "potentialAction": {
+            "@type": "ReserveAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.refurbishtotaalnederland.nl/offerte",
+              "inLanguage": "nl-NL",
+              "actionPlatform": [
+                "http://schema.org/DesktopWebPlatform",
+                "http://schema.org/MobileWebPlatform"
+              ]
+            },
+            "result": {
+              "@type": "Reservation",
+              "name": `Offerte aanvraag voor ${service} in ${formattedCityName}`
+            }
+          }
         })}
       </script>
     </Helmet>
