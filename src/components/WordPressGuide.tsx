@@ -32,7 +32,7 @@ const WordPressGuide = () => {
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
               <div>
                 <p className="font-semibold">Headless WordPress configureren</p>
-                <p className="text-gray-600">WPFIXIT installeert de benodigde plugins en stelt de API in voor contentbeheer.</p>
+                <p className="text-gray-600">WPFIXIT installeert de benodigde plugins (zoals WPGraphQL) en stelt de API in voor contentbeheer.</p>
               </div>
             </div>
           </div>
@@ -46,14 +46,14 @@ const WordPressGuide = () => {
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
               <div>
                 <p className="font-semibold">Diensten content type</p>
-                <p className="text-gray-600">Er wordt een speciaal content type gemaakt voor het beheren van alle dienstenpagina's.</p>
+                <p className="text-gray-600">Per dienst wordt een pagina aangemaakt waar u eenvoudig alle teksten kunt aanpassen.</p>
               </div>
             </div>
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
               <div>
-                <p className="font-semibold">Custom velden inrichten</p>
-                <p className="text-gray-600">Voor elke dienst komen er velden voor titel, beschrijving, features, voordelen en veel gestelde vragen.</p>
+                <p className="font-semibold">Gebruiksvriendelijke editor</p>
+                <p className="text-gray-600">De WordPress editor wordt zo ingericht dat u makkelijk teksten, titels en beschrijvingen kunt aanpassen.</p>
               </div>
             </div>
           </div>
@@ -73,46 +73,43 @@ const WordPressGuide = () => {
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
               <div>
-                <p className="font-semibold">Content testen</p>
-                <p className="text-gray-600">We controleren of alle content correct wordt weergegeven op de website.</p>
+                <p className="font-semibold">Eenvoudige bewerking</p>
+                <p className="text-gray-600">U krijgt een duidelijk overzicht van alle pagina's die u kunt bewerken.</p>
               </div>
             </div>
           </div>
 
           <h3 className="text-xl font-semibold text-brand-darkGreen flex items-center gap-2 mt-8">
             <Globe className="h-6 w-6" />
-            Stap 4: Website Koppelen
+            Stap 4: Website Koppeling
           </h3>
           <div className="ml-8 space-y-4">
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
               <div>
                 <p className="font-semibold">API koppeling</p>
-                <p className="text-gray-600">De website wordt gekoppeld aan de WordPress API voor dynamische content.</p>
+                <p className="text-gray-600">De website haalt automatisch alle content op uit WordPress.</p>
               </div>
             </div>
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
               <div>
                 <p className="font-semibold">Training</p>
-                <p className="text-gray-600">U krijgt een uitgebreide training voor het beheren van de content via WordPress.</p>
+                <p className="text-gray-600">U krijgt een korte training voor het beheren van de content via WordPress.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="mt-8 bg-brand-darkGreen/5 p-6 rounded-lg">
-          <h3 className="font-bold text-lg mb-3">Hulp nodig?</h3>
-          <p className="mb-4">
-            WPFIXIT kan u helpen met:
-          </p>
+          <h3 className="font-bold text-lg mb-3">Voordelen van deze aanpak:</h3>
           <ul className="list-disc ml-6 space-y-2 mb-6">
-            <li>WordPress als headless CMS installeren</li>
-            <li>Content types en velden inrichten</li>
-            <li>Content migratie naar WordPress</li>
-            <li>API koppeling met de website</li>
-            <li>WordPress training en ondersteuning</li>
-            <li>Doorlopende technische support</li>
+            <li>Zeer gebruiksvriendelijke interface voor contentbeheer</li>
+            <li>Geen technische kennis nodig</li>
+            <li>Bestaande website blijft ongewijzigd</li>
+            <li>Snelle implementatie mogelijk</li>
+            <li>24/7 support beschikbaar</li>
+            <li>Veilige en stabiele oplossing</li>
           </ul>
           <Button className="bg-brand-darkGreen hover:bg-brand-darkGreen/90">
             Contact WPFIXIT Support
