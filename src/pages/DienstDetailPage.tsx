@@ -54,21 +54,31 @@ const DienstDetailPage: React.FC = () => {
         
         <main className="flex-grow">
           <DienstHero 
-            title={cityName ? `${dienst.title} in ${cityName}` : dienst.title}
-            description={dienst.longDescription}
-            image={dienst.image}
+            dienst={dienst}
+            serviceId={serviceId || ''}
           />
           
           <div className="container py-12">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <DienstFeatures features={dienst.features} />
-                <DienstBenefits benefits={dienst.benefits} />
+                <DienstFeatures 
+                  title={dienst.title}
+                  longDescription={dienst.longDescription}
+                  features={dienst.features} 
+                />
+                <DienstBenefits 
+                  title={dienst.title}
+                  benefits={dienst.benefits} 
+                />
                 <DienstFAQs faqs={dienst.faqs} />
               </div>
               
               <div className="lg:col-span-1">
-                <DienstSidebar serviceId={serviceId} />
+                <DienstSidebar 
+                  currentServiceId={serviceId || ''}
+                  diensten={diensten}
+                  dienstTitle={dienst.title}
+                />
               </div>
             </div>
           </div>
