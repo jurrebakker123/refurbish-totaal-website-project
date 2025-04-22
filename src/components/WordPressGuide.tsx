@@ -1,143 +1,123 @@
 
 import { motion } from 'framer-motion';
-import { AlertCircle, CheckCircle, ArrowRight, Database, Globe, Code, FileCode, Server } from 'lucide-react';
+import { CheckCircle, ArrowRight, FileCode, Laptop, Download, Globe } from 'lucide-react';
+import { Button } from './ui/button';
 
 const WordPressGuide = () => {
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-brand-darkGreen mb-6">Hoe deze website naar WordPress migreren</h2>
+    <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold text-brand-darkGreen mb-6">Website naar WordPress Omzetten - Eenvoudige Handleiding</h2>
       
       <div className="space-y-8">
-        <div className="bg-gray-50 p-6 rounded-lg border-l-4 border-yellow-500">
-          <div className="flex items-start">
-            <AlertCircle className="h-6 w-6 text-yellow-500 mr-3 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-bold text-lg mb-2">Belangrijk om te weten</h3>
-              <p className="text-gray-700">
-                Deze website is gebouwd met React, een JavaScript framework dat anders werkt dan WordPress. 
-                Een directe migratie is niet mogelijk, maar er zijn verschillende methoden om de site toch naar WordPress te verplaatsen.
-              </p>
-            </div>
-          </div>
+        <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+          <p className="text-lg text-green-800">
+            Deze handleiding legt stap voor stap uit hoe je deze website kunt omzetten naar een WordPress website die je zelf kunt beheren.
+          </p>
         </div>
-        
-        <h3 className="text-xl font-semibold text-brand-darkGreen">Migratie Opties</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <h4 className="font-bold text-lg mb-3 flex items-center">
-              <Globe className="h-5 w-5 mr-2 text-brand-lightGreen" />
-              Optie 1: WordPress met Custom Theme
-            </h4>
-            <p className="text-gray-700 mb-4">
-              Laat een WordPress ontwikkelaar een custom theme bouwen dat het uiterlijk van deze website nabootst.
-            </p>
-            <div className="mt-4">
-              <div className="flex items-start mb-2">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span>Volledig bewerkbaar in WordPress</span>
-              </div>
-              <div className="flex items-start mb-2">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span>Behoud van functionaliteit</span>
-              </div>
-              <div className="flex items-start">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span>Optimale WordPress integratie</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-            <h4 className="font-bold text-lg mb-3 flex items-center">
-              <Database className="h-5 w-5 mr-2 text-brand-lightGreen" />
-              Optie 2: Headless WordPress
-            </h4>
-            <p className="text-gray-700 mb-4">
-              Gebruik WordPress als CMS (backend) en behoud de React frontend, waarbij data uit WordPress wordt opgehaald.
-            </p>
-            <div className="mt-4">
-              <div className="flex items-start mb-2">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span>Behoud van moderne React frontend</span>
-              </div>
-              <div className="flex items-start mb-2">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                <span>Content beheer via WordPress</span>
-              </div>
-              <div className="flex items-start">
-                <CheckCircle className="h-5 w-5 text-orange-500 mr-2 flex-shrink-0" />
-                <span>Technisch complexer</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <h3 className="text-xl font-semibold text-brand-darkGreen mt-8">Aanbevolen Methode: Custom WordPress Theme</h3>
-        
-        <ol className="space-y-6 mt-4">
-          <li className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-bold mb-2 flex items-center">
-              <div className="bg-brand-darkGreen text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0">1</div>
-              Neem contact op met een WordPress ontwikkelaar
-            </h4>
-            <p className="text-gray-700 pl-9">
-              Zoek een ontwikkelaar met ervaring in het maken van custom WordPress themes, bij voorkeur iemand die bekend is met WPFIXIT.
-            </p>
-          </li>
-          
-          <li className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-bold mb-2 flex items-center">
-              <div className="bg-brand-darkGreen text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0">2</div>
-              Deel de huidige website als referentie
-            </h4>
-            <p className="text-gray-700 pl-9">
-              Geef de ontwikkelaar toegang tot deze website, zodat zij de stijl, layout en functionaliteiten kunnen analyseren en reproduceren.
-            </p>
-          </li>
-          
-          <li className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-bold mb-2 flex items-center">
-              <div className="bg-brand-darkGreen text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0">3</div>
-              Exporteer en lever alle assets
-            </h4>
-            <p className="text-gray-700 pl-9">
-              Stel alle afbeeldingen, logos, en content beschikbaar aan de ontwikkelaar voor de WordPress-migratie.
-            </p>
-          </li>
-          
-          <li className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-bold mb-2 flex items-center">
-              <div className="bg-brand-darkGreen text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0">4</div>
-              Test grondig op een staging-omgeving
-            </h4>
-            <p className="text-gray-700 pl-9">
-              Controleer of alle functionaliteiten correct werken voordat u de site live zet op uw WPFIXIT server.
-            </p>
-          </li>
-          
-          <li className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-bold mb-2 flex items-center">
-              <div className="bg-brand-darkGreen text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0">5</div>
-              Live gaan en doorlopend onderhoud
-            </h4>
-            <p className="text-gray-700 pl-9">
-              Na de lancering is het belangrijk om WordPress, plugins en themes regelmatig te updaten voor veiligheid en prestaties.
-            </p>
-          </li>
-        </ol>
-        
-        <div className="mt-8 bg-brand-darkGreen/5 p-6 rounded-lg border border-brand-darkGreen/20">
-          <h3 className="font-bold text-lg mb-3 text-brand-darkGreen flex items-center">
-            <Server className="h-5 w-5 mr-2" />
-            Contacteer WPFIXIT voor hulp
+
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold text-brand-darkGreen flex items-center gap-2">
+            <Laptop className="h-6 w-6" />
+            Stap 1: WordPress Installatie
           </h3>
+          <div className="ml-8 space-y-4">
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Hosting en domein instellen</p>
+                <p className="text-gray-600">Gebruik WPFIXIT voor de WordPress hosting - zij zorgen voor een snelle en veilige omgeving.</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">WordPress installeren</p>
+                <p className="text-gray-600">WPFIXIT kan WordPress automatisch voor je installeren tijdens het opzetten van je hosting.</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="text-xl font-semibold text-brand-darkGreen flex items-center gap-2 mt-8">
+            <FileCode className="h-6 w-6" />
+            Stap 2: Theme Installatie
+          </h3>
+          <div className="ml-8 space-y-4">
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Download het theme</p>
+                <p className="text-gray-600">Vraag het WordPress theme aan bij je ontwikkelaar - dit is een exacte kopie van je huidige website.</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Theme uploaden</p>
+                <p className="text-gray-600">Upload het theme via WordPress Admin → Weergave → Thema's → Nieuwe toevoegen.</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="text-xl font-semibold text-brand-darkGreen flex items-center gap-2 mt-8">
+            <Download className="h-6 w-6" />
+            Stap 3: Content Overzetten
+          </h3>
+          <div className="ml-8 space-y-4">
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Pagina's aanmaken</p>
+                <p className="text-gray-600">Maak alle diensten-pagina's aan via WordPress Admin → Pagina's → Nieuwe pagina.</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Content invullen</p>
+                <p className="text-gray-600">Kopieer de teksten van je huidige website naar de nieuwe WordPress pagina's.</p>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="text-xl font-semibold text-brand-darkGreen flex items-center gap-2 mt-8">
+            <Globe className="h-6 w-6" />
+            Stap 4: Website Live Zetten
+          </h3>
+          <div className="ml-8 space-y-4">
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">DNS instellingen</p>
+                <p className="text-gray-600">WPFIXIT helpt je met het aanpassen van je DNS instellingen om de website live te zetten.</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Cache en optimalisatie</p>
+                <p className="text-gray-600">WPFIXIT zorgt voor de juiste cache-instellingen en website optimalisatie.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 bg-brand-darkGreen/5 p-6 rounded-lg">
+          <h3 className="font-bold text-lg mb-3">Hulp nodig?</h3>
           <p className="mb-4">
-            Het WPFIXIT team kan u mogelijk assisteren bij de migratie of u doorverwijzen naar WordPress-ontwikkelaars die bekend zijn met hun hosting-omgeving.
+            WPFIXIT kan je helpen met:
           </p>
-          <p>
-            <strong>Belangrijk:</strong> Behoud een backup van de huidige website als referentie, zelfs na de migratie naar WordPress.
-          </p>
+          <ul className="list-disc ml-6 space-y-2 mb-6">
+            <li>WordPress installatie en configuratie</li>
+            <li>Theme installatie en aanpassingen</li>
+            <li>Content migratie</li>
+            <li>SEO behoud en verbetering</li>
+            <li>Website optimalisatie</li>
+            <li>Training voor content beheer</li>
+          </ul>
+          <Button className="bg-brand-darkGreen hover:bg-brand-darkGreen/90">
+            Contact WPFIXIT Support
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>
