@@ -29,7 +29,7 @@ User-agent: facebookexternalhit
 Allow: /
 
 # Sitemap location
-Sitemap: https://www.refurbishtotaal.nl/sitemap.xml
+Sitemap: https://www.refurbishtotaalnederland.nl/sitemap.xml
 
 # Disallow non-public content if needed
 # Disallow: /admin/

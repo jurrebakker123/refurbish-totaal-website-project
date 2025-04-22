@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -7,6 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import emailjs from '@emailjs/browser';
+import { emailConfig } from "@/config/email";
+
+// List of services
+const SERVICES = [
+  "Schilderwerk",
+  "Dakrenovatie",
+  "Stukadoren",
+  "Installatietechniek",
+  "Aan- en verbouw",
+  "Behangen",
+  "PVC Vloeren"
+];
 
 export function OfferteForm() {
   const form = useForm<OfferteFormData>({
@@ -31,8 +44,8 @@ export function OfferteForm() {
     
     try {
       await emailjs.send(
-        'YOUR_SERVICE_ID', // You'll need to replace this with your EmailJS service ID
-        'YOUR_TEMPLATE_ID', // You'll need to replace this with your EmailJS template ID
+        emailConfig.serviceId,
+        emailConfig.templateId,
         {
           from_name: data.name,
           to_name: "Refurbish Totaal Nederland",
@@ -43,7 +56,7 @@ export function OfferteForm() {
           service: data.service,
           message: data.message,
         },
-        'YOUR_PUBLIC_KEY' // You'll need to replace this with your EmailJS public key
+        emailConfig.publicKey
       );
 
       toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");

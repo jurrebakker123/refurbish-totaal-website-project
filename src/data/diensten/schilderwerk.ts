@@ -6,7 +6,7 @@ import React from 'react';
 const schilderwerk: DienstData = {
   title: 'Schilderwerk',
   description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
-  longDescription: 'Ons team van ervaren schilders zorgt voor een vakkundige en duurzame verfafwerking voor zowel binnen- als buitenschilderwerk. Wij gebruiken alleen hoogwaardige verfproducten die zorgen voor een langdurig mooi resultaat en bescherming van uw hout- en muurwerk.',
+  longDescription: 'Ons team van ervaren schilders zorgt voor een vakkundige en duurzame verfafwerking voor zowel binnen- als buitenschilderwerk. Wij gebruiken alleen hoogwaardige verfproducten die zorgen voor een langdurig mooi resultaat en bescherming van uw hout- en muurwerk. Werkzaam in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray.',
   icon: React.createElement(Brush, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
     'Buitenschilderwerk voor gevels, kozijnen en deuren',
@@ -35,9 +35,18 @@ const schilderwerk: DienstData = {
     { 
       question: 'Geven jullie garantie op schilderwerk?', 
       answer: 'Ja, wij geven garantie op al ons schilderwerk. De exacte garantieperiode is afhankelijk van het type schilderwerk en wordt vooraf in de offerte vermeld.' 
+    },
+    {
+      question: 'In welke steden bieden jullie schilderwerk aan?',
+      answer: 'Wij verzorgen schilderwerk in heel Nederland, maar hebben specifieke expertise in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray.'
+    },
+    {
+      question: 'Wat kost het schilderen van kozijnen?',
+      answer: 'De kosten voor het schilderen van kozijnen zijn afhankelijk van verschillende factoren zoals materiaal, staat van het houtwerk, bereikbaarheid en aantal. Na een vrijblijvende inspectie bieden wij een gedetailleerde offerte aan.'
     }
   ],
-  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+  keywords: 'schilder, schilderwerk, buitenschilderwerk, kozijnen schilderen, houtrot reparatie, schildersbedrijf, binnenschilderwerk, verfwerk, schilder Eindhoven, schilder Rotterdam, schilder Breda, schilder Amsterdam, schilder Lelystad, schilder Zwolle, schilder Doetinchem, schilder Venray'
 };
 
 export default schilderwerk;
