@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
@@ -36,6 +37,16 @@ const ContactPage = () => {
         ...formData, 
         destinationEmail: emailConfig.contactEmail 
       });
+
+      // Controleer of EmailJS is geconfigureerd
+      if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
+          emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
+          emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
+        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
+        console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
+        setIsSubmitting(false);
+        return;
+      }
 
       await emailjs.send(
         emailConfig.serviceId,

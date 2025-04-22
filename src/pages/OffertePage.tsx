@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Check, User, Mail, Phone, MapPin, Calendar, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { emailConfig } from '@/config/email';
+import emailjs from '@emailjs/browser';
 
 const services = [
   'Schilderwerk',
@@ -39,7 +40,7 @@ const OffertePage = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!formData.terms) {
@@ -49,23 +50,39 @@ const OffertePage = () => {
     
     setIsSubmitting(true);
     
-    // Create email body content
-    const emailBody = `
-      Naam: ${formData.name}
-      E-mail: ${formData.email}
-      Telefoon: ${formData.phone}
-      Locatie: ${formData.location}
-      Voorkeursdatum: ${formData.preferredDate || 'Niet opgegeven'}
-      Dienst: ${formData.service}
-      Bericht: ${formData.message || 'Geen bericht'}
-    `;
-
-    // Using mailto as a fallback for email submission
-    const mailtoLink = `mailto:${emailConfig.contactEmail}?subject=${encodeURIComponent('Offerte aanvraag voor ' + formData.service)}&body=${encodeURIComponent(emailBody)}`;
-    
     try {
-      // Try to open the email client
-      window.location.href = mailtoLink;
+      // Log form data for verification
+      console.log('Offerte Page Form Submission:', { 
+        ...formData, 
+        destinationEmail: emailConfig.contactEmail 
+      });
+
+      // Controleer of EmailJS is geconfigureerd
+      if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
+          emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
+          emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
+        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
+        console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Gebruik EmailJS voor het verzenden van het formulier
+      await emailjs.send(
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
+          preferred_date: formData.preferredDate || 'Niet opgegeven',
+          service: formData.service,
+          message: formData.message || 'Geen bericht',
+          to_email: emailConfig.contactEmail
+        },
+        emailConfig.publicKey
+      );
       
       toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
       
