@@ -15,6 +15,7 @@ export type DienstData = {
   benefits: string[];
   faqs: DienstFAQ[];
   image: string;
+  keywords?: string; // Added keywords as optional property
 };
 
 export type DienstenRecord = {
