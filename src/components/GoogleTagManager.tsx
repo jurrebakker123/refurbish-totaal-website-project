@@ -12,9 +12,11 @@ const GoogleTagManager: React.FC = () => {
         event: 'pageview',
         page: {
           path: location.pathname,
-          title: document.title
+          title: document.title,
+          url: window.location.href
         }
       });
+      console.log('GTM pageview event sent:', location.pathname);
     }
   }, [location]);
 

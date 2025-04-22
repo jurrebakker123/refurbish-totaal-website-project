@@ -15,6 +15,15 @@ declare global {
 // Initialize dataLayer
 window.dataLayer = window.dataLayer || [];
 
+// Push initial pageview event
+window.dataLayer.push({
+  event: 'pageview',
+  page: {
+    path: window.location.pathname,
+    title: document.title
+  }
+});
+
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <GoogleTagManager />
