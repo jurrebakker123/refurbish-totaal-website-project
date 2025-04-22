@@ -1,5 +1,3 @@
-
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -44,6 +42,12 @@ export function OfferteForm() {
     }
     
     try {
+      // Log form data for verification
+      console.log('Offerte Form Submission:', { 
+        ...data, 
+        destinationEmail: emailConfig.contactEmail 
+      });
+
       await emailjs.send(
         emailConfig.serviceId,
         emailConfig.templateId,
@@ -56,7 +60,7 @@ export function OfferteForm() {
           preferred_date: data.preferredDate,
           service: data.service,
           message: data.message,
-          to_email: emailConfig.contactEmail,  // Gebruik de geconfigureerde e-mail
+          to_email: emailConfig.contactEmail
         },
         emailConfig.publicKey
       );
@@ -64,8 +68,8 @@ export function OfferteForm() {
       toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
       form.reset();
     } catch (error) {
-      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw.");
-      console.error("Email error:", error);
+      console.error('Offerte Form Email Error:', error);
+      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag.");
     }
   };
 

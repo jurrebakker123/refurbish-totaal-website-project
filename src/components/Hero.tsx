@@ -1,10 +1,8 @@
-
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { emailConfig } from '@/config/email';
+import emailjs from '@emailjs/browser';
 
 const Hero = () => {
   const [formData, setFormData] = useState({
@@ -22,22 +20,43 @@ const Hero = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
     
-    // Send email - this would typically be handled by a backend service
-    // For now we'll just simulate this with a console log
-    console.log("Form submitted:", formData);
-    console.log(`Email would be sent to: ${emailConfig.contactEmail}`);
-    
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      location: '',
-      message: ''
-    });
+    try {
+      // Log form data for verification
+      console.log('Hero Form Submission:', { 
+        ...formData, 
+        destinationEmail: emailConfig.contactEmail 
+      });
+
+      // Use EmailJS for sending email
+      await emailjs.send(
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
+          message: formData.message,
+          to_email: emailConfig.contactEmail
+        },
+        emailConfig.publicKey
+      );
+
+      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        location: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Hero Form Email Error:', error);
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht.");
+    }
   };
 
   // Animation variants

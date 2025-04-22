@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
@@ -27,30 +26,31 @@ const ContactPage = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const emailData = {
-      to_email: emailConfig.contactEmail,
-      from_name: formData.name,
-      from_email: formData.email,
-      from_phone: formData.phone,
-      subject: formData.subject,
-      message: formData.message,
-    };
-
-    const emailBody = `
-      Naam: ${formData.name}
-      E-mail: ${formData.email}
-      Telefoon: ${formData.phone}
-      Onderwerp: ${formData.subject}
-      Bericht: ${formData.message}
-    `;
-    const mailtoLink = `mailto:${emailConfig.contactEmail}?subject=${encodeURIComponent('Contact vanaf website: ' + formData.subject)}&body=${encodeURIComponent(emailBody)}`;
-
     try {
-      window.location.href = mailtoLink;
+      // Log form data for verification
+      console.log('Contact Form Submission:', { 
+        ...formData, 
+        destinationEmail: emailConfig.contactEmail 
+      });
+
+      await emailjs.send(
+        emailConfig.serviceId,
+        emailConfig.templateId,
+        {
+          to_email: emailConfig.contactEmail,
+          from_name: formData.name,
+          from_email: formData.email,
+          from_phone: formData.phone,
+          subject: formData.subject,
+          message: formData.message,
+        },
+        emailConfig.publicKey
+      );
+
       toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
       setFormData({
         name: '',
@@ -60,8 +60,8 @@ const ContactPage = () => {
         message: ''
       });
     } catch (error) {
-      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.");
-      console.error("Email error:", error);
+      console.error('Contact Form Email Error:', error);
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht.");
     } finally {
       setIsSubmitting(false);
     }
