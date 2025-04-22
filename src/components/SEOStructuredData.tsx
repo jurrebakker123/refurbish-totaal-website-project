@@ -8,6 +8,37 @@ const targetLocations = [
   "Lelystad", "Zwolle", "Doetinchem", "Venray"
 ];
 
+const services = [
+  {
+    name: "Schilderwerk",
+    keywords: "schilder, schildersbedrijf, buitenschilderwerk, kozijnen schilderen, houtrot reparatie, binnenschilderwerk"
+  },
+  {
+    name: "Dakrenovatie",
+    keywords: "dakrenovatie, dakdekker, daklekkage, dakisolatie, dakbedekking vervangen, dakpannen vervangen"
+  },
+  {
+    name: "Stukadoren",
+    keywords: "stukadoor, stucwerk, wanden stucen, plafond stucen, spachtelputz, sierpleister"
+  },
+  {
+    name: "Installatietechniek",
+    keywords: "loodgieter, elektricien, cv monteur, installateur, elektra aanleggen, cv ketel installatie"
+  },
+  {
+    name: "Aan- en verbouw",
+    keywords: "aannemer, verbouwing, aanbouw, uitbouw, renovatie, dakkapel plaatsen"
+  },
+  {
+    name: "Behangen",
+    keywords: "behanger, behang, fotobehang, behangwerk, behang verwijderen, glasvliesbehang"
+  },
+  {
+    name: "PVC Vloeren",
+    keywords: "pvc vloer, pvc vloeren leggen, vloeren specialist, vloerverwarming pvc, onderhoud pvc vloer"
+  }
+];
+
 const SEOStructuredData: React.FC = () => {
   // Generate service areas that include all target locations
   const serviceAreas = targetLocations.map(location => ({
@@ -43,68 +74,114 @@ const SEOStructuredData: React.FC = () => {
       "https://www.facebook.com/refurbishtotaal",
       "https://www.instagram.com/refurbishtotaal"
     ],
-    "keywords": "dakrenovatie, schilderwerk, stukadoren, installatietechniek, aan- en verbouw, behangen, pvc vloeren, renovatie, verbouwing, Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem, Venray",
+    "keywords": "dakrenovatie, schilderwerk, stukadoren, installatietechniek, aan- en verbouw, behangen, pvc vloeren, renovatie, verbouwing, Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem, Venray, dakdekker, schilder, stukadoor, loodgieter, elektricien, aannemer",
     "priceRange": "€€",
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Renovatie en Verbouwdiensten",
-      "itemListElement": [
-        {
-          "@type": "Offer",
-          "name": "Schilderwerk",
-          "description": "Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat in heel Nederland, inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        },
-        {
-          "@type": "Offer",
-          "name": "Dakrenovatie",
-          "description": "Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak. Werkzaam in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        },
-        {
-          "@type": "Offer",
-          "name": "Stukadoren",
-          "description": "Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief. Werkzaam in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        },
-        {
-          "@type": "Offer",
-          "name": "Installatietechniek",
-          "description": "Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        },
-        {
-          "@type": "Offer",
-          "name": "Aan- en verbouw",
-          "description": "Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        },
-        {
-          "@type": "Offer",
-          "name": "Behangen",
-          "description": "Professioneel behangwerk met oog voor detail en een perfect eindresultaat in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        },
-        {
-          "@type": "Offer",
-          "name": "PVC Vloeren",
-          "description": "Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren in Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray."
-        }
-      ]
+      "itemListElement": services.map(service => ({
+        "@type": "Offer",
+        "name": service.name,
+        "description": `Professionele ${service.name.toLowerCase()} in heel Nederland, inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray. ${service.keywords}.`
+      }))
     }
   };
 
-  // Create location-specific service pages for each location and service combination
-  const locationServicePages = [];
-  const services = ["Dakrenovatie", "Schilderwerk", "Stukadoren", "Installatietechniek", "Aan- en verbouw", "Behangen", "PVC Vloeren"];
+  // Create breadcrumbs schema
+  const breadcrumbsSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.refurbishtotaalnederland.nl"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Diensten",
+        "item": "https://www.refurbishtotaalnederland.nl/diensten"
+      },
+      ...services.map((service, index) => ({
+        "@type": "ListItem",
+        "position": 3 + index,
+        "name": service.name,
+        "item": `https://www.refurbishtotaalnederland.nl/diensten/${service.name.toLowerCase().replace(/\s+/g, '-')}`
+      }))
+    ]
+  };
+
+  // Create FAQs schema
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "In welke steden is Refurbish Totaal Nederland actief?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Refurbish Totaal Nederland is actief in heel Nederland, met focus op Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray. Neem contact op voor meer informatie over onze diensten in uw regio."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Welke renovatie- en verbouwdiensten biedt Refurbish Totaal Nederland?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Wij bieden een compleet pakket aan diensten, waaronder schilderwerk, dakrenovatie, stukadoren, installatietechniek, aan- en verbouw, behangen en PVC vloeren. Elk van deze diensten wordt uitgevoerd door vakkundige specialisten."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Geeft Refurbish Totaal Nederland garantie op het uitgevoerde werk?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, wij geven garantie op al onze werkzaamheden. De exacte garantieperiode varieert per type werk en wordt duidelijk vermeld in onze offertes. Kwaliteit staat bij ons voorop."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Kan ik een vrijblijvende offerte aanvragen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absoluut! U kunt via onze website gemakkelijk een vrijblijvende offerte aanvragen of direct contact met ons opnemen via telefoon of e-mail. Wij reageren snel en komen graag langs voor een persoonlijk gesprek."
+        }
+      }
+    ]
+  };
+
+  // Create city-specific service pages schema
+  const cityServiceSchemas = [];
   
   targetLocations.forEach(location => {
     services.forEach(service => {
-      locationServicePages.push({
+      const serviceSlug = service.name.toLowerCase().replace(/\s+/g, '-');
+      
+      cityServiceSchemas.push({
         "@context": "https://schema.org",
-        "@type": "WebPage",
-        "url": `https://www.refurbishtotaalnederland.nl/diensten/${service.toLowerCase().replace(/\s+/g, '-')}/${location.toLowerCase()}`,
-        "name": `${service} ${location} | Refurbish Totaal Nederland`,
-        "description": `Professionele ${service.toLowerCase()} in ${location} en omgeving. Refurbish Totaal Nederland biedt vakkundige ${service.toLowerCase()} diensten voor particuliere en zakelijke klanten.`,
-        "isPartOf": {
-          "@type": "WebSite",
-          "url": "https://www.refurbishtotaalnederland.nl",
-          "name": "Refurbish Totaal Nederland"
-        }
+        "@type": "Service",
+        "name": `${service.name} ${location}`,
+        "url": `https://www.refurbishtotaalnederland.nl/diensten/${serviceSlug}/${location.toLowerCase()}`,
+        "description": `Professionele ${service.name.toLowerCase()} diensten in ${location} en omgeving. Met meer dan 20 jaar ervaring bieden wij vakkundige oplossingen voor particuliere en zakelijke klanten.`,
+        "provider": {
+          "@type": "LocalBusiness",
+          "name": "Refurbish Totaal Nederland",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Niersweg 27",
+            "addressLocality": "Gennep",
+            "postalCode": "6591 CT",
+            "addressCountry": "NL"
+          }
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": location
+        },
+        "serviceType": service.name
       });
     });
   });
@@ -114,9 +191,15 @@ const SEOStructuredData: React.FC = () => {
       <script type="application/ld+json">
         {JSON.stringify(structuredData)}
       </script>
-      {locationServicePages.map((page, index) => (
+      <script type="application/ld+json">
+        {JSON.stringify(breadcrumbsSchema)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(faqSchema)}
+      </script>
+      {cityServiceSchemas.map((schema, index) => (
         <script key={index} type="application/ld+json">
-          {JSON.stringify(page)}
+          {JSON.stringify(schema)}
         </script>
       ))}
     </Helmet>

@@ -1,5 +1,5 @@
 
-# robots.txt for Refurbish Totaal Nederland
+# robots.txt voor Refurbish Totaal Nederland
 User-agent: *
 Allow: /
 
@@ -30,6 +30,8 @@ Allow: /
 
 # Sitemap location
 Sitemap: https://www.refurbishtotaalnederland.nl/sitemap.xml
+
+# Crawl-delay: 10
 
 # Disallow non-public content if needed
 # Disallow: /admin/

@@ -20,13 +20,14 @@ const LocalBusinessSchema: React.FC<LocalBusinessSchemaProps> = ({ city, service
     "@type": "LocalBusiness",
     "name": businessName + (city ? ` ${city}` : ""),
     "image": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png",
+    "logo": "https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png",
     "telephone": "+31854444255",
     "email": "info@refurbishtotaalnederland.nl",
     "url": `https://www.refurbishtotaalnederland.nl${city ? `/diensten/${service?.toLowerCase().replace(/\s+/g, '-')}/${city.toLowerCase()}` : ''}`,
     "priceRange": "€€",
     "description": city && service 
-      ? `Professionele ${service.toLowerCase()} diensten in ${city} en omgeving. Refurbish Totaal Nederland levert vakkundige ${service.toLowerCase()} met meer dan 20 jaar ervaring.`
-      : "Refurbish Totaal Nederland is uw betrouwbare partner voor professionele verbouwing en renovatie. Schilderwerk, dakrenovatie, stucwerk en meer in heel Nederland.",
+      ? `Professionele ${service.toLowerCase()} diensten in ${city} en omgeving. Refurbish Totaal Nederland levert vakkundige ${service.toLowerCase()} met meer dan 20 jaar ervaring. Kwaliteit en klanttevredenheid gegarandeerd.`
+      : "Refurbish Totaal Nederland is uw betrouwbare partner voor professionele verbouwing en renovatie. Schilderwerk, dakrenovatie, stucwerk en meer in heel Nederland inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray.",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Niersweg 27",
@@ -57,6 +58,10 @@ const LocalBusinessSchema: React.FC<LocalBusinessSchemaProps> = ({ city, service
     "serviceType": service || [
       "Schilderwerk", "Dakrenovatie", "Stukadoren", 
       "Installatietechniek", "Aan- en verbouw", "Behangen", "PVC Vloeren"
+    ],
+    "sameAs": [
+      "https://www.facebook.com/refurbishtotaal",
+      "https://www.instagram.com/refurbishtotaal"
     ]
   };
 

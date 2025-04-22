@@ -1,87 +1,86 @@
 
 import React, { useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import CallToActionSection from '@/components/CallToActionSection';
-import diensten from '@/data/diensten';
-
-// Import our new components
 import DienstHero from '@/components/dienst-detail/DienstHero';
 import DienstFeatures from '@/components/dienst-detail/DienstFeatures';
 import DienstBenefits from '@/components/dienst-detail/DienstBenefits';
 import DienstFAQs from '@/components/dienst-detail/DienstFAQs';
 import DienstSidebar from '@/components/dienst-detail/DienstSidebar';
 import DienstNotFound from '@/components/dienst-detail/DienstNotFound';
+import CityServiceOptimization from '@/components/CityServiceOptimization';
+import LocalBusinessSchema from '@/components/LocalBusinessSchema';
+import diensten from '@/data/diensten';
 
-const DienstDetailPage = () => {
-  const { serviceId } = useParams<{serviceId: string}>();
-  const navigate = useNavigate();
-  const dienst = serviceId && diensten[serviceId as keyof typeof diensten];
-
+const DienstDetailPage: React.FC = () => {
+  const { serviceId, cityName } = useParams<{ serviceId: string; cityName?: string }>();
+  
+  const dienst = serviceId ? diensten[serviceId] : undefined;
+  
   useEffect(() => {
-    if (!dienst) {
-      console.error(`Dienst met ID ${serviceId} bestaat niet.`);
-    } else {
-      // Scroll naar boven bij het laden van een nieuwe dienst
-      window.scrollTo(0, 0);
+    // Set document title based on the service and city
+    if (dienst) {
+      document.title = cityName 
+        ? `${dienst.title} ${cityName} | Refurbish Totaal Nederland`
+        : `${dienst.title} | Refurbish Totaal Nederland`;
     }
-  }, [dienst, serviceId]);
-
-  // Handle redirect from old "stucadoren" URL to new "stukadoren" URL
-  useEffect(() => {
-    if (serviceId === 'stucadoren') {
-      navigate('/diensten/stukadoren', { replace: true });
-    }
-  }, [serviceId, navigate]);
-
-  if (!dienst) {
+  }, [dienst, cityName]);
+  
+  // If service not found, render the not found component
+  if (!dienst && serviceId) {
     return <DienstNotFound />;
   }
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow pt-32">
-        {/* Hero Section */}
-        <DienstHero dienst={dienst} serviceId={serviceId || ''} />
-
-        {/* Main Content */}
-        <section className="py-16">
-          <div className="container">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              {/* Main Content */}
+  
+  // If service found and we have a dienst object
+  if (dienst) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        
+        {/* SEO Optimization Component */}
+        {cityName && (
+          <CityServiceOptimization 
+            service={dienst.title}
+            serviceDescription={dienst.description}
+          />
+        )}
+        
+        {/* Local Business Schema */}
+        <LocalBusinessSchema
+          city={cityName} 
+          service={dienst.title}
+        />
+        
+        <main className="flex-grow">
+          <DienstHero 
+            title={cityName ? `${dienst.title} in ${cityName}` : dienst.title}
+            description={dienst.longDescription}
+            image={dienst.image}
+          />
+          
+          <div className="container py-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <DienstFeatures 
-                  title={dienst.title} 
-                  longDescription={dienst.longDescription}
-                  features={dienst.features}
-                />
-                
-                <DienstBenefits 
-                  title={dienst.title} 
-                  benefits={dienst.benefits}
-                />
-                
+                <DienstFeatures features={dienst.features} />
+                <DienstBenefits benefits={dienst.benefits} />
                 <DienstFAQs faqs={dienst.faqs} />
               </div>
-
-              {/* Sidebar */}
-              <DienstSidebar 
-                currentServiceId={serviceId || ''} 
-                diensten={diensten}
-                dienstTitle={dienst.title} 
-              />
+              
+              <div className="lg:col-span-1">
+                <DienstSidebar serviceId={serviceId} />
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Call to Action */}
-        <CallToActionSection />
-      </main>
-      <Footer />
-    </div>
-  );
+        </main>
+        
+        <Footer />
+      </div>
+    );
+  }
+  
+  // Redirect to diensten page if no serviceId provided
+  return <Navigate to="/diensten" />;
 };
 
 export default DienstDetailPage;
