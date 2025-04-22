@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -9,8 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import emailjs from '@emailjs/browser';
 import { emailConfig } from "@/config/email";
+import React from 'react';
 
-// List of services
 const SERVICES = [
   "Schilderwerk",
   "Dakrenovatie",
@@ -36,20 +35,37 @@ export function OfferteForm() {
     },
   });
 
+  const [tekeningFile, setTekeningFile] = React.useState<File | null>(null);
+  const [tekeningBase64, setTekeningBase64] = React.useState<string | null>(null);
+
+  const handleTekeningChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setTekeningFile(file || null);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // @ts-ignore
+        setTekeningBase64(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setTekeningBase64(null);
+    }
+  };
+
   const handleSubmit = async (data: OfferteFormData) => {
     if (!data.terms) {
       toast.error("U dient akkoord te gaan met onze voorwaarden.");
       return;
     }
-    
+
     try {
-      // Log form data for verification
       console.log('Offerte Form Submission:', { 
         ...data, 
-        destinationEmail: emailConfig.contactEmail 
+        destinationEmail: emailConfig.contactEmail,
+        tekening: !!tekeningBase64 ? '(base64 bijlage toegevoegd)' : '(geen tekening)'
       });
 
-      // Controleer of EmailJS is geconfigureerd
       if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
           emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
           emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
@@ -70,13 +86,17 @@ export function OfferteForm() {
           preferred_date: data.preferredDate,
           service: data.service,
           message: data.message,
-          to_email: emailConfig.contactEmail
+          to_email: emailConfig.contactEmail,
+          tekening: tekeningBase64 || ""
         },
         emailConfig.publicKey
       );
 
       toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
       form.reset();
+      setTekeningFile(null);
+      setTekeningBase64(null);
+      (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
     } catch (error) {
       console.error('Offerte Form Email Error:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag.");
@@ -166,6 +186,24 @@ export function OfferteForm() {
             </FormItem>
           )}
         />
+
+        <div>
+          <label htmlFor="tekening-upload" className="block text-sm font-medium text-gray-700 mb-1">
+            Upload tekeningen (optioneel, pdf/jpg/png, max 5MB)
+          </label>
+          <input
+            id="tekening-upload"
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={handleTekeningChange}
+            className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm bg-white focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen"
+          />
+          {tekeningFile && (
+            <div className="mt-1 text-xs text-gray-600 italic">
+              Geselecteerd: {tekeningFile.name}
+            </div>
+          )}
+        </div>
 
         <FormField
           control={form.control}
