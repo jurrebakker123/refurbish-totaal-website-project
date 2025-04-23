@@ -14,12 +14,6 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
   
   // Check if the image URL is valid and exists
   const imageUrl = dienst.image || '/placeholder.svg';
-  
-  // Use a backup image if the current one fails to load
-  const handleImageError = (e: React.SyntheticEvent<HTMLDivElement, Event>) => {
-    const element = e.target as HTMLDivElement;
-    element.style.backgroundImage = "url('/placeholder.svg')";
-  };
 
   return (
     <section className={`relative text-white ${heroHeight}`}>
@@ -29,7 +23,6 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
           backgroundImage: `url('${imageUrl}')`,
           backgroundPosition: 'center 25%'
         }}
-        onError={handleImageError}
       >
         <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-50"></div>
       </div>

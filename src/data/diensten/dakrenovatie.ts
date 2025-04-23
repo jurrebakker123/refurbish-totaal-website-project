@@ -1,3 +1,4 @@
+
 import { DienstData } from '../types/dienst';
 import { Home } from 'lucide-react';
 import React from 'react';
@@ -36,7 +37,7 @@ const dakrenovatie: DienstData = {
       answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
     }
   ],
-  image: '/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png'
+  image: '/lovable-uploads/3b0229fd-9f27-4076-acc1-1ef2a7168e25.png'
 };
 
 export default dakrenovatie;

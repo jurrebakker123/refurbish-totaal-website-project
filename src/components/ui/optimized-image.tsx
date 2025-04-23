@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -21,9 +21,33 @@ export function OptimizedImage({
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);
 
+  // Reset error state when src changes
+  useEffect(() => {
+    if (src !== imgSrc && !hasError) {
+      setImgSrc(src);
+    }
+  }, [src, imgSrc, hasError]);
+
+  // Pre-check if image exists
+  useEffect(() => {
+    // Only check if it's not already showing the fallback
+    if (imgSrc !== fallbackSrc) {
+      const img = new Image();
+      img.onload = () => {
+        // Image loaded successfully
+      };
+      img.onerror = () => {
+        console.log(`Image pre-check failed: ${imgSrc}, using fallback`);
+        setImgSrc(fallbackSrc);
+        setHasError(true);
+      };
+      img.src = imgSrc;
+    }
+  }, [imgSrc, fallbackSrc]);
+
   const handleError = () => {
-    if (!hasError) {
-      console.log(`Image failed to load: ${src}, using fallback`);
+    if (!hasError && imgSrc !== fallbackSrc) {
+      console.log(`Image failed to load in component: ${imgSrc}, using fallback`);
       setImgSrc(fallbackSrc);
       setHasError(true);
     }

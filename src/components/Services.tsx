@@ -19,7 +19,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: '/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png'
+    image: '/lovable-uploads/3b0229fd-9f27-4076-acc1-1ef2a7168e25.png'
   },
   {
     id: 'stukadoren',
@@ -27,7 +27,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: '/lovable-uploads/54349b4b-f813-4e06-94ac-24e75ad931ba.png'
+    image: '/lovable-uploads/99959b05-5a83-42b4-b97b-473c5bfc3de5.png'
   },
   {
     id: 'installatietechniek',
@@ -51,7 +51,7 @@ const services = [
     title: 'Behangen',
     description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
     link: '/diensten/behangen',
-    image: '/lovable-uploads/7e14e714-4164-419a-a09a-263050a60360.png'
+    image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
   },
   {
     id: 'pvc-vloeren',

@@ -20,14 +20,14 @@ const diensten = [{
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
   features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
-  image: '/lovable-uploads/14f0504b-e3c9-4763-bfec-ae4e6c81a4da.png'
+  image: '/lovable-uploads/3b0229fd-9f27-4076-acc1-1ef2a7168e25.png'
 }, {
   id: 'stukadoren',
   icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Stukadoren',
   description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
   features: ['Gladpleisterwerk voor wanden en plafonds', 'Renovatiestucwerk bij scheuren en beschadigingen', 'Sierlijsten en ornamenten aanbrengen', 'Spachtelputz en structuurwerk', 'Venetiaans stucwerk en tadelakt', 'Betonlook wanden en vloeren'],
-  image: '/lovable-uploads/54349b4b-f813-4e06-94ac-24e75ad931ba.png'
+  image: '/lovable-uploads/99959b05-5a83-42b4-b97b-473c5bfc3de5.png'
 }, {
   id: 'installatietechniek',
   icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
@@ -48,7 +48,7 @@ const diensten = [{
   title: 'Behangen',
   description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
   features: ['Behang verwijderen en ondergrond voorbereiden', 'Aanbrengen van luxe behang en wandbekleding', 'Fotobehang op maat', 'Vliesbehang en traditioneel behang', 'Textiel- en vinylbehang', 'Reparatie van bestaand behangwerk'],
-  image: '/lovable-uploads/7e14e714-4164-419a-a09a-263050a60360.png'
+  image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
 }, {
   id: 'pvc-vloeren',
   icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
