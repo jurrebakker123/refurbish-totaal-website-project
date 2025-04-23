@@ -15,6 +15,7 @@ const Hero = () => {
     location: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -25,6 +26,7 @@ const Hero = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     try {
       // Log form data for verification
@@ -39,6 +41,7 @@ const Hero = () => {
           emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
         toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
         console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
+        setIsSubmitting(false);
         return;
       }
 
@@ -57,7 +60,12 @@ const Hero = () => {
         emailConfig.publicKey
       );
 
-      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+      // Duidelijke succesmelding tonen
+      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
+      
       setFormData({
         name: '',
         email: '',
@@ -67,7 +75,9 @@ const Hero = () => {
       });
     } catch (error) {
       console.error('Hero Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw bericht.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -223,8 +233,9 @@ const Hero = () => {
                 className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                disabled={isSubmitting}
               >
-                Verstuur Aanvraag
+                {isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Aanvraag'}
               </motion.button>
             </form>
           </motion.div>

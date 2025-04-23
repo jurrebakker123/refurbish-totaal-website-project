@@ -62,7 +62,12 @@ const ContactPage = () => {
         emailConfig.publicKey
       );
 
-      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.");
+      // Duidelijke succesmelding tonen
+      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
+      
       setFormData({
         name: '',
         email: '',
@@ -72,7 +77,7 @@ const ContactPage = () => {
       });
     } catch (error) {
       console.error('Contact Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw bericht.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.");
     } finally {
       setIsSubmitting(false);
     }

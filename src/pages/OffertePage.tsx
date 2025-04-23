@@ -84,7 +84,11 @@ const OffertePage = () => {
         emailConfig.publicKey
       );
       
-      toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
+      // Duidelijke succesmelding tonen
+      toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
       
       // Reset form
       setFormData({

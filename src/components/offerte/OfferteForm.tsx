@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ export function OfferteForm() {
 
   const [tekeningFile, setTekeningFile] = React.useState<File | null>(null);
   const [tekeningBase64, setTekeningBase64] = React.useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleTekeningChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -59,6 +61,8 @@ export function OfferteForm() {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       console.log('Offerte Form Submission:', { 
         ...data, 
@@ -71,6 +75,7 @@ export function OfferteForm() {
           emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
         toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
         console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
+        setIsSubmitting(false);
         return;
       }
 
@@ -92,14 +97,21 @@ export function OfferteForm() {
         emailConfig.publicKey
       );
 
-      toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.");
+      // Duidelijke succesmelding tonen
+      toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
+      
       form.reset();
       setTekeningFile(null);
       setTekeningBase64(null);
       (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
     } catch (error) {
       console.error('Offerte Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -228,9 +240,9 @@ export function OfferteForm() {
         <button
           type="submit"
           className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
-          disabled={form.formState.isSubmitting}
+          disabled={isSubmitting}
         >
-          {form.formState.isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Aanvraag'}
+          {isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Aanvraag'}
         </button>
       </form>
     </Form>
