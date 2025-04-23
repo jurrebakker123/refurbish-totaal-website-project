@@ -1,3 +1,4 @@
+
 /**
  * EmailJS configuratie
  * 
@@ -9,17 +10,21 @@
  */
 
 export const emailConfig = {
-  serviceId: 'YOUR_SERVICE_ID', // Vervang dit met uw Service ID
-  templateId: 'YOUR_TEMPLATE_ID', // Vervang dit met uw Template ID
-  publicKey: 'YOUR_PUBLIC_KEY', // Vervang dit met uw Public Key
+  serviceId: 'YOUR_SERVICE_ID', // Vervang dit met uw Service ID van EmailJS
+  templateId: 'YOUR_TEMPLATE_ID', // Vervang dit met uw Template ID van EmailJS
+  publicKey: 'YOUR_PUBLIC_KEY', // Vervang dit met uw Public Key van EmailJS
   contactEmail: 'info@refurbishtotaalnederland.nl',
 };
 
 /**
- * INSTRUCTIES:
+ * INSTRUCTIES VOOR GEBRUIK:
  * 
- * 1. Ga naar uw EmailJS dashboard
- * 2. Service ID vindt u bij Email Services
- * 3. Template ID vindt u bij het template dat u net heeft gemaakt
- * 4. Public Key vindt u bij Account > API Keys
+ * 1. Vervang YOUR_SERVICE_ID met uw EmailJS Service ID
+ * 2. Vervang YOUR_TEMPLATE_ID met uw EmailJS Template ID
+ * 3. Vervang YOUR_PUBLIC_KEY met uw EmailJS Public Key
+ * 
+ * U kunt deze gegevens vinden in uw EmailJS dashboard:
+ * - Service ID: Bij Email Services
+ * - Template ID: Bij Email Templates
+ * - Public Key: Bij Account > API Keys
  */
