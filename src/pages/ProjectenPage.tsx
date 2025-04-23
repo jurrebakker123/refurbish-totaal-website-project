@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import CallToActionSection from '@/components/CallToActionSection';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const projects = [
   {
@@ -122,15 +123,18 @@ const ProjectenPage = () => {
                   {/* Project Image */}
                   <div className="w-full md:w-1/2 overflow-hidden rounded-lg shadow-lg group">
                     <div className="relative h-80 overflow-hidden">
-                      <motion.img 
+                      <motion.div
                         whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.5 }}
-                        src={project.imageUrl} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
+                        className="h-full w-full"
+                      >
+                        <OptimizedImage 
+                          src={project.imageUrl} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover"
+                          fallbackSrc="/placeholder.svg"
+                        />
+                      </motion.div>
                       <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-brand-darkGreen text-xs font-bold px-2 py-1 rounded">
                         Na
                       </div>
@@ -146,24 +150,22 @@ const ProjectenPage = () => {
                     {/* Before/After Comparison Button */}
                     <div className="mt-6 flex items-center gap-3">
                       <div className="relative overflow-hidden w-16 h-16 rounded">
-                        <img 
+                        <OptimizedImage 
                           src={project.beforeImageUrl} 
                           alt="Voor" 
                           className="w-full h-full object-cover"
-                          loading="lazy"
-                          decoding="async"
+                          fallbackSrc="/placeholder.svg"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-xs font-medium">
                           Voor
                         </div>
                       </div>
                       <div className="relative overflow-hidden w-16 h-16 rounded">
-                        <img 
+                        <OptimizedImage 
                           src={project.imageUrl} 
                           alt="Na" 
                           className="w-full h-full object-cover"
-                          loading="lazy"
-                          decoding="async"
+                          fallbackSrc="/placeholder.svg"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white text-xs font-medium">
                           Na

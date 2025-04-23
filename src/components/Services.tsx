@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 import React from 'react';
+import { OptimizedImage } from './ui/optimized-image';
 
 const services = [
   {
@@ -63,12 +64,6 @@ const services = [
 ];
 
 const Services = () => {
-  // Handle image errors for service cards 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.target as HTMLImageElement;
-    target.src = '/placeholder.svg';
-  };
-
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="container">
@@ -90,13 +85,11 @@ const Services = () => {
               <div className="animate-float">{service.icon}</div>
               <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{service.title}</h3>
               <p className="text-gray-600 mb-6 flex-grow">{service.description}</p>
-              <img
+              <OptimizedImage
                 src={service.image}
                 alt={service.title}
                 className="w-full h-48 object-cover rounded mb-4"
-                loading="lazy"
-                decoding="async"
-                onError={handleImageError}
+                fallbackSrc="/placeholder.svg"
               />
               <Link 
                 to={service.link} 

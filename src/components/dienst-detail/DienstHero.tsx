@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { DienstData } from '@/data/types/dienst';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 interface DienstHeroProps {
   dienst: DienstData;
@@ -43,16 +44,11 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
           </div>
           <div className="md:w-1/2 md:pl-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="rounded-lg overflow-hidden shadow-lg hover-lift">
-              <img 
+              <OptimizedImage 
                 src={imageUrl} 
                 alt={dienst.title} 
                 className="w-full h-auto"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/placeholder.svg';
-                }}
-                loading="lazy"
-                decoding="async"
+                fallbackSrc="/placeholder.svg"
               />
             </div>
           </div>

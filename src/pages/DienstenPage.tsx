@@ -1,9 +1,11 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const diensten = [{
   id: 'schilderwerk',
@@ -57,11 +59,6 @@ const diensten = [{
 }];
 
 const DienstenPage = () => {
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.target as HTMLImageElement;
-    target.src = '/placeholder.svg';
-  };
-  
   return <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow pt-32">
@@ -89,13 +86,11 @@ const DienstenPage = () => {
                   <div className="lg:w-1/2 animate-fade-in" style={{
                 animationDelay: '0.2s'
               }}>
-                    <img 
+                    <OptimizedImage 
                       src={dienst.image} 
                       alt={dienst.title} 
                       className="rounded-lg shadow-lg w-full h-96 hover-lift object-cover" 
-                      onError={handleImageError}
-                      loading="lazy"
-                      decoding="async"
+                      fallbackSrc="/placeholder.svg"
                     />
                   </div>
                   <div className="lg:w-1/2 animate-fade-in" style={{
