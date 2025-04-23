@@ -10,9 +10,9 @@
  */
 
 export const emailConfig = {
-  serviceId: 'YOUR_SERVICE_ID', // Vervang dit met uw Service ID van EmailJS
-  templateId: 'YOUR_TEMPLATE_ID', // Vervang dit met uw Template ID van EmailJS
-  publicKey: 'YOUR_PUBLIC_KEY', // Vervang dit met uw Public Key van EmailJS
+  serviceId: 'service_noxuhr5', // Vervang dit met uw Service ID van EmailJS
+  templateId: 'template_ezfzaao', // Vervang dit met uw Template ID van EmailJS
+  publicKey: 'tqJDJUY1QjRWXLIiF', // Vervang dit met uw Public Key van EmailJS
   contactEmail: 'info@refurbishtotaalnederland.nl',
 };
 
