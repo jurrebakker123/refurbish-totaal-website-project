@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
@@ -142,6 +143,26 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
   const serviceSlug = serviceType.replace(/\s+/g, '-');
   const canonicalUrl = `https://www.refurbishtotaalnederland.nl/diensten/${serviceSlug}/${cityName.toLowerCase()}`;
 
+  // Genereer stad-specifieke FAQs
+  const citySpecificFAQs = [
+    {
+      question: `Biedt Refurbish Totaal Nederland ${service.toLowerCase()} diensten aan in ${formattedCityName}?`,
+      answer: `Ja, wij bieden professionele ${service.toLowerCase()} diensten aan in ${formattedCityName} en omgeving. Met meer dan 20 jaar ervaring garanderen wij kwaliteit en betrouwbaarheid.`
+    },
+    {
+      question: `Wat zijn de kosten voor ${service.toLowerCase()} in ${formattedCityName}?`,
+      answer: `De kosten voor ${service.toLowerCase()} in ${formattedCityName} zijn afhankelijk van specifieke factoren zoals oppervlakte, materialen en complexiteit. Neem contact met ons op voor een gratis offerte op maat.`
+    },
+    {
+      question: `Hoe snel kan Refurbish Totaal Nederland starten met ${service.toLowerCase()} in ${formattedCityName}?`,
+      answer: `In ${formattedCityName} kunnen wij meestal binnen 2-4 weken starten met ${service.toLowerCase()} werkzaamheden, afhankelijk van onze actuele planning. Neem contact op voor de exacte mogelijkheden.`
+    },
+    {
+      question: `Geeft u garantie op ${service.toLowerCase()} uitgevoerd in ${formattedCityName}?`,
+      answer: `Absoluut, al onze ${service.toLowerCase()} werkzaamheden in ${formattedCityName} worden uitgevoerd met garantie. Afhankelijk van het type werk bieden wij 5-10 jaar garantie op onze diensten.`
+    }
+  ];
+
   return (
     <Helmet>
       <title>{title}</title>
@@ -244,6 +265,22 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
               "name": `Offerte aanvraag voor ${service} in ${formattedCityName}`
             }
           }
+        })}
+      </script>
+
+      {/* City-specific FAQs */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": citySpecificFAQs.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.answer
+            }
+          }))
         })}
       </script>
     </Helmet>

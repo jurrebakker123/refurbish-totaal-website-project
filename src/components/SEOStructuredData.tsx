@@ -262,6 +262,24 @@ const SEOStructuredData: React.FC = () => {
     });
   });
 
+  // Optimalisaties voor Google Core Web Vitals
+  const webVitalsOptimizations = `
+    // Reduce layout shifts
+    img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: attr(width) / attr(height);
+    }
+    // Optimize LCP
+    .critical-rendering {
+      content-visibility: auto;
+    }
+    // Reduce CLS
+    .image-container {
+      min-height: 200px;
+    }
+  `;
+
   return (
     <Helmet>
       <script type="application/ld+json">
@@ -281,11 +299,16 @@ const SEOStructuredData: React.FC = () => {
           {JSON.stringify(schema)}
         </script>
       ))}
+      <style type="text/css">{webVitalsOptimizations}</style>
       <meta name="author" content="Refurbish Totaal Nederland" />
       <meta name="revisit-after" content="7 days" />
       <meta name="distribution" content="Global" />
       <meta name="rating" content="General" />
       <meta name="geo.region" content="NL" />
+      {/* Technische SEO meta tags voor Core Web Vitals */}
+      <meta name="theme-color" content="#0B4619" />
+      <link rel="preload" as="image" href="https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" />
+      <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
     </Helmet>
   );
 };
