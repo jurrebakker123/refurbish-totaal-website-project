@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
-import { emailConfig } from '@/config/email';
-import emailjs from '@emailjs/browser';
+import { sendEmail } from '@/config/email';
 
 const Hero = () => {
   const [formData, setFormData] = useState({
@@ -28,40 +27,34 @@ const Hero = () => {
     setIsSubmitting(true);
     
     try {
-      // Log form data for verification
-      console.log('Hero Form Submission:', { 
-        ...formData, 
-        destinationEmail: emailConfig.contactEmail 
+      console.log('Hero Form Submission:', formData);
+
+      const result = await sendEmail({
+        from_name: formData.name,
+        to_name: "Refurbish Totaal Nederland",
+        from_email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        message: formData.message || "Geen bericht",
+        to_email: "info@refurbishtotaalnederland.nl",
+        subject: "Contact aanvraag via website"
       });
 
-      // Use EmailJS for sending email
-      await emailjs.send(
-        emailConfig.serviceId,
-        emailConfig.templateId,
-        {
-          from_name: formData.name,
-          to_name: "Refurbish Totaal Nederland",
-          from_email: formData.email,
-          phone: formData.phone,
-          location: formData.location,
-          message: formData.message,
-          to_email: emailConfig.contactEmail
-        },
-        emailConfig.publicKey
-      );
-
-      // Duidelijke succesmelding tonen
-      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
-        duration: 5000,
-      });
-      
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        location: '',
-        message: ''
-      });
+      if (result.success) {
+        toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
+          duration: 5000,
+        });
+        
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          location: '',
+          message: ''
+        });
+      } else {
+        throw new Error("EmailJS verzending mislukt");
+      }
     } catch (error) {
       console.error('Hero Form Email Error:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {

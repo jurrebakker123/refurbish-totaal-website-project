@@ -6,8 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import emailjs from '@emailjs/browser';
-import { emailConfig } from "@/config/email";
+import { sendEmail } from "@/config/email";
 import React from 'react';
 
 const SERVICES = [
@@ -67,38 +66,37 @@ export function OfferteForm() {
     try {
       console.log('Offerte Form Submission:', { 
         ...data, 
-        destinationEmail: emailConfig.contactEmail,
-        tekening: !!tekeningBase64 ? '(base64 bijlage toegevoegd)' : '(geen tekening)'
+        tekeningIncluded: !!tekeningBase64
       });
 
-      await emailjs.send(
-        emailConfig.serviceId,
-        emailConfig.templateId,
-        {
-          from_name: data.name,
-          to_name: "Refurbish Totaal Nederland",
-          from_email: data.email,
-          phone: data.phone,
-          location: data.location,
-          preferred_date: data.preferredDate || "Niet opgegeven",
-          service: data.service,
-          message: data.message || "Geen bericht",
-          to_email: emailConfig.contactEmail,
-          tekening: tekeningBase64 || ""
-        },
-        emailConfig.publicKey
-      );
-
-      toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
-        duration: 5000,
-        position: 'top-center',
+      const result = await sendEmail({
+        from_name: data.name,
+        to_name: "Refurbish Totaal Nederland",
+        from_email: data.email,
+        phone: data.phone,
+        location: data.location,
+        preferred_date: data.preferredDate || "Niet opgegeven",
+        service: data.service,
+        message: data.message || "Geen bericht",
+        to_email: "info@refurbishtotaalnederland.nl",
+        tekening: tekeningBase64 || "",
+        subject: `Nieuwe offerte aanvraag: ${data.service}`
       });
-      
-      form.reset();
-      setTekeningFile(null);
-      setTekeningBase64(null);
-      if (document.getElementById('tekening-upload')) {
-        (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+
+      if (result.success) {
+        toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+          duration: 5000,
+          position: 'top-center',
+        });
+        
+        form.reset();
+        setTekeningFile(null);
+        setTekeningBase64(null);
+        if (document.getElementById('tekening-upload')) {
+          (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+        }
+      } else {
+        throw new Error("EmailJS verzending mislukt");
       }
     } catch (error) {
       console.error('Offerte Form Email Error:', error);

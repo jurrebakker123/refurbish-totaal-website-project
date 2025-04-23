@@ -10,8 +10,29 @@
  */
 
 export const emailConfig = {
-  serviceId: 'service_noxuhr5', // Vervang dit met uw Service ID van EmailJS
-  templateId: 'template_ezfzaao', // Vervang dit met uw Template ID van EmailJS
-  publicKey: 'tqJDJUY1QjRWXLIiF', // Vervang dit met uw Public Key van EmailJS
+  serviceId: 'service_noxuhr5', // Uw Service ID van EmailJS
+  templateId: 'template_ezfzaao', // Uw Template ID van EmailJS
+  publicKey: 'tqJDJUY1QjRWXLIiF', // Uw Public Key van EmailJS
   contactEmail: 'info@refurbishtotaalnederland.nl',
+};
+
+// Deze functie helpt bij het debuggen van EmailJS verzendproblemen
+export const sendEmail = async (templateParams: Record<string, any>) => {
+  console.log('EmailJS verzendpoging met parameters:', templateParams);
+  
+  try {
+    const emailjs = await import('@emailjs/browser');
+    const result = await emailjs.send(
+      emailConfig.serviceId,
+      emailConfig.templateId,
+      templateParams,
+      emailConfig.publicKey
+    );
+    
+    console.log('EmailJS succes:', result);
+    return { success: true, result };
+  } catch (error) {
+    console.error('EmailJS fout:', error);
+    return { success: false, error };
+  }
 };

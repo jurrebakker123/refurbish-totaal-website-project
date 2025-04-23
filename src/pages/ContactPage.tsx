@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { MapPin, Phone, Mail, Send, User, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import CallToActionSection from '@/components/CallToActionSection';
-import emailjs from '@emailjs/browser';
-import { emailConfig } from '@/config/email';
+import { sendEmail } from '@/config/email';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -31,39 +30,33 @@ const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Log form data for verification
-      console.log('Contact Form Submission:', { 
-        ...formData, 
-        destinationEmail: emailConfig.contactEmail 
+      console.log('Contact Form Submission:', formData);
+
+      const result = await sendEmail({
+        from_name: formData.name,
+        to_name: "Refurbish Totaal Nederland",
+        from_email: formData.email,
+        from_phone: formData.phone,
+        subject: formData.subject || "Contactformulier website",
+        message: formData.message || "Geen bericht",
+        to_email: "info@refurbishtotaalnederland.nl"
       });
 
-      await emailjs.send(
-        emailConfig.serviceId,
-        emailConfig.templateId,
-        {
-          to_email: emailConfig.contactEmail,
-          to_name: "Refurbish Totaal Nederland",
-          from_name: formData.name,
-          from_email: formData.email,
-          from_phone: formData.phone,
-          subject: formData.subject || "Contactformulier website",
-          message: formData.message || "Geen bericht",
-        },
-        emailConfig.publicKey
-      );
-
-      // Duidelijke succesmelding tonen
-      toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
-        duration: 5000,
-      });
-      
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
+      if (result.success) {
+        toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
+          duration: 5000,
+        });
+        
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        throw new Error("EmailJS verzending mislukt");
+      }
     } catch (error) {
       console.error('Contact Form Email Error:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
