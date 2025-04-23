@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
@@ -42,7 +41,10 @@ const ContactPage = () => {
       if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
           emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
           emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
-        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
+        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.", {
+          duration: 5000,
+          position: 'top-center',
+        });
         console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
         setIsSubmitting(false);
         return;
@@ -53,11 +55,12 @@ const ContactPage = () => {
         emailConfig.templateId,
         {
           to_email: emailConfig.contactEmail,
+          to_name: "Refurbish Totaal Nederland",
           from_name: formData.name,
           from_email: formData.email,
           from_phone: formData.phone,
-          subject: formData.subject,
-          message: formData.message,
+          subject: formData.subject || "Contactformulier website",
+          message: formData.message || "Geen bericht",
         },
         emailConfig.publicKey
       );
@@ -77,7 +80,10 @@ const ContactPage = () => {
       });
     } catch (error) {
       console.error('Contact Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
     } finally {
       setIsSubmitting(false);
     }

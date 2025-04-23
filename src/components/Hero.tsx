@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
@@ -51,6 +50,7 @@ const Hero = () => {
         emailConfig.templateId,
         {
           from_name: formData.name,
+          to_name: "Refurbish Totaal Nederland",
           from_email: formData.email,
           phone: formData.phone,
           location: formData.location,
@@ -75,13 +75,15 @@ const Hero = () => {
       });
     } catch (error) {
       console.error('Hero Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Animation variants
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -99,7 +101,6 @@ const Hero = () => {
 
   return (
     <section className="relative bg-gray-900 text-white min-h-screen flex items-center pt-20">
-      {/* Background image with overlay - reduced opacity */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0" 
         style={{ 
@@ -109,7 +110,6 @@ const Hero = () => {
         <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
       </div>
       
-      {/* Content */}
       <div className="container relative z-10 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div 
@@ -153,7 +153,6 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Contact form block */}
           <motion.div 
             className="bg-white text-gray-800 rounded-lg shadow-2xl p-6 md:p-8"
             initial={{ opacity: 0, scale: 0.9 }}

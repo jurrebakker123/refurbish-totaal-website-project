@@ -46,8 +46,7 @@ export function OfferteForm() {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        // @ts-ignore
-        setTekeningBase64(reader.result);
+        setTekeningBase64(reader.result as string);
       };
       reader.readAsDataURL(file);
     } else {
@@ -57,7 +56,10 @@ export function OfferteForm() {
 
   const handleSubmit = async (data: OfferteFormData) => {
     if (!data.terms) {
-      toast.error("U dient akkoord te gaan met onze voorwaarden.");
+      toast.error("U dient akkoord te gaan met onze voorwaarden.", {
+        duration: 5000,
+        position: 'top-center',
+      });
       return;
     }
 
@@ -73,7 +75,10 @@ export function OfferteForm() {
       if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
           emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
           emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
-        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
+        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.", {
+          duration: 5000,
+          position: 'top-center',
+        });
         console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
         setIsSubmitting(false);
         return;
@@ -88,9 +93,9 @@ export function OfferteForm() {
           from_email: data.email,
           phone: data.phone,
           location: data.location,
-          preferred_date: data.preferredDate,
+          preferred_date: data.preferredDate || "Niet opgegeven",
           service: data.service,
-          message: data.message,
+          message: data.message || "Geen bericht",
           to_email: emailConfig.contactEmail,
           tekening: tekeningBase64 || ""
         },
@@ -109,7 +114,10 @@ export function OfferteForm() {
       (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
     } catch (error) {
       console.error('Offerte Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.");
+      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
     } finally {
       setIsSubmitting(false);
     }
