@@ -1,4 +1,3 @@
-
 /**
  * EmailJS configuratie
  * 
@@ -10,23 +9,21 @@
  */
 
 export const emailConfig = {
-  serviceId: 'YOUR_SERVICE_ID', // Vervang met uw EmailJS service ID
-  templateId: 'YOUR_TEMPLATE_ID', // Vervang met uw EmailJS template ID
-  publicKey: 'YOUR_PUBLIC_KEY', // Vervang met uw EmailJS public key
-  contactEmail: 'info@jbe-commerce.com', // Dit is het e-mailadres waar berichten naartoe worden gestuurd
+  serviceId: 'YOUR_SERVICE_ID', // Vervang dit met uw Service ID van EmailJS
+  templateId: 'YOUR_TEMPLATE_ID', // Vervang dit met uw Template ID van EmailJS
+  publicKey: 'YOUR_PUBLIC_KEY', // Vervang dit met uw Public Key van EmailJS
+  contactEmail: 'info@refurbishtotaalnederland.nl',
 };
 
 /**
  * INSTRUCTIES VOOR GEBRUIK:
  * 
- * 1. Maak een EmailJS account aan op https://www.emailjs.com/
- * 2. In uw dashboard, maak een nieuwe service aan (Gmail, Outlook, etc.)
- * 3. Ga naar "Email Templates" en maak een nieuw template
- * 4. In het template, gebruik de volgende parameters:
- *    - {{from_name}} - de naam van de persoon die het formulier verstuurt
- *    - {{from_email}} - het e-mailadres van de persoon
- *    - {{message}} - het bericht
- *    - {{subject}} - het onderwerp
- *    - {{phone}} - het telefoonnummer
- * 5. Kopieer uw Service ID, Template ID en Public Key hierboven
+ * 1. Vervang YOUR_SERVICE_ID met uw EmailJS Service ID
+ * 2. Vervang YOUR_TEMPLATE_ID met uw EmailJS Template ID
+ * 3. Vervang YOUR_PUBLIC_KEY met uw EmailJS Public Key
+ * 
+ * U kunt deze gegevens vinden in uw EmailJS dashboard:
+ * - Service ID: Bij Email Services
+ * - Template ID: Bij Email Templates
+ * - Public Key: Bij Account > API Keys
  */
