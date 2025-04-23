@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -90,7 +89,6 @@ export function OfferteForm() {
         emailConfig.publicKey
       );
 
-      // Duidelijke succesmelding tonen
       toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
         duration: 5000,
         position: 'top-center',

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { Coffee } from 'lucide-react';
 
 const LeaveSiteNotification = () => {
