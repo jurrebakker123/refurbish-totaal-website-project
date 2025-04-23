@@ -34,16 +34,6 @@ const Hero = () => {
         destinationEmail: emailConfig.contactEmail 
       });
 
-      // Controleer of EmailJS is geconfigureerd
-      if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
-          emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
-          emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
-        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.");
-        console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
-        setIsSubmitting(false);
-        return;
-      }
-
       // Use EmailJS for sending email
       await emailjs.send(
         emailConfig.serviceId,
@@ -63,7 +53,6 @@ const Hero = () => {
       // Duidelijke succesmelding tonen
       toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
         duration: 5000,
-        position: 'top-center',
       });
       
       setFormData({
@@ -77,7 +66,6 @@ const Hero = () => {
       console.error('Hero Form Email Error:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
         duration: 5000,
-        position: 'top-center',
       });
     } finally {
       setIsSubmitting(false);
@@ -114,20 +102,24 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div 
             className="max-w-3xl"
-            variants={container}
-            initial="hidden"
-            animate="show"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
           >
             <motion.h1 
               className="text-4xl md:text-5xl font-bold mb-6 leading-tight"
-              variants={item}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               Slimmer dan Renoveren: Wonen in de Toekomst Begint Nu
             </motion.h1>
             
             <motion.p 
               className="text-lg md:text-xl mb-8 text-gray-200"
-              variants={item}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
               Waar een gewone renovatie vaak stopt bij herstel of vervanging, kijken wij verder. 
               Met onze integrale refurbish-aanpak maken we uw woning comfortabeler, zuiniger én mooier.
@@ -135,7 +127,9 @@ const Hero = () => {
             
             <motion.div 
               className="flex flex-col sm:flex-row gap-4"
-              variants={item}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
             >
               <Link 
                 to="/offerte" 

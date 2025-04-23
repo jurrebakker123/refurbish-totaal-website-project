@@ -72,18 +72,6 @@ export function OfferteForm() {
         tekening: !!tekeningBase64 ? '(base64 bijlage toegevoegd)' : '(geen tekening)'
       });
 
-      if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
-          emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
-          emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
-        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.", {
-          duration: 5000,
-          position: 'top-center',
-        });
-        console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await emailjs.send(
         emailConfig.serviceId,
         emailConfig.templateId,
@@ -111,7 +99,9 @@ export function OfferteForm() {
       form.reset();
       setTekeningFile(null);
       setTekeningBase64(null);
-      (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+      if (document.getElementById('tekening-upload')) {
+        (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+      }
     } catch (error) {
       console.error('Offerte Form Email Error:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.", {

@@ -37,19 +37,6 @@ const ContactPage = () => {
         destinationEmail: emailConfig.contactEmail 
       });
 
-      // Controleer of EmailJS is geconfigureerd
-      if (emailConfig.serviceId === 'YOUR_SERVICE_ID' || 
-          emailConfig.templateId === 'YOUR_TEMPLATE_ID' || 
-          emailConfig.publicKey === 'YOUR_PUBLIC_KEY') {
-        toast.error("EmailJS is niet correct geconfigureerd. Controleer de src/config/email.ts instellingen.", {
-          duration: 5000,
-          position: 'top-center',
-        });
-        console.error("EmailJS is niet correct geconfigureerd. Vervang de placeholders in src/config/email.ts met echte waarden.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await emailjs.send(
         emailConfig.serviceId,
         emailConfig.templateId,
@@ -68,7 +55,6 @@ const ContactPage = () => {
       // Duidelijke succesmelding tonen
       toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
         duration: 5000,
-        position: 'top-center',
       });
       
       setFormData({
@@ -82,7 +68,6 @@ const ContactPage = () => {
       console.error('Contact Form Email Error:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
         duration: 5000,
-        position: 'top-center',
       });
     } finally {
       setIsSubmitting(false);
