@@ -6,6 +6,7 @@ import { Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { OptimizedImage } from "@/components/ui/optimized-image"
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -41,10 +42,12 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
-    <img 
+    <OptimizedImage 
       src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" 
       alt="Refurbish Totaal Nederland Logo" 
-      className="mr-2 h-8 w-auto object-contain"
+      className="mr-2 h-8 w-auto"
+      objectFit="contain"
+      fallbackSrc="/placeholder.svg"
     />
     <CommandPrimitive.Input
       ref={ref}

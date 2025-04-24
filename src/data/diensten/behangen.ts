@@ -37,7 +37,7 @@ const behangen: DienstData = {
       answer: 'Voor een gemiddelde kamer (circa 4x4 meter) moet u rekenen op ongeveer één werkdag voor het complete behangwerk, inclusief de voorbereidingen. Bij complexe patronen of een moeilijke ondergrond kan dit iets langer duren.' 
     }
   ],
-  image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
+  image: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 };
 
 export default behangen;

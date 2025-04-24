@@ -12,7 +12,7 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
   // Adjust height for PVC vloeren page
   const heroHeight = serviceId === 'pvc-vloeren' ? 'py-12' : 'py-16';
   
-  // Check if the image URL is valid and exists
+  // Check if the image URL is valid and ensure fallback is available
   const imageUrl = dienst.image || '/placeholder.svg';
 
   return (
