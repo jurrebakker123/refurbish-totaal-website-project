@@ -43,8 +43,8 @@ const CommandInput = React.forwardRef<
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
     <img 
       src="/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png" 
-      alt="Refurbish Totaal Nederland" 
-      className="mr-2 h-6 w-auto"
+      alt="Refurbish Totaal Nederland Logo" 
+      className="mr-2 h-8 w-auto object-contain"
     />
     <CommandPrimitive.Input
       ref={ref}
