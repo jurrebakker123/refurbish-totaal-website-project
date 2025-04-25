@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Mail, Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function TuinhuizenContact() {
   return (
@@ -17,13 +18,13 @@ export function TuinhuizenContact() {
               <p className="text-gray-600 mb-6">
                 Spreek direct met één van onze tuinhuis specialisten voor persoonlijk advies.
               </p>
-              <a 
-                href="tel:+31612345678" 
-                className="btn-primary inline-flex items-center justify-center gap-2"
+              <Button 
+                onClick={() => window.location.href = 'tel:+31854444255'}
+                className="w-full"
               >
-                <Phone className="h-5 w-5" />
-                <span>06-12345678</span>
-              </a>
+                <Phone className="h-5 w-5 mr-2" />
+                Bel 085 4444 255
+              </Button>
             </div>
             <div className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow text-center">
               <Mail className="h-12 w-12 text-brand-lightGreen mx-auto mb-4" />
@@ -31,13 +32,13 @@ export function TuinhuizenContact() {
               <p className="text-gray-600 mb-6">
                 Stuur ons uw wensen en ontvang binnen 24 uur een reactie van ons team.
               </p>
-              <a 
-                href="mailto:info@tuinhuisbouwer.nl" 
-                className="btn-primary inline-flex items-center justify-center gap-2"
+              <Button 
+                onClick={() => window.location.href = 'mailto:info@refurbishtotaalnederland.nl'}
+                className="w-full"
               >
-                <Mail className="h-5 w-5" />
-                <span>E-mail Versturen</span>
-              </a>
+                <Mail className="h-5 w-5 mr-2" />
+                E-mail Versturen
+              </Button>
             </div>
           </div>
         </div>
