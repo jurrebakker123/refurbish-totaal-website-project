@@ -9,18 +9,26 @@ export function TuinhuizenCTA() {
       <div className="container">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Klaar om Uw Droomtuinhuis te Realiseren?
+            Start Vandaag Nog met Uw Droomproject
           </h2>
           <p className="text-lg mb-8 text-gray-100">
-            Vraag vandaag nog een vrijblijvende offerte aan en ontdek hoe wij uw tuinhuiswensen kunnen waarmaken.
+            Ontvang een vrijblijvende offerte en ontdek hoe wij uw tuinhuiswensen kunnen waarmaken.
           </p>
-          <Link 
-            to="/offerte" 
-            className="inline-flex items-center justify-center px-8 py-4 bg-brand-lightGreen text-white rounded-md font-medium hover:bg-opacity-90 transition-colors group"
-          >
-            Start Uw Tuinhuis Project
-            <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"/>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              to="/offerte" 
+              className="btn-primary bg-white text-brand-darkGreen hover:bg-gray-100 group inline-flex items-center justify-center"
+            >
+              Vraag een Offerte Aan
+              <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"/>
+            </Link>
+            <a 
+              href="tel:+31612345678"
+              className="btn-outline border-white text-white hover:bg-white hover:text-brand-darkGreen inline-flex items-center justify-center"
+            >
+              Bel Direct: 06-12345678
+            </a>
+          </div>
         </div>
       </div>
     </section>
