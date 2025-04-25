@@ -8,6 +8,8 @@ import { TuinhuizenGallery } from '@/components/tuinhuizen/TuinhuizenGallery';
 import { TuinhuizenCTA } from '@/components/tuinhuizen/TuinhuizenCTA';
 
 const TuinhuizenPage = () => {
+  console.log('TuinhuizenPage is being rendered');
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
