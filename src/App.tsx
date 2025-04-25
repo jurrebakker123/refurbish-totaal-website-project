@@ -1,3 +1,4 @@
+
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +20,7 @@ import { CursorEffects } from "./components/CursorEffects";
 import CookieConsent from "./components/CookieConsent";
 import LeaveSiteNotification from "./components/LeaveSiteNotification";
 import SEOStructuredData from "./components/SEOStructuredData";
+import TuinhuizenPage from "./pages/TuinhuizenPage";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
