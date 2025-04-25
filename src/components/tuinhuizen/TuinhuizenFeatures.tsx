@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Check, Calendar, Image } from 'lucide-react';
+import { Home, Check, Calendar, Image, Construction } from 'lucide-react';
 
 export function TuinhuizenFeatures() {
   const features = [
@@ -20,9 +20,9 @@ export function TuinhuizenFeatures() {
       description: "Professionele plaatsing binnen de afgesproken termijn."
     },
     {
-      icon: <Image className="h-8 w-8 text-brand-lightGreen" />,
-      title: "3D Visualisatie",
-      description: "Zie uw tuinhuis al voordat we beginnen met bouwen."
+      icon: <Construction className="h-8 w-8 text-brand-lightGreen" />,
+      title: "Volledige Installatie",
+      description: "Wij verzorgen de complete installatie van uw tuinhuis, van fundering tot afwerking."
     }
   ];
 
