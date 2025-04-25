@@ -1,4 +1,3 @@
-
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -41,6 +40,7 @@ const App = () => {
         <SEOStructuredData />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
           <Route path="/diensten" element={<DienstenPage />} />
           <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
           <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
