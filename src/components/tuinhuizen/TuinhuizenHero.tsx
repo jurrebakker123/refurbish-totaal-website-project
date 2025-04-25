@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Phone, Mail } from 'lucide-react';
@@ -35,17 +34,16 @@ export function TuinhuizenHero() {
               <Phone className="h-5 w-5" />
               <span>Bel Direct: 085 4444 255</span>
             </a>
-            <Link 
-              to="/offerte" 
+            <a 
+              href="mailto:info@refurbishtotaalnederland.nl" 
               className="btn-outline border-white text-white hover:bg-white hover:text-brand-darkGreen inline-flex items-center justify-center gap-2"
             >
               <Mail className="h-5 w-5" />
               <span>Offerte Aanvragen</span>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
