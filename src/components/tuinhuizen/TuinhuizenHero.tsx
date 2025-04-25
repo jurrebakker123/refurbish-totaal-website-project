@@ -29,11 +29,11 @@ export function TuinhuizenHero() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <a 
-              href="tel:+31612345678" 
+              href="tel:+31854444255" 
               className="btn-primary group inline-flex items-center justify-center gap-2"
             >
               <Phone className="h-5 w-5" />
-              <span>Bel Direct: 06-12345678</span>
+              <span>Bel Direct: 085 4444 255</span>
             </a>
             <Link 
               to="/offerte" 
@@ -48,3 +48,4 @@ export function TuinhuizenHero() {
     </section>
   );
 }
+
