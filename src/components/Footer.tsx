@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
@@ -22,16 +23,28 @@ const Footer = () => {
               Wij zijn uw betrouwbare partner voor al uw verbouwings- en renovatieprojecten in heel Nederland.
             </p>
             <div className="flex space-x-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" 
-                className="hover:text-brand-lightGreen transition-colors">
+              <a 
+                href="https://www.facebook.com/profile.php?id=61575351209112" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-brand-lightGreen transition-colors"
+              >
                 <Facebook size={20} />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-brand-lightGreen transition-colors">
+              <a 
+                href="https://www.instagram.com/refurbishtotaalnederland/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-brand-lightGreen transition-colors"
+              >
                 <Instagram size={20} />
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-brand-lightGreen transition-colors">
+              <a 
+                href="https://www.linkedin.com/company/refurbish-totaal-nederland/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-brand-lightGreen transition-colors"
+              >
                 <Linkedin size={20} />
               </a>
             </div>
