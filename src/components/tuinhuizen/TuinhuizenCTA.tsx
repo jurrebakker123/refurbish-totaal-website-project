@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { ChevronRight, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -13,7 +12,7 @@ export function TuinhuizenCTA() {
             Start Vandaag Nog met Uw Droomproject
           </h2>
           <p className="text-lg mb-8 text-gray-100">
-            Ontvang een vrijblijvende offerte en ontdek hoe wij uw tuinhuiswensen kunnen waarmaken.
+            Ontvang een vrijblijvende offerte en ontdek hoe wij uw tuinhuswensen kunnen waarmaken.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
