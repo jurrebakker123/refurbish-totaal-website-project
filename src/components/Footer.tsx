@@ -28,24 +28,30 @@ const Footer = () => {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-brand-lightGreen transition-colors"
+                aria-label="Bezoek onze Facebook pagina"
               >
                 <Facebook size={20} />
+                <span className="sr-only">Facebook</span>
               </a>
               <a 
                 href="https://www.instagram.com/refurbishtotaalnederland/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-brand-lightGreen transition-colors"
+                aria-label="Bezoek onze Instagram pagina"
               >
                 <Instagram size={20} />
+                <span className="sr-only">Instagram</span>
               </a>
               <a 
                 href="https://www.linkedin.com/company/refurbish-totaal-nederland/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-brand-lightGreen transition-colors"
+                aria-label="Bezoek onze LinkedIn pagina"
               >
                 <Linkedin size={20} />
+                <span className="sr-only">LinkedIn</span>
               </a>
             </div>
           </div>
@@ -107,13 +113,17 @@ const Footer = () => {
           <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <h3 className="text-xl font-bold mb-4">Contact Informatie</h3>
             <ul className="space-y-4">
-              <li className="flex items-start hover:text-brand-lightGreen transition-colors">
-                <Phone className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>085 4444 255</span>
+              <li className="flex items-start">
+                <a href="tel:0854444255" className="flex hover:text-brand-lightGreen transition-colors">
+                  <Phone className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
+                  <span>085 4444 255</span>
+                </a>
               </li>
-              <li className="flex items-start hover:text-brand-lightGreen transition-colors">
-                <Mail className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                <span>info@refurbishtotaal.nl</span>
+              <li className="flex items-start">
+                <a href="mailto:info@refurbishtotaal.nl" className="flex hover:text-brand-lightGreen transition-colors">
+                  <Mail className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
+                  <span>info@refurbishtotaal.nl</span>
+                </a>
               </li>
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
