@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,13 +15,28 @@ const ChatBot = () => {
   const phoneNumber = "31854444255";
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      text: "Hallo! Ik ben de Refurbish Totaal chatbot. Hoe kan ik u helpen?",
-      isUser: false,
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) return "Goedemorgen";
+    if (hour >= 12 && hour < 18) return "Goedemiddag";
+    if (hour >= 18 && hour < 24) return "Goedenavond";
+    return "Goedenacht";
+  };
+
+  useEffect(() => {
+    // Set initial greeting message
+    setMessages([
+      {
+        text: `${getGreeting()}! Ik ben de Refurbish Totaal chatbot. Hoe kan ik u helpen?`,
+        isUser: false,
+        timestamp: new Date()
+      }
+    ]);
+  }, []);
+
   const [currentMessage, setCurrentMessage] = useState("");
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -69,7 +84,7 @@ const ChatBot = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 md:right-8 z-40 transition-transform hover:scale-105"
+        className="fixed bottom-4 right-4 z-40 transition-transform hover:scale-105"
         aria-label="Open chat"
       >
         <img 
@@ -80,7 +95,7 @@ const ChatBot = () => {
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="fixed bottom-24 right-6 md:right-8 max-w-[350px] p-4 rounded-lg">
+        <DialogContent className="fixed bottom-[80px] right-4 w-[350px] p-4 rounded-lg max-w-[90vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">Chat met Refurbish Totaal</DialogTitle>
           </DialogHeader>
@@ -135,3 +150,4 @@ const ChatBot = () => {
 };
 
 export default ChatBot;
+
