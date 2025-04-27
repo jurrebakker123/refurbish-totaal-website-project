@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -86,17 +87,17 @@ const ChatBot = () => {
         <img 
           src="/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png"
           alt="WhatsApp"
-          className="w-12 h-12 md:w-14 md:h-14 bg-transparent"
+          className="w-12 h-12 md:w-14 md:h-14 bg-transparent object-contain"
         />
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="fixed bottom-[80px] right-4 w-[350px] p-4 rounded-lg max-w-[90vw]">
+        <DialogContent className="fixed bottom-[80px] right-4 w-[300px] p-3 rounded-lg max-w-[90vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">Chat met Refurbish Totaal</DialogTitle>
           </DialogHeader>
           
-          <ScrollArea className="h-[300px] w-full pr-4">
+          <ScrollArea className="h-[250px] w-full pr-4">
             <div className="flex flex-col gap-3">
               {messages.map((message, index) => (
                 <div
