@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { MessageCircle } from 'lucide-react';
 
 const ChatBot = () => {
   const phoneNumber = "31854444255"; // Converting Dutch number to international format
@@ -11,13 +10,14 @@ const ChatBot = () => {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 md:right-8 bg-green-500 text-white p-3 rounded-full shadow-lg z-40 hover:bg-green-600 transition-colors"
+      className="fixed bottom-6 right-6 md:right-8 z-40 transition-transform hover:scale-105"
       aria-label="Contact via WhatsApp"
     >
-      <div className="relative">
-        <MessageCircle className="h-6 w-6" />
-        <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">W</span>
-      </div>
+      <img 
+        src="/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png"
+        alt="WhatsApp"
+        className="w-14 h-14"
+      />
       <span className="sr-only">WhatsApp</span>
     </a>
   );
