@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // Get time-based greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 12) return "Goedemorgen";
@@ -27,7 +25,6 @@ const ChatBot = () => {
   };
 
   useEffect(() => {
-    // Set initial greeting message
     setMessages([
       {
         text: `${getGreeting()}! Ik ben de Refurbish Totaal chatbot. Hoe kan ik u helpen?`,
@@ -51,7 +48,6 @@ const ChatBot = () => {
     setMessages(prev => [...prev, userMessage]);
     setCurrentMessage("");
 
-    // Verbeterde bot responses
     setTimeout(() => {
       let botResponse: Message;
       const lowercaseMessage = currentMessage.toLowerCase();
@@ -90,7 +86,7 @@ const ChatBot = () => {
         <img 
           src="/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png"
           alt="WhatsApp"
-          className="w-12 h-12 md:w-14 md:h-14"
+          className="w-12 h-12 md:w-14 md:h-14 bg-transparent"
         />
       </button>
 
@@ -150,4 +146,3 @@ const ChatBot = () => {
 };
 
 export default ChatBot;
-
