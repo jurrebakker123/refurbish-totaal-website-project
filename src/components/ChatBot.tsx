@@ -83,21 +83,23 @@ const ChatBot = () => {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-4 right-4 z-40 transition-transform hover:scale-105"
         aria-label="Open chat"
+        style={{ background: 'transparent' }}
       >
         <img 
           src="/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png"
           alt="WhatsApp"
-          className="w-12 h-12 md:w-14 md:h-14 bg-transparent object-contain"
+          className="w-12 h-12 md:w-14 md:h-14 object-contain"
+          style={{ background: 'transparent' }}
         />
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="fixed bottom-[80px] right-4 w-[300px] p-3 rounded-lg max-w-[90vw]">
+        <DialogContent className="fixed bottom-4 right-4 w-[280px] p-3 rounded-lg max-w-[90vw]">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">Chat met Refurbish Totaal</DialogTitle>
           </DialogHeader>
           
-          <ScrollArea className="h-[250px] w-full pr-4">
+          <ScrollArea className="h-[220px] w-full pr-4">
             <div className="flex flex-col gap-3">
               {messages.map((message, index) => (
                 <div
