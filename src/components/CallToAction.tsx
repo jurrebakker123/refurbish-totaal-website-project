@@ -2,7 +2,9 @@
 import { Link } from 'react-router-dom';
 import { Check, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { emailConfig } from '@/config/email';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { sendEmail } from '@/config/email';
 
 const benefits = [
   'Gratis en vrijblijvende offerte',
@@ -30,6 +32,65 @@ const staggerContainer = {
 };
 
 const CallToAction = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    service: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      console.log('Call To Action Form Submission:', formData);
+
+      const result = await sendEmail({
+        from_name: formData.name,
+        to_name: "Refurbish Totaal Nederland",
+        from_email: formData.email,
+        phone: formData.phone,
+        service: formData.service || "Niet opgegeven",
+        message: formData.message || "Geen bericht",
+        to_email: "info@refurbishtotaalnederland.nl",
+        subject: `Contact aanvraag: ${formData.service || "Algemeen"}`
+      });
+
+      if (result.success) {
+        toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+          duration: 5000,
+        });
+        
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          service: '',
+          message: ''
+        });
+      } else {
+        throw new Error("EmailJS verzending mislukt");
+      }
+    } catch (error) {
+      console.error('Call To Action Form Error:', error);
+      toast.error("Er is iets misgegaan bij het verzenden van uw aanvraag. Probeer het later opnieuw of neem direct contact met ons op.", {
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="py-16 bg-gray-900 text-white relative overflow-hidden">
       {/* Background overlay */}
@@ -102,24 +163,32 @@ const CallToAction = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-2xl font-bold mb-6">Neem Direct Contact Op</h3>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam</label>
                   <input 
                     type="text" 
-                    id="name" 
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                     placeholder="Uw naam"
+                    required
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mailadres</label>
                   <input 
                     type="email" 
-                    id="email" 
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                     placeholder="uw@email.nl"
+                    required
                   />
                 </div>
               </div>
@@ -127,21 +196,29 @@ const CallToAction = () => {
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
                 <input 
                   type="tel" 
-                  id="phone" 
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                   placeholder="+31 6 30136079"
+                  required
                 />
               </div>
               <div className="mb-4">
                 <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">Dienst</label>
                 <select 
                   id="service"
+                  name="service"
+                  value={formData.service}
+                  onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
+                  required
                 >
                   <option value="">Selecteer een dienst</option>
                   <option value="schilderwerk">Schilderwerk</option>
                   <option value="dakrenovatie">Dakrenovatie</option>
-                  <option value="stucadoren">Stucadoren</option>
+                  <option value="stukadoren">Stucadoren</option>
                   <option value="installatietechniek">Installatietechniek</option>
                   <option value="aan-en-verbouw">Aan- en verbouw</option>
                   <option value="pvc-vloeren">PVC Vloeren</option>
@@ -151,7 +228,10 @@ const CallToAction = () => {
               <div className="mb-6">
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Bericht</label>
                 <textarea 
-                  id="message" 
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   rows={4}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-darkGreen focus:border-brand-darkGreen"
                   placeholder="Vertel ons over uw project..."
@@ -162,8 +242,9 @@ const CallToAction = () => {
                 className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                disabled={isSubmitting}
               >
-                Verstuur Aanvraag
+                {isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Aanvraag'}
               </motion.button>
             </form>
           </motion.div>
