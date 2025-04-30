@@ -1,21 +1,8 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
 
 const VoorwaardenPage = () => {
-  // Function to handle direct PDF download
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf';
-    link.download = 'Algemene-Voorwaarden-Refurbish-Totaal-Nederland.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -91,7 +78,7 @@ const VoorwaardenPage = () => {
                 <p className="mb-4">11.4 Opdrachtgever vrijwaart Refurbish Totaal Nederland voor aanspraken van de Belastingdienst voortvloeiend uit onjuiste of onvolledige informatieverstrekking door opdrachtgever die van invloed is op de toepassing van de WKa.</p>
                 <p className="mb-4">11.5 In het geval Refurbish Totaal Nederland gebruik maakt van zelfstandige opdrachtnemers (zzp'ers), wordt gewerkt op basis van een overeenkomst van opdracht. Refurbish Totaal Nederland houdt hierbij rekening met de geldende wet- en regelgeving uit de Wet Deregulering Beoordeling Arbeidsrelaties (Wet DBA).</p>
                 <p className="mb-4">11.6 Refurbish Totaal Nederland ziet er op toe dat de arbeidsverhouding met ingehuurde zelfstandigen voldoet aan de criteria voor zelfstandig ondernemerschap. Indien nodig wordt gebruikgemaakt van door de Belastingdienst goedgekeurde modelovereenkomsten.</p>
-                <p className="mb-6">11.7 Opdrachtgever vrijwaart Refurbish Totaal Nederland voor eventuele aanspraken die voortvloeien uit een onjuiste kwalificatie van de arbeidsrelatie, voor zover deze niet het gevolg zijn van onzorgvuldig handelen door Refurbish Totaal Nederland.</p>
+                <p className="mb-4">11.7 Opdrachtgever vrijwaart Refurbish Totaal Nederland voor eventuele aanspraken die voortvloeien uit een onjuiste kwalificatie van de arbeidsrelatie, voor zover deze niet het gevolg zijn van onzorgvuldig handelen door Refurbish Totaal Nederland.</p>
 
                 <h2 className="text-2xl font-bold mb-4 text-brand-darkGreen">12. Geschillen en Toepasselijk Recht</h2>
                 <p className="mb-4">12.1 Op alle overeenkomsten is uitsluitend Nederlands recht van toepassing.</p>
@@ -102,17 +89,6 @@ const VoorwaardenPage = () => {
                     Datum: 20 April 2025<br />
                     Auteur: Gerard Groeneveld
                   </p>
-                </div>
-
-                <div className="text-center mt-8 mb-8">
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center" 
-                    onClick={handleDownload}
-                  >
-                    <Download className="mr-2" />
-                    Download Algemene Voorwaarden
-                  </Button>
                 </div>
 
                 <div className="text-center mt-12">
