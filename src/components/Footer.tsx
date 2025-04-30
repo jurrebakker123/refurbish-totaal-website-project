@@ -152,7 +152,7 @@ const Footer = () => {
           <div className="mt-2 md:mt-0">
             <Link to="/privacy" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Privacybeleid</Link>
             <Link to="/voorwaarden" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Algemene Voorwaarden</Link>
-            <a href="/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf" download className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">
+            <a href="/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf" download="Algemene-Voorwaarden-Refurbish-Totaal-Nederland.pdf" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">
               <Download className="inline h-4 w-4 mr-1" />
               Download Voorwaarden
             </a>
