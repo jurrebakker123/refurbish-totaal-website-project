@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Phone, Mail, Sun } from 'lucide-react';
+import { OptimizedImage } from '../ui/optimized-image';
 
 export function ZonnepanelenHero() {
   return (
@@ -17,7 +18,7 @@ export function ZonnepanelenHero() {
       <div className="container relative z-10 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
           <img 
-            src="/lovable-uploads/504b25db-f625-4ccd-9e93-6970157c6bf6.png" 
+            src="/lovable-uploads/ce310265-aaac-49aa-bff7-99a27901151a.png" 
             alt="Refurbish Zonnepanelen Logo" 
             className="w-48 md:w-64 mx-auto mb-8"
           />
