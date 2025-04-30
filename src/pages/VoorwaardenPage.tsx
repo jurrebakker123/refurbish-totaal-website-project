@@ -2,6 +2,8 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 const VoorwaardenPage = () => {
   return (
@@ -90,6 +92,15 @@ const VoorwaardenPage = () => {
                     Datum: 20 April 2025<br />
                     Auteur: Gerard Groeneveld
                   </p>
+                </div>
+
+                <div className="text-center mt-8 mb-8">
+                  <Button variant="outline" className="mr-4" asChild>
+                    <a href="/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf" download>
+                      <Download className="mr-2" />
+                      Download Algemene Voorwaarden
+                    </a>
+                  </Button>
                 </div>
 
                 <div className="text-center mt-12">
