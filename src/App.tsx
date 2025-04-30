@@ -21,6 +21,7 @@ import CookieConsent from "./components/CookieConsent";
 import LeaveSiteNotification from "./components/LeaveSiteNotification";
 import SEOStructuredData from "./components/SEOStructuredData";
 import TuinhuizenPage from "./pages/TuinhuizenPage";
+import ZonnepanelenPage from "./pages/ZonnepanelenPage";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -43,6 +44,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
+          <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
           <Route path="/diensten" element={<DienstenPage />} />
           <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
           <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
