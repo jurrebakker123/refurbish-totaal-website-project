@@ -4,14 +4,6 @@ import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 const VoorwaardenPage = () => {
   // Function to handle direct PDF download
@@ -112,7 +104,7 @@ const VoorwaardenPage = () => {
                   </p>
                 </div>
 
-                <div className="text-center mt-8 mb-8 flex flex-col md:flex-row justify-center gap-4">
+                <div className="text-center mt-8 mb-8">
                   <Button 
                     variant="outline" 
                     className="flex items-center" 
@@ -121,29 +113,6 @@ const VoorwaardenPage = () => {
                     <Download className="mr-2" />
                     Download Algemene Voorwaarden
                   </Button>
-                  
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="default" className="bg-brand-darkGreen hover:bg-brand-darkGreen/90">
-                        Bekijk PDF
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Algemene Voorwaarden Refurbish Totaal Nederland</DialogTitle>
-                        <DialogDescription>
-                          Laatste update: 20 april 2025
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="mt-4">
-                        <iframe 
-                          src="/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf" 
-                          className="w-full h-[70vh]" 
-                          title="Algemene Voorwaarden Refurbish Totaal Nederland"
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
                 </div>
 
                 <div className="text-center mt-12">
