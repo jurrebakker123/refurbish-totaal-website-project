@@ -14,6 +14,16 @@ import {
 } from "@/components/ui/dialog";
 
 const VoorwaardenPage = () => {
+  // Function to handle direct PDF download
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf';
+    link.download = 'Algemene-Voorwaarden-Refurbish-Totaal-Nederland.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -103,11 +113,13 @@ const VoorwaardenPage = () => {
                 </div>
 
                 <div className="text-center mt-8 mb-8 flex flex-col md:flex-row justify-center gap-4">
-                  <Button variant="outline" className="flex items-center" asChild>
-                    <a href="/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf" download="Algemene-Voorwaarden-Refurbish-Totaal-Nederland.pdf">
-                      <Download className="mr-2" />
-                      Download Algemene Voorwaarden
-                    </a>
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center" 
+                    onClick={handleDownload}
+                  >
+                    <Download className="mr-2" />
+                    Download Algemene Voorwaarden
                   </Button>
                   
                   <Dialog>

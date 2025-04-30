@@ -1,6 +1,5 @@
-
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Download } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -152,10 +151,6 @@ const Footer = () => {
           <div className="mt-2 md:mt-0">
             <Link to="/privacy" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Privacybeleid</Link>
             <Link to="/voorwaarden" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Algemene Voorwaarden</Link>
-            <a href="/documents/algemene-voorwaarden-refurbish-totaal-nederland.pdf" download="Algemene-Voorwaarden-Refurbish-Totaal-Nederland.pdf" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">
-              <Download className="inline h-4 w-4 mr-1" />
-              Download Voorwaarden
-            </a>
             <Link to="/certificaat" className="hover:text-brand-lightGreen transition-colors hover-underline">Certificering</Link>
           </div>
         </div>
