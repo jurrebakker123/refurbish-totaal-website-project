@@ -31,14 +31,19 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
     console.log('EmailJS verzendpoging met parameters:', templateParams);
     
+    // Validate email voor reply_to
+    const validReplyEmail = isValidEmail(templateParams.from_email) 
+      ? templateParams.from_email 
+      : emailConfig.contactEmail;
+    
     // Email parameters die EmailJS verwacht
     const params = {
       from_name: templateParams.from_name || "Niet opgegeven",
-      from_email: templateParams.from_email || "noreply@refurbishtotaalnederland.nl",
+      from_email: templateParams.from_email || emailConfig.contactEmail,
       to_name: templateParams.to_name || "Refurbish Totaal Nederland",
       to_email: templateParams.to_email || emailConfig.contactEmail,
       subject: templateParams.subject || "Contact via website",
-      reply_to: templateParams.from_email || "noreply@refurbishtotaalnederland.nl",
+      reply_to: validReplyEmail, // Always use a valid email here
       message: templateParams.message || "",
       phone: templateParams.phone || "",
       location: templateParams.location || "",
