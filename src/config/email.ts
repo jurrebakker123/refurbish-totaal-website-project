@@ -31,31 +31,40 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
     console.log('EmailJS verzendpoging met parameters:', templateParams);
     
-    // Bepaal een geldig e-mailadres voor from_email en reply_to
-    // Dit moet een geldig e-mailadres zijn, anders gebruikt Outlook het niet
-    let validEmail = emailConfig.contactEmail; // Gebruik altijd een standaard fallback
+    // BELANGRIJK: Outlook vereist een geldig e-mailadres voor de reply_to parameter
+    // We controleren of er een geldig e-mailadres is opgegeven, zo niet, dan gebruiken we het standaard contactadres
     
-    if (templateParams.from_email && isValidEmail(templateParams.from_email)) {
-      validEmail = templateParams.from_email;
-    } else {
-      console.log('Geen geldig e-mailadres opgegeven voor afzender, gebruik van standaard e-mailadres');
-    }
-    
-    // Email parameters die EmailJS verwacht
+    // Standaard e-mailparameters met vaste waarden voor kritieke velden
     const params = {
+      // Afzender informatie
       from_name: templateParams.from_name || "Niet opgegeven",
-      from_email: validEmail, // Altijd een geldig e-mailadres
-      to_name: templateParams.to_name || "Refurbish Totaal Nederland",
-      to_email: templateParams.to_email || emailConfig.contactEmail,
+      from_email: emailConfig.contactEmail, // Begin met een gegarandeerd geldig e-mailadres
+      
+      // Ontvanger informatie (vast)
+      to_name: "Refurbish Totaal Nederland",
+      to_email: emailConfig.contactEmail,
+      
+      // E-mail inhoud
       subject: templateParams.subject || "Contact via website",
-      reply_to: validEmail, // BELANGRIJK: Moet altijd een geldig e-mailadres zijn voor Outlook!
       message: templateParams.message || "",
       phone: templateParams.phone || "",
       location: templateParams.location || "",
       service: templateParams.service || "",
       preferred_date: templateParams.preferred_date || "",
-      tekening: templateParams.tekening || ""
+      tekening: templateParams.tekening || "",
+      
+      // Reply-to instelling - KRITIEK voor Outlook
+      reply_to: emailConfig.contactEmail, // Begin met een gegarandeerd geldig e-mailadres
     };
+    
+    // Als er een geldig e-mailadres is opgegeven, gebruiken we dat voor from_email en reply_to
+    if (templateParams.from_email && isValidEmail(templateParams.from_email)) {
+      params.from_email = templateParams.from_email;
+      params.reply_to = templateParams.from_email;
+      console.log('Geldig e-mailadres opgegeven:', templateParams.from_email);
+    } else {
+      console.log('Geen geldig e-mailadres opgegeven, gebruik standaard:', emailConfig.contactEmail);
+    }
     
     console.log('EmailJS verzenden met definitieve parameters:', params);
     
