@@ -22,7 +22,8 @@ export const emailConfig = {
 };
 
 // Definieer het type voor de email parameters inclusief _attachments
-interface EmailParams {
+// Belangrijk: Met indexsignatuur om aan Record<string, unknown> te voldoen
+interface EmailParams extends Record<string, unknown> {
   // Basisgegevens
   from_name: string;
   from_email: string;
