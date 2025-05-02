@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
@@ -33,6 +34,7 @@ const Hero = () => {
         from_name: formData.name,
         to_name: "Refurbish Totaal Nederland",
         from_email: formData.email,
+        reply_to: formData.email, // Expliciet reply_to toevoegen 
         phone: formData.phone,
         location: formData.location,
         message: formData.message || "Geen bericht",

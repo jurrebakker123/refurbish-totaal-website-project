@@ -38,7 +38,9 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     from_email: templateParams.from_email || templateParams.email || "Niet opgegeven", // Accepteer beide namen
     to_name: templateParams.to_name || "Refurbish Totaal Nederland",
     to_email: templateParams.to_email || emailConfig.contactEmail,
-    subject: templateParams.subject || "Contact via website"
+    subject: templateParams.subject || "Contact via website",
+    // Zorg ervoor dat reply_to altijd een geldig e-mailadres heeft
+    reply_to: templateParams.from_email || templateParams.email || emailConfig.contactEmail
   };
   
   try {

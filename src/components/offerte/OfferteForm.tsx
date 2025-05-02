@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -72,13 +73,16 @@ export function OfferteForm() {
       const result = await sendEmail({
         from_name: data.name,
         from_email: data.email,
+        reply_to: data.email, // Expliciet reply_to toevoegen
         phone: data.phone,
         location: data.location,
         preferred_date: data.preferredDate || "Niet opgegeven",
         service: data.service,
         message: data.message || "Geen bericht",
         tekening: tekeningBase64 || "",
-        subject: `Nieuwe offerte aanvraag: ${data.service}`
+        subject: `Nieuwe offerte aanvraag: ${data.service}`,
+        to_name: "Refurbish Totaal Nederland",
+        to_email: "info@refurbishtotaalnederland.nl"
       });
 
       if (result.success) {
