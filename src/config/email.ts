@@ -21,16 +21,32 @@ export const emailConfig = {
   contactEmail: 'info@refurbishtotaalnederland.nl',
 };
 
-// Deze functie helpt bij het debuggen van EmailJS verzendproblemen
+/**
+ * Functie voor het verzenden van e-mails via EmailJS
+ * 
+ * @param templateParams Parameters die nodig zijn voor het template
+ * @returns Object met succes status en resultaat of fout
+ */
 export const sendEmail = async (templateParams: Record<string, any>) => {
   console.log('EmailJS verzendpoging met parameters:', templateParams);
   
+  // Zorg ervoor dat we alle vereiste parameters hebben
+  const params = {
+    ...templateParams,
+    // Voeg standaardwaarden toe als ze ontbreken
+    from_name: templateParams.from_name || "Niet opgegeven",
+    from_email: templateParams.from_email || templateParams.email || "Niet opgegeven", // Accepteer beide namen
+    to_name: templateParams.to_name || "Refurbish Totaal Nederland",
+    to_email: templateParams.to_email || emailConfig.contactEmail,
+    subject: templateParams.subject || "Contact via website"
+  };
+  
   try {
-    // Direct emailjs gebruiken in plaats van het dynamisch te importeren
+    // Direct emailjs gebruiken met expliciete options parameter
     const result = await emailjs.send(
       emailConfig.serviceId,
       emailConfig.templateId,
-      templateParams,
+      params,
       {
         publicKey: emailConfig.publicKey,
       }
