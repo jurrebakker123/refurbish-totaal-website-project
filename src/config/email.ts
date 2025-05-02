@@ -9,6 +9,11 @@
  * 4. Vul hieronder uw Service ID, Template ID en Public Key in
  */
 
+import emailjs from '@emailjs/browser';
+
+// EmailJS configuratie initialiseren
+emailjs.init("tqJDJUY1QjRWXLIiF");
+
 export const emailConfig = {
   serviceId: 'service_mp8y6zo', // Uw Service ID van EmailJS
   templateId: 'template_ix4mdjh', // Uw Template ID van EmailJS
@@ -21,12 +26,14 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   console.log('EmailJS verzendpoging met parameters:', templateParams);
   
   try {
-    const emailjs = await import('@emailjs/browser');
+    // Direct emailjs gebruiken in plaats van het dynamisch te importeren
     const result = await emailjs.send(
       emailConfig.serviceId,
       emailConfig.templateId,
       templateParams,
-      emailConfig.publicKey
+      {
+        publicKey: emailConfig.publicKey,
+      }
     );
     
     console.log('EmailJS succes:', result);
