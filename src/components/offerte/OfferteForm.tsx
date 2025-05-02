@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -8,16 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { sendEmail } from "@/config/email";
 import React from 'react';
-
-const SERVICES = [
-  "Schilderwerk",
-  "Dakrenovatie",
-  "Stukadoren",
-  "Installatietechniek",
-  "Aan- en verbouw",
-  "Behangen",
-  "PVC Vloeren"
-];
+import { SERVICES } from "./constants";
 
 export function OfferteForm() {
   const form = useForm<OfferteFormData>({
@@ -75,7 +67,7 @@ export function OfferteForm() {
         to_name: "Refurbish Totaal Nederland",
         to_email: "info@refurbishtotaalnederland.nl",
         subject: `Nieuwe offerte aanvraag: ${data.service}`,
-        message: data.message,
+        message: data.message || "Geen bericht",
         phone: data.phone,
         location: data.location,
         service: data.service,
@@ -172,6 +164,32 @@ export function OfferteForm() {
                   ))}
                 </SelectContent>
               </Select>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Woonplaats</FormLabel>
+              <FormControl>
+                <Input placeholder="Uw woonplaats" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="preferredDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gewenste datum (optioneel)</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
             </FormItem>
           )}
         />
