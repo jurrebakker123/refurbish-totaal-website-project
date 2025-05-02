@@ -39,7 +39,7 @@ interface EmailParams extends Record<string, unknown> {
   preferred_date?: string;
   
   // Bijlagen gerelateerd
-  has_attachment?: string;
+  has_attachment: boolean; // Gewijzigd naar boolean voor betere compatibiliteit
   tekening_naam?: string;
   
   // Kritiek voor email clients
@@ -89,8 +89,8 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       service: templateParams.service || "",
       preferred_date: templateParams.preferred_date || "",
       
-      // Voor bijlagen
-      has_attachment: templateParams.tekening ? "Ja" : "Nee",
+      // Voor bijlagen - gewijzigd naar boolean in plaats van string
+      has_attachment: !!templateParams.tekening, // Dubbele uitroeptekens voor expliciete boolean conversie
       tekening_naam: templateParams.tekening_naam || "Geen bestand",
       
       // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres
@@ -116,14 +116,15 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     
     console.log('EmailJS verzenden met definitieve parameters:', {
       ...params,
-      _attachments: params._attachments ? "Bestand bijgevoegd als echte bijlage" : "Geen bijlage"
+      _attachments: params._attachments ? "Bestand bijgevoegd als echte bijlage" : "Geen bijlage",
+      has_attachment: params.has_attachment // Log de boolean waarde
     });
     
     // Direct emailjs gebruiken met expliciete options parameter
     const result = await emailjs.send(
       emailConfig.serviceId,
       emailConfig.templateId,
-      params,
+      params as Record<string, unknown>,
       {
         publicKey: emailConfig.publicKey,
       }
