@@ -31,16 +31,18 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
     console.log('EmailJS verzendpoging met parameters:', templateParams);
     
-    // BELANGRIJK: Outlook vereist een geldig e-mailadres voor de reply_to parameter
-    // We controleren of er een geldig e-mailadres is opgegeven, zo niet, dan gebruiken we het standaard contactadres
+    // KRITIEKE VALIDATIE voor Outlook compatibiliteit:
+    // --------------------------------------------
+    // 1. from_email en reply_to moeten altijd geldige e-mailadressen zijn
+    // 2. We gebruiken een gevalideerd e-mailadres of een betrouwbaar fallback
     
-    // Standaard e-mailparameters met vaste waarden voor kritieke velden
+    // Standaard e-mailparameters met gegarandeerd geldige waarden
     const params = {
-      // Afzender informatie
+      // Afzender informatie (begin met betrouwbare standaardwaarden)
       from_name: templateParams.from_name || "Niet opgegeven",
-      from_email: emailConfig.contactEmail, // Begin met een gegarandeerd geldig e-mailadres
+      from_email: emailConfig.contactEmail, 
       
-      // Ontvanger informatie (vast)
+      // Ontvanger informatie (altijd vast)
       to_name: "Refurbish Totaal Nederland",
       to_email: emailConfig.contactEmail,
       
@@ -53,17 +55,17 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       preferred_date: templateParams.preferred_date || "",
       tekening: templateParams.tekening || "",
       
-      // Reply-to instelling - KRITIEK voor Outlook
-      reply_to: emailConfig.contactEmail, // Begin met een gegarandeerd geldig e-mailadres
+      // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres
+      reply_to: emailConfig.contactEmail, 
     };
     
-    // Als er een geldig e-mailadres is opgegeven, gebruiken we dat voor from_email en reply_to
+    // Validatie en overschrijven met gebruikersgegevens indien geldig
     if (templateParams.from_email && isValidEmail(templateParams.from_email)) {
       params.from_email = templateParams.from_email;
       params.reply_to = templateParams.from_email;
-      console.log('Geldig e-mailadres opgegeven:', templateParams.from_email);
+      console.log('Geldig e-mailadres gebruikt voor reply_to:', templateParams.from_email);
     } else {
-      console.log('Geen geldig e-mailadres opgegeven, gebruik standaard:', emailConfig.contactEmail);
+      console.log('Geen geldig e-mailadres opgegeven, standaard gebruikt:', emailConfig.contactEmail);
     }
     
     console.log('EmailJS verzenden met definitieve parameters:', params);
