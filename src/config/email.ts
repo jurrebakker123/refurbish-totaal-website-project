@@ -31,29 +31,21 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
     console.log('EmailJS verzendpoging met parameters:', templateParams);
     
-    // Verzeker dat alle vereiste velden aanwezig zijn
+    // Email parameters die EmailJS verwacht
     const params = {
-      ...templateParams,
       from_name: templateParams.from_name || "Niet opgegeven",
       from_email: templateParams.from_email || "noreply@refurbishtotaalnederland.nl",
       to_name: templateParams.to_name || "Refurbish Totaal Nederland",
       to_email: templateParams.to_email || emailConfig.contactEmail,
       subject: templateParams.subject || "Contact via website",
-      reply_to: "" // Initialize reply_to property to avoid TypeScript errors
+      reply_to: templateParams.from_email || "noreply@refurbishtotaalnederland.nl",
+      message: templateParams.message || "",
+      phone: templateParams.phone || "",
+      location: templateParams.location || "",
+      service: templateParams.service || "",
+      preferred_date: templateParams.preferred_date || "",
+      tekening: templateParams.tekening || ""
     };
-    
-    // Zorg ervoor dat reply_to correct is ingesteld
-    // Dit is een kritiek veld dat vaak problemen veroorzaakt in EmailJS
-    if (!templateParams.reply_to || !isValidEmail(templateParams.reply_to)) {
-      if (isValidEmail(templateParams.from_email)) {
-        params.reply_to = templateParams.from_email;
-      } else if (isValidEmail(templateParams.email)) {
-        params.reply_to = templateParams.email;
-      } else {
-        // Als er geen geldig e-mailadres is, gebruik dan de noreply
-        params.reply_to = "noreply@refurbishtotaalnederland.nl";
-      }
-    }
     
     console.log('EmailJS verzenden met definitieve parameters:', params);
     

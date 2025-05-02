@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
@@ -35,14 +34,12 @@ const ContactPage = () => {
 
       const result = await sendEmail({
         from_name: formData.name,
-        to_name: "Refurbish Totaal Nederland",
         from_email: formData.email,
-        email: formData.email, // Extra toevoeging voor compatibiliteit
-        reply_to: formData.email,
-        phone: formData.phone,
+        to_name: "Refurbish Totaal Nederland",
+        to_email: "info@refurbishtotaalnederland.nl",
         subject: formData.subject || "Contactformulier website",
-        message: formData.message || "Geen bericht",
-        to_email: "info@refurbishtotaalnederland.nl"
+        message: formData.message,
+        phone: formData.phone
       });
 
       if (result.success) {

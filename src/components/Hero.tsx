@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, User, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
@@ -32,15 +31,13 @@ const Hero = () => {
 
       const result = await sendEmail({
         from_name: formData.name,
-        to_name: "Refurbish Totaal Nederland",
         from_email: formData.email,
-        email: formData.email, // Extra toevoeging voor compatibiliteit
-        reply_to: formData.email, 
-        phone: formData.phone,
-        location: formData.location,
-        message: formData.message || "Geen bericht",
+        to_name: "Refurbish Totaal Nederland",
         to_email: "info@refurbishtotaalnederland.nl",
-        subject: "Contact aanvraag via website"
+        subject: "Contact aanvraag via website",
+        message: formData.message,
+        phone: formData.phone,
+        location: formData.location
       });
 
       if (result.success) {
