@@ -31,7 +31,7 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
     console.log('EmailJS verzendpoging met parameters:', {
       ...templateParams,
-      tekening: templateParams.tekening ? "Bestand aanwezig (base64 string)" : "Geen bestand",
+      tekening: templateParams.tekening ? "Bestand aanwezig" : "Geen bestand",
       tekening_naam: templateParams.tekening_naam || "Geen bestand"
     });
     
@@ -57,7 +57,9 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       location: templateParams.location || "",
       service: templateParams.service || "",
       preferred_date: templateParams.preferred_date || "",
-      tekening: templateParams.tekening || "",
+      
+      // Voor bijlagen
+      has_attachment: templateParams.tekening ? "Ja" : "Nee",
       tekening_naam: templateParams.tekening_naam || "Geen bestand",
       
       // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres
@@ -73,9 +75,17 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       console.log('Geen geldig e-mailadres opgegeven, standaard gebruikt:', emailConfig.contactEmail);
     }
     
+    // Add file as a proper attachment
+    if (templateParams.tekening) {
+      params._attachments = [{
+        name: templateParams.tekening_naam,
+        data: templateParams.tekening
+      }];
+    }
+    
     console.log('EmailJS verzenden met definitieve parameters:', {
       ...params,
-      tekening: params.tekening ? "Bestand aanwezig (base64 string)" : "Geen bestand"
+      _attachments: params._attachments ? "Bestand bijgevoegd als echte bijlage" : "Geen bijlage"
     });
     
     // Direct emailjs gebruiken met expliciete options parameter

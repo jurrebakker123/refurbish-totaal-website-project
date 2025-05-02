@@ -33,10 +33,30 @@ export function OfferteForm() {
   const handleTekeningChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     setTekeningFile(file || null);
+    
     if (file) {
+      // Controleer de grootte van het bestand (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Het bestand is te groot. Maximum grootte is 5MB.", {
+          duration: 5000,
+          position: 'top-center',
+        });
+        
+        // Reset file input
+        if (document.getElementById('tekening-upload')) {
+          (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+        }
+        setTekeningFile(null);
+        setTekeningBase64(null);
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = () => {
-        setTekeningBase64(reader.result as string);
+        const result = reader.result as string;
+        // Extract only the base64 data part
+        const base64Data = result.split(',')[1]; 
+        setTekeningBase64(base64Data);
       };
       reader.readAsDataURL(file);
     } else {
@@ -62,16 +82,6 @@ export function OfferteForm() {
         tekeningFileName: tekeningFile?.name || "Geen bestand"
       });
 
-      // Controleer de grootte van het bestand (max 5MB)
-      if (tekeningFile && tekeningFile.size > 5 * 1024 * 1024) {
-        toast.error("Het bestand is te groot. Maximum grootte is 5MB.", {
-          duration: 5000,
-          position: 'top-center',
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
       const result = await sendEmail({
         from_name: data.name,
         from_email: data.email,
@@ -84,7 +94,7 @@ export function OfferteForm() {
         service: data.service,
         preferred_date: data.preferredDate || "Niet opgegeven",
         tekening: tekeningBase64 || "",
-        tekening_naam: tekeningFile?.name || "Geen bestand geüpload"
+        tekening_naam: tekeningFile?.name || ""
       });
 
       if (result.success) {
