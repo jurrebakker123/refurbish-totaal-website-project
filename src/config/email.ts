@@ -21,6 +21,36 @@ export const emailConfig = {
   contactEmail: 'info@refurbishtotaalnederland.nl',
 };
 
+// Definieer het type voor de email parameters inclusief _attachments
+interface EmailParams {
+  // Basisgegevens
+  from_name: string;
+  from_email: string;
+  to_name: string;
+  to_email: string;
+  subject: string;
+  message: string;
+  
+  // Aanvullende informatie
+  phone?: string;
+  location?: string;
+  service?: string;
+  preferred_date?: string;
+  
+  // Bijlagen gerelateerd
+  has_attachment?: string;
+  tekening_naam?: string;
+  
+  // Kritiek voor email clients
+  reply_to: string;
+  
+  // Bijlage object voor EmailJS
+  _attachments?: Array<{
+    name: string;
+    data: string;
+  }>;
+}
+
 /**
  * Functie voor het verzenden van e-mails via EmailJS
  * 
@@ -41,7 +71,7 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     // 2. We gebruiken een gevalideerd e-mailadres of een betrouwbaar fallback
     
     // Standaard e-mailparameters met gegarandeerd geldige waarden
-    const params = {
+    const params: EmailParams = {
       // Afzender informatie (begin met betrouwbare standaardwaarden)
       from_name: templateParams.from_name || "Niet opgegeven",
       from_email: emailConfig.contactEmail, 
