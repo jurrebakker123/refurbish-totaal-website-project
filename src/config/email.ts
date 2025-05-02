@@ -31,23 +31,24 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
     console.log('EmailJS verzendpoging met parameters:', templateParams);
     
-    // EmailJS vereist een geldig e-mailadres voor reply_to bij Outlook
-    // Als er geen geldig e-mailadres is, gebruiken we een standaard e-mailadres
-    let validatedEmail = emailConfig.contactEmail;
+    // Bepaal een geldig e-mailadres voor from_email en reply_to
+    // Dit moet een geldig e-mailadres zijn, anders gebruikt Outlook het niet
+    let validEmail = emailConfig.contactEmail; // Gebruik altijd een standaard fallback
+    
     if (templateParams.from_email && isValidEmail(templateParams.from_email)) {
-      validatedEmail = templateParams.from_email;
+      validEmail = templateParams.from_email;
     } else {
-      console.log('Geen geldig e-mailadres opgegeven, gebruik van standaard e-mailadres');
+      console.log('Geen geldig e-mailadres opgegeven voor afzender, gebruik van standaard e-mailadres');
     }
     
     // Email parameters die EmailJS verwacht
     const params = {
       from_name: templateParams.from_name || "Niet opgegeven",
-      from_email: validatedEmail, // Gebruik altijd een geldig e-mailadres
+      from_email: validEmail, // Altijd een geldig e-mailadres
       to_name: templateParams.to_name || "Refurbish Totaal Nederland",
       to_email: templateParams.to_email || emailConfig.contactEmail,
       subject: templateParams.subject || "Contact via website",
-      reply_to: validatedEmail, // Gebruik altijd een geldig e-mailadres
+      reply_to: validEmail, // BELANGRIJK: Moet altijd een geldig e-mailadres zijn voor Outlook!
       message: templateParams.message || "",
       phone: templateParams.phone || "",
       location: templateParams.location || "",
