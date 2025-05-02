@@ -73,7 +73,8 @@ export function OfferteForm() {
       const result = await sendEmail({
         from_name: data.name,
         from_email: data.email,
-        reply_to: data.email, // Expliciet reply_to toevoegen
+        email: data.email, // Extra toevoeging voor compatibiliteit
+        reply_to: data.email,
         phone: data.phone,
         location: data.location,
         preferred_date: data.preferredDate || "Niet opgegeven",

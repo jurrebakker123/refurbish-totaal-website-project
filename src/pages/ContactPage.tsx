@@ -37,8 +37,9 @@ const ContactPage = () => {
         from_name: formData.name,
         to_name: "Refurbish Totaal Nederland",
         from_email: formData.email,
-        reply_to: formData.email, // Expliciet reply_to toevoegen
-        from_phone: formData.phone,
+        email: formData.email, // Extra toevoeging voor compatibiliteit
+        reply_to: formData.email,
+        phone: formData.phone,
         subject: formData.subject || "Contactformulier website",
         message: formData.message || "Geen bericht",
         to_email: "info@refurbishtotaalnederland.nl"

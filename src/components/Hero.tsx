@@ -34,7 +34,8 @@ const Hero = () => {
         from_name: formData.name,
         to_name: "Refurbish Totaal Nederland",
         from_email: formData.email,
-        reply_to: formData.email, // Expliciet reply_to toevoegen 
+        email: formData.email, // Extra toevoeging voor compatibiliteit
+        reply_to: formData.email, 
         phone: formData.phone,
         location: formData.location,
         message: formData.message || "Geen bericht",

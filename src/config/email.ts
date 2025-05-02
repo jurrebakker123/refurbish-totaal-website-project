@@ -28,22 +28,34 @@ export const emailConfig = {
  * @returns Object met succes status en resultaat of fout
  */
 export const sendEmail = async (templateParams: Record<string, any>) => {
-  console.log('EmailJS verzendpoging met parameters:', templateParams);
-  
-  // Zorg ervoor dat we alle vereiste parameters hebben
-  const params = {
-    ...templateParams,
-    // Voeg standaardwaarden toe als ze ontbreken
-    from_name: templateParams.from_name || "Niet opgegeven",
-    from_email: templateParams.from_email || templateParams.email || "Niet opgegeven", // Accepteer beide namen
-    to_name: templateParams.to_name || "Refurbish Totaal Nederland",
-    to_email: templateParams.to_email || emailConfig.contactEmail,
-    subject: templateParams.subject || "Contact via website",
-    // Zorg ervoor dat reply_to altijd een geldig e-mailadres heeft
-    reply_to: templateParams.from_email || templateParams.email || emailConfig.contactEmail
-  };
-  
   try {
+    console.log('EmailJS verzendpoging met parameters:', templateParams);
+    
+    // Verzeker dat alle vereiste velden aanwezig zijn
+    const params = {
+      ...templateParams,
+      from_name: templateParams.from_name || "Niet opgegeven",
+      from_email: templateParams.from_email || "noreply@refurbishtotaalnederland.nl",
+      to_name: templateParams.to_name || "Refurbish Totaal Nederland",
+      to_email: templateParams.to_email || emailConfig.contactEmail,
+      subject: templateParams.subject || "Contact via website",
+    };
+    
+    // Zorg ervoor dat reply_to correct is ingesteld
+    // Dit is een kritiek veld dat vaak problemen veroorzaakt in EmailJS
+    if (!templateParams.reply_to || !isValidEmail(templateParams.reply_to)) {
+      if (isValidEmail(templateParams.from_email)) {
+        params.reply_to = templateParams.from_email;
+      } else if (isValidEmail(templateParams.email)) {
+        params.reply_to = templateParams.email;
+      } else {
+        // Als er geen geldig e-mailadres is, gebruik dan de noreply
+        params.reply_to = "noreply@refurbishtotaalnederland.nl";
+      }
+    }
+    
+    console.log('EmailJS verzenden met definitieve parameters:', params);
+    
     // Direct emailjs gebruiken met expliciete options parameter
     const result = await emailjs.send(
       emailConfig.serviceId,
@@ -56,8 +68,20 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     
     console.log('EmailJS succes:', result);
     return { success: true, result };
-  } catch (error) {
+  } catch (error: any) {
     console.error('EmailJS fout:', error);
+    // Log meer details over de fout
+    if (error.text) console.error('EmailJS foutmelding:', error.text);
     return { success: false, error };
   }
 };
+
+/**
+ * Helper functie om te controleren of een e-mailadres geldig is
+ */
+function isValidEmail(email: any): boolean {
+  if (!email || typeof email !== 'string') return false;
+  // Basic e-mail validatie met regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
