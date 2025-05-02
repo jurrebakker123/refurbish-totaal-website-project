@@ -58,8 +58,19 @@ export function OfferteForm() {
     try {
       console.log('Offerte Form Submission:', { 
         ...data, 
-        tekeningIncluded: !!tekeningBase64
+        tekeningIncluded: !!tekeningBase64,
+        tekeningFileName: tekeningFile?.name || "Geen bestand"
       });
+
+      // Controleer de grootte van het bestand (max 5MB)
+      if (tekeningFile && tekeningFile.size > 5 * 1024 * 1024) {
+        toast.error("Het bestand is te groot. Maximum grootte is 5MB.", {
+          duration: 5000,
+          position: 'top-center',
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       const result = await sendEmail({
         from_name: data.name,
@@ -72,7 +83,8 @@ export function OfferteForm() {
         location: data.location,
         service: data.service,
         preferred_date: data.preferredDate || "Niet opgegeven",
-        tekening: tekeningBase64 || ""
+        tekening: tekeningBase64 || "",
+        tekening_naam: tekeningFile?.name || "Geen bestand geüpload"
       });
 
       if (result.success) {
@@ -224,7 +236,7 @@ export function OfferteForm() {
           />
           {tekeningFile && (
             <div className="mt-1 text-xs text-gray-600 italic">
-              Geselecteerd: {tekeningFile.name}
+              Geselecteerd: {tekeningFile.name} ({(tekeningFile.size / (1024 * 1024)).toFixed(2)} MB)
             </div>
           )}
         </div>

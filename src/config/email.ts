@@ -29,7 +29,11 @@ export const emailConfig = {
  */
 export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
-    console.log('EmailJS verzendpoging met parameters:', templateParams);
+    console.log('EmailJS verzendpoging met parameters:', {
+      ...templateParams,
+      tekening: templateParams.tekening ? "Bestand aanwezig (base64 string)" : "Geen bestand",
+      tekening_naam: templateParams.tekening_naam || "Geen bestand"
+    });
     
     // KRITIEKE VALIDATIE voor Outlook compatibiliteit:
     // --------------------------------------------
@@ -54,6 +58,7 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       service: templateParams.service || "",
       preferred_date: templateParams.preferred_date || "",
       tekening: templateParams.tekening || "",
+      tekening_naam: templateParams.tekening_naam || "Geen bestand",
       
       // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres
       reply_to: emailConfig.contactEmail, 
@@ -68,7 +73,10 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       console.log('Geen geldig e-mailadres opgegeven, standaard gebruikt:', emailConfig.contactEmail);
     }
     
-    console.log('EmailJS verzenden met definitieve parameters:', params);
+    console.log('EmailJS verzenden met definitieve parameters:', {
+      ...params,
+      tekening: params.tekening ? "Bestand aanwezig (base64 string)" : "Geen bestand"
+    });
     
     // Direct emailjs gebruiken met expliciete options parameter
     const result = await emailjs.send(
