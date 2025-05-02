@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Sun, Recycle, Battery, Zap, BarChart4, Leaf } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function ZonnepanelenFeatures() {
   const features = [
@@ -17,7 +19,7 @@ export function ZonnepanelenFeatures() {
     {
       icon: <Battery className="h-8 w-8 text-brand-lightGreen" />,
       title: "Garantie",
-      description: "3 jaar volledige garantie op alle refurbished zonnepanelen met professionele installatie."
+      description: "12 maanden volledige garantie op alle refurbished zonnepanelen met professionele installatie."
     },
     {
       icon: <BarChart4 className="h-8 w-8 text-brand-lightGreen" />,
