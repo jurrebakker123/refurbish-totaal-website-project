@@ -39,6 +39,7 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       to_name: templateParams.to_name || "Refurbish Totaal Nederland",
       to_email: templateParams.to_email || emailConfig.contactEmail,
       subject: templateParams.subject || "Contact via website",
+      reply_to: "" // Initialize reply_to property to avoid TypeScript errors
     };
     
     // Zorg ervoor dat reply_to correct is ingesteld
