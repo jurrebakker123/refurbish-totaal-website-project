@@ -30,6 +30,13 @@ export function DakkapelCTA() {
               <span>Offerte Aanvragen</span>
             </Link>
           </div>
+          
+          {/* Hidden link to concept calculator - Visible only in development */}
+          <div className="mt-8 text-sm opacity-50 hover:opacity-100 transition-opacity">
+            <Link to="/dakkapel-calculator-concept" className="underline">
+              Dakkapel Calculator (Concept)
+            </Link>
+          </div>
         </div>
       </div>
     </section>
