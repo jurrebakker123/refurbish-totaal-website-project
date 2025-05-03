@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
 
 const VoorwaardenPage = () => {
-  const phoneNumber = "31854444255"; // Dutch phone number format for WhatsApp
+  const phoneNumber = "31630136079"; // Updated Dutch phone number format for WhatsApp
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
 
   const handleDownloadPdf = () => {

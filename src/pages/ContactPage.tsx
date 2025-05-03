@@ -8,7 +8,7 @@ import CallToActionSection from '@/components/CallToActionSection';
 import { sendEmail } from '@/config/email';
 
 const ContactPage = () => {
-  const phoneNumber = "31854444255"; // Dutch phone number format for WhatsApp
+  const phoneNumber = "31630136079"; // Updated Dutch phone number format for WhatsApp
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
   
   const [formData, setFormData] = useState({
