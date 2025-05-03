@@ -13,7 +13,7 @@ const services = [
   'dakkapel',
   'schilderwerk',
   'dakrenovatie',
-  'stukadoren',  // Changed to stukadoren consistently
+  'stukadoren',  // Correct spelling maintained here
   'installatietechniek',
   'aan-en-verbouw',
   'behangen',
@@ -36,7 +36,7 @@ const serviceSlugMap: Record<string, string> = {
   'dakkapel': 'dakkapel',
   'schilderwerk': 'schilderwerk',
   'dakrenovatie': 'dakrenovatie',
-  'stukadoren': 'stukadoren',  // Changed to stukadoren consistently
+  'stukadoren': 'stukadoren',  // Correct slug for stukadoren service
   'installatietechniek': 'installatietechniek',
   'aan-en-verbouw': 'aan-en-verbouw',
   'behangen': 'behangen',

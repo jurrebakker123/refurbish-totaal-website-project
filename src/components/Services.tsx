@@ -11,7 +11,7 @@ const services = [
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
-    image: '/lovable-uploads/c7004d6e-4f2e-412b-b099-bed6db090eb2.png'
+    image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
   },
   {
     id: 'schilderwerk',
@@ -19,7 +19,7 @@ const services = [
     title: 'Schilderwerk',
     description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
     link: '/diensten/schilderwerk',
-    image: '/lovable-uploads/aac56ae6-f108-44cf-9a95-00bf6e672bdc.png'
+    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'dakrenovatie',
@@ -27,7 +27,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: '/lovable-uploads/c2cb0f93-2dfc-46b4-96d0-d62c6f253a58.png'
+    image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
   },
   {
     id: 'stukadoren',
@@ -35,7 +35,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: '/lovable-uploads/566490a7-118d-4e59-b708-05d058ea3bf8.png'
+    image: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'installatietechniek',
@@ -43,7 +43,7 @@ const services = [
     title: 'Installatietechniek',
     description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
     link: '/diensten/installatietechniek',
-    image: '/lovable-uploads/b63f65bc-1311-409d-a72e-1c3304444e05.png'
+    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
   },
   {
     id: 'aan-en-verbouw',
@@ -51,7 +51,7 @@ const services = [
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
-    image: '/lovable-uploads/a346e449-9340-4cf7-be48-d58a75924dc0.png'
+    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
   },
   {
     id: 'behangen',
@@ -59,7 +59,7 @@ const services = [
     title: 'Behangen',
     description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
     link: '/diensten/behangen',
-    image: '/lovable-uploads/2c964755-86df-4c0d-aa11-d95b5b686c40.png'
+    image: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'pvc-vloeren',
@@ -67,7 +67,7 @@ const services = [
     title: 'PVC Vloeren',
     description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
     link: '/diensten/pvc-vloeren',
-    image: '/lovable-uploads/566490a7-118d-4e59-b708-05d058ea3bf8.png'
+    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   }
 ];
 

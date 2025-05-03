@@ -53,7 +53,8 @@ const schilderwerk: DienstData = {
       answer: 'Onze schilders besteden veel aandacht aan de voorbereiding: schuren, schoonmaken, repareren van beschadigingen en indien nodig houtrotreparaties. Deze voorbereidende werkzaamheden zijn cruciaal voor een duurzaam resultaat.'
     }
   ],
-  image: '/lovable-uploads/aac56ae6-f108-44cf-9a95-00bf6e672bdc.png'
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+  keywords: 'schilder, schilderwerk, buitenschilderwerk, kozijnen schilderen, houtrot reparatie, schildersbedrijf, binnenschilderwerk, verfwerk, schilder Eindhoven, schilder Rotterdam, schilder Breda, schilder Amsterdam, schilder Lelystad, schilder Zwolle, schilder Doetinchem, schilder Venray, schildersbedrijf Eindhoven, buitenschilderwerk Rotterdam, houtrot specialist Amsterdam, kozijnen schilderen Breda, schilderwerk offerte'
 };
 
 export default schilderwerk;

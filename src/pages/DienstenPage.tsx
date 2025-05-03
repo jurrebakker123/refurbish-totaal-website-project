@@ -13,56 +13,56 @@ const diensten = [{
   title: 'Dakkapel',
   description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
   features: ['Ontwerp en plaatsing van nieuwe dakkapellen', 'Renovatie en isolatie van bestaande dakkapellen', 'Diverse stijlen en afwerkingsmogelijkheden', 'Compleet met dakbedekking en zinkwerk', 'Snelle en efficiënte plaatsing', 'Garantie op materialen en werkzaamheden'],
-  image: '/lovable-uploads/c7004d6e-4f2e-412b-b099-bed6db090eb2.png'
+  image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
 }, {
   id: 'schilderwerk',
   icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Schilderwerk',
   description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
   features: ['Buitenschilderwerk voor gevels, kozijnen en deuren', 'Binnenschilderwerk voor wanden, plafonds en trappen', 'Kleuradvies en verfkeuze op maat', 'Houtrotherstel en reparaties', 'Graffiti verwijdering', 'Behang- en spuitwerk'],
-  image: '/lovable-uploads/aac56ae6-f108-44cf-9a95-00bf6e672bdc.png'
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'dakrenovatie',
   icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
   features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
-  image: '/lovable-uploads/c2cb0f93-2dfc-46b4-96d0-d62c6f253a58.png'
+  image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
 }, {
   id: 'stukadoren',
   icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Stukadoren',
   description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
   features: ['Gladpleisterwerk voor wanden en plafonds', 'Renovatiestucwerk bij scheuren en beschadigingen', 'Sierlijsten en ornamenten aanbrengen', 'Spachtelputz en structuurwerk', 'Venetiaans stucwerk en tadelakt', 'Betonlook wanden en vloeren'],
-  image: '/lovable-uploads/566490a7-118d-4e59-b708-05d058ea3bf8.png'
+  image: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'installatietechniek',
   icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Installatietechniek',
   description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
   features: ['Elektra aanleggen of vernieuwen', 'Groepenkast vervangen of uitbreiden', 'Water- en gasleidingen aanleggen of vervangen', 'Badkamer en toilet installaties', 'Vloerverwarming aanleggen', 'Domotica en slimme huisinstallaties'],
-  image: '/lovable-uploads/b63f65bc-1311-409d-a72e-1c3304444e05.png'
+  image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
 }, {
   id: 'aan-en-verbouw',
   icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Aan- en verbouw',
   description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
   features: ['Uitbouwen en aanbouwen realiseren', 'Dakkapellen en dakopbouwen', 'Muren doorbreken en dragende constructies', 'Garage ombouwen tot woonruimte', 'Indeling van woning wijzigen', 'Funderingsherstel'],
-  image: '/lovable-uploads/a346e449-9340-4cf7-be48-d58a75924dc0.png'
+  image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
 }, {
   id: 'behangen',
   icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Behangen',
   description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
   features: ['Behang verwijderen en ondergrond voorbereiden', 'Aanbrengen van luxe behang en wandbekleding', 'Fotobehang op maat', 'Vliesbehang en traditioneel behang', 'Textiel- en vinylbehang', 'Reparatie van bestaand behangwerk'],
-  image: '/lovable-uploads/2c964755-86df-4c0d-aa11-d95b5b686c40.png'
+  image: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'pvc-vloeren',
   icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
   title: 'PVC Vloeren',
   description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
   features: ['PVC vloeren in diverse dessins en kwaliteiten', 'Egaliseren van ondervloeren', 'Vloerverwarming geschikte PVC vloeren', 'Click PVC en vaste PVC vloeren', 'Onderhoud en reparatie van PVC vloeren', 'Verwijderen van oude vloerbedekking'],
-  image: '/lovable-uploads/566490a7-118d-4e59-b708-05d058ea3bf8.png'
+  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }];
 
 const DienstenPage = () => {
@@ -71,7 +71,7 @@ const DienstenPage = () => {
       <main className="flex-grow pt-32">
         <section className="relative text-white py-16">
           <div className="absolute inset-0 bg-cover bg-center" style={{
-          backgroundImage: `url('/lovable-uploads/aac56ae6-f108-44cf-9a95-00bf6e672bdc.png')`
+          backgroundImage: `url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`
         }}>
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
