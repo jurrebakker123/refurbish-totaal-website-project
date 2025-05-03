@@ -2,6 +2,7 @@
 import React from 'react';
 import { Mail, Phone, CalendarCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ReusableForm from '@/components/common/ReusableForm';
 
 export function ZonnepanelenContact() {
   return (
@@ -11,7 +12,8 @@ export function ZonnepanelenContact() {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-brand-darkGreen">
             Direct Contact met Onze Zonnepanelen Specialisten
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow text-center">
               <Phone className="h-12 w-12 text-brand-lightGreen mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-4">Telefonisch Contact</h3>
@@ -56,6 +58,39 @@ export function ZonnepanelenContact() {
                 Afspraak Inplannen
               </Button>
             </div>
+          </div>
+          
+          <div className="mt-12">
+            <ReusableForm 
+              title="Vraag direct een offerte aan voor zonnepanelen"
+              description="Ontvang binnen 24 uur een reactie van onze zonnepanelen specialisten."
+              showFileUpload={true}
+              templateId="template_ezfzaao"
+              buttonText="Offerte aanvragen"
+              showServiceInput={false}
+              showDateField={true}
+              additionalFields={[
+                {
+                  name: 'daktype',
+                  label: 'Type dak',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { value: 'Plat dak', label: 'Plat dak' },
+                    { value: 'Schuin dak', label: 'Schuin dak' },
+                    { value: 'Combinatie', label: 'Combinatie van plat en schuin' },
+                    { value: 'Anders', label: 'Anders' }
+                  ]
+                },
+                {
+                  name: 'dakoppervlakte',
+                  label: 'Geschat dakoppervlakte (m²)',
+                  type: 'number',
+                  required: false,
+                  placeholder: 'Bijv. 60'
+                }
+              ]}
+            />
           </div>
         </div>
       </div>

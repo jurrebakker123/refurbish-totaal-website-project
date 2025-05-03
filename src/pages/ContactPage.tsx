@@ -1,75 +1,13 @@
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
-import { MapPin, Phone, Mail, Send, User, MessageSquare, Smartphone } from 'lucide-react';
-import { toast } from 'sonner';
+import { MapPin, Phone, Mail, Smartphone } from 'lucide-react';
 import CallToActionSection from '@/components/CallToActionSection';
-import { sendEmail } from '@/config/email';
+import ReusableForm from '@/components/common/ReusableForm';
 
 const ContactPage = () => {
   const phoneNumber = "31630136079"; // Updated Dutch phone number format for WhatsApp
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
-  
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      console.log('Contact Form Submission:', formData);
-
-      const result = await sendEmail({
-        from_name: formData.name,
-        from_email: formData.email,
-        to_name: "Refurbish Totaal Nederland",
-        to_email: "info@refurbishtotaalnederland.nl",
-        subject: formData.subject || "Contactformulier website",
-        message: formData.message,
-        phone: formData.phone
-      });
-
-      if (result.success) {
-        toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
-          duration: 5000,
-        });
-        
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: ''
-        });
-      } else {
-        throw new Error("EmailJS verzending mislukt");
-      }
-    } catch (error) {
-      console.error('Contact Form Email Error:', error);
-      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
-        duration: 5000,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -150,98 +88,26 @@ const ContactPage = () => {
               </div>
               <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
                 <div className="bg-white p-8 rounded-lg shadow-lg hover-lift">
-                  <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Stuur ons een bericht</h2>
-                  <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-3 text-gray-400" size={18} />
-                          <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mailadres *</label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
-                          <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer</label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-3 text-gray-400" size={18} />
-                          <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Onderwerp *</label>
-                        <select
-                          id="subject"
-                          name="subject"
-                          value={formData.subject}
-                          onChange={handleChange}
-                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                          required
-                        >
-                          <option value="" disabled>Selecteer een onderwerp</option>
-                          <option value="Offerte">Offerte aanvragen</option>
-                          <option value="Informatie">Informatie aanvragen</option>
-                          <option value="Planning">Planning en afspraken</option>
-                          <option value="Klacht">Klacht of suggestie</option>
-                          <option value="Anders">Anders</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="mb-6">
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Bericht *</label>
-                      <div className="relative">
-                        <MessageSquare className="absolute left-3 top-3 text-gray-400" size={18} />
-                        <textarea
-                          id="message"
-                          name="message"
-                          value={formData.message}
-                          onChange={handleChange}
-                          rows={5}
-                          className="pl-10 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                          required
-                        ></textarea>
-                      </div>
-                    </div>
-                    <button 
-                      type="submit" 
-                      className="btn-primary w-full flex items-center justify-center mb-4"
-                      disabled={isSubmitting}
-                    >
-                      <span>{isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Bericht'}</span>
-                      <Send className="ml-2 h-5 w-5" />
-                    </button>
-                  </form>
+                  <ReusableForm 
+                    title="Stuur ons een bericht"
+                    showFileUpload={false}
+                    buttonText="Verstuur Bericht"
+                    additionalFields={[
+                      {
+                        name: 'subject',
+                        label: 'Onderwerp',
+                        type: 'select',
+                        required: true,
+                        options: [
+                          { value: 'Offerte', label: 'Offerte aanvragen' },
+                          { value: 'Informatie', label: 'Informatie aanvragen' },
+                          { value: 'Planning', label: 'Planning en afspraken' },
+                          { value: 'Klacht', label: 'Klacht of suggestie' },
+                          { value: 'Anders', label: 'Anders' }
+                        ]
+                      }
+                    ]}
+                  />
                   
                   <div className="mt-4 text-center">
                     <p className="text-gray-700 mb-3">Of neem direct contact op via:</p>
@@ -251,8 +117,7 @@ const ContactPage = () => {
                       rel="noopener noreferrer" 
                       className="btn-primary bg-green-600 hover:bg-green-700 inline-flex items-center justify-center w-full"
                     >
-                      <MessageSquare className="mr-2 h-5 w-5" />
-                      WhatsApp Chat Starten
+                      <span className="mr-2">WhatsApp Chat Starten</span>
                     </a>
                   </div>
                 </div>
