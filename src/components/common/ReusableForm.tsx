@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import emailjs from '@emailjs/browser';
 import { emailConfig } from '@/config/email';
+import { Link } from 'react-router-dom';
 
 type FormProps = {
   title?: string;
@@ -28,7 +29,7 @@ const ReusableForm = ({
   title = "Contactformulier",
   description = "Vul het formulier in en we nemen zo snel mogelijk contact met u op.",
   showFileUpload = false,
-  templateId = "template_ix4mdjh",
+  templateId = "template_ezfzaao",
   buttonText = "Verstuur",
   showServiceInput = false,
   useCheckboxServices = false,
@@ -38,6 +39,8 @@ const ReusableForm = ({
 }: FormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   
   // Initialize Uploadcare when component mounts if file upload is needed
   useEffect(() => {
@@ -106,6 +109,16 @@ const ReusableForm = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    // Check if terms are accepted
+    if (!termsAccepted) {
+      setTermsError(true);
+      toast.error("U dient akkoord te gaan met onze voorwaarden.", {
+        duration: 5000,
+        position: 'top-center',
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -123,7 +136,8 @@ const ReusableForm = ({
       message: formData.get('bericht') as string,
       phone: formData.get('telefoon') as string,
       location: formData.get('woonplaats') as string,
-      preferred_date: showDateField && formData.get('datum') ? formData.get('datum') as string : "Niet opgegeven"
+      preferred_date: showDateField && formData.get('datum') ? formData.get('datum') as string : "Niet opgegeven",
+      terms_accepted: "Ja"
     };
 
     // Add service information if applicable
@@ -158,6 +172,7 @@ const ReusableForm = ({
           position: 'top-center',
         });
         form.reset();
+        setTermsAccepted(false);
         
         // Reset Uploadcare widget if it exists
         if (showFileUpload && window.uploadcare) {
@@ -315,6 +330,26 @@ const ReusableForm = ({
             <p className="text-xs text-gray-500 mt-1">Max. 10 MB – PDF, JPG, PNG. De link wordt automatisch toegevoegd.</p>
           </div>
         )}
+
+        {/* Terms and Conditions Checkbox */}
+        <div className="field">
+          <div className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={termsAccepted}
+              onChange={(e) => {
+                setTermsAccepted(e.target.checked);
+                if (e.target.checked) setTermsError(false);
+              }}
+              className="mt-1"
+            />
+            <label htmlFor="terms" className={`text-sm ${termsError ? 'text-red-600' : 'text-gray-700'}`}>
+              Ik ga akkoord met de <Link to="/voorwaarden" className="text-brand-lightGreen hover:underline">algemene voorwaarden</Link>
+            </label>
+          </div>
+          {termsError && <p className="text-red-600 text-xs mt-1">U dient akkoord te gaan met onze voorwaarden</p>}
+        </div>
         
         <div className="field">
           <button 
