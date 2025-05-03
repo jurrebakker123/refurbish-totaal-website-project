@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -12,7 +13,7 @@ const diensten = [{
   title: 'Dakkapel',
   description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
   features: ['Ontwerp en plaatsing van nieuwe dakkapellen', 'Renovatie en isolatie van bestaande dakkapellen', 'Diverse stijlen en afwerkingsmogelijkheden', 'Compleet met dakbedekking en zinkwerk', 'Snelle en efficiënte plaatsing', 'Garantie op materialen en werkzaamheden'],
-  image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
+  image: '/lovable-uploads/e0a67ba4-3d90-49d8-bcca-5a4a9a6723d1.png'
 }, {
   id: 'schilderwerk',
   icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
@@ -26,14 +27,14 @@ const diensten = [{
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
   features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
-  image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
+  image: 'https://images.unsplash.com/photo-1632759145356-1d14365d219d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'stukadoren',
   icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Stukadoren',
   description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
   features: ['Gladpleisterwerk voor wanden en plafonds', 'Renovatiestucwerk bij scheuren en beschadigingen', 'Sierlijsten en ornamenten aanbrengen', 'Spachtelputz en structuurwerk', 'Venetiaans stucwerk en tadelakt', 'Betonlook wanden en vloeren'],
-  image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
+  image: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'installatietechniek',
   icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
@@ -54,7 +55,7 @@ const diensten = [{
   title: 'Behangen',
   description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
   features: ['Behang verwijderen en ondergrond voorbereiden', 'Aanbrengen van luxe behang en wandbekleding', 'Fotobehang op maat', 'Vliesbehang en traditioneel behang', 'Textiel- en vinylbehang', 'Reparatie van bestaand behangwerk'],
-  image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
+  image: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'pvc-vloeren',
   icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
