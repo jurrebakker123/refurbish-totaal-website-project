@@ -40,6 +40,7 @@ interface EmailParams extends Record<string, unknown> {
   
   // Tekening link voor Uploadcare
   tekening_link?: string;
+  tekening_beschikbaar?: string;
   
   // Bijlagen gerelateerd
   has_attachment: boolean; // Boolean voor betere compatibiliteit
@@ -101,9 +102,10 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       
       // Tekening link van Uploadcare
       tekening_link: templateParams.tekening_link || "",
+      tekening_beschikbaar: templateParams.tekening_link ? "Ja" : "Nee",
       
       // Voor bijlagen - gewijzigd naar boolean in plaats van string
-      has_attachment: !!templateParams.tekening || !!templateParams.tekening_link, 
+      has_attachment: !!templateParams.tekening_link || !!templateParams.tekening, 
       tekening_naam: templateParams.tekening_naam || "Geen bestand",
       
       // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres

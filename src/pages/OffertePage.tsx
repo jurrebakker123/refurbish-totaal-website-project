@@ -19,6 +19,11 @@ const OffertePage = () => {
     widgetScript.async = true;
     document.head.appendChild(widgetScript);
 
+    // Log when scripts are loaded
+    widgetScript.onload = () => {
+      console.log('Uploadcare widget loaded successfully');
+    };
+
     return () => {
       // Clean up
       document.head.removeChild(uploadcareScript);
@@ -32,6 +37,7 @@ const OffertePage = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Offerte Aanvraag - Refurbish Totaal Nederland</title>
+        <meta name="description" content="Vraag een vrijblijvende offerte aan voor uw bouw- of renovatieproject bij Refurbish Totaal Nederland." />
       </Helmet>
       <Header />
       <main className="flex-grow pt-32">

@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -59,6 +58,7 @@ export function OfferteForm() {
       widget.onChange(function(file: any) {
         if (file) {
           file.done(function(fileInfo: any) {
+            console.log("Uploadcare file info:", fileInfo);
             form.setValue('tekening_link', fileInfo.cdnUrl);
             toast.success("Tekening geupload!", {
               duration: 3000,
@@ -84,6 +84,7 @@ export function OfferteForm() {
     setIsSubmitting(true);
 
     try {
+      // Log more details about the submission
       console.log('Offerte Form Submission:', { 
         ...data,
         tekeningLink: data.tekening_link || "Geen tekening"
@@ -103,7 +104,8 @@ export function OfferteForm() {
         location: data.woonplaats,
         service: selectedServices,
         preferred_date: data.datum || "Niet opgegeven",
-        tekening_link: data.tekening_link || "Geen tekening",
+        tekening_link: data.tekening_link || "",  // Ensure this is always defined
+        tekening_beschikbaar: data.tekening_link ? "Ja" : "Nee", // Add this flag for clarity
         templateId: "template_ezfzaao" // Sjabloon ID voor offerteaanvragen
       });
 
@@ -290,7 +292,7 @@ export function OfferteForm() {
                 />
                 <p className="text-xs text-gray-500">Max. 10 MB – PDF, JPG, PNG</p>
                 {field.value && (
-                  <p className="text-xs text-green-600">Bestand succesvol geupload!</p>
+                  <p className="text-xs text-green-600">Bestand succesvol geupload! <a href={field.value} target="_blank" rel="noopener noreferrer" className="underline">Bekijk bestand</a></p>
                 )}
               </div>
               <FormMessage />
