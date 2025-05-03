@@ -16,8 +16,8 @@ const dienstenItems = [{
   title: 'Dakrenovatie',
   path: '/diensten/dakrenovatie'
 }, {
-  title: 'Stucadoren',
-  path: '/diensten/stucadoren'
+  title: 'Stukadoren',
+  path: '/diensten/stukadoren'
 }, {
   title: 'Installatietechniek',
   path: '/diensten/installatietechniek'
