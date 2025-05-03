@@ -11,7 +11,7 @@ const services = [
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
-    image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
+    image: '/lovable-uploads/e0a67ba4-3d90-49d8-bcca-5a4a9a6723d1.png'
   },
   {
     id: 'schilderwerk',
