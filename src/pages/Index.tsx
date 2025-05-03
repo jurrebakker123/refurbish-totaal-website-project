@@ -226,6 +226,52 @@ const Index = () => {
             </div>
           </div>
         </section>
+        
+        {/* Free inspection & advice banner */}
+        <motion.section 
+          className="py-16 bg-brand-darkGreen text-white"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="container">
+            <div className="max-w-4xl mx-auto text-center">
+              <motion.h2 
+                className="text-3xl md:text-4xl font-bold mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                Gratis inspectie & advies
+              </motion.h2>
+              <motion.p 
+                className="text-xl mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                Wij komen graag vrijblijvend bij u langs om de mogelijkheden te bespreken en u te voorzien van professioneel advies zonder kosten of verplichtingen.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Link 
+                  to="/contact" 
+                  className="bg-white text-brand-darkGreen px-8 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all inline-flex items-center"
+                >
+                  Plan Uw Gratis Inspectie
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
 
         <section className="py-16 bg-gray-50">
           <div className="container">

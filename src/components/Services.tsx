@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 import React from 'react';
@@ -80,6 +81,9 @@ const Services = () => {
             Bij Refurbish Totaal Nederland bieden wij een compleet pakket aan renovatie- en verbouwdiensten. 
             Al onze werkzaamheden worden uitgevoerd door ervaren vakmensen.
           </p>
+          <div className="inline-block bg-brand-lightGreen text-white text-lg font-medium px-6 py-3 rounded-full mt-4 animate-pulse">
+            ✓ Gratis inspectie & advies
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
