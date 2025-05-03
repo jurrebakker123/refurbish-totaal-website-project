@@ -2,8 +2,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail } from 'lucide-react';
+import { triggerSearchNotification } from '@/components/LeaveSiteNotification';
 
 export function DakkapelCTA() {
+  const handleExternalLinkClick = () => {
+    // Trigger notification when user is about to leave via phone
+    triggerSearchNotification();
+  };
+
   return (
     <section className="py-16 bg-brand-darkGreen text-white">
       <div className="container">
@@ -18,6 +24,7 @@ export function DakkapelCTA() {
             <a 
               href="tel:+31854444255" 
               className="bg-white text-brand-darkGreen hover:bg-gray-100 px-8 py-3 rounded-md font-medium inline-flex items-center justify-center gap-2"
+              onClick={handleExternalLinkClick}
             >
               <Phone className="h-5 w-5" />
               <span>Bel Direct: 085 4444 255</span>
