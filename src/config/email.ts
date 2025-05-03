@@ -16,7 +16,7 @@ emailjs.init("tqJDJUY1QjRWXLIiF");
 
 export const emailConfig = {
   serviceId: 'service_mp8y6zo', // Uw Service ID van EmailJS
-  templateId: 'template_ix4mdjh', // Uw Template ID van EmailJS
+  templateId: 'template_ix4mdjh', // Standaard Template ID van EmailJS
   publicKey: 'tqJDJUY1QjRWXLIiF', // Uw Public Key van EmailJS
   contactEmail: 'info@refurbishtotaalnederland.nl',
 };
@@ -39,11 +39,14 @@ interface EmailParams extends Record<string, unknown> {
   preferred_date?: string;
   
   // Bijlagen gerelateerd
-  has_attachment: boolean; // Gewijzigd naar boolean voor betere compatibiliteit
+  has_attachment: boolean; // Boolean voor betere compatibiliteit
   tekening_naam?: string;
   
   // Kritiek voor email clients
   reply_to: string;
+  
+  // Template selectie
+  templateId?: string;
   
   // Bijlage object voor EmailJS
   _attachments?: Array<{
@@ -70,6 +73,9 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     // --------------------------------------------
     // 1. from_email en reply_to moeten altijd geldige e-mailadressen zijn
     // 2. We gebruiken een gevalideerd e-mailadres of een betrouwbaar fallback
+    
+    // Gebruik de specifieke template ID als die is meegegeven, anders gebruik de standaard
+    const templateId = templateParams.templateId || emailConfig.templateId;
     
     // Standaard e-mailparameters met gegarandeerd geldige waarden
     const params: EmailParams = {
@@ -123,7 +129,7 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     // Direct emailjs gebruiken met expliciete options parameter
     const result = await emailjs.send(
       emailConfig.serviceId,
-      emailConfig.templateId,
+      templateId, // Gebruik de mogelijk aangepaste template ID
       params as Record<string, unknown>,
       {
         publicKey: emailConfig.publicKey,

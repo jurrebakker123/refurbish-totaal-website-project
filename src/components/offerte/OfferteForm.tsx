@@ -94,7 +94,8 @@ export function OfferteForm() {
         service: data.service,
         preferred_date: data.preferredDate || "Niet opgegeven",
         tekening: tekeningBase64 || "",
-        tekening_naam: tekeningFile?.name || ""
+        tekening_naam: tekeningFile?.name || "",
+        templateId: "template_ezfzaao" // Nieuwe sjabloon ID voor offerteaanvragen
       });
 
       if (result.success) {
