@@ -8,6 +8,7 @@ import { PriceDisplay } from './PriceDisplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
+import { DakkapelRenderer } from './DakkapelRenderer';
 
 export type DakkapelType = 'prefab' | 'maatwerk' | 'renovatie';
 export type MaterialType = 'kunststof' | 'hout' | 'aluminium';

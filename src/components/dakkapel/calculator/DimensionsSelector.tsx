@@ -3,6 +3,7 @@ import React from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
+import { DakkapelRenderer } from './DakkapelRenderer';
 
 interface DimensionsSelectorProps {
   breedte: number;
@@ -23,29 +24,11 @@ export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: Dimens
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <div className="relative mb-2 p-12 border-2 border-dashed border-gray-300 bg-gray-50">
-            <div 
-              className="bg-brand-darkGreen"
-              style={{ 
-                width: '100%', 
-                height: '100px', 
-                position: 'relative',
-              }}
-            >
-              <div 
-                className="absolute bg-white border-2 border-brand-lightGreen"
-                style={{
-                  width: `${(breedte / 600) * 100}%`,
-                  height: `${(hoogte / 250) * 80}px`,
-                  bottom: '0',
-                  left: `${50 - ((breedte / 600) * 100) / 2}%`,
-                  boxShadow: '0 0 10px rgba(0,0,0,0.2)'
-                }}
-              ></div>
-            </div>
-            <div className="text-center text-sm text-gray-600 mt-2">
-              Visuele weergave (niet op schaal)
-            </div>
+          <div className="h-[300px] border-2 border-dashed border-gray-300 bg-gray-50">
+            <DakkapelRenderer breedte={breedte} hoogte={hoogte} />
+          </div>
+          <div className="text-center text-sm text-gray-600 mt-2">
+            3D visualisatie (draai met muis)
           </div>
         </div>
 

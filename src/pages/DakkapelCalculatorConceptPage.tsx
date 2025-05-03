@@ -24,6 +24,9 @@ const DakkapelCalculatorConceptPage = () => {
           <p className="text-center text-lg mb-8 max-w-3xl mx-auto">
             Bereken direct de indicatieprijs voor uw dakkapel op maat. Pas de afmetingen en opties aan om een nauwkeurige prijsindicatie te krijgen.
           </p>
+          <p className="text-center text-md mb-8 max-w-2xl mx-auto text-brand-lightGreen font-medium">
+            Nieuw: Bekijk een 3D-weergave van uw dakkapel terwijl u de instellingen aanpast!
+          </p>
           <DakkapelCalculator />
         </div>
       </main>
