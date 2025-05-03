@@ -6,29 +6,29 @@ import { OfferteFormData, offerteFormSchema } from "./schema";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { sendEmail } from "@/config/email";
-import React from 'react';
+import React, { useState } from 'react';
 import { SERVICES } from "./constants";
 
 export function OfferteForm() {
   const form = useForm<OfferteFormData>({
     resolver: zodResolver(offerteFormSchema),
     defaultValues: {
-      name: '',
+      naam: '',
       email: '',
-      phone: '',
-      location: '',
-      preferredDate: '',
-      service: '',
-      message: '',
+      telefoon: '',
+      woonplaats: '',
+      datum: '',
+      diensten: [],
+      bericht: '',
       terms: false
     },
   });
 
-  const [tekeningFile, setTekeningFile] = React.useState<File | null>(null);
-  const [tekeningBase64, setTekeningBase64] = React.useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [tekeningFile, setTekeningFile] = useState<File | null>(null);
+  const [tekeningBase64, setTekeningBase64] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleTekeningChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -43,8 +43,8 @@ export function OfferteForm() {
         });
         
         // Reset file input
-        if (document.getElementById('tekening-upload')) {
-          (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+        if (document.getElementById('bijlage-upload')) {
+          (document.getElementById('bijlage-upload') as HTMLInputElement).value = '';
         }
         setTekeningFile(null);
         setTekeningBase64(null);
@@ -82,17 +82,20 @@ export function OfferteForm() {
         tekeningFileName: tekeningFile?.name || "Geen bestand"
       });
 
+      // Formatteer geselecteerde diensten als string
+      const selectedServices = data.diensten.join(", ");
+
       const result = await sendEmail({
-        from_name: data.name,
+        from_name: data.naam,
         from_email: data.email,
         to_name: "Refurbish Totaal Nederland",
         to_email: "info@refurbishtotaalnederland.nl",
-        subject: `Nieuwe offerte aanvraag: ${data.service}`,
-        message: data.message || "Geen bericht",
-        phone: data.phone,
-        location: data.location,
-        service: data.service,
-        preferred_date: data.preferredDate || "Niet opgegeven",
+        subject: `Nieuwe offerte aanvraag: ${selectedServices}`,
+        message: data.bericht || "Geen bericht",
+        phone: data.telefoon,
+        location: data.woonplaats,
+        service: selectedServices,
+        preferred_date: data.datum || "Niet opgegeven",
         tekening: tekeningBase64 || "",
         tekening_naam: tekeningFile?.name || "",
         templateId: "template_ezfzaao" // Nieuwe sjabloon ID voor offerteaanvragen
@@ -107,8 +110,8 @@ export function OfferteForm() {
         form.reset();
         setTekeningFile(null);
         setTekeningBase64(null);
-        if (document.getElementById('tekening-upload')) {
-          (document.getElementById('tekening-upload') as HTMLInputElement).value = '';
+        if (document.getElementById('bijlage-upload')) {
+          (document.getElementById('bijlage-upload') as HTMLInputElement).value = '';
         }
       } else {
         throw new Error("EmailJS verzending mislukt");
@@ -130,7 +133,7 @@ export function OfferteForm() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="name"
+            name="naam"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Naam</FormLabel>
@@ -156,7 +159,7 @@ export function OfferteForm() {
 
         <FormField
           control={form.control}
-          name="phone"
+          name="telefoon"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Telefoonnummer</FormLabel>
@@ -169,31 +172,49 @@ export function OfferteForm() {
 
         <FormField
           control={form.control}
-          name="service"
-          render={({ field }) => (
+          name="diensten"
+          render={() => (
             <FormItem>
-              <FormLabel>Dienst</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecteer een dienst" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {SERVICES.map((service) => (
-                    <SelectItem key={service} value={service}>
-                      {service}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Dienst(en)</FormLabel>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                {SERVICES.map((service) => (
+                  <FormField
+                    key={service}
+                    control={form.control}
+                    name="diensten"
+                    render={({ field }) => {
+                      return (
+                        <FormItem key={service} className="flex flex-row items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(service)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...field.value, service])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== service
+                                      )
+                                    );
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">
+                            {service}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+              </div>
             </FormItem>
           )}
         />
 
         <FormField
           control={form.control}
-          name="location"
+          name="woonplaats"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Woonplaats</FormLabel>
@@ -206,7 +227,7 @@ export function OfferteForm() {
 
         <FormField
           control={form.control}
-          name="preferredDate"
+          name="datum"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Gewenste datum (optioneel)</FormLabel>
@@ -219,7 +240,7 @@ export function OfferteForm() {
 
         <FormField
           control={form.control}
-          name="message"
+          name="bericht"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Bericht</FormLabel>
@@ -235,11 +256,12 @@ export function OfferteForm() {
         />
 
         <div>
-          <label htmlFor="tekening-upload" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="bijlage-upload" className="block text-sm font-medium text-gray-700 mb-1">
             Upload tekeningen (optioneel, pdf/jpg/png, max 5MB)
           </label>
           <input
-            id="tekening-upload"
+            id="bijlage-upload"
+            name="bijlage"
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
             onChange={handleTekeningChange}
