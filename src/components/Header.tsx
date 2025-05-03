@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const dienstenItems = [{
+  title: 'Dakkapel',
+  path: '/diensten/dakkapel'
+}, {
   title: 'Schilderwerk',
   path: '/diensten/schilderwerk'
 }, {

@@ -7,8 +7,10 @@ import installatietechniek from './diensten/installatietechniek';
 import aanEnVerbouw from './diensten/aan-en-verbouw';
 import behangen from './diensten/behangen';
 import pvcVloeren from './diensten/pvc-vloeren';
+import dakkapel from './diensten/dakkapel';
 
 const diensten: DienstenRecord = {
+  'dakkapel': dakkapel,
   'schilderwerk': schilderwerk,
   'dakrenovatie': dakrenovatie,
   'stukadoren': stukadoren,

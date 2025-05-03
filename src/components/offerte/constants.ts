@@ -1,5 +1,6 @@
 
 export const SERVICES = [
+  'Dakkapel',
   'Schilderwerk',
   'Dakrenovatie',
   'Stukadoren',

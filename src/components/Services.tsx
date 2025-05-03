@@ -1,10 +1,18 @@
 
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper, Roof } from 'lucide-react';
 import React from 'react';
 import { OptimizedImage } from './ui/optimized-image';
 
 const services = [
+  {
+    id: 'dakkapel',
+    icon: <Roof className="h-12 w-12 text-brand-lightGreen mb-4" />,
+    title: 'Dakkapel',
+    description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
+    link: '/diensten/dakkapel',
+    image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
+  },
   {
     id: 'schilderwerk',
     icon: <Brush className="h-12 w-12 text-brand-lightGreen mb-4" />,
@@ -19,7 +27,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: '/lovable-uploads/3b0229fd-9f27-4076-acc1-1ef2a7168e25.png'
+    image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
   },
   {
     id: 'stukadoren',
@@ -27,7 +35,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: '/lovable-uploads/99959b05-5a83-42b4-b97b-473c5bfc3de5.png'
+    image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
   },
   {
     id: 'installatietechniek',
@@ -51,7 +59,7 @@ const services = [
     title: 'Behangen',
     description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
     link: '/diensten/behangen',
-    image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
+    image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
   },
   {
     id: 'pvc-vloeren',

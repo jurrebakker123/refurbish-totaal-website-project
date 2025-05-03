@@ -10,6 +10,7 @@ const targetCities = [
 ];
 
 const services = [
+  'dakkapel',
   'schilderwerk',
   'dakrenovatie',
   'stukadoren',  // Correct spelling maintained here
@@ -32,6 +33,7 @@ const citySlugMap: Record<string, string> = {
 };
 
 const serviceSlugMap: Record<string, string> = {
+  'dakkapel': 'dakkapel',
   'schilderwerk': 'schilderwerk',
   'dakrenovatie': 'dakrenovatie',
   'stukadoren': 'stukadoren',  // Correct slug for stukadoren service
