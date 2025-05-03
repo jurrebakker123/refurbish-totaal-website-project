@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -92,12 +93,14 @@ const DienstenPage = () => {
                   <div className="lg:w-1/2 animate-fade-in" style={{
                 animationDelay: '0.2s'
               }}>
-                    <OptimizedImage 
-                      src={dienst.image} 
-                      alt={dienst.title} 
-                      className="rounded-lg shadow-lg w-full h-96 hover-lift object-cover" 
-                      fallbackSrc="/placeholder.svg"
-                    />
+                    <div className="rounded-lg shadow-lg overflow-hidden">
+                      <OptimizedImage 
+                        src={dienst.image} 
+                        alt={dienst.title} 
+                        className="w-full h-96 object-cover transition-transform hover:scale-105 duration-300" 
+                        fallbackSrc="/placeholder.svg"
+                      />
+                    </div>
                   </div>
                   <div className="lg:w-1/2 animate-fade-in" style={{
                 animationDelay: '0.3s'

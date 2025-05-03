@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 import React from 'react';
@@ -95,12 +96,14 @@ const Services = () => {
               <div className="animate-float">{service.icon}</div>
               <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{service.title}</h3>
               <p className="text-gray-600 mb-6 flex-grow">{service.description}</p>
-              <OptimizedImage
-                src={service.image}
-                alt={service.title}
-                className="w-full h-48 object-cover rounded mb-4"
-                fallbackSrc="/placeholder.svg"
-              />
+              <div className="w-full h-48 rounded mb-4 overflow-hidden">
+                <OptimizedImage
+                  src={service.image}
+                  alt={service.title}
+                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                  fallbackSrc="/placeholder.svg"
+                />
+              </div>
               <Link 
                 to={service.link} 
                 className="text-brand-lightGreen font-medium hover-underline inline-flex items-center"
