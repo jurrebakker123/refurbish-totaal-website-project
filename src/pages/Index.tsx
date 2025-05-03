@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ShieldCheck, Check, ArrowRight, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -385,24 +386,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* New Form Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="container">
-            <motion.div className="max-w-4xl mx-auto" initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            duration: 0.5
-          }}>
-              <ReusableForm title="Offerte Aanvraagformulier" description="Wij nemen zo snel mogelijk contact met u op om uw wensen te bespreken." showFileUpload={true} templateId="template_ezfzaao" buttonText="Verstuur aanvraag" showServiceInput={true} showDateField={true} />
-            </motion.div>
-          </div>
-        </section>
+        {/* Form Section removed from here */}
 
         <CallToActionSection />
       </main>
