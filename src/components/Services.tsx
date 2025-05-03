@@ -35,7 +35,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png'
   },
   {
     id: 'installatietechniek',

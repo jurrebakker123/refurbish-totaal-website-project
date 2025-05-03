@@ -95,7 +95,7 @@ const Footer = () => {
                 <Link to="/diensten/dakrenovatie" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakrenovatie</Link>
               </li>
               <li>
-                <Link to="/diensten/stukadoren" className="hover:text-brand-lightGreen transition-colors hover-underline">Stucadoren</Link>
+                <Link to="/diensten/stukadoren" className="hover:text-brand-lightGreen transition-colors hover-underline">Stukadoren</Link>
               </li>
               <li>
                 <Link to="/diensten/installatietechniek" className="hover:text-brand-lightGreen transition-colors hover-underline">Installatietechniek</Link>

@@ -34,7 +34,7 @@ const diensten = [{
   title: 'Stukadoren',
   description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
   features: ['Gladpleisterwerk voor wanden en plafonds', 'Renovatiestucwerk bij scheuren en beschadigingen', 'Sierlijsten en ornamenten aanbrengen', 'Spachtelputz en structuurwerk', 'Venetiaans stucwerk en tadelakt', 'Betonlook wanden en vloeren'],
-  image: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png'
 }, {
   id: 'installatietechniek',
   icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
