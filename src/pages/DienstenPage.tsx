@@ -13,7 +13,7 @@ const diensten = [{
   title: 'Dakkapel',
   description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
   features: ['Ontwerp en plaatsing van nieuwe dakkapellen', 'Renovatie en isolatie van bestaande dakkapellen', 'Diverse stijlen en afwerkingsmogelijkheden', 'Compleet met dakbedekking en zinkwerk', 'Snelle en efficiënte plaatsing', 'Garantie op materialen en werkzaamheden'],
-  image: '/lovable-uploads/e0a67ba4-3d90-49d8-bcca-5a4a9a6723d1.png'
+  image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
 }, {
   id: 'schilderwerk',
   icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
@@ -27,7 +27,7 @@ const diensten = [{
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
   features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
-  image: 'https://images.unsplash.com/photo-1632759145356-1d14365d219d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
 }, {
   id: 'stukadoren',
   icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
