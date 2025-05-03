@@ -9,6 +9,7 @@ export const offerteFormSchema = z.object({
   datum: z.string().optional(),
   diensten: z.array(z.string()).min(1, "Selecteer minimaal één dienst"),
   bericht: z.string().optional(),
+  tekening_link: z.string().optional(),
   terms: z.boolean().refine((val) => val === true, {
     message: "U dient akkoord te gaan met onze voorwaarden",
   }),

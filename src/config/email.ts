@@ -38,6 +38,9 @@ interface EmailParams extends Record<string, unknown> {
   service?: string;
   preferred_date?: string;
   
+  // Tekening link voor Uploadcare
+  tekening_link?: string;
+  
   // Bijlagen gerelateerd
   has_attachment: boolean; // Boolean voor betere compatibiliteit
   tekening_naam?: string;
@@ -66,7 +69,8 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     console.log('EmailJS verzendpoging met parameters:', {
       ...templateParams,
       tekening: templateParams.tekening ? "Bestand aanwezig" : "Geen bestand",
-      tekening_naam: templateParams.tekening_naam || "Geen bestand"
+      tekening_naam: templateParams.tekening_naam || "Geen bestand",
+      tekening_link: templateParams.tekening_link || "Geen tekening link"
     });
     
     // KRITIEKE VALIDATIE voor Outlook compatibiliteit:
@@ -95,8 +99,11 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       service: templateParams.service || "",
       preferred_date: templateParams.preferred_date || "",
       
+      // Tekening link van Uploadcare
+      tekening_link: templateParams.tekening_link || "",
+      
       // Voor bijlagen - gewijzigd naar boolean in plaats van string
-      has_attachment: !!templateParams.tekening, // Dubbele uitroeptekens voor expliciete boolean conversie
+      has_attachment: !!templateParams.tekening || !!templateParams.tekening_link, 
       tekening_naam: templateParams.tekening_naam || "Geen bestand",
       
       // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres
@@ -123,7 +130,8 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
     console.log('EmailJS verzenden met definitieve parameters:', {
       ...params,
       _attachments: params._attachments ? "Bestand bijgevoegd als echte bijlage" : "Geen bijlage",
-      has_attachment: params.has_attachment // Log de boolean waarde
+      has_attachment: params.has_attachment, // Log de boolean waarde
+      tekening_link: params.tekening_link // Log de tekening link
     });
     
     // Direct emailjs gebruiken met expliciete options parameter

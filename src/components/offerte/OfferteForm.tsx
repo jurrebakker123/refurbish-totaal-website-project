@@ -3,13 +3,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { OfferteFormData, offerteFormSchema } from "./schema";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { sendEmail } from "@/config/email";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SERVICES } from "./constants";
+
+declare global {
+  interface Window {
+    uploadcare: any;
+  }
+}
 
 export function OfferteForm() {
   const form = useForm<OfferteFormData>({
@@ -22,47 +28,49 @@ export function OfferteForm() {
       datum: '',
       diensten: [],
       bericht: '',
+      tekening_link: '',
       terms: false
     },
   });
 
-  const [tekeningFile, setTekeningFile] = useState<File | null>(null);
-  const [tekeningBase64, setTekeningBase64] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const uploadcareInputRef = useRef<HTMLInputElement>(null);
+  const [uploadcareLoaded, setUploadcareLoaded] = useState(false);
 
-  const handleTekeningChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    setTekeningFile(file || null);
-    
-    if (file) {
-      // Controleer de grootte van het bestand (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Het bestand is te groot. Maximum grootte is 5MB.", {
-          duration: 5000,
-          position: 'top-center',
-        });
-        
-        // Reset file input
-        if (document.getElementById('bijlage-upload')) {
-          (document.getElementById('bijlage-upload') as HTMLInputElement).value = '';
-        }
-        setTekeningFile(null);
-        setTekeningBase64(null);
-        return;
+  // Wait for the Uploadcare widget to load and initialize
+  useEffect(() => {
+    const checkUploadcare = () => {
+      if (window.uploadcare) {
+        setUploadcareLoaded(true);
+      } else {
+        setTimeout(checkUploadcare, 100);
       }
+    };
+    
+    checkUploadcare();
+  }, []);
+
+  // Initialize Uploadcare widget when it's loaded
+  useEffect(() => {
+    if (uploadcareLoaded && uploadcareInputRef.current) {
+      const widget = window.uploadcare.Widget(uploadcareInputRef.current);
       
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        // Extract only the base64 data part
-        const base64Data = result.split(',')[1]; 
-        setTekeningBase64(base64Data);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setTekeningBase64(null);
+      // Listen for file changes
+      widget.onChange(function(file: any) {
+        if (file) {
+          file.done(function(fileInfo: any) {
+            form.setValue('tekening_link', fileInfo.cdnUrl);
+            toast.success("Tekening geupload!", {
+              duration: 3000,
+              position: 'top-center',
+            });
+          });
+        } else {
+          form.setValue('tekening_link', '');
+        }
+      });
     }
-  };
+  }, [uploadcareLoaded, form]);
 
   const handleSubmit = async (data: OfferteFormData) => {
     if (!data.terms) {
@@ -77,9 +85,8 @@ export function OfferteForm() {
 
     try {
       console.log('Offerte Form Submission:', { 
-        ...data, 
-        tekeningIncluded: !!tekeningBase64,
-        tekeningFileName: tekeningFile?.name || "Geen bestand"
+        ...data,
+        tekeningLink: data.tekening_link || "Geen tekening"
       });
 
       // Formatteer geselecteerde diensten als string
@@ -96,9 +103,8 @@ export function OfferteForm() {
         location: data.woonplaats,
         service: selectedServices,
         preferred_date: data.datum || "Niet opgegeven",
-        tekening: tekeningBase64 || "",
-        tekening_naam: tekeningFile?.name || "",
-        templateId: "template_ezfzaao" // Nieuwe sjabloon ID voor offerteaanvragen
+        tekening_link: data.tekening_link || "Geen tekening",
+        templateId: "template_ezfzaao" // Sjabloon ID voor offerteaanvragen
       });
 
       if (result.success) {
@@ -108,10 +114,11 @@ export function OfferteForm() {
         });
         
         form.reset();
-        setTekeningFile(null);
-        setTekeningBase64(null);
-        if (document.getElementById('bijlage-upload')) {
-          (document.getElementById('bijlage-upload') as HTMLInputElement).value = '';
+        
+        // Reset Uploadcare widget if it exists
+        if (window.uploadcare && uploadcareInputRef.current) {
+          const widget = window.uploadcare.Widget(uploadcareInputRef.current);
+          widget.value(null);
         }
       } else {
         throw new Error("EmailJS verzending mislukt");
@@ -140,6 +147,7 @@ export function OfferteForm() {
                 <FormControl>
                   <Input placeholder="Uw naam" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -152,6 +160,7 @@ export function OfferteForm() {
                 <FormControl>
                   <Input type="email" placeholder="uw@email.nl" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -166,6 +175,7 @@ export function OfferteForm() {
               <FormControl>
                 <Input placeholder="+31 6 30136079" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -208,6 +218,7 @@ export function OfferteForm() {
                   />
                 ))}
               </div>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -221,6 +232,7 @@ export function OfferteForm() {
               <FormControl>
                 <Input placeholder="Uw woonplaats" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -234,6 +246,7 @@ export function OfferteForm() {
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -251,28 +264,39 @@ export function OfferteForm() {
                   {...field} 
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
 
-        <div>
-          <label htmlFor="bijlage-upload" className="block text-sm font-medium text-gray-700 mb-1">
-            Upload tekeningen (optioneel, pdf/jpg/png, max 5MB)
-          </label>
-          <input
-            id="bijlage-upload"
-            name="bijlage"
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleTekeningChange}
-            className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm bg-white focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen"
-          />
-          {tekeningFile && (
-            <div className="mt-1 text-xs text-gray-600 italic">
-              Geselecteerd: {tekeningFile.name} ({(tekeningFile.size / (1024 * 1024)).toFixed(2)} MB)
-            </div>
+        {/* Uploadcare widget */}
+        <FormField
+          control={form.control}
+          name="tekening_link"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Upload tekeningen</FormLabel>
+              <div className="flex flex-col space-y-1">
+                <input
+                  ref={uploadcareInputRef}
+                  type="hidden"
+                  role="uploadcare-uploader"
+                  data-tabs="file url"
+                  data-multiple="false"
+                  data-clearable
+                  data-preview-step
+                  data-button-text="Upload tekeningen"
+                  {...field}
+                />
+                <p className="text-xs text-gray-500">Max. 10 MB – PDF, JPG, PNG</p>
+                {field.value && (
+                  <p className="text-xs text-green-600">Bestand succesvol geupload!</p>
+                )}
+              </div>
+              <FormMessage />
+            </FormItem>
           )}
-        </div>
+        />
 
         <FormField
           control={form.control}
@@ -280,16 +304,15 @@ export function OfferteForm() {
           render={({ field }) => (
             <FormItem className="flex items-start space-x-2 space-y-0">
               <FormControl>
-                <input
-                  type="checkbox"
+                <Checkbox 
                   checked={field.value}
-                  onChange={field.onChange}
-                  className="mt-1"
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
               <FormLabel className="font-normal">
                 Ik ga akkoord met de <a href="/voorwaarden" className="text-brand-lightGreen hover:underline">algemene voorwaarden</a>
               </FormLabel>
+              <FormMessage />
             </FormItem>
           )}
         />
