@@ -48,7 +48,7 @@ export function ZonnepanelenContact() {
               <CalendarCheck className="h-12 w-12 text-brand-lightGreen mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-4">Gratis Inspectie</h3>
               <p className="text-gray-600 mb-6">
-                Plan een vrijblijvende dakopname voor een persoonlijk advies op maat.
+                Plan een vrijblijvende inspectie voor een persoonlijk advies op maat.
               </p>
               <Button 
                 onClick={() => window.location.href = '/offerte'}
@@ -62,34 +62,13 @@ export function ZonnepanelenContact() {
           
           <div className="mt-12">
             <ReusableForm 
-              title="Vraag direct een offerte aan voor zonnepanelen"
+              title="Vraag direct een offerte aan voor uw zonnepanelen"
               description="Ontvang binnen 24 uur een reactie van onze zonnepanelen specialisten."
               showFileUpload={true}
               templateId="template_ezfzaao"
               buttonText="Offerte aanvragen"
-              showServiceInput={false}
+              showServiceInput={true}
               showDateField={true}
-              additionalFields={[
-                {
-                  name: 'daktype',
-                  label: 'Type dak',
-                  type: 'select',
-                  required: true,
-                  options: [
-                    { value: 'Plat dak', label: 'Plat dak' },
-                    { value: 'Schuin dak', label: 'Schuin dak' },
-                    { value: 'Combinatie', label: 'Combinatie van plat en schuin' },
-                    { value: 'Anders', label: 'Anders' }
-                  ]
-                },
-                {
-                  name: 'dakoppervlakte',
-                  label: 'Geschat dakoppervlakte (m²)',
-                  type: 'number',
-                  required: false,
-                  placeholder: 'Bijv. 60'
-                }
-              ]}
             />
           </div>
         </div>
