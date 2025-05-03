@@ -27,10 +27,11 @@ export function OptimizedImage({
       setImgSrc(src);
       setHasError(false);
     }
-  }, [src]);
+  }, [src, imgSrc, hasError]);
 
   const handleError = () => {
     if (imgSrc !== fallbackSrc) {
+      console.log(`Image failed to load: ${imgSrc}, using fallback`);
       setImgSrc(fallbackSrc);
       setHasError(true);
     }

@@ -40,7 +40,7 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
               <OptimizedImage 
                 src={imageUrl} 
                 alt={dienst.title} 
-                className="w-full h-auto"
+                className="w-full h-72 object-cover"
                 fallbackSrc="/placeholder.svg"
               />
             </div>
