@@ -37,8 +37,7 @@ const dakrenovatie: DienstData = {
       answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
     }
   ],
-  image: '/lovable-uploads/e8bc0451-1253-46ab-9f7b-e70945e43bc6.png',
-  keywords: 'dakrenovatie, dakonderhoud, dakbedekking, dakisolatie, daklekkage, dakpannen vervangen'
+  image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
 };
 
 export default dakrenovatie;

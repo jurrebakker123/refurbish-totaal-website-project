@@ -11,7 +11,7 @@ const services = [
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
-    image: '/lovable-uploads/dc93c2be-7ce5-4fd8-a988-1baa4c8cf0ca.png'
+    image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
   },
   {
     id: 'schilderwerk',
@@ -27,7 +27,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: '/lovable-uploads/e8bc0451-1253-46ab-9f7b-e70945e43bc6.png'
+    image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
   },
   {
     id: 'stukadoren',
@@ -35,7 +35,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: 'https://images.unsplash.com/photo-1590502593747-42a996133562?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png'
   },
   {
     id: 'installatietechniek',
