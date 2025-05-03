@@ -11,7 +11,7 @@ const services = [
     title: 'Schilderwerk',
     description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
     link: '/diensten/schilderwerk',
-    image: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png'
+    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'dakrenovatie',
@@ -35,7 +35,7 @@ const services = [
     title: 'Installatietechniek',
     description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
     link: '/diensten/installatietechniek',
-    image: '/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png'
+    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
   },
   {
     id: 'aan-en-verbouw',
@@ -43,7 +43,7 @@ const services = [
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
-    image: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png'
+    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
   },
   {
     id: 'behangen',
@@ -59,7 +59,7 @@ const services = [
     title: 'PVC Vloeren',
     description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
     link: '/diensten/pvc-vloeren',
-    image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
+    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   }
 ];
 

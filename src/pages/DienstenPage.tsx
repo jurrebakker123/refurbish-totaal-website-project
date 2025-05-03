@@ -13,7 +13,7 @@ const diensten = [{
   title: 'Schilderwerk',
   description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
   features: ['Buitenschilderwerk voor gevels, kozijnen en deuren', 'Binnenschilderwerk voor wanden, plafonds en trappen', 'Kleuradvies en verfkeuze op maat', 'Houtrotherstel en reparaties', 'Graffiti verwijdering', 'Behang- en spuitwerk'],
-  image: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png'
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'dakrenovatie',
   icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
@@ -34,14 +34,14 @@ const diensten = [{
   title: 'Installatietechniek',
   description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
   features: ['Elektra aanleggen of vernieuwen', 'Groepenkast vervangen of uitbreiden', 'Water- en gasleidingen aanleggen of vervangen', 'Badkamer en toilet installaties', 'Vloerverwarming aanleggen', 'Domotica en slimme huisinstallaties'],
-  image: '/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png'
+  image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
 }, {
   id: 'aan-en-verbouw',
   icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Aan- en verbouw',
   description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
   features: ['Uitbouwen en aanbouwen realiseren', 'Dakkapellen en dakopbouwen', 'Muren doorbreken en dragende constructies', 'Garage ombouwen tot woonruimte', 'Indeling van woning wijzigen', 'Funderingsherstel'],
-  image: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png'
+  image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
 }, {
   id: 'behangen',
   icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
@@ -55,7 +55,7 @@ const diensten = [{
   title: 'PVC Vloeren',
   description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
   features: ['PVC vloeren in diverse dessins en kwaliteiten', 'Egaliseren van ondervloeren', 'Vloerverwarming geschikte PVC vloeren', 'Click PVC en vaste PVC vloeren', 'Onderhoud en reparatie van PVC vloeren', 'Verwijderen van oude vloerbedekking'],
-  image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
+  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }];
 
 const DienstenPage = () => {

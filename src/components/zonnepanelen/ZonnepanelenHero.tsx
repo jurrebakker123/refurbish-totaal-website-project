@@ -7,14 +7,12 @@ import { OptimizedImage } from '../ui/optimized-image';
 export function ZonnepanelenHero() {
   return (
     <section className="relative min-h-[90vh] flex items-center">
-      <div className="absolute inset-0">
-        <OptimizedImage 
-          src="/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png" 
-          alt="Zonnepanelen achtergrond" 
-          className="w-full h-full"
-          objectFit="cover"
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-        />
+      <div 
+        className="absolute inset-0 bg-cover bg-center" 
+        style={{ 
+          backgroundImage: `url('https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+        }}
+      >
         <div className="absolute inset-0 bg-brand-darkGreen/80"></div>
       </div>
       <div className="container relative z-10 py-16 md:py-24">

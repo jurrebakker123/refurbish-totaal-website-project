@@ -21,10 +21,9 @@ export function ZonnepanelenVoordelen() {
           <div>
             <div className="rounded-lg overflow-hidden shadow-xl">
               <OptimizedImage 
-                src="/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png" 
+                src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?ixlib=rb-4.0.1&auto=format&fit=crop&w=1500&q=80" 
                 alt="Refurbished zonnepanelen installatie" 
                 className="w-full h-auto"
-                fallbackSrc="/placeholder.svg"
               />
             </div>
           </div>

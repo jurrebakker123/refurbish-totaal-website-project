@@ -1,19 +1,18 @@
 
 import React from 'react';
-import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function TuinhuizenGallery() {
   const images = [
     {
-      url: '/lovable-uploads/3b0229fd-9f27-4076-acc1-1ef2a7168e25.png',
+      url: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       title: 'Modern Tuinhuis'
     },
     {
-      url: '/lovable-uploads/99959b05-5a83-42b4-b97b-473c5bfc3de5.png',
+      url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       title: 'Klassiek Tuinhuis'
     },
     {
-      url: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png',
+      url: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       title: 'Luxe Tuinhuis'
     }
   ];
@@ -31,11 +30,10 @@ export function TuinhuizenGallery() {
               className="group relative overflow-hidden rounded-lg shadow-lg hover-lift animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <OptimizedImage 
+              <img 
                 src={image.url} 
                 alt={image.title} 
-                className="w-full h-64 object-cover"
-                fallbackSrc="/placeholder.svg"
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <h3 className="text-white text-xl font-bold">{image.title}</h3>

@@ -17,13 +17,14 @@ const DienstHero = ({ dienst, serviceId }: DienstHeroProps) => {
 
   return (
     <section className={`relative text-white ${heroHeight}`}>
-      <div className="absolute inset-0 bg-brand-darkGreen">
-        <OptimizedImage 
-          src={imageUrl} 
-          alt={`${dienst.title} achtergrond`}
-          className="w-full h-full opacity-50"
-          objectFit="cover"
-        />
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+        style={{ 
+          backgroundImage: `url('${imageUrl}')`,
+          backgroundPosition: 'center 25%'
+        }}
+      >
+        <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-50"></div>
       </div>
       <div className="container relative z-10">
         <div className="flex flex-col md:flex-row items-center">

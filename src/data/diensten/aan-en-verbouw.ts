@@ -37,7 +37,7 @@ const aanEnVerbouw: DienstData = {
       answer: 'In de meeste gevallen is dit mogelijk, hoewel er natuurlijk wel overlast zal zijn. Wij proberen deze overlast zoveel mogelijk te beperken en stemmen de werkzaamheden met u af.' 
     }
   ],
-  image: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png'
+  image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
 };
 
 export default aanEnVerbouw;
