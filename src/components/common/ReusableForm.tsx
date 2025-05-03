@@ -204,41 +204,48 @@ const ReusableForm = ({
       
       <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
         <div className="field">
-          <label className="block font-medium mb-1">Naam</label>
+          <label htmlFor="naam" className="block font-medium mb-1 text-gray-700">Naam</label>
           <input 
             type="text" 
             name="naam" 
+            id="naam"
             required 
             className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Uw naam"
           />
         </div>
         
         <div className="field">
-          <label className="block font-medium mb-1">E-mailadres</label>
+          <label htmlFor="email" className="block font-medium mb-1 text-gray-700">E-mailadres</label>
           <input 
             type="email" 
             name="email" 
+            id="email"
             required 
             className="w-full p-2 border border-gray-300 rounded"
+            placeholder="uw.email@voorbeeld.nl"
           />
         </div>
         
         <div className="field">
-          <label className="block font-medium mb-1">Telefoonnummer</label>
+          <label htmlFor="telefoon" className="block font-medium mb-1 text-gray-700">Telefoonnummer</label>
           <input 
             type="tel" 
             name="telefoon" 
+            id="telefoon"
             required 
             className="w-full p-2 border border-gray-300 rounded"
+            placeholder="06 12345678"
           />
         </div>
         
         {showServiceInput && (
           <div className="field">
-            <label className="block font-medium mb-1">Dienst</label>
+            <label htmlFor="dienst" className="block font-medium mb-1 text-gray-700">Dienst</label>
             <input 
               type="text" 
               name="dienst" 
+              id="dienst"
               required 
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="Bijv. Dakkapel, Schilderwerk, etc."
@@ -247,21 +254,24 @@ const ReusableForm = ({
         )}
         
         <div className="field">
-          <label className="block font-medium mb-1">Woonplaats</label>
+          <label htmlFor="woonplaats" className="block font-medium mb-1 text-gray-700">Woonplaats</label>
           <input 
             type="text" 
             name="woonplaats" 
+            id="woonplaats"
             required 
             className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Uw woonplaats"
           />
         </div>
         
         {showDateField && (
           <div className="field">
-            <label className="block font-medium mb-1">Gewenste datum</label>
+            <label htmlFor="datum" className="block font-medium mb-1 text-gray-700">Gewenste datum</label>
             <input 
               type="date" 
               name="datum" 
+              id="datum"
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
@@ -270,10 +280,11 @@ const ReusableForm = ({
         {/* Additional custom fields */}
         {additionalFields.map((field) => (
           <div className="field" key={field.name}>
-            <label className="block font-medium mb-1">{field.label}</label>
+            <label htmlFor={field.name} className="block font-medium mb-1 text-gray-700">{field.label}</label>
             {field.type === 'select' ? (
               <select
                 name={field.name}
+                id={field.name}
                 required={field.required}
                 className="w-full p-2 border border-gray-300 rounded"
               >
@@ -287,6 +298,7 @@ const ReusableForm = ({
             ) : field.type === 'textarea' ? (
               <textarea
                 name={field.name}
+                id={field.name}
                 required={field.required}
                 placeholder={field.placeholder}
                 rows={5}
@@ -296,6 +308,7 @@ const ReusableForm = ({
               <input
                 type={field.type}
                 name={field.name}
+                id={field.name}
                 required={field.required}
                 placeholder={field.placeholder}
                 className="w-full p-2 border border-gray-300 rounded"
@@ -305,18 +318,20 @@ const ReusableForm = ({
         ))}
         
         <div className="field">
-          <label className="block font-medium mb-1">Bericht</label>
+          <label htmlFor="bericht" className="block font-medium mb-1 text-gray-700">Bericht</label>
           <textarea 
             name="bericht" 
+            id="bericht"
             rows={5} 
             required 
             className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Uw bericht of vraag"
           ></textarea>
         </div>
         
         {showFileUpload && (
           <div className="field">
-            <label className="block font-medium mb-1">Upload bestanden</label>
+            <label className="block font-medium mb-1 text-gray-700">Upload bestanden</label>
             <input
               type="hidden"
               role="uploadcare-uploader"
