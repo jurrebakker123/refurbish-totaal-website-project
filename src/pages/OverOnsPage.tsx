@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { CheckCircle, Users, ThumbsUp, Award, Target, TrendingUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
+import ReusableForm from '@/components/common/ReusableForm';
 
 const OverOnsPage = () => {
   return (
@@ -194,17 +195,16 @@ const OverOnsPage = () => {
                     </ul>
                   </div>
 
-                  <div className="bg-brand-darkGreen text-white p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.5s' }}>
-                    <h3 className="text-xl font-bold mb-4">Contact</h3>
-                    <p className="mb-6">
-                      Heeft u vragen over onze diensten of wilt u een offerte aanvragen? Neem gerust contact met ons op.
-                    </p>
-                    <a 
-                      href="/contact" 
-                      className="block bg-white text-brand-darkGreen py-3 px-6 rounded-md font-medium text-center hover:bg-gray-100 transition-colors"
-                    >
-                      Neem Contact Op
-                    </a>
+                  <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                    <h3 className="text-xl font-bold mb-4 text-brand-darkGreen">Neem Contact Op</h3>
+                    <ReusableForm 
+                      title=""
+                      description="Heeft u vragen of wilt u een offerte aanvragen? Vul het formulier in."
+                      showFileUpload={false}
+                      templateId="template_ezfzaao"
+                      buttonText="Verstuur bericht"
+                      showServiceInput={true}
+                    />
                   </div>
                 </div>
               </div>

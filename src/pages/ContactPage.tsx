@@ -91,6 +91,7 @@ const ContactPage = () => {
                   <ReusableForm 
                     title="Stuur ons een bericht"
                     showFileUpload={false}
+                    templateId="template_ezfzaao"
                     buttonText="Verstuur Bericht"
                     additionalFields={[
                       {
