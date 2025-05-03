@@ -21,45 +21,21 @@ export function OptimizedImage({
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);
 
-  // Reset error state and image source when src prop changes
+  // Reset error state when src changes
   useEffect(() => {
-    if (src !== imgSrc) {
+    if (src !== imgSrc && !hasError) {
       setImgSrc(src);
       setHasError(false);
     }
-  }, [src, imgSrc]);
+  }, [src, imgSrc, hasError]);
 
   const handleError = () => {
     if (imgSrc !== fallbackSrc) {
-      console.log(`Image failed to load: ${imgSrc}, using fallback: ${fallbackSrc}`);
+      console.log(`Image failed to load: ${imgSrc}, using fallback`);
       setImgSrc(fallbackSrc);
       setHasError(true);
     }
   };
-
-  // Pre-check if the image is valid
-  useEffect(() => {
-    const img = new Image();
-    img.src = src;
-    
-    img.onload = () => {
-      setImgSrc(src);
-      setHasError(false);
-    };
-    
-    img.onerror = () => {
-      if (src !== fallbackSrc) {
-        console.log(`Image preload failed: ${src}, using fallback`);
-        setImgSrc(fallbackSrc);
-        setHasError(true);
-      }
-    };
-    
-    return () => {
-      img.onload = null;
-      img.onerror = null;
-    };
-  }, [src, fallbackSrc]);
 
   return (
     <img
