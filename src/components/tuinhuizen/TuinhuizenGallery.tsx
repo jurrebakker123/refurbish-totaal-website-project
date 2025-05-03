@@ -5,15 +5,15 @@ import { OptimizedImage } from '../ui/optimized-image';
 export function TuinhuizenGallery() {
   const images = [
     {
-      url: 'https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png',
       title: 'Modern Tuinhuis'
     },
     {
-      url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png',
       title: 'Klassiek Tuinhuis'
     },
     {
-      url: 'https://images.unsplash.com/photo-1623883993704-22ae14b5accd?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/504b25db-f625-4ccd-9e93-6970157c6bf6.png',
       title: 'Luxe Tuinhuis'
     }
   ];
