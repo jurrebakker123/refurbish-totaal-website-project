@@ -45,7 +45,8 @@ const dakkapel: DienstData = {
       answer: 'Onze dakkapellen zijn goed geïsoleerd en voldoen aan de huidige bouwnormen. We gebruiken hoogwaardige isolatiematerialen voor zowel het dak, de zijwanden als de borstweringen, en plaatsen HR++ of triple glas voor optimale energieprestaties.'
     }
   ],
-  image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
+  image: '/lovable-uploads/dc93c2be-7ce5-4fd8-a988-1baa4c8cf0ca.png',
+  keywords: 'dakkapel, dakkapellen, zolder uitbouw, meer ruimte, lichtinval, zolderverbouwing'
 };
 
 export default dakkapel;
