@@ -37,7 +37,7 @@ const pvcVloeren: DienstData = {
       answer: 'Bij normaal gebruik en goed onderhoud gaat een kwaliteits-PVC vloer minstens 10-15 jaar mee. De slijtlaag is bepalend voor de levensduur.' 
     }
   ],
-  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png'
 };
 
 export default pvcVloeren;

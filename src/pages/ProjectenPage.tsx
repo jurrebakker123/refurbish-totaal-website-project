@@ -14,8 +14,8 @@ const projects = [
     category: 'Renovatie',
     description: 'Complete renovatie van een jaren 30 woning, inclusief nieuwe badkamer, keuken, en stucwerk in alle ruimtes. De woning is volledig gemoderniseerd met behoud van authentieke elementen.',
     challenges: 'Uitdagingen waren het behouden van originele ornamenten terwijl moderne installaties werden geïntegreerd.',
-    imageUrl: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png',
+    beforeImageUrl: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png',
   },
   {
     id: 2,
@@ -24,8 +24,8 @@ const projects = [
     category: 'Schilderwerk',
     description: 'Volledig buitenschilderwerk van een vrijstaande villa, inclusief houtrotreparaties en vervanging van kozijnen waar nodig. Gebruik van hoogwaardige verf voor langdurige bescherming.',
     challenges: 'Door het werken met hoogwaardige materialen en grondige voorbereiding hebben we een resultaat bereikt dat jaren meegaat.',
-    imageUrl: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png',
+    beforeImageUrl: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png',
   },
   {
     id: 3,
@@ -34,8 +34,8 @@ const projects = [
     category: 'Dakrenovatie',
     description: 'Complete renovatie van het dak van een karakteristieke jaren 30 woning. Inclusief vervanging van dakpannen, isolatie en nieuwe dakramen voor meer natuurlijk licht.',
     challenges: 'De uitdaging lag in het behouden van het authentieke karakter van het dak terwijl moderne isolatie werd toegepast.',
-    imageUrl: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1625602812206-5ec545ca1231?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/3b0229fd-9f27-4076-acc1-1ef2a7168e25.png',
+    beforeImageUrl: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png',
   },
   {
     id: 4,
@@ -44,8 +44,8 @@ const projects = [
     category: 'Verbouwing',
     description: 'Volledige renovatie van een verouderde badkamer naar een moderne wellnessruimte. Inclusief inloopdouche, vrijstaand bad en op maat gemaakt badkamermeubel.',
     challenges: 'In een beperkte ruimte hebben we optimaal gebruik gemaakt van slimme indelingen en materialen.',
-    imageUrl: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png',
+    beforeImageUrl: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png',
   },
   {
     id: 5,
@@ -54,8 +54,8 @@ const projects = [
     category: 'PVC Vloeren',
     description: 'Installatie van hoogwaardige PVC vloeren in een modern kantoorpand van 500m². De vloer combineert praktische eigenschappen met een stijlvolle uitstraling.',
     challenges: 'Door een strakke planning en efficiënte werkwijze hebben we het project binnen 3 dagen kunnen afronden zonder bedrijfsactiviteiten te verstoren.',
-    imageUrl: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/a9b0106d-07f8-457b-bf57-185f81ec746f.png',
+    beforeImageUrl: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png',
   },
 ];
 
