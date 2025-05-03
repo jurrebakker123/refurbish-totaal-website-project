@@ -37,7 +37,7 @@ const installatietechniek: DienstData = {
       answer: 'Wij geven minimaal 2 jaar garantie op al ons installatiewerk. Op veel materialen geldt een fabrieksgarantie die nog langer is.' 
     }
   ],
-  image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
+  image: '/lovable-uploads/b63f65bc-1311-409d-a72e-1c3304444e05.png'
 };
 
 export default installatietechniek;

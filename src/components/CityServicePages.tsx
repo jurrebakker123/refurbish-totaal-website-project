@@ -13,7 +13,7 @@ const services = [
   'dakkapel',
   'schilderwerk',
   'dakrenovatie',
-  'stukadoren',  // Now using stukadoren consistently
+  'stukadoren',  // Changed to stukadoren consistently
   'installatietechniek',
   'aan-en-verbouw',
   'behangen',
@@ -36,7 +36,7 @@ const serviceSlugMap: Record<string, string> = {
   'dakkapel': 'dakkapel',
   'schilderwerk': 'schilderwerk',
   'dakrenovatie': 'dakrenovatie',
-  'stukadoren': 'stukadoren',  // Now using stukadoren consistently
+  'stukadoren': 'stukadoren',  // Changed to stukadoren consistently
   'installatietechniek': 'installatietechniek',
   'aan-en-verbouw': 'aan-en-verbouw',
   'behangen': 'behangen',
