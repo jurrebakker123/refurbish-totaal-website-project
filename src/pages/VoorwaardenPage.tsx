@@ -2,12 +2,15 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Download } from 'lucide-react';
+import { Download, MessageSquare } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
 
 const VoorwaardenPage = () => {
+  const phoneNumber = "31854444255"; // Dutch phone number format for WhatsApp
+  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+
   const handleDownloadPdf = () => {
     toast.info("PDF genereren, even geduld...");
     
@@ -123,12 +126,18 @@ const VoorwaardenPage = () => {
                 </div>
 
                 <div className="text-center mt-12">
-                  <Link to="/contact" className="btn-primary mr-4">
+                  <a 
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="btn-primary mr-4 inline-flex items-center"
+                  >
+                    <MessageSquare className="mr-2 h-5 w-5" />
                     Contact Opnemen
-                  </Link>
+                  </a>
                   <button 
                     onClick={handleDownloadPdf}
-                    className="btn-primary bg-brand-lightGreen hover:bg-brand-darkGreen flex items-center justify-center"
+                    className="btn-primary bg-brand-lightGreen hover:bg-brand-darkGreen flex items-center justify-center inline-flex"
                   >
                     <Download className="mr-2 h-5 w-5" />
                     Download als PDF

@@ -1,12 +1,16 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Send, User, MessageSquare } from 'lucide-react';
+import { MapPin, Phone, Mail, Send, User, MessageSquare, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 import CallToActionSection from '@/components/CallToActionSection';
 import { sendEmail } from '@/config/email';
 
 const ContactPage = () => {
+  const phoneNumber = "31854444255"; // Dutch phone number format for WhatsApp
+  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -105,6 +109,15 @@ const ContactPage = () => {
                     <div>
                       <h3 className="font-semibold text-xl mb-1">Telefoonnummer</h3>
                       <a href="tel:+31854444255" className="text-gray-700 hover:text-brand-darkGreen">085 4444 255</a>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="bg-brand-lightGreen/10 p-3 rounded-lg mr-4">
+                      <Smartphone className="h-6 w-6 text-brand-darkGreen" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-xl mb-1">WhatsApp</h3>
+                      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-brand-darkGreen">Direct chatten via WhatsApp</a>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -222,13 +235,26 @@ const ContactPage = () => {
                     </div>
                     <button 
                       type="submit" 
-                      className="btn-primary w-full flex items-center justify-center"
+                      className="btn-primary w-full flex items-center justify-center mb-4"
                       disabled={isSubmitting}
                     >
                       <span>{isSubmitting ? 'Bezig met verzenden...' : 'Verstuur Bericht'}</span>
                       <Send className="ml-2 h-5 w-5" />
                     </button>
                   </form>
+                  
+                  <div className="mt-4 text-center">
+                    <p className="text-gray-700 mb-3">Of neem direct contact op via:</p>
+                    <a 
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer" 
+                      className="btn-primary bg-green-600 hover:bg-green-700 inline-flex items-center justify-center w-full"
+                    >
+                      <MessageSquare className="mr-2 h-5 w-5" />
+                      WhatsApp Chat Starten
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
