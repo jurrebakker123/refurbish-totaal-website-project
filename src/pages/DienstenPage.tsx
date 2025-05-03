@@ -1,15 +1,14 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper, Roof } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const diensten = [{
   id: 'dakkapel',
-  icon: <Roof size={48} className="text-brand-lightGreen mb-6" />,
+  icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Dakkapel',
   description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
   features: ['Ontwerp en plaatsing van nieuwe dakkapellen', 'Renovatie en isolatie van bestaande dakkapellen', 'Diverse stijlen en afwerkingsmogelijkheden', 'Compleet met dakbedekking en zinkwerk', 'Snelle en efficiënte plaatsing', 'Garantie op materialen en werkzaamheden'],

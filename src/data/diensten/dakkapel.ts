@@ -1,32 +1,19 @@
 
-import { Dienst } from '../types/dienst';
+import { DienstData } from '../types/dienst';
+import { Home } from 'lucide-react';
+import React from 'react';
 
-const dakkapel: Dienst = {
-  id: 'dakkapel',
+const dakkapel: DienstData = {
   title: 'Dakkapel',
-  subtitle: 'Meer ruimte en licht in uw woning',
-  description: 'Een dakkapel is een uitbouw op het dak van een woning. Het vergroot de ruimte en lichtinval op uw zolder, waardoor deze beter benut kan worden als slaap-, werk- of hobbyruimte. Bij Refurbish Totaal Nederland plaatsen we kwalitatief hoogwaardige dakkapellen die perfect bij uw woning passen.',
+  description: 'Meer ruimte en licht in uw woning',
+  longDescription: 'Een dakkapel is een uitbouw op het dak van een woning. Het vergroot de ruimte en lichtinval op uw zolder, waardoor deze beter benut kan worden als slaap-, werk- of hobbyruimte. Bij Refurbish Totaal Nederland plaatsen we kwalitatief hoogwaardige dakkapellen die perfect bij uw woning passen.',
+  icon: React.createElement(Home, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    {
-      title: 'Professionele plaatsing',
-      description: 'Onze ervaren vakmensen zorgen voor een perfecte montage en afwerking van uw dakkapel.'
-    },
-    {
-      title: 'Diverse stijlen',
-      description: 'Kies uit verschillende stijlen, materialen en afwerkingsmogelijkheden die passen bij uw woning.'
-    },
-    {
-      title: 'Hoogwaardige isolatie',
-      description: 'Onze dakkapellen zijn goed geïsoleerd voor optimaal comfort en energiebesparing.'
-    },
-    {
-      title: 'Snelle realisatie',
-      description: 'Een dakkapel is vaak binnen 1-2 dagen geplaatst, zodat u snel kunt genieten van uw extra ruimte.'
-    },
-    {
-      title: 'Vergunning aanvragen',
-      description: 'We kunnen u helpen bij het aanvragen van de benodigde vergunningen bij uw gemeente.'
-    }
+    'Professionele plaatsing',
+    'Diverse stijlen',
+    'Hoogwaardige isolatie',
+    'Snelle realisatie',
+    'Vergunning aanvragen'
   ],
   benefits: [
     'Meer leefruimte in uw woning',
@@ -58,8 +45,7 @@ const dakkapel: Dienst = {
       answer: 'Onze dakkapellen zijn goed geïsoleerd en voldoen aan de huidige bouwnormen. We gebruiken hoogwaardige isolatiematerialen voor zowel het dak, de zijwanden als de borstweringen, en plaatsen HR++ of triple glas voor optimale energieprestaties.'
     }
   ],
-  image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png',
-  metaDescription: 'Professionele plaatsing en renovatie van dakkapellen door Refurbish Totaal Nederland. Meer ruimte en licht in uw woning met een kwalitatieve dakkapel op maat.'
+  image: '/lovable-uploads/b38cb6ce-e0f6-43c0-8689-c272ffea8c12.png'
 };
 
 export default dakkapel;

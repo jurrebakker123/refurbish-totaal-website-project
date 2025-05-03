@@ -1,13 +1,12 @@
-
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper, Roof } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
 import React from 'react';
 import { OptimizedImage } from './ui/optimized-image';
 
 const services = [
   {
     id: 'dakkapel',
-    icon: <Roof className="h-12 w-12 text-brand-lightGreen mb-4" />,
+    icon: <Home className="h-12 w-12 text-brand-lightGreen mb-4" />,
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
