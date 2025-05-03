@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
@@ -84,6 +85,9 @@ const Footer = () => {
           <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <h3 className="text-xl font-bold mb-4">Onze Diensten</h3>
             <ul className="space-y-2">
+              <li>
+                <Link to="/diensten/dakkapel" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakkapel</Link>
+              </li>
               <li>
                 <Link to="/diensten/schilderwerk" className="hover:text-brand-lightGreen transition-colors hover-underline">Schilderwerk</Link>
               </li>

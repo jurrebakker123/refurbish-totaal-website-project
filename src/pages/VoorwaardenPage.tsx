@@ -1,8 +1,39 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
+import { Download } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from "sonner";
+import html2pdf from 'html2pdf.js';
 
 const VoorwaardenPage = () => {
+  const handleDownloadPdf = () => {
+    toast.info("PDF genereren, even geduld...");
+    
+    const contentElement = document.getElementById('voorwaarden-content');
+    
+    if (!contentElement) {
+      toast.error("Kan de inhoud niet vinden om te converteren naar PDF");
+      return;
+    }
+
+    const opt = {
+      margin: 10,
+      filename: 'algemene-voorwaarden-refurbish-totaal.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().from(contentElement).set(opt).save().then(() => {
+      toast.success("PDF succesvol gedownload!");
+    }).catch((error) => {
+      console.error("Error generating PDF:", error);
+      toast.error("Er is een fout opgetreden bij het genereren van de PDF");
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -22,7 +53,7 @@ const VoorwaardenPage = () => {
         {/* Voorwaarden Content */}
         <section className="py-16">
           <div className="container">
-            <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div id="voorwaarden-content" className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.3s' }}>
               <div className="prose max-w-none">
                 <h2 className="text-2xl font-bold mb-4 text-brand-darkGreen">1. Definities</h2>
                 <ul className="list-disc pl-6 mb-6">
@@ -92,9 +123,16 @@ const VoorwaardenPage = () => {
                 </div>
 
                 <div className="text-center mt-12">
-                  <Link to="/contact" className="btn-primary">
+                  <Link to="/contact" className="btn-primary mr-4">
                     Contact Opnemen
                   </Link>
+                  <button 
+                    onClick={handleDownloadPdf}
+                    className="btn-primary bg-brand-lightGreen hover:bg-brand-darkGreen flex items-center justify-center"
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    Download als PDF
+                  </button>
                 </div>
               </div>
             </div>
