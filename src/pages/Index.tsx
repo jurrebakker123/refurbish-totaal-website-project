@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ShieldCheck, Check, ArrowRight, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -10,6 +9,7 @@ import ProjectsPreview from '@/components/ProjectsPreview';
 import Testimonials from '@/components/Testimonials';
 import CallToActionSection from '@/components/CallToActionSection';
 import { Link } from 'react-router-dom';
+import ReusableForm from '@/components/common/ReusableForm';
 
 const Index = () => {
   const benefits = [
@@ -54,6 +54,7 @@ const Index = () => {
         </section>
         <Services />
         
+        {/* Benefits Section */}
         <section className="py-16 bg-gray-50">
           <div className="container">
             <motion.div 
@@ -114,6 +115,7 @@ const Index = () => {
         <ProjectsPreview />
         <Testimonials />
         
+        {/* Map Section */}
         <section className="py-10 md:py-16">
           <div className="container">
             <motion.div 
@@ -171,6 +173,7 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Client types section */}
         <section className="py-16 bg-gray-50">
           <div className="container">
             <motion.div 
@@ -227,7 +230,7 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Free inspection & advice banner */}
+        {/* Free inspection banner */}
         <motion.section 
           className="py-16 bg-brand-darkGreen text-white"
           initial={{ opacity: 0 }}
@@ -273,6 +276,7 @@ const Index = () => {
           </div>
         </motion.section>
 
+        {/* Certifications Section */}
         <section className="py-16 bg-gray-50">
           <div className="container">
             <motion.div 
@@ -319,6 +323,29 @@ const Index = () => {
               >
                 Onze Certificeringen <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* New Form Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="container">
+            <motion.div 
+              className="max-w-4xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <ReusableForm 
+                title="Offerte Aanvraagformulier"
+                description="Wij nemen zo snel mogelijk contact met u op om uw wensen te bespreken."
+                showFileUpload={true}
+                templateId="template_ezfzaao"
+                buttonText="Verstuur aanvraag"
+                showServiceInput={true}
+                showDateField={true}
+              />
             </motion.div>
           </div>
         </section>
