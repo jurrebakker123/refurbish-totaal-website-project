@@ -1,7 +1,5 @@
 
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { MessageCircle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
 // Custom event for search notification
@@ -21,10 +19,7 @@ const LeaveSiteNotification = () => {
       // Trigger the search notification when user tries to leave
       triggerSearchNotification();
       
-      // Standard beforeunload handling
-      e.preventDefault();
-      e.returnValue = '';
-      return '';
+      // Don't block the user from leaving - removed the prevent default code
     };
 
     const handleVisibilityChange = () => {
