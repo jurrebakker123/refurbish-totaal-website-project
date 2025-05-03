@@ -22,6 +22,7 @@ import LeaveSiteNotification from "./components/LeaveSiteNotification";
 import SEOStructuredData from "./components/SEOStructuredData";
 import TuinhuizenPage from "./pages/TuinhuizenPage";
 import ZonnepanelenPage from "./pages/ZonnepanelenPage";
+import DakkapelLandingPage from "./pages/DakkapelLandingPage";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -45,6 +46,7 @@ const App = () => {
           <Route path="/" element={<Index />} />
           <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
           <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
+          <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
           <Route path="/diensten" element={<DienstenPage />} />
           <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
           <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
