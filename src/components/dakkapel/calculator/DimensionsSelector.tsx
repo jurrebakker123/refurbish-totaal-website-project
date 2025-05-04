@@ -35,7 +35,7 @@ export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: Dimens
         <div className="space-y-8">
           <div className="space-y-4">
             <div className="flex justify-between">
-              <label className="font-medium">Breedte:</label>
+              <label className="font-medium text-gray-800">Breedte:</label>
               <span className="font-bold text-brand-darkGreen">{breedte} cm</span>
             </div>
             <Slider 
@@ -54,7 +54,7 @@ export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: Dimens
 
           <div className="space-y-4">
             <div className="flex justify-between">
-              <label className="font-medium">Hoogte:</label>
+              <label className="font-medium text-gray-800">Hoogte:</label>
               <span className="font-bold text-brand-darkGreen">{hoogte} cm</span>
             </div>
             <Slider 
