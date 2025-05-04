@@ -8,17 +8,21 @@ import { PriceDisplay } from './PriceDisplay';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
 import { ContactFormSelector } from './ContactFormSelector';
 
+export type DakkapelType = 'prefab' | 'maatwerk' | 'renovatie';
+export type MaterialType = 'kunststof' | 'hout' | 'aluminium';
+export type DakkapelOptions = {
+  ventilatie: boolean;
+  zonwering: boolean;
+  gootafwerking: boolean;
+  extra_isolatie: boolean;
+};
+
 export interface DakkapelConfiguration {
-  type: 'prefab' | 'maatwerk' | 'renovatie';
+  type: DakkapelType;
   breedte: number;
   hoogte: number;
-  materiaal: 'kunststof' | 'hout' | 'aluminium';
-  opties: {
-    ventilatie: boolean;
-    zonwering: boolean;
-    gootafwerking: boolean;
-    extra_isolatie: boolean;
-  };
+  materiaal: MaterialType;
+  opties: DakkapelOptions;
 }
 
 export function DakkapelCalculator() {
@@ -38,7 +42,7 @@ export function DakkapelCalculator() {
 
   const totalPrice = calculateTotalPrice(configuration);
 
-  const updateType = (type: 'prefab' | 'maatwerk' | 'renovatie') => {
+  const updateType = (type: DakkapelType) => {
     setConfiguration({ ...configuration, type });
   };
 
@@ -46,7 +50,7 @@ export function DakkapelCalculator() {
     setConfiguration({ ...configuration, breedte, hoogte });
   };
 
-  const updateMaterial = (materiaal: 'kunststof' | 'hout' | 'aluminium') => {
+  const updateMaterial = (materiaal: MaterialType) => {
     setConfiguration({ ...configuration, materiaal });
   };
 
@@ -74,6 +78,7 @@ export function DakkapelCalculator() {
           selectedType={configuration.type}
           onChange={updateType}
           onNext={nextStep}
+          onPrevious={() => {}} // Empty function since there's no previous step
         />
       )}
 
@@ -97,7 +102,7 @@ export function DakkapelCalculator() {
 
       {step === 4 && (
         <OptionsSelector
-          options={configuration.opties}
+          selectedOptions={configuration.opties}
           onChange={updateOptions}
           onPrevious={previousStep}
           onNext={nextStep}
