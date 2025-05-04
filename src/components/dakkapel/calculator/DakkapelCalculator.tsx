@@ -1,150 +1,124 @@
 
-import React, { useState, useEffect } from 'react';
-import { DimensionsSelector } from './DimensionsSelector';
+import React, { useState } from 'react';
 import { TypeSelector } from './TypeSelector';
+import { DimensionsSelector } from './DimensionsSelector';
 import { MaterialSelector } from './MaterialSelector';
 import { OptionsSelector } from './OptionsSelector';
 import { PriceDisplay } from './PriceDisplay';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
-import { DakkapelRenderer } from './DakkapelRenderer';
-
-export type DakkapelType = 'prefab' | 'maatwerk' | 'renovatie';
-export type MaterialType = 'kunststof' | 'hout' | 'aluminium';
-
-export interface DakkapelOptions {
-  ventilatie: boolean;
-  zonwering: boolean;
-  gootafwerking: boolean;
-  extra_isolatie: boolean;
-}
+import { ContactFormSelector } from './ContactFormSelector';
 
 export interface DakkapelConfiguration {
+  type: 'prefab' | 'maatwerk' | 'renovatie';
   breedte: number;
   hoogte: number;
-  type: DakkapelType;
-  materiaal: MaterialType;
-  opties: DakkapelOptions;
+  materiaal: 'kunststof' | 'hout' | 'aluminium';
+  opties: {
+    ventilatie: boolean;
+    zonwering: boolean;
+    gootafwerking: boolean;
+    extra_isolatie: boolean;
+  };
 }
 
 export function DakkapelCalculator() {
+  const [step, setStep] = useState(1);
   const [configuration, setConfiguration] = useState<DakkapelConfiguration>({
-    breedte: 300, // in cm
-    hoogte: 150, // in cm
     type: 'prefab',
+    breedte: 300,
+    hoogte: 175,
     materiaal: 'kunststof',
     opties: {
       ventilatie: false,
       zonwering: false,
       gootafwerking: false,
       extra_isolatie: false,
-    }
+    },
   });
 
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [activeTab, setActiveTab] = useState("afmetingen");
+  const totalPrice = calculateTotalPrice(configuration);
 
-  useEffect(() => {
-    const price = calculateTotalPrice(configuration);
-    setTotalPrice(price);
-  }, [configuration]);
+  const updateType = (type: 'prefab' | 'maatwerk' | 'renovatie') => {
+    setConfiguration({ ...configuration, type });
+  };
 
   const updateDimensions = (breedte: number, hoogte: number) => {
-    setConfiguration(prev => ({ ...prev, breedte, hoogte }));
+    setConfiguration({ ...configuration, breedte, hoogte });
   };
 
-  const updateType = (type: DakkapelType) => {
-    setConfiguration(prev => ({ ...prev, type }));
+  const updateMaterial = (materiaal: 'kunststof' | 'hout' | 'aluminium') => {
+    setConfiguration({ ...configuration, materiaal });
   };
 
-  const updateMaterial = (materiaal: MaterialType) => {
-    setConfiguration(prev => ({ ...prev, materiaal }));
+  const updateOptions = (opties: { [key: string]: boolean }) => {
+    setConfiguration({
+      ...configuration,
+      opties: { ...configuration.opties, ...opties },
+    });
   };
 
-  const updateOptions = (opties: DakkapelOptions) => {
-    setConfiguration(prev => ({ ...prev, opties }));
+  const nextStep = () => {
+    setStep(step + 1);
+    window.scrollTo(0, 0);
   };
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
-
-  const nextTab = () => {
-    if (activeTab === "afmetingen") setActiveTab("type");
-    else if (activeTab === "type") setActiveTab("materiaal");
-    else if (activeTab === "materiaal") setActiveTab("opties");
-    else if (activeTab === "opties") setActiveTab("resultaat");
-  };
-
-  const previousTab = () => {
-    if (activeTab === "resultaat") setActiveTab("opties");
-    else if (activeTab === "opties") setActiveTab("materiaal");
-    else if (activeTab === "materiaal") setActiveTab("type");
-    else if (activeTab === "type") setActiveTab("afmetingen");
+  const previousStep = () => {
+    setStep(step - 1);
+    window.scrollTo(0, 0);
   };
 
   return (
-    <Card className="shadow-lg border-2 border-gray-200">
-      <CardContent className="p-0">
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <div className="bg-gray-50 p-4 border-b">
-            <TabsList className="w-full grid grid-cols-5">
-              <TabsTrigger value="afmetingen">1. Afmetingen</TabsTrigger>
-              <TabsTrigger value="type">2. Type</TabsTrigger>
-              <TabsTrigger value="materiaal">3. Materiaal</TabsTrigger>
-              <TabsTrigger value="opties">4. Opties</TabsTrigger>
-              <TabsTrigger value="resultaat">5. Resultaat</TabsTrigger>
-            </TabsList>
-          </div>
+    <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+      {step === 1 && (
+        <TypeSelector
+          selectedType={configuration.type}
+          onChange={updateType}
+          onNext={nextStep}
+        />
+      )}
 
-          <div className="p-6">
-            <TabsContent value="afmetingen">
-              <DimensionsSelector 
-                breedte={configuration.breedte} 
-                hoogte={configuration.hoogte} 
-                onChange={updateDimensions}
-                onNext={nextTab}
-              />
-            </TabsContent>
-            
-            <TabsContent value="type">
-              <TypeSelector 
-                selectedType={configuration.type} 
-                onChange={updateType}
-                onNext={nextTab}
-                onPrevious={previousTab}
-              />
-            </TabsContent>
-            
-            <TabsContent value="materiaal">
-              <MaterialSelector 
-                selectedMaterial={configuration.materiaal} 
-                onChange={updateMaterial}
-                onNext={nextTab}
-                onPrevious={previousTab}
-              />
-            </TabsContent>
-            
-            <TabsContent value="opties">
-              <OptionsSelector 
-                selectedOptions={configuration.opties} 
-                onChange={updateOptions}
-                onNext={nextTab}
-                onPrevious={previousTab}
-              />
-            </TabsContent>
-            
-            <TabsContent value="resultaat">
-              <PriceDisplay 
-                configuration={configuration} 
-                totalPrice={totalPrice}
-                onPrevious={previousTab}
-              />
-            </TabsContent>
-          </div>
-        </Tabs>
-      </CardContent>
-    </Card>
+      {step === 2 && (
+        <DimensionsSelector
+          breedte={configuration.breedte}
+          hoogte={configuration.hoogte}
+          onChange={updateDimensions}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 3 && (
+        <MaterialSelector
+          selectedMaterial={configuration.materiaal}
+          onChange={updateMaterial}
+          onPrevious={previousStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 4 && (
+        <OptionsSelector
+          options={configuration.opties}
+          onChange={updateOptions}
+          onPrevious={previousStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 5 && (
+        <ContactFormSelector
+          configuration={configuration}
+          onPrevious={previousStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 6 && (
+        <PriceDisplay
+          configuration={configuration}
+          totalPrice={totalPrice}
+          onPrevious={previousStep}
+        />
+      )}
+    </div>
   );
 }

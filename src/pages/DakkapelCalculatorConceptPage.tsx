@@ -1,9 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { DakkapelCalculator } from '@/components/dakkapel/calculator/DakkapelCalculator';
 import { Helmet } from 'react-helmet';
+import { Toaster } from 'sonner';
 
 const DakkapelCalculatorConceptPage = () => {
   useEffect(() => {
@@ -28,6 +29,7 @@ const DakkapelCalculatorConceptPage = () => {
             Nieuw: Bekijk een 3D-weergave van uw dakkapel terwijl u de instellingen aanpast!
           </p>
           <DakkapelCalculator />
+          <Toaster position="top-center" />
         </div>
       </main>
       <Footer />
