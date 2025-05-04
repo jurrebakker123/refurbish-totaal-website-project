@@ -19,11 +19,11 @@ interface DimensionsSelectorProps {
 }
 
 export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: DimensionsSelectorProps) {
-  // Updated width options based on Benelux Dakkapellen website
-  const breedteOptions = [150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600];
+  // Limited width options as requested
+  const breedteOptions = [200, 300, 400, 500];
   
-  // Updated height options based on Benelux Dakkapellen website
-  const hoogteOptions = [100, 125, 150, 175, 200, 225, 250];
+  // Limited height options as requested
+  const hoogteOptions = [150, 175];
 
   return (
     <div className="space-y-8">
