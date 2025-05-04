@@ -1,9 +1,15 @@
 
-import React from 'react';
-import { Slider } from '@/components/ui/slider';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { DakkapelRenderer } from './DakkapelRenderer';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DimensionsSelectorProps {
   breedte: number;
@@ -13,12 +19,17 @@ interface DimensionsSelectorProps {
 }
 
 export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: DimensionsSelectorProps) {
+  // Breedte options from Benelux Dakkapellen
+  const breedteOptions = [150, 175, 200, 300, 400, 500, 600];
+  // Hoogte options from Benelux Dakkapellen
+  const hoogteOptions = [100, 125, 150, 175, 200, 225, 250];
+
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold mb-4">Afmetingen van uw dakkapel</h2>
         <p className="mb-6 text-gray-600">
-          Pas de afmetingen van uw dakkapel aan voor een nauwkeurige prijsindicatie.
+          Selecteer de gewenste afmetingen van uw dakkapel voor een nauwkeurige prijsindicatie.
         </p>
       </div>
 
@@ -35,39 +46,56 @@ export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: Dimens
         <div className="space-y-8">
           <div className="space-y-4">
             <div className="flex justify-between">
-              <label className="font-medium text-gray-800">Breedte:</label>
+              <label className="font-medium text-gray-800">Breedte dakkapel:</label>
               <span className="font-bold text-brand-darkGreen">{breedte} cm</span>
             </div>
-            <Slider 
-              defaultValue={[breedte]} 
-              min={150} 
-              max={600} 
-              step={10}
-              onValueChange={(value) => onChange(value[0], hoogte)}
-              className="my-4"
-            />
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>150 cm</span>
-              <span>600 cm</span>
+            <div className="w-full">
+              <Select
+                value={breedte.toString()}
+                onValueChange={(value) => onChange(parseInt(value), hoogte)}
+              >
+                <SelectTrigger className="w-full bg-white text-black">
+                  <SelectValue placeholder="Kies een optie..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white text-black">
+                  {breedteOptions.map((option) => (
+                    <SelectItem key={option} value={option.toString()}>
+                      {option} cm
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="advies">Weet ik niet, adviseer mij.</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="flex justify-between">
-              <label className="font-medium text-gray-800">Hoogte:</label>
+              <label className="font-medium text-gray-800">Hoogte dakkapel:</label>
               <span className="font-bold text-brand-darkGreen">{hoogte} cm</span>
             </div>
-            <Slider 
-              defaultValue={[hoogte]} 
-              min={100} 
-              max={250} 
-              step={10}
-              onValueChange={(value) => onChange(breedte, value[0])}
-              className="my-4"
-            />
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>100 cm</span>
-              <span>250 cm</span>
+            <div className="w-full">
+              <Select
+                value={hoogte.toString()}
+                onValueChange={(value) => {
+                  const parsedValue = parseInt(value);
+                  if (!isNaN(parsedValue)) {
+                    onChange(breedte, parsedValue);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full bg-white text-black">
+                  <SelectValue placeholder="Kies een optie..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white text-black">
+                  {hoogteOptions.map((option) => (
+                    <SelectItem key={option} value={option.toString()}>
+                      {option} cm
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="advies">Weet ik niet, adviseer mij.</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
