@@ -22,9 +22,11 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
   };
 
   const typeLabels = {
-    'prefab': 'Prefab Dakkapel',
-    'maatwerk': 'Maatwerk Dakkapel',
-    'renovatie': 'Dakkapel Renovatie'
+    'typeA': 'Type A (1 meter)',
+    'typeB': 'Type B (2 meter)',
+    'typeC': 'Type C (3 meter)',
+    'typeD': 'Type D (4 meter)',
+    'typeE': 'Type E (5 meter)'
   };
 
   const materiaalLabels = {
@@ -41,11 +43,19 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
         case 'zonwering': return 'Zonwering';
         case 'gootafwerking': return 'Gootafwerking';
         case 'extra_isolatie': return 'Extra Isolatie';
+        case 'extra_draaikiepraam': return 'Extra draaikiepraam';
+        case 'horren': return 'Horren in draaikiepramen';
+        case 'elektrisch_rolluik': return 'Elektrisch rolluik';
+        case 'verwijderen_bestaande': return 'Verwijderen bestaande dakkapel';
+        case 'afvoeren_bouwafval': return 'Afvoeren bouwafval';
         default: return '';
       }
     });
 
   const offerteURL = `/offerte?type=${configuration.type}&breedte=${configuration.breedte}&hoogte=${configuration.hoogte}&materiaal=${configuration.materiaal}`;
+
+  // Warning for low roof pitch
+  const lowRoofPitchWarning = configuration.dakHelling < 36;
 
   return (
     <div className="space-y-8">
@@ -55,6 +65,13 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
           Op basis van uw selecties hebben we een prijsindicatie berekend. 
           Voor een exacte offerte kunt u contact met ons opnemen.
         </p>
+        {lowRoofPitchWarning && (
+          <div className="p-4 bg-amber-50 border-l-4 border-amber-500 mb-6">
+            <p className="text-amber-800">
+              <strong>Let op:</strong> Bij een dakhelling lager dan 36° adviseren wij u contact met ons op te nemen voor een nauwkeurige prijsopgave, omdat er dan speciale aanpassingen nodig kunnen zijn.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -63,18 +80,38 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
           
           <div className="space-y-4">
             <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Type:</span>
+              <span className="font-medium">{typeLabels[configuration.type]}</span>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
               <span className="text-gray-600">Afmetingen:</span>
               <span className="font-medium">{configuration.breedte} × {configuration.hoogte} cm</span>
             </div>
             
             <div className="flex justify-between border-b pb-2">
-              <span className="text-gray-600">Type:</span>
-              <span className="font-medium">{typeLabels[configuration.type]}</span>
+              <span className="text-gray-600">Aantal ramen:</span>
+              <span className="font-medium">{configuration.aantalRamen}</span>
             </div>
             
             <div className="flex justify-between border-b pb-2">
               <span className="text-gray-600">Materiaal:</span>
               <span className="font-medium">{materiaalLabels[configuration.materiaal]}</span>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Kleur kozijnen:</span>
+              <span className="font-medium">{configuration.kleurKozijnen}</span>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Kleur zijkanten:</span>
+              <span className="font-medium">{configuration.kleurZijkanten}</span>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-600">Dakhelling:</span>
+              <span className="font-medium">{configuration.dakHelling}°</span>
             </div>
             
             <div className="flex justify-between border-b pb-2">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { DakkapelRenderer } from './DakkapelRenderer';
@@ -53,7 +53,7 @@ export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: Dimens
             <div className="w-full">
               <Select
                 value={breedte.toString()}
-                onValueChange={(value) => onChange(parseInt(value), hoogte)}
+                onValueChange={(value) => onChange(parseInt(value) || breedte, hoogte)}
               >
                 <SelectTrigger className="w-full bg-white text-black">
                   <SelectValue placeholder="Kies een optie..." />

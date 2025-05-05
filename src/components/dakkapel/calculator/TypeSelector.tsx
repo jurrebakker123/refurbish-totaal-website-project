@@ -13,22 +13,42 @@ interface TypeSelectorProps {
 }
 
 export function TypeSelector({ selectedType, onChange, onNext, onPrevious }: TypeSelectorProps) {
-  const types: { id: DakkapelType; name: string; description: string }[] = [
+  const types: { id: DakkapelType; name: string; description: string; basePrice: number; width: string }[] = [
     {
-      id: 'prefab',
-      name: 'Prefab Dakkapel',
-      description: 'Voordelige, vooraf gefabriceerde dakkapel die snel geplaatst kan worden.',
+      id: 'typeA',
+      name: 'Type A',
+      description: 'Kleine dakkapel met één draaikiepraam',
+      basePrice: 7060,
+      width: '1 meter'
     },
     {
-      id: 'maatwerk',
-      name: 'Maatwerk Dakkapel',
-      description: 'Volledig op maat gemaakte dakkapel met meer mogelijkheden voor aanpassingen.',
+      id: 'typeB',
+      name: 'Type B',
+      description: 'Middelgrote dakkapel met één draaikiepraam',
+      basePrice: 7290,
+      width: '2 meter'
     },
     {
-      id: 'renovatie',
-      name: 'Dakkapel Renovatie',
-      description: 'Renovatie van een bestaande dakkapel voor een verbeterde uitstraling en isolatie.',
+      id: 'typeC',
+      name: 'Type C',
+      description: 'Ruime dakkapel met twee draaikiepramen',
+      basePrice: 8200,
+      width: '3 meter'
     },
+    {
+      id: 'typeD',
+      name: 'Type D',
+      description: 'Grote dakkapel met twee of drie draaikiepramen',
+      basePrice: 8780,
+      width: '4 meter'
+    },
+    {
+      id: 'typeE',
+      name: 'Type E',
+      description: 'Extra brede dakkapel met drie of vier draaikiepramen',
+      basePrice: 9330,
+      width: '5 meter'
+    }
   ];
 
   return (
@@ -40,7 +60,7 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious }: Typ
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {types.map((type) => (
           <Card 
             key={type.id} 
@@ -57,6 +77,12 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious }: Typ
                 )}
               </div>
               <p className="text-gray-600 mt-2">{type.description}</p>
+              <div className="mt-4">
+                <div className="text-sm text-gray-500">Breedte: {type.width}</div>
+                <div className="font-medium text-brand-darkGreen">
+                  Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -66,6 +92,7 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious }: Typ
         <Button 
           variant="outline" 
           onClick={onPrevious}
+          disabled={typeof onPrevious !== 'function'}
         >
           <MoveLeft className="mr-2 h-4 w-4" /> Vorige
         </Button>

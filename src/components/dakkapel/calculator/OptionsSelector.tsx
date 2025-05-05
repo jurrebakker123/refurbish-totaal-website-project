@@ -4,16 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DakkapelOptions } from './DakkapelCalculator';
 import { MoveRight, MoveLeft } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface OptionsSelectorProps {
   selectedOptions: DakkapelOptions;
-  onChange: (options: DakkapelOptions) => void;
+  aantalRamen: number;
+  onChange: (options: Partial<DakkapelOptions>, aantalRamen?: number) => void;
   onNext: () => void;
   onPrevious: () => void;
 }
 
 export function OptionsSelector({ 
   selectedOptions, 
+  aantalRamen,
   onChange, 
   onNext, 
   onPrevious 
@@ -23,29 +32,67 @@ export function OptionsSelector({
       id: 'ventilatie',
       label: 'Ventilatie',
       description: 'Mechanische ventilatie voor optimale luchtcirculatie',
+      price: 450,
     },
     {
       id: 'zonwering',
       label: 'Zonwering',
       description: 'Buitenzonwering om warmte en lichtinval te reguleren',
+      price: 850,
     },
     {
       id: 'gootafwerking',
       label: 'Gootafwerking',
       description: 'Hoogwaardige afwerking van dakgoten en regenwaterafvoer',
+      price: 350,
     },
     {
       id: 'extra_isolatie',
       label: 'Extra Isolatie',
       description: 'Verbeterde isolatie voor optimaal energiebehoud',
+      price: 650,
     },
+    {
+      id: 'extra_draaikiepraam',
+      label: 'Extra draaikiepraam',
+      description: 'Extra raam voor meer licht en ventilatie',
+      price: 192.77,
+    },
+    {
+      id: 'horren',
+      label: 'Horren in draaikiepramen',
+      description: 'Insectenhor voor frisse lucht zonder insecten',
+      price: 240,
+    },
+    {
+      id: 'elektrisch_rolluik',
+      label: 'Elektrisch rolluik',
+      description: 'Elektrisch bedienbaar rolluik voor privacy en zonwering',
+      price: 281.75,
+      unit: 'per strekkende meter',
+    },
+    {
+      id: 'verwijderen_bestaande',
+      label: 'Verwijderen bestaande dakkapel',
+      description: 'Professionele demontage en verwijdering van oude dakkapel',
+      price: 402.50,
+    },
+    {
+      id: 'afvoeren_bouwafval',
+      label: 'Afvoeren bouwafval',
+      description: 'Volledige afvoer en verantwoorde verwerking van bouwafval',
+      price: 150,
+    }
   ];
 
   const handleOptionChange = (optionId: keyof DakkapelOptions, checked: boolean) => {
     onChange({
-      ...selectedOptions,
       [optionId]: checked,
     });
+  };
+
+  const formatPrice = (price: number, unit?: string) => {
+    return `+ €${price.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${unit ? ` ${unit}` : ''}`;
   };
 
   return (
@@ -55,6 +102,25 @@ export function OptionsSelector({
         <p className="mb-6 text-gray-600">
           Selecteer de gewenste aanvullende opties voor uw dakkapel.
         </p>
+      </div>
+
+      <div className="space-y-4 mb-8">
+        <label className="font-medium text-gray-800">Aantal draaikiepramen</label>
+        <Select
+          value={aantalRamen.toString()}
+          onValueChange={(value) => onChange({}, parseInt(value))}
+        >
+          <SelectTrigger className="w-full md:w-1/3 bg-white text-black">
+            <SelectValue placeholder="Kies aantal..." />
+          </SelectTrigger>
+          <SelectContent className="bg-white text-black">
+            {[1, 2, 3, 4].map((aantal) => (
+              <SelectItem key={aantal} value={aantal.toString()}>
+                {aantal} {aantal === 1 ? 'raam' : 'ramen'}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-4">
@@ -68,13 +134,18 @@ export function OptionsSelector({
                 onCheckedChange={(checked) => handleOptionChange(optionId, checked === true)}
                 className="mt-1"
               />
-              <div>
-                <label 
-                  htmlFor={option.id} 
-                  className="font-medium text-gray-900 cursor-pointer"
-                >
-                  {option.label}
-                </label>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <label 
+                    htmlFor={option.id} 
+                    className="font-medium text-gray-900 cursor-pointer"
+                  >
+                    {option.label}
+                  </label>
+                  <span className="text-sm font-medium text-brand-darkGreen">
+                    {formatPrice(option.price, option.unit)}
+                  </span>
+                </div>
                 <p className="text-gray-600 text-sm">{option.description}</p>
               </div>
             </div>

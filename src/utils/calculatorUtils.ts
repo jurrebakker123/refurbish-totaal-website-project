@@ -1,18 +1,13 @@
 
 import { DakkapelConfiguration } from '@/components/dakkapel/calculator/DakkapelCalculator';
 
-// Base prices
+// Base prices per dakkapel type
 const BASE_PRICES = {
-  prefab: 4500,   // Base price for prefab dakkapel
-  maatwerk: 5500, // Base price for custom dakkapel
-  renovatie: 3000 // Base price for renovation
-};
-
-// Price per square meter
-const PRICE_PER_SQM = {
-  prefab: 600,
-  maatwerk: 800,
-  renovatie: 500
+  typeA: 7060, // 1 meter
+  typeB: 7290, // 2 meter
+  typeC: 8200, // 3 meter
+  typeD: 8780, // 4 meter
+  typeE: 9330, // 5 meter
 };
 
 // Material cost multipliers
@@ -27,36 +22,78 @@ const OPTION_COSTS = {
   ventilatie: 450,
   zonwering: 850,
   gootafwerking: 350,
-  extra_isolatie: 650
+  extra_isolatie: 650,
+  extra_draaikiepraam: 192.77,
+  horren: 240,
+  elektrisch_rolluik: 281.75, // per meter
+  verwijderen_bestaande: 402.50,
+  afvoeren_bouwafval: 150
 };
 
 /**
  * Calculate the total price based on the dakkapel configuration
  */
 export function calculateTotalPrice(config: DakkapelConfiguration): number {
-  // Calculate area in square meters
-  const width = config.breedte / 100; // convert cm to m
-  const height = config.hoogte / 100; // convert cm to m
-  const area = width * height;
-  
-  // Base price calculation
+  // Base price for the selected dakkapel type
   const basePrice = BASE_PRICES[config.type];
   
-  // Area price calculation
-  const areaPrice = area * PRICE_PER_SQM[config.type];
+  // Width in meters for rolluik calculation
+  const widthInMeters = config.breedte / 100;
   
   // Material price adjustment
   const materialMultiplier = MATERIAL_MULTIPLIERS[config.materiaal];
   
   // Optional extras calculation
   let optionsTotal = 0;
-  if (config.opties.ventilatie) optionsTotal += OPTION_COSTS.ventilatie;
-  if (config.opties.zonwering) optionsTotal += OPTION_COSTS.zonwering;
-  if (config.opties.gootafwerking) optionsTotal += OPTION_COSTS.gootafwerking;
-  if (config.opties.extra_isolatie) optionsTotal += OPTION_COSTS.extra_isolatie;
+  
+  // Add costs for each selected option
+  for (const [key, isSelected] of Object.entries(config.opties)) {
+    if (isSelected) {
+      const optionKey = key as keyof typeof OPTION_COSTS;
+      // For electric rolluik, multiply by width
+      if (optionKey === 'elektrisch_rolluik') {
+        optionsTotal += OPTION_COSTS[optionKey] * widthInMeters;
+      } 
+      // For horren, multiply by number of windows
+      else if (optionKey === 'horren') {
+        optionsTotal += OPTION_COSTS[optionKey] * config.aantalRamen;
+      }
+      // For all other options, add the fixed cost
+      else {
+        optionsTotal += OPTION_COSTS[optionKey];
+      }
+    }
+  }
+  
+  // Add cost for additional windows if any (standard is 2 for type C)
+  let windowsAdjustment = 0;
+  if (config.type === 'typeC') {
+    // Type C comes with 2 windows as standard
+    if (config.aantalRamen > 2) {
+      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 2);
+    }
+  } else if (config.type === 'typeD') {
+    // Type D comes with 2-3 windows, we'll use 2 as standard
+    if (config.aantalRamen > 2) {
+      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 2);
+    }
+  } else if (config.type === 'typeE') {
+    // Type E comes with 3-4 windows, we'll use 3 as standard
+    if (config.aantalRamen > 3) {
+      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 3);
+    }
+  } else {
+    // Types A and B come with 1 window as standard
+    if (config.aantalRamen > 1) {
+      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 1);
+    }
+  }
+  
+  // Low roof pitch warning (no price adjustment, just a warning in the UI)
+  let roofPitchAdjustment = 0; // Usually this would be handled by contacting for a quote
   
   // Calculate total price
-  const totalPrice = (basePrice + areaPrice) * materialMultiplier + optionsTotal;
+  const totalPrice = (basePrice * materialMultiplier) + optionsTotal + windowsAdjustment + roofPitchAdjustment;
   
   // Round to nearest 10
   return Math.round(totalPrice / 10) * 10;

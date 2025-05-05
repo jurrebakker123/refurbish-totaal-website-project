@@ -8,13 +8,18 @@ import { PriceDisplay } from './PriceDisplay';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
 import { ContactFormSelector } from './ContactFormSelector';
 
-export type DakkapelType = 'prefab' | 'maatwerk' | 'renovatie';
+export type DakkapelType = 'typeA' | 'typeB' | 'typeC' | 'typeD' | 'typeE';
 export type MaterialType = 'kunststof' | 'hout' | 'aluminium';
 export type DakkapelOptions = {
   ventilatie: boolean;
   zonwering: boolean;
   gootafwerking: boolean;
   extra_isolatie: boolean;
+  extra_draaikiepraam: boolean;
+  horren: boolean;
+  elektrisch_rolluik: boolean;
+  verwijderen_bestaande: boolean;
+  afvoeren_bouwafval: boolean;
 };
 
 export interface DakkapelConfiguration {
@@ -22,21 +27,34 @@ export interface DakkapelConfiguration {
   breedte: number;
   hoogte: number;
   materiaal: MaterialType;
+  dakHelling: number;
+  aantalRamen: number;
+  kleurKozijnen: string;
+  kleurZijkanten: string;
   opties: DakkapelOptions;
 }
 
 export function DakkapelCalculator() {
   const [step, setStep] = useState(1);
   const [configuration, setConfiguration] = useState<DakkapelConfiguration>({
-    type: 'prefab',
+    type: 'typeC',
     breedte: 300,
     hoogte: 175,
     materiaal: 'kunststof',
+    dakHelling: 45,
+    aantalRamen: 2,
+    kleurKozijnen: 'wit',
+    kleurZijkanten: 'wit',
     opties: {
       ventilatie: false,
       zonwering: false,
       gootafwerking: false,
       extra_isolatie: false,
+      extra_draaikiepraam: false,
+      horren: false,
+      elektrisch_rolluik: false,
+      verwijderen_bestaande: false,
+      afvoeren_bouwafval: false,
     },
   });
 
@@ -50,14 +68,21 @@ export function DakkapelCalculator() {
     setConfiguration({ ...configuration, breedte, hoogte });
   };
 
-  const updateMaterial = (materiaal: MaterialType) => {
-    setConfiguration({ ...configuration, materiaal });
+  const updateMaterial = (materiaal: MaterialType, kleurKozijnen: string, kleurZijkanten: string, dakHelling: number) => {
+    setConfiguration({ 
+      ...configuration, 
+      materiaal, 
+      kleurKozijnen, 
+      kleurZijkanten, 
+      dakHelling 
+    });
   };
 
-  const updateOptions = (opties: { [key: string]: boolean }) => {
+  const updateOptions = (opties: Partial<DakkapelOptions>, aantalRamen?: number) => {
     setConfiguration({
       ...configuration,
       opties: { ...configuration.opties, ...opties },
+      ...(aantalRamen !== undefined ? { aantalRamen } : {})
     });
   };
 
@@ -78,7 +103,7 @@ export function DakkapelCalculator() {
           selectedType={configuration.type}
           onChange={updateType}
           onNext={nextStep}
-          onPrevious={() => {}} // Empty function since there's no previous step
+          onPrevious={() => {}}
         />
       )}
 
@@ -94,6 +119,9 @@ export function DakkapelCalculator() {
       {step === 3 && (
         <MaterialSelector
           selectedMaterial={configuration.materiaal}
+          kleurKozijnen={configuration.kleurKozijnen}
+          kleurZijkanten={configuration.kleurZijkanten}
+          dakHelling={configuration.dakHelling}
           onChange={updateMaterial}
           onPrevious={previousStep}
           onNext={nextStep}
@@ -103,6 +131,7 @@ export function DakkapelCalculator() {
       {step === 4 && (
         <OptionsSelector
           selectedOptions={configuration.opties}
+          aantalRamen={configuration.aantalRamen}
           onChange={updateOptions}
           onPrevious={previousStep}
           onNext={nextStep}
