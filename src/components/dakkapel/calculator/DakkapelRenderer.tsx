@@ -149,12 +149,13 @@ function DakkapelModel({
       {/* Ventilatie system */}
       {hasVentilatie && (
         <group>
-          <mesh position={[width/2 - 0.1, height/2 - 0.1, 0.25]}>
-            <cylinderGeometry args={[0.05, 0.05, 0.1, 16]} rotation={[Math.PI/2, 0, 0]} />
+          {/* Fixed the issue: removed rotation from cylinderGeometry and added it to the mesh */}
+          <mesh position={[width/2 - 0.1, height/2 - 0.1, 0.25]} rotation={[Math.PI/2, 0, 0]}>
+            <cylinderGeometry args={[0.05, 0.05, 0.1, 16]} />
             <meshStandardMaterial color="#555555" />
           </mesh>
-          <mesh position={[-width/2 + 0.1, height/2 - 0.1, 0.25]}>
-            <cylinderGeometry args={[0.05, 0.05, 0.1, 16]} rotation={[Math.PI/2, 0, 0]} />
+          <mesh position={[-width/2 + 0.1, height/2 - 0.1, 0.25]} rotation={[Math.PI/2, 0, 0]}>
+            <cylinderGeometry args={[0.05, 0.05, 0.1, 16]} />
             <meshStandardMaterial color="#555555" />
           </mesh>
         </group>
