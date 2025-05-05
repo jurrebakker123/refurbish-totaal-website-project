@@ -116,7 +116,7 @@ export function OptionsSelector({
         </div>
 
         <div className="space-y-4">
-          <label className="font-medium text-gray-800">Aantal draaikiepramen</label>
+          <label className="font-medium text-gray-800">Aantal ramen</label>
           <Select
             value={aantalRamen.toString()}
             onValueChange={(value) => onChange({}, parseInt(value))}

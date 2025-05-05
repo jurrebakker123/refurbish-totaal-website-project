@@ -144,18 +144,19 @@ export function DakkapelCalculator() {
       )}
 
       {step === 5 && (
-        <ContactFormSelector
+        <PriceDisplay
           configuration={configuration}
+          totalPrice={totalPrice}
           onPrevious={previousStep}
           onNext={nextStep}
         />
       )}
 
       {step === 6 && (
-        <PriceDisplay
+        <ContactFormSelector
           configuration={configuration}
-          totalPrice={totalPrice}
           onPrevious={previousStep}
+          onNext={() => {}}
         />
       )}
     </div>

@@ -3,15 +3,17 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { DakkapelConfiguration } from './DakkapelCalculator';
-import { MoveLeft, Mail, Phone } from 'lucide-react';
+import { MoveLeft, MoveRight, Mail, Phone, Download, Printer } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 interface PriceDisplayProps {
   configuration: DakkapelConfiguration;
   totalPrice: number;
   onPrevious: () => void;
+  onNext: () => void;
 }
 
-export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDisplayProps) {
+export function PriceDisplay({ configuration, totalPrice, onPrevious, onNext }: PriceDisplayProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('nl-NL', { 
       style: 'currency', 
@@ -56,14 +58,33 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
 
   // Warning for low roof pitch
   const lowRoofPitchWarning = configuration.dakHelling < 36;
+  
+  // Function to generate and download PDF
+  const handleDownloadPDF = () => {
+    const element = document.getElementById('prijsindicatie');
+    const opt = {
+      margin: 10,
+      filename: 'dakkapel-offerte.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+  };
+  
+  // Function to print the price display
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" id="prijsindicatie">
       <div>
         <h2 className="text-2xl font-bold mb-4">Uw Dakkapel Prijsindicatie</h2>
         <p className="mb-6 text-gray-600">
           Op basis van uw selecties hebben we een prijsindicatie berekend. 
-          Voor een exacte offerte kunt u contact met ons opnemen.
+          Voor een exacte offerte kunt u contact met ons opnemen of uw gegevens achterlaten.
         </p>
         {lowRoofPitchWarning && (
           <div className="p-4 bg-amber-50 border-l-4 border-amber-500 mb-6">
@@ -145,6 +166,26 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
             * Deze prijsindicatie is exclusief eventuele installatiekosten en aanvullende werkzaamheden.
             Voor een exacte offerte kunt u contact met ons opnemen.
           </p>
+          
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleDownloadPDF}
+              className="text-xs flex items-center"
+            >
+              <Download className="mr-1 h-3 w-3" /> PDF downloaden
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handlePrint}
+              className="text-xs flex items-center"
+            >
+              <Printer className="mr-1 h-3 w-3" /> Printen
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -165,13 +206,11 @@ export function PriceDisplay({ configuration, totalPrice, onPrevious }: PriceDis
               </a>
             </Button>
             <Button 
-              asChild
               className="bg-brand-lightGreen text-white hover:bg-opacity-90"
+              onClick={onNext}
             >
-              <Link to={offerteURL}>
-                <Mail className="h-5 w-5 mr-2" />
-                <span>Offerte Aanvragen</span>
-              </Link>
+              <Mail className="h-5 w-5 mr-2" />
+              <span>Offerte Aanvragen</span>
             </Button>
           </div>
         </div>

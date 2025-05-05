@@ -16,6 +16,7 @@ interface DakkapelRendererProps {
   kleurZijkanten?: string;
   showZonwering?: boolean;
   showRolluik?: boolean;
+  dakHelling?: number; // Added dakHelling prop
 }
 
 function getColorHex(colorName: string = 'wit'): string {
@@ -38,7 +39,8 @@ function DakkapelModel({
   kleurKozijnen = 'wit',
   kleurZijkanten = 'wit',
   showZonwering = false,
-  showRolluik = false
+  showRolluik = false,
+  dakHelling = 45 // Default value
 }: DakkapelRendererProps) {
   const dakkapelRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
@@ -86,10 +88,16 @@ function DakkapelModel({
     windowPositions.push([xPos, 0, 0.26]);
   }
 
+  // Convert dakHelling to radians for the 3D rendering
+  const dakHellingRadians = (dakHelling * Math.PI) / 180;
+  
+  // Calculate the roof angle to visualize the dakHelling
+  const roofAngle = Math.PI / 2 - dakHellingRadians;
+
   return (
     <group ref={dakkapelRef}>
-      {/* Roof base */}
-      <mesh position={[0, -0.5, 0]} rotation={[Math.PI / 4, 0, 0]}>
+      {/* Roof base with dynamic dakHelling */}
+      <mesh position={[0, -0.5, 0]} rotation={[roofAngle, 0, 0]}>
         <boxGeometry args={[2, 0.1, 2]} />
         <meshStandardMaterial color="#8B4513" />
       </mesh>
@@ -159,7 +167,8 @@ export function DakkapelRenderer({
   kleurKozijnen,
   kleurZijkanten,
   showZonwering,
-  showRolluik
+  showRolluik,
+  dakHelling
 }: DakkapelRendererProps) {
   // If configuration is provided, use its values; otherwise use individual props
   const effectiveBreedte = configuration?.breedte || breedte || 300;
@@ -171,6 +180,7 @@ export function DakkapelRenderer({
   const effectiveKleurZijkanten = configuration?.kleurZijkanten || kleurZijkanten || 'wit';
   const effectiveShowZonwering = configuration?.opties?.zonwering || showZonwering || false;
   const effectiveShowRolluik = configuration?.opties?.elektrisch_rolluik || showRolluik || false;
+  const effectiveDakHelling = configuration?.dakHelling || dakHelling || 45;
 
   return (
     <div className="w-full h-full min-h-[300px] bg-gray-50 rounded-md overflow-hidden">
@@ -189,6 +199,7 @@ export function DakkapelRenderer({
             kleurZijkanten={effectiveKleurZijkanten}
             showZonwering={effectiveShowZonwering}
             showRolluik={effectiveShowRolluik}
+            dakHelling={effectiveDakHelling}
           />
         </Center>
         <OrbitControls 
