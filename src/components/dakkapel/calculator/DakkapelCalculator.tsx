@@ -7,6 +7,7 @@ import { OptionsSelector } from './OptionsSelector';
 import { PriceDisplay } from './PriceDisplay';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
 import { ContactFormSelector } from './ContactFormSelector';
+import { DakkapelRenderer } from './DakkapelRenderer';
 
 export type DakkapelType = 'typeA' | 'typeB' | 'typeC' | 'typeD' | 'typeE';
 export type MaterialType = 'kunststof' | 'hout' | 'aluminium';
@@ -104,6 +105,7 @@ export function DakkapelCalculator() {
           onChange={updateType}
           onNext={nextStep}
           onPrevious={() => {}}
+          configuration={configuration}
         />
       )}
 
@@ -113,6 +115,7 @@ export function DakkapelCalculator() {
           hoogte={configuration.hoogte}
           onChange={updateDimensions}
           onNext={nextStep}
+          configuration={configuration}
         />
       )}
 
@@ -125,6 +128,7 @@ export function DakkapelCalculator() {
           onChange={updateMaterial}
           onPrevious={previousStep}
           onNext={nextStep}
+          configuration={configuration}
         />
       )}
 
@@ -135,6 +139,7 @@ export function DakkapelCalculator() {
           onChange={updateOptions}
           onPrevious={previousStep}
           onNext={nextStep}
+          configuration={configuration}
         />
       )}
 

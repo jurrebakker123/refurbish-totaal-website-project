@@ -30,6 +30,24 @@ const OPTION_COSTS = {
   afvoeren_bouwafval: 150
 };
 
+// Type to width mapping in meters
+const TYPE_WIDTH_MAP = {
+  typeA: 100, // 1 meter
+  typeB: 200, // 2 meter
+  typeC: 300, // 3 meter
+  typeD: 400, // 4 meter
+  typeE: 500, // 5 meter
+};
+
+// Default number of windows per type
+const DEFAULT_WINDOWS = {
+  typeA: 1,
+  typeB: 1,
+  typeC: 2,
+  typeD: 2,
+  typeE: 3
+};
+
 /**
  * Calculate the total price based on the dakkapel configuration
  */
@@ -97,4 +115,18 @@ export function calculateTotalPrice(config: DakkapelConfiguration): number {
   
   // Round to nearest 10
   return Math.round(totalPrice / 10) * 10;
+}
+
+/**
+ * Get the default width for a dakkapel type
+ */
+export function getDefaultWidthForType(type: string): number {
+  return TYPE_WIDTH_MAP[type as keyof typeof TYPE_WIDTH_MAP] || 300;
+}
+
+/**
+ * Get the default number of windows for a dakkapel type
+ */
+export function getDefaultWindowsForType(type: string): number {
+  return DEFAULT_WINDOWS[type as keyof typeof DEFAULT_WINDOWS] || 2;
 }

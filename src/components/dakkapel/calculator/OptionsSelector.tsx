@@ -2,8 +2,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DakkapelOptions } from './DakkapelCalculator';
+import { DakkapelOptions, DakkapelConfiguration } from './DakkapelCalculator';
 import { MoveRight, MoveLeft } from 'lucide-react';
+import { DakkapelRenderer } from './DakkapelRenderer';
 import { 
   Select,
   SelectContent,
@@ -18,6 +19,7 @@ interface OptionsSelectorProps {
   onChange: (options: Partial<DakkapelOptions>, aantalRamen?: number) => void;
   onNext: () => void;
   onPrevious: () => void;
+  configuration: DakkapelConfiguration;
 }
 
 export function OptionsSelector({ 
@@ -25,7 +27,8 @@ export function OptionsSelector({
   aantalRamen,
   onChange, 
   onNext, 
-  onPrevious 
+  onPrevious,
+  configuration
 }: OptionsSelectorProps) {
   const options = [
     {
@@ -104,23 +107,32 @@ export function OptionsSelector({
         </p>
       </div>
 
-      <div className="space-y-4 mb-8">
-        <label className="font-medium text-gray-800">Aantal draaikiepramen</label>
-        <Select
-          value={aantalRamen.toString()}
-          onValueChange={(value) => onChange({}, parseInt(value))}
-        >
-          <SelectTrigger className="w-full md:w-1/3 bg-white text-black">
-            <SelectValue placeholder="Kies aantal..." />
-          </SelectTrigger>
-          <SelectContent className="bg-white text-black">
-            {[1, 2, 3, 4].map((aantal) => (
-              <SelectItem key={aantal} value={aantal.toString()}>
-                {aantal} {aantal === 1 ? 'raam' : 'ramen'}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="h-[350px] border-2 border-dashed border-gray-300 bg-gray-50 rounded-md">
+          <DakkapelRenderer configuration={configuration} />
+          <div className="text-center text-sm text-gray-600 mt-2">
+            3D visualisatie (draai met muis)
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <label className="font-medium text-gray-800">Aantal draaikiepramen</label>
+          <Select
+            value={aantalRamen.toString()}
+            onValueChange={(value) => onChange({}, parseInt(value))}
+          >
+            <SelectTrigger className="w-full bg-white text-black">
+              <SelectValue placeholder="Kies aantal..." />
+            </SelectTrigger>
+            <SelectContent className="bg-white text-black">
+              {[1, 2, 3, 4].map((aantal) => (
+                <SelectItem key={aantal} value={aantal.toString()}>
+                  {aantal} {aantal === 1 ? 'raam' : 'ramen'}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-4">

@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
 import { DakkapelRenderer } from './DakkapelRenderer';
+import { DakkapelConfiguration } from './DakkapelCalculator';
 import { 
   Select,
   SelectContent,
@@ -16,9 +17,10 @@ interface DimensionsSelectorProps {
   hoogte: number;
   onChange: (breedte: number, hoogte: number) => void;
   onNext: () => void;
+  configuration: DakkapelConfiguration;
 }
 
-export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: DimensionsSelectorProps) {
+export function DimensionsSelector({ breedte, hoogte, onChange, onNext, configuration }: DimensionsSelectorProps) {
   // Limited width options as requested
   const breedteOptions = [200, 300, 400, 500];
   
@@ -37,7 +39,7 @@ export function DimensionsSelector({ breedte, hoogte, onChange, onNext }: Dimens
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <div className="h-[300px] border-2 border-dashed border-gray-300 bg-gray-50">
-            <DakkapelRenderer breedte={breedte} hoogte={hoogte} />
+            <DakkapelRenderer configuration={configuration} />
           </div>
           <div className="text-center text-sm text-gray-600 mt-2">
             3D visualisatie (draai met muis)
