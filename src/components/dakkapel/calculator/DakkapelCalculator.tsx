@@ -10,7 +10,14 @@ import { ContactFormSelector } from './ContactFormSelector';
 import { DakkapelRenderer } from './DakkapelRenderer';
 
 export type DakkapelType = 'typeA' | 'typeB' | 'typeC' | 'typeD' | 'typeE';
-export type MaterialType = 'kunststof' | 'hout' | 'aluminium';
+export type MaterialType = 'kunststof' | 'hout' | 'aluminium' | 'standaard' | 'kunststof_rabat' | 'kunststof_rabat_boeideel' | 'polyester_glad' | 'polyester_rabat';
+export type KozijnHoogte = 'standaard' | 'medium' | 'large' | 'extra_large';
+export type WoningZijde = 'achter' | 'voor' | 'zijkant';
+export type RCWaarde = 'standaard' | 'upgrade_6_0' | 'upgrade_6_5';
+export type DakHelling = 'kleiner_dan_40' | 'tussen_40_45' | 'groter_dan_45';
+
+export type KleurOptie = 'wit' | 'crème' | 'grijs' | 'antraciet' | 'zwart' | 'staalblauw' | 'dennengroen';
+
 export type DakkapelOptions = {
   ventilatie: boolean;
   zonwering: boolean;
@@ -21,6 +28,12 @@ export type DakkapelOptions = {
   elektrisch_rolluik: boolean;
   verwijderen_bestaande: boolean;
   afvoeren_bouwafval: boolean;
+  kader_dakkapel: boolean;
+  voorbereiden_rolluiken: boolean;
+  minirooftop: boolean;
+  dak_versteviging: boolean;
+  ventilatieroosters: boolean;
+  sporenkap: boolean;
 };
 
 export interface DakkapelConfiguration {
@@ -29,9 +42,14 @@ export interface DakkapelConfiguration {
   hoogte: number;
   materiaal: MaterialType;
   dakHelling: number;
+  dakHellingType: DakHelling;
   aantalRamen: number;
-  kleurKozijnen: string;
-  kleurZijkanten: string;
+  kleurKozijnen: KleurOptie;
+  kleurZijkanten: KleurOptie;
+  kleurDraaikiepramen: KleurOptie;
+  kozijnHoogte: KozijnHoogte;
+  woningZijde: WoningZijde;
+  rcWaarde: RCWaarde;
   opties: DakkapelOptions;
 }
 
@@ -43,9 +61,14 @@ export function DakkapelCalculator() {
     hoogte: 175,
     materiaal: 'kunststof',
     dakHelling: 45,
+    dakHellingType: 'tussen_40_45',
     aantalRamen: 2,
     kleurKozijnen: 'wit',
     kleurZijkanten: 'wit',
+    kleurDraaikiepramen: 'wit',
+    kozijnHoogte: 'standaard',
+    woningZijde: 'achter',
+    rcWaarde: 'standaard',
     opties: {
       ventilatie: false,
       zonwering: false,
@@ -56,6 +79,12 @@ export function DakkapelCalculator() {
       elektrisch_rolluik: false,
       verwijderen_bestaande: false,
       afvoeren_bouwafval: false,
+      kader_dakkapel: false,
+      voorbereiden_rolluiken: false,
+      minirooftop: false,
+      dak_versteviging: false,
+      ventilatieroosters: false,
+      sporenkap: false,
     },
   });
 
@@ -69,21 +98,32 @@ export function DakkapelCalculator() {
     setConfiguration({ ...configuration, breedte, hoogte });
   };
 
-  const updateMaterial = (materiaal: MaterialType, kleurKozijnen: string, kleurZijkanten: string, dakHelling: number) => {
+  const updateMaterial = (materiaal: MaterialType, kleurKozijnen: KleurOptie, kleurZijkanten: KleurOptie, dakHelling: number, dakHellingType: DakHelling, rcWaarde: RCWaarde) => {
     setConfiguration({ 
       ...configuration, 
       materiaal, 
       kleurKozijnen, 
       kleurZijkanten, 
-      dakHelling 
+      dakHelling,
+      dakHellingType,
+      rcWaarde
     });
   };
 
-  const updateOptions = (opties: Partial<DakkapelOptions>, aantalRamen?: number) => {
+  const updateOptions = (
+    opties: Partial<DakkapelOptions>, 
+    aantalRamen?: number, 
+    kozijnHoogte?: KozijnHoogte, 
+    woningZijde?: WoningZijde,
+    kleurDraaikiepramen?: KleurOptie
+  ) => {
     setConfiguration({
       ...configuration,
       opties: { ...configuration.opties, ...opties },
-      ...(aantalRamen !== undefined ? { aantalRamen } : {})
+      ...(aantalRamen !== undefined ? { aantalRamen } : {}),
+      ...(kozijnHoogte !== undefined ? { kozijnHoogte } : {}),
+      ...(woningZijde !== undefined ? { woningZijde } : {}),
+      ...(kleurDraaikiepramen !== undefined ? { kleurDraaikiepramen } : {})
     });
   };
 
@@ -125,6 +165,8 @@ export function DakkapelCalculator() {
           kleurKozijnen={configuration.kleurKozijnen}
           kleurZijkanten={configuration.kleurZijkanten}
           dakHelling={configuration.dakHelling}
+          dakHellingType={configuration.dakHellingType}
+          rcWaarde={configuration.rcWaarde}
           onChange={updateMaterial}
           onPrevious={previousStep}
           onNext={nextStep}
@@ -136,6 +178,9 @@ export function DakkapelCalculator() {
         <OptionsSelector
           selectedOptions={configuration.opties}
           aantalRamen={configuration.aantalRamen}
+          kozijnHoogte={configuration.kozijnHoogte}
+          woningZijde={configuration.woningZijde}
+          kleurDraaikiepramen={configuration.kleurDraaikiepramen}
           onChange={updateOptions}
           onPrevious={previousStep}
           onNext={nextStep}

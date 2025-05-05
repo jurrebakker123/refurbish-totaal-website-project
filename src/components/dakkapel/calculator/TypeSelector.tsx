@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DakkapelType, DakkapelConfiguration } from './DakkapelCalculator';
 import { MoveRight, MoveLeft, CheckCircle } from 'lucide-react';
 import { DakkapelRenderer } from './DakkapelRenderer';
+import { getWidthRangeForType } from '@/utils/calculatorUtils';
 
 interface TypeSelectorProps {
   selectedType: DakkapelType;
@@ -15,41 +16,41 @@ interface TypeSelectorProps {
 }
 
 export function TypeSelector({ selectedType, onChange, onNext, onPrevious, configuration }: TypeSelectorProps) {
-  const types: { id: DakkapelType; name: string; description: string; basePrice: number; width: string }[] = [
+  const types: { id: DakkapelType; name: string; description: string; basePrice: number; windowCount: string }[] = [
     {
       id: 'typeA',
       name: 'Type A',
-      description: 'Kleine dakkapel met één draaikiepraam',
+      description: 'Dakkapel één draaikiepraam',
       basePrice: 7060,
-      width: '1 meter'
+      windowCount: 'één draaikiepraam'
     },
     {
       id: 'typeB',
       name: 'Type B',
-      description: 'Middelgrote dakkapel met één draaikiepraam',
+      description: 'Dakkapel één draaikiepraam',
       basePrice: 7290,
-      width: '2 meter'
+      windowCount: 'één draaikiepraam'
     },
     {
       id: 'typeC',
       name: 'Type C',
-      description: 'Ruime dakkapel met twee draaikiepramen',
+      description: 'Dakkapel twee draaikiepramen',
       basePrice: 8200,
-      width: '3 meter'
+      windowCount: 'twee draaikiepramen'
     },
     {
       id: 'typeD',
       name: 'Type D',
-      description: 'Grote dakkapel met twee of drie draaikiepramen',
+      description: 'Dakkapel twee draaikiepramen',
       basePrice: 8780,
-      width: '4 meter'
+      windowCount: 'twee draaikiepramen'
     },
     {
       id: 'typeE',
       name: 'Type E',
-      description: 'Extra brede dakkapel met drie of vier draaikiepramen',
+      description: 'Dakkapel twee draaikiepramen en dicht paneel',
       basePrice: 9330,
-      width: '5 meter'
+      windowCount: 'twee draaikiepramen en dicht paneel'
     }
   ];
 
@@ -78,31 +79,34 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
 
         {/* Type selection cards */}
         <div className="md:col-span-2 grid grid-cols-1 gap-4">
-          {types.map((type) => (
-            <Card 
-              key={type.id} 
-              className={`cursor-pointer transition-all hover:shadow-md ${
-                selectedType === type.id ? 'border-2 border-brand-lightGreen shadow-md' : 'border border-gray-200'
-              }`}
-              onClick={() => onChange(type.id)}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <h3 className="font-bold text-lg">{type.name}</h3>
-                  {selectedType === type.id && (
-                    <CheckCircle className="h-5 w-5 text-brand-lightGreen" />
-                  )}
-                </div>
-                <p className="text-gray-600 mt-2">{type.description}</p>
-                <div className="mt-4">
-                  <div className="text-sm text-gray-500">Breedte: {type.width}</div>
-                  <div className="font-medium text-brand-darkGreen">
-                    Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
+          {types.map((type) => {
+            const widthRange = getWidthRangeForType(type.id);
+            return (
+              <Card 
+                key={type.id} 
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  selectedType === type.id ? 'border-2 border-brand-lightGreen shadow-md' : 'border border-gray-200'
+                }`}
+                onClick={() => onChange(type.id)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <h3 className="font-bold text-lg">{type.name}</h3>
+                    {selectedType === type.id && (
+                      <CheckCircle className="h-5 w-5 text-brand-lightGreen" />
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <p className="text-gray-600 mt-2">{type.description}</p>
+                  <div className="mt-4">
+                    <div className="text-sm text-gray-500">Min {widthRange.min/100},00 m - max {widthRange.max/100},00 m</div>
+                    <div className="font-medium text-brand-darkGreen">
+                      Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
