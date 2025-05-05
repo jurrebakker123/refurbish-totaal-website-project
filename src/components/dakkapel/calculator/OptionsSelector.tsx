@@ -176,7 +176,7 @@ export function OptionsSelector({
           onClick={onNext} 
           className="bg-brand-lightGreen hover:bg-opacity-90"
         >
-          Bekijk Resultaat <MoveRight className="ml-2 h-4 w-4" />
+          Prijsopgave Bekijken <MoveRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>

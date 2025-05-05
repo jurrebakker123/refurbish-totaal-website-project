@@ -38,7 +38,8 @@ function DakkapelModel({
   kleurKozijnen = 'wit',
   kleurZijkanten = 'wit',
   showZonwering = false,
-  showRolluik = false
+  showRolluik = false,
+  configuration
 }: DakkapelRendererProps) {
   const dakkapelRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
@@ -86,6 +87,12 @@ function DakkapelModel({
     windowPositions.push([xPos, 0, 0.26]);
   }
 
+  // Check if extra options are enabled
+  const hasVentilatie = configuration?.opties?.ventilatie || false;
+  const hasGootafwerking = configuration?.opties?.gootafwerking || false;
+  const hasExtraIsolatie = configuration?.opties?.extra_isolatie || false;
+  const hasHorren = configuration?.opties?.horren || false;
+
   return (
     <group ref={dakkapelRef}>
       {/* Roof base */}
@@ -94,9 +101,9 @@ function DakkapelModel({
         <meshStandardMaterial color="#8B4513" />
       </mesh>
       
-      {/* Dakkapel base */}
+      {/* Dakkapel base - thicker if extra insulation is selected */}
       <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[width, height, 0.5]} />
+        <boxGeometry args={[width, height, hasExtraIsolatie ? 0.6 : 0.5]} />
         <meshStandardMaterial color={zijkantenColor} />
       </mesh>
       
@@ -105,6 +112,14 @@ function DakkapelModel({
         <boxGeometry args={[width, height, 0.02]} />
         <meshStandardMaterial color={dakkapelColor} />
       </mesh>
+
+      {/* Extra insulation indicator */}
+      {hasExtraIsolatie && (
+        <mesh position={[0, 0, -0.25]} rotation={[0, Math.PI, 0]}>
+          <boxGeometry args={[width * 0.9, height * 0.9, 0.01]} />
+          <meshStandardMaterial color="#FFE0B2" />
+        </mesh>
+      )}
 
       {/* Windows based on aantal ramen */}
       {windowPositions.map((pos, index) => (
@@ -120,8 +135,38 @@ function DakkapelModel({
             <boxGeometry args={[windowWidth * 0.85, height * 0.6, 0.01]} />
             <meshStandardMaterial color="#a5d8ff" transparent opacity={0.7} />
           </mesh>
+
+          {/* Horren (insect screens) */}
+          {hasHorren && (
+            <mesh position={[0, 0, 0.035]}>
+              <boxGeometry args={[windowWidth * 0.85, height * 0.6, 0.001]} />
+              <meshStandardMaterial color="#e0e0e0" transparent opacity={0.5} wireframe={true} />
+            </mesh>
+          )}
         </group>
       ))}
+      
+      {/* Ventilatie system */}
+      {hasVentilatie && (
+        <group>
+          <mesh position={[width/2 - 0.1, height/2 - 0.1, 0.25]}>
+            <cylinderGeometry args={[0.05, 0.05, 0.1, 16]} rotation={[Math.PI/2, 0, 0]} />
+            <meshStandardMaterial color="#555555" />
+          </mesh>
+          <mesh position={[-width/2 + 0.1, height/2 - 0.1, 0.25]}>
+            <cylinderGeometry args={[0.05, 0.05, 0.1, 16]} rotation={[Math.PI/2, 0, 0]} />
+            <meshStandardMaterial color="#555555" />
+          </mesh>
+        </group>
+      )}
+      
+      {/* Gootafwerking (gutter finish) */}
+      {hasGootafwerking && (
+        <mesh position={[0, height/2 + 0.03, 0.3]}>
+          <boxGeometry args={[width + 0.1, 0.05, 0.2]} />
+          <meshStandardMaterial color="#777777" />
+        </mesh>
+      )}
       
       {/* Zonwering if selected */}
       {showZonwering && (
@@ -131,17 +176,34 @@ function DakkapelModel({
         </mesh>
       )}
       
-      {/* Electric rolluik if selected */}
+      {/* Improved Electric rolluik */}
       {showRolluik && (
         <group>
-          <mesh position={[0, height/2 + 0.05, 0.3]}>
-            <boxGeometry args={[width, 0.08, 0.1]} />
+          {/* Rolluik housing box */}
+          <mesh position={[0, height/2 + 0.08, 0.3]}>
+            <boxGeometry args={[width + 0.05, 0.15, 0.2]} />
             <meshStandardMaterial color="#555555" />
           </mesh>
-          {/* Partially rolled down shutter */}
-          <mesh position={[0, height/4, 0.26]}>
-            <boxGeometry args={[width, height/2, 0.01]} />
-            <meshStandardMaterial color="#dddddd" />
+          
+          {/* Rolluik slats - partially rolled down */}
+          {Array.from({ length: 8 }).map((_, i) => (
+            <mesh 
+              key={`rolluik-slat-${i}`} 
+              position={[0, height/2 - 0.15 - (i * 0.06), 0.26]}
+            >
+              <boxGeometry args={[width, 0.04, 0.02]} />
+              <meshStandardMaterial color={i % 2 === 0 ? "#d0d0d0" : "#c0c0c0"} />
+            </mesh>
+          ))}
+          
+          {/* Side rails for rolluik */}
+          <mesh position={[-width/2 - 0.02, height/4, 0.26]}>
+            <boxGeometry args={[0.04, height/2, 0.04]} />
+            <meshStandardMaterial color="#555555" />
+          </mesh>
+          <mesh position={[width/2 + 0.02, height/4, 0.26]}>
+            <boxGeometry args={[0.04, height/2, 0.04]} />
+            <meshStandardMaterial color="#555555" />
           </mesh>
         </group>
       )}
@@ -189,6 +251,7 @@ export function DakkapelRenderer({
             kleurZijkanten={effectiveKleurZijkanten}
             showZonwering={effectiveShowZonwering}
             showRolluik={effectiveShowRolluik}
+            configuration={configuration}
           />
         </Center>
         <OrbitControls 
