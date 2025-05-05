@@ -6,6 +6,7 @@ import { MaterialSelector } from './MaterialSelector';
 import { OptionsSelector } from './OptionsSelector';
 import { PriceDisplay } from './PriceDisplay';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
+import { ContactFormSelector } from './ContactFormSelector';
 import { DakkapelRenderer } from './DakkapelRenderer';
 
 export type DakkapelType = 'typeA' | 'typeB' | 'typeC' | 'typeD' | 'typeE';
@@ -143,6 +144,14 @@ export function DakkapelCalculator() {
       )}
 
       {step === 5 && (
+        <ContactFormSelector
+          configuration={configuration}
+          onPrevious={previousStep}
+          onNext={nextStep}
+        />
+      )}
+
+      {step === 6 && (
         <PriceDisplay
           configuration={configuration}
           totalPrice={totalPrice}
