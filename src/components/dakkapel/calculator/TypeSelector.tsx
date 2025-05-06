@@ -98,7 +98,9 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
                   </div>
                   <p className="text-gray-600 mt-2">{type.description}</p>
                   <div className="mt-4">
-                    <div className="text-sm text-gray-500">Min {widthRange.min/100},00 m - max {widthRange.max/100},00 m</div>
+                    <div className="text-sm text-gray-500">
+                      Min {(widthRange.min/100).toFixed(2).replace('.', ',')} m - max {(widthRange.max/100).toFixed(2).replace('.', ',')} m
+                    </div>
                     <div className="font-medium text-brand-darkGreen">
                       Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
                     </div>

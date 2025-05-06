@@ -50,7 +50,7 @@ const TYPE_WIDTH_MAP = {
   typeE: 500, // 5 meter
 };
 
-// Type to width range mapping
+// Type to width range mapping - Corrected based on requirements
 const TYPE_WIDTH_RANGE = {
   typeA: { min: 100, max: 150 }, // Min 1,00m - max 1,50m
   typeB: { min: 150, max: 300 }, // Min 1,50m - max 3,00m

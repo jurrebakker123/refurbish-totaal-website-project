@@ -100,12 +100,6 @@ export function OptionsSelector({
       price: 150,
     },
     {
-      id: 'kader_dakkapel',
-      label: 'Kader dakkapel',
-      description: 'Fraai afgewerkt kader rondom de dakkapel',
-      price: 1140.26,
-    },
-    {
       id: 'ventilatieroosters',
       label: 'Ventilatieroosters',
       description: 'Roosters voor natuurlijke ventilatie',
