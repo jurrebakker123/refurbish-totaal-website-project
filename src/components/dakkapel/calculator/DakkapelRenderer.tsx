@@ -1,13 +1,14 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Center, useTexture, Environment, softShadows } from '@react-three/drei';
+import { OrbitControls, Center, useTexture, Environment, SoftShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte } from './DakkapelCalculator';
 import { getKozijnHeight } from '@/utils/calculatorUtils';
 
 // Enable soft shadows for more realistic lighting
-softShadows();
+// Use SoftShadows component instead of softShadows function
+// Will use this in the Canvas component
 
 interface DakkapelRendererProps {
   configuration?: DakkapelConfiguration;
@@ -379,7 +380,7 @@ function DakkapelModel({
           </mesh>
           
           {/* Cooling pipes */}
-          <mesh position={[-width * 0.15, 0, -0.05]} rotation={[Math.PI/2, 0, 0]} castShadow>
+          <mesh position={[-width * 0.15, 0, -0.05]}>
             <cylinderGeometry args={[0.02, 0.02, 0.2, 8]} />
             <meshStandardMaterial color="#777777" metalness={0.8} />
           </mesh>
@@ -497,25 +498,25 @@ function DakkapelModel({
           </mesh>
           
           {/* Detailed gutter pipe */}
-          <mesh position={[width/2 - 0.1, -height/4, 0.3]} castShadow>
+          <mesh position={[width/2 - 0.1, -height/4, 0.3]}>
             <cylinderGeometry args={[0.025, 0.025, height/2, 8]} />
             <meshStandardMaterial color="#555555" metalness={0.4} roughness={0.6} />
           </mesh>
           
           {/* Pipe connector at top */}
-          <mesh position={[width/2 - 0.1, height/4 - 0.02, 0.3]} castShadow>
+          <mesh position={[width/2 - 0.1, height/4 - 0.02, 0.3]}>
             <cylinderGeometry args={[0.035, 0.025, 0.04, 8]} />
             <meshStandardMaterial color="#444444" metalness={0.4} roughness={0.6} />
           </mesh>
           
           {/* Pipe elbow at bottom */}
-          <mesh position={[width/2 - 0.1, -height/2 + 0.05, 0.3]} castShadow>
+          <mesh position={[width/2 - 0.1, -height/2 + 0.05, 0.3]}>
             <sphereGeometry args={[0.03, 8, 8, 0, Math.PI * 2, 0, Math.PI/2]} />
             <meshStandardMaterial color="#444444" metalness={0.4} roughness={0.6} />
           </mesh>
           
           {/* Horizontal pipe section at bottom */}
-          <mesh position={[width/2 - 0.05, -height/2 + 0.05, 0.3]} rotation={[0, 0, Math.PI/2]} castShadow>
+          <mesh position={[width/2 - 0.05, -height/2 + 0.05, 0.3]}>
             <cylinderGeometry args={[0.025, 0.025, 0.1, 8]} />
             <meshStandardMaterial color="#555555" metalness={0.4} roughness={0.6} />
           </mesh>
@@ -577,7 +578,7 @@ function DakkapelModel({
             
             {/* Handle lever */}
             <mesh position={[0, 0.06, 0]} castShadow>
-              <cylinderGeometry args={[0.01, 0.01, 0.12, 8]} rotation={[Math.PI/2, 0, 0]} />
+              <cylinderGeometry args={[0.01, 0.01, 0.12, 8]} />
               <meshStandardMaterial color={draaikiepramenColor} metalness={0.7} roughness={0.3} />
             </mesh>
           </group>
@@ -644,8 +645,8 @@ function DakkapelModel({
           </mesh>
           
           {/* Fabric rod at bottom */}
-          <mesh position={[0, height/2 - 0.8, 0.4]} castShadow>
-            <cylinderGeometry args={[0.03, 0.03, width - 0.05, 8]} rotation={[0, Math.PI/2, 0]} />
+          <mesh position={[0, height/2 - 0.8, 0.4]}>
+            <cylinderGeometry args={[0.03, 0.03, width - 0.05, 8]} />
             <meshStandardMaterial color="#888888" metalness={0.3} roughness={0.7} />
           </mesh>
           
@@ -830,6 +831,8 @@ export function DakkapelRenderer({
           shadow-mapSize={[1024, 1024]}
         />
         <directionalLight position={[-5, 5, -5]} intensity={0.4} />
+        {/* Use SoftShadows component for better shadows */}
+        <SoftShadows size={10} focus={0.5} samples={16} />
         <Center>
           <DakkapelModel 
             breedte={effectiveBreedte} 
