@@ -51,22 +51,22 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     try {
       // Alle dakkapel configuratie gegevens toevoegen aan de e-mail
       const dakkapelDetails = {
-        dakkapel_type: configuration.type || "Standaard",
+        dakkapel_type: configuration.dakkapelType || "Standaard",
         breedte: configuration.breedte ? `${configuration.breedte} meter` : "Niet opgegeven",
         hoogte: configuration.hoogte ? `${configuration.hoogte} meter` : "Niet opgegeven",
-        kozijnen: configuration.aantalRamen ? configuration.aantalRamen.toString() : "0",
-        materiaal: configuration.materiaal || "Standaard",
-        boeideel: "Standaard", // Default value since it's not in the configuration
-        overstek: configuration.opties.gootafwerking ? "Ja" : "Nee",
-        afvoer: false, // Default value since it's not in the configuration
-        dakbedekking: "EPDM", // Default value since it's not in the configuration
-        zonwering: configuration.opties.zonwering ? "Ja" : "Nee",
-        rolluik: configuration.opties.elektrisch_rolluik ? "Ja" : "Nee",
-        minidak: configuration.opties.minirooftop ? "Ja" : "Nee",
-        kaderDakkapel: configuration.opties.kader_dakkapel ? "Ja" : "Nee",
-        extraIsolatie: configuration.opties.extra_isolatie ? "Ja" : "Nee",
-        achterzijde: configuration.woningZijde === 'achter' ? "Ja" : "Nee",
-        totaalprijs: typeof configuration.calculatedPrice === 'number' ? `€${configuration.calculatedPrice.toFixed(2)}` : "Niet berekend",
+        kozijnen: configuration.kozijnen ? configuration.kozijnen.toString() : "0",
+        materiaal: configuration.materiaalType || "Standaard",
+        boeideel: configuration.boeideel || "Standaard",
+        overstek: configuration.overstek ? "Ja" : "Nee",
+        afvoer: configuration.afvoer ? "Ja" : "Nee",
+        dakbedekking: configuration.dakbedekking || "EPDM",
+        zonwering: configuration.zonwering ? "Ja" : "Nee",
+        rolluik: configuration.rolluik ? "Ja" : "Nee",
+        minidak: configuration.minidak ? "Ja" : "Nee",
+        kaderDakkapel: configuration.kaderDakkapel ? "Ja" : "Nee",
+        extraIsolatie: configuration.extraIsolatie ? "Ja" : "Nee",
+        achterzijde: configuration.achterzijde ? "Ja" : "Nee",
+        totaalprijs: configuration.price ? `€${configuration.price.toFixed(2)}` : "Niet berekend",
       };
 
       // Klantgegevens voorbereiden
@@ -89,7 +89,7 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
         from_name: klantgegevens.naam,
         from_email: klantgegevens.email,
         to_name: "Refurbish Totaal Nederland",
-        subject: `Nieuwe dakkapel offerte aanvraag - € ${typeof configuration.calculatedPrice === 'number' ? configuration.calculatedPrice.toFixed(2) : "0,00"}`,
+        subject: `Nieuwe dakkapel offerte aanvraag - € ${configuration.price?.toFixed(2) || "0,00"}`,
         service: "Dakkapel",
         
         // Toon alle veldwaarden in e-mail

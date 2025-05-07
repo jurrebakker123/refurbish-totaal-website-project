@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, useTexture, Environment, SoftShadows } from '@react-three/drei';
@@ -868,27 +869,4 @@ export function DakkapelRenderer({
       </Canvas>
     </div>
   );
-}
-
-// Since this is a read-only file, we need to fix the Vector3 type error, but we can't modify it directly.
-// We would need to address this in a different way.
-
-// The error is on line 758: Type 'number[]' is not assignable to type 'Vector3'
-// This would typically be fixed by ensuring we provide a proper Vector3 object or a fixed-length tuple [x, y, z]
-// Since we can't modify the file directly, we can create a custom hook that can be used to fix Vector3-related issues.
-
-import { useEffect } from 'react';
-import { Vector3 } from 'three';
-
-// This is a helper function that can be used to convert number[] to Vector3
-export function useVector3Helper() {
-  const convertToVector3 = (arr: number[]): [number, number, number] => {
-    // Ensure the array has exactly 3 elements
-    if (arr.length < 3) {
-      return [arr[0] || 0, arr[1] || 0, 0]; // Default z to 0 if missing
-    }
-    return [arr[0], arr[1], arr[2]];
-  };
-
-  return { convertToVector3 };
 }
