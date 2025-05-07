@@ -94,11 +94,11 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       
       // E-mail inhoud
       subject: templateParams.subject || "Contact via website",
-      message: templateParams.message || "",
-      phone: templateParams.phone || "",
-      location: templateParams.location || "",
-      service: templateParams.service || "",
-      preferred_date: templateParams.preferred_date || "",
+      message: templateParams.message || "Geen bericht",
+      phone: templateParams.phone || "Niet opgegeven",
+      location: templateParams.location || "Niet opgegeven",
+      service: templateParams.service || "Niet opgegeven",
+      preferred_date: templateParams.preferred_date || "Niet opgegeven",
       
       // Tekening link van Uploadcare
       tekening_link: templateParams.tekening_link || "",
@@ -128,6 +128,14 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
         data: templateParams.tekening
       }];
     }
+    
+    // Voeg alle templateParams toe aan params voor weergave in de e-mail
+    // Dit zorgt ervoor dat alle velden die in het formulier zijn ingevuld worden meegestuurd
+    Object.keys(templateParams).forEach(key => {
+      if (key !== 'tekening' && key !== '_attachments') { // Voorkom dubbele of grote objecten
+        params[key] = templateParams[key] || params[key] || "";
+      }
+    });
     
     console.log('EmailJS verzenden met definitieve parameters:', {
       ...params,

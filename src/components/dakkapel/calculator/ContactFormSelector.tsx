@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { MoveLeft, MoveRight } from 'lucide-react';
 import { DakkapelConfiguration } from './DakkapelCalculator';
 import { toast } from 'sonner';
+import { sendEmail } from '@/config/email';
 
 interface ContactFormSelectorProps {
   configuration: DakkapelConfiguration;
@@ -33,7 +34,7 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -47,13 +48,76 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
       return;
     }
 
-    // Here you would normally send the data to the server
-    // For now, we'll just simulate a successful submission
-    setTimeout(() => {
-      toast.success("Uw aanvraag is succesvol verzonden! We nemen zo spoedig mogelijk contact met u op.");
-      onNext();
+    try {
+      // Alle dakkapel configuratie gegevens toevoegen aan de e-mail
+      const dakkapelDetails = {
+        dakkapel_type: configuration.dakkapelType || "Standaard",
+        breedte: configuration.breedte ? `${configuration.breedte} meter` : "Niet opgegeven",
+        hoogte: configuration.hoogte ? `${configuration.hoogte} meter` : "Niet opgegeven",
+        kozijnen: configuration.kozijnen ? configuration.kozijnen.toString() : "0",
+        materiaal: configuration.materiaalType || "Standaard",
+        boeideel: configuration.boeideel || "Standaard",
+        overstek: configuration.overstek ? "Ja" : "Nee",
+        afvoer: configuration.afvoer ? "Ja" : "Nee",
+        dakbedekking: configuration.dakbedekking || "EPDM",
+        zonwering: configuration.zonwering ? "Ja" : "Nee",
+        rolluik: configuration.rolluik ? "Ja" : "Nee",
+        minidak: configuration.minidak ? "Ja" : "Nee",
+        kaderDakkapel: configuration.kaderDakkapel ? "Ja" : "Nee",
+        extraIsolatie: configuration.extraIsolatie ? "Ja" : "Nee",
+        achterzijde: configuration.achterzijde ? "Ja" : "Nee",
+        totaalprijs: configuration.price ? `€${configuration.price.toFixed(2)}` : "Niet berekend",
+      };
+
+      // Klantgegevens voorbereiden
+      const klantgegevens = {
+        naam: `${formData.voornaam} ${formData.achternaam}`,
+        email: formData.emailadres,
+        telefoon: formData.telefoon,
+        adres: `${formData.straatnaam} ${formData.huisnummer}`,
+        postcode: formData.postcode,
+        plaats: formData.plaats,
+        bericht: formData.bericht || "Geen bericht toegevoegd",
+      };
+
+      // Combineer alle gegevens voor de e-mail
+      const emailParams = {
+        ...klantgegevens,
+        ...dakkapelDetails,
+        
+        // Standaard parameters
+        from_name: klantgegevens.naam,
+        from_email: klantgegevens.email,
+        to_name: "Refurbish Totaal Nederland",
+        subject: `Nieuwe dakkapel offerte aanvraag - € ${configuration.price?.toFixed(2) || "0,00"}`,
+        service: "Dakkapel",
+        
+        // Toon alle veldwaarden in e-mail
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats,
+        
+        // Template ID voor dakkapel offerte
+        templateId: "template_ezfzaao"
+      };
+
+      const result = await sendEmail(emailParams);
+
+      if (result.success) {
+        toast.success("Uw aanvraag is succesvol verzonden! We nemen zo spoedig mogelijk contact met u op.");
+        onNext();
+      } else {
+        throw new Error("Er ging iets mis bij het versturen van de aanvraag");
+      }
+    } catch (error) {
+      console.error("Fout bij verzenden offerte:", error);
+      toast.error("Er is iets misgegaan. Probeer het later opnieuw of neem direct contact met ons op.");
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   const inputClasses = "w-full border border-gray-300 rounded-md p-3 text-black";
