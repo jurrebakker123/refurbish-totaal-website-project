@@ -188,37 +188,6 @@ function DakkapelModel({
         </group>
       )}
       
-      {/* House side indicator (only visual, doesn't affect functionality) */}
-      {woningZijde && (
-        <group position={[0, 0, -1.5]}>
-          <mesh>
-            <boxGeometry args={[2, 1, 0.1]} />
-            <meshStandardMaterial color="#d4d0c8" />
-          </mesh>
-          <mesh position={[0, 0, 0.06]}>
-            <planeGeometry args={[1.8, 0.5]} />
-            <meshBasicMaterial>
-              <canvasTexture attach="map" args={[(() => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 256;
-                canvas.height = 128;
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                  ctx.fillStyle = '#ffffff';
-                  ctx.fillRect(0, 0, 256, 128);
-                  ctx.font = '24px Arial';
-                  ctx.fillStyle = '#000000';
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'middle';
-                  ctx.fillText(`${woningZijde.charAt(0).toUpperCase() + woningZijde.slice(1)}zijde`, 128, 64);
-                }
-                return canvas;
-              })()]} />
-            </meshBasicMaterial>
-          </mesh>
-        </group>
-      )}
-      
       {/* Extra Isolatie if selected - INSIDE the walls */}
       {showExtraIsolatie && (
         <group>

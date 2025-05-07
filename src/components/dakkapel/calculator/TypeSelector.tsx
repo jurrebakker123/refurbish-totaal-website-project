@@ -80,7 +80,33 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
         {/* Type selection cards */}
         <div className="md:col-span-2 grid grid-cols-1 gap-4">
           {types.map((type) => {
-            const widthRange = getWidthRangeForType(type.id);
+            // Manually set the width ranges for each type
+            let minWidth = "1,00";
+            let maxWidth = "1,50";
+            
+            switch (type.id) {
+              case 'typeA':
+                minWidth = "1,00";
+                maxWidth = "1,50";
+                break;
+              case 'typeB':
+                minWidth = "1,50";
+                maxWidth = "3,00";
+                break;
+              case 'typeC':
+                minWidth = "3,00";
+                maxWidth = "3,50";
+                break;
+              case 'typeD':
+                minWidth = "3,50";
+                maxWidth = "5,50";
+                break;
+              case 'typeE':
+                minWidth = "3,50";
+                maxWidth = "5,90";
+                break;
+            }
+
             return (
               <Card 
                 key={type.id} 
@@ -99,7 +125,7 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
                   <p className="text-gray-600 mt-2">{type.description}</p>
                   <div className="mt-4">
                     <div className="text-sm text-gray-500">
-                      Min {(widthRange.min/100).toFixed(2).replace('.', ',')} m - max {(widthRange.max/100).toFixed(2).replace('.', ',')} m
+                      Min {minWidth} m - max {maxWidth} m
                     </div>
                     <div className="font-medium text-brand-darkGreen">
                       Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
