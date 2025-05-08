@@ -126,7 +126,7 @@ const ReusableForm = ({
     // Get the tekening_link value if applicable
     const teekeningLink = showFileUpload ? formData.get('tekening_link') as string : "";
     
-    // Prepare email data - Format with values
+    // Prepare email data
     const emailData: Record<string, any> = {
       from_name: formData.get('naam') as string,
       from_email: formData.get('email') as string,
@@ -140,18 +140,9 @@ const ReusableForm = ({
       terms_accepted: "Ja"
     };
 
-    // Save all form fields to named parameters to ensure they appear in the email template
-    formData.forEach((value, key) => {
-      // Convert FormData entries to string values
-      if (typeof value === 'string') {
-        emailData[key] = value;
-      }
-    });
-
     // Add service information if applicable
     if (showServiceInput) {
       emailData.service = formData.get('dienst') as string;
-      emailData.dienst = formData.get('dienst') as string; // Zorg dat 'dienst' altijd beschikbaar is
     }
 
     // Add tekening information if applicable
@@ -162,10 +153,7 @@ const ReusableForm = ({
 
     // Add additional fields to email data
     additionalFields.forEach(field => {
-      const value = formData.get(field.name);
-      if (value) {
-        emailData[field.name] = value;
-      }
+      emailData[field.name] = formData.get(field.name);
     });
 
     console.log("Sending email with data:", emailData);

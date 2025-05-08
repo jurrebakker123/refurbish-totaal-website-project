@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -94,35 +93,21 @@ export function OfferteForm() {
       // Formatteer geselecteerde diensten als string
       const selectedServices = data.diensten.join(", ");
 
-      // Verzamel alle gegevensvelden voor in de e-mail
-      const emailData = {
-        // Standaardvelden
+      const result = await sendEmail({
         from_name: data.naam,
         from_email: data.email,
         to_name: "Refurbish Totaal Nederland",
         to_email: "info@refurbishtotaalnederland.nl",
         subject: `Nieuwe offerte aanvraag: ${selectedServices}`,
-        
-        // Alle velden expliciet vermelden voor in e-mail template
-        naam: data.naam,
-        email: data.email,
-        telefoon: data.telefoon,
-        woonplaats: data.woonplaats,
-        datum: data.datum || "Niet opgegeven",
         message: data.bericht || "Geen bericht",
-        bericht: data.bericht || "Geen bericht",
-        diensten: selectedServices,
+        phone: data.telefoon,
+        location: data.woonplaats,
         service: selectedServices,
-        
-        // Media velden
-        tekening_link: data.tekening_link || "",
-        tekening_beschikbaar: data.tekening_link ? "Ja" : "Nee",
-        
-        // Template specificatie
+        preferred_date: data.datum || "Niet opgegeven",
+        tekening_link: data.tekening_link || "",  // Ensure this is always defined
+        tekening_beschikbaar: data.tekening_link ? "Ja" : "Nee", // Add this flag for clarity
         templateId: "template_ezfzaao" // Sjabloon ID voor offerteaanvragen
-      };
-
-      const result = await sendEmail(emailData);
+      });
 
       if (result.success) {
         toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
