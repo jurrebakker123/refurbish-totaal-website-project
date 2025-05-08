@@ -315,7 +315,7 @@ function DakkapelModel({
 
       {/* Windows based on aantal ramen and kozijnHoogte */}
       {windowPositions.map((pos, index) => (
-        <group key={`window-${index}`} position={[pos[0], pos[1], pos[2]]}>
+        <group key={`window-${index}`} position={pos}>
           {/* Window frame */}
           <mesh>
             <boxGeometry args={[windowWidth * 0.95, windowHeight, 0.03]} />
