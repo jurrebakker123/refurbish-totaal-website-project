@@ -89,7 +89,7 @@ const CallToActionSection = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-20" 
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`,
         }}
       ></div>
       

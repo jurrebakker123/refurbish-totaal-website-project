@@ -8,6 +8,8 @@ interface OptimizedImageProps {
   fallbackSrc?: string;
   style?: React.CSSProperties;
   objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  width?: number;
+  height?: number;
 }
 
 export function OptimizedImage({
@@ -17,6 +19,8 @@ export function OptimizedImage({
   fallbackSrc = '/placeholder.svg',
   style = {},
   objectFit = 'cover',
+  width,
+  height,
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -28,6 +32,23 @@ export function OptimizedImage({
       setHasError(false);
     }
   }, [src, imgSrc, hasError]);
+
+  // Pre-load image to check if it's valid
+  useEffect(() => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      setImgSrc(src);
+      setHasError(false);
+    };
+    img.onerror = () => {
+      if (imgSrc !== fallbackSrc) {
+        console.log(`Image failed to load: ${imgSrc}, using fallback`);
+        setImgSrc(fallbackSrc);
+        setHasError(true);
+      }
+    };
+  }, [src, fallbackSrc]);
 
   const handleError = () => {
     if (imgSrc !== fallbackSrc) {
@@ -46,6 +67,8 @@ export function OptimizedImage({
       onError={handleError}
       loading="lazy"
       decoding="async"
+      width={width}
+      height={height}
     />
   );
 }

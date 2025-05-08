@@ -7,19 +7,19 @@ export function DakkapelTypes() {
     {
       title: 'Prefab Dakkapel',
       description: 'Een voordelige en snelle optie die in één dag geplaatst kan worden.',
-      image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       features: ['Snel geplaatst', 'Voordelig', 'Verschillende stijlen', 'Hoge isolatiewaarde']
     },
     {
       title: 'Op Maat Gemaakte Dakkapel',
       description: 'Volledig naar uw wensen gebouwd met premium materialen en afwerking.',
-      image: 'https://images.unsplash.com/photo-1558036117-15f0184515da?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       features: ['Volledig op maat', 'Premium materialen', 'Luxe afwerking', 'Maximale ruimtewinst']
     },
     {
       title: 'Renovatie Bestaande Dakkapel',
       description: 'Geef uw bestaande dakkapel een tweede leven met onze renovatiediensten.',
-      image: 'https://images.unsplash.com/photo-1584622781807-7b9544f1a63d?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       features: ['Energiebesparend', 'Modern uiterlijk', 'Verlengt levensduur', 'Verbeterde isolatie']
     }
   ];

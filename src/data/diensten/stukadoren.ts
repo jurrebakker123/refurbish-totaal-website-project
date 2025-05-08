@@ -37,7 +37,7 @@ const stukadoren: DienstData = {
       answer: 'Ja, wij gebruiken speciale vochtbestendige stucmortel voor badkamers en andere vochtige ruimtes. Ook kunnen we waterafstotende afwerkingen toepassen.' 
     }
   ],
-  image: 'https://images.unsplash.com/photo-1604857864317-2344f52026ce?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 };
 
 export default stukadoren;

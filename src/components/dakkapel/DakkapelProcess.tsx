@@ -20,13 +20,13 @@ export function DakkapelProcess() {
       number: '03',
       title: 'Productie',
       description: 'Uw dakkapel wordt op maat geproduceerd in onze Nederlandse werkplaats met hoogwaardige materialen.',
-      image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80'
+      image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80'
     },
     {
       number: '04',
       title: 'Plaatsing & Afwerking',
       description: 'Onze vakkundige monteurs plaatsen uw dakkapel en zorgen voor een perfecte afwerking.',
-      image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80'
+      image: 'https://images.unsplash.com/photo-1613685703305-eb42ee346545?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80'
     },
   ];
 
