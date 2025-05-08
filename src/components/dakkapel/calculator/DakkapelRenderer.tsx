@@ -792,7 +792,7 @@ function DakkapelModel({
             [-width/2 - 0.03, -height/2 - 0.01, 0.26],
             [width/2 + 0.03, -height/2 - 0.01, 0.26]
           ].map((pos, i) => (
-            <mesh key={`corner-${i}`} position={[pos[0], pos[1], pos[2]]} castShadow>
+            <mesh key={`corner-${i}`} position={pos} castShadow>
               <boxGeometry args={[0.05, 0.05, 0.035]} />
               <meshStandardMaterial color="#222222" roughness={0.7} />
             </mesh>
