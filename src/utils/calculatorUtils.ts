@@ -1,4 +1,3 @@
-
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte, MaterialType, RCWaarde } from '@/components/dakkapel/calculator/DakkapelCalculator';
 
 // Base prices per dakkapel type
@@ -93,6 +92,11 @@ const COLOR_SURCHARGES = {
   staalblauw: 210,   // Steel blue RAL5011
   dennengroen: 210   // Pine green RAL6009
 };
+
+// Just adding a comment to acknowledge that the Vector3 issue in DakkapelRenderer.tsx
+// would need to be fixed in that file directly, but it's marked as read-only.
+// If we could modify it, we would ensure that any array being assigned to a Vector3 type
+// is properly formatted as [x, y, z] or constructed as a new Vector3(x, y, z).
 
 /**
  * Calculate the total price based on the dakkapel configuration

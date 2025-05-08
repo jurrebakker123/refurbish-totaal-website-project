@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TypeSelector } from './TypeSelector';
 import { DimensionsSelector } from './DimensionsSelector';
 import { MaterialSelector } from './MaterialSelector';
@@ -51,6 +50,7 @@ export interface DakkapelConfiguration {
   woningZijde: WoningZijde;
   rcWaarde: RCWaarde;
   opties: DakkapelOptions;
+  calculatedPrice?: number; // Add calculatedPrice property
 }
 
 export function DakkapelCalculator() {
@@ -89,6 +89,14 @@ export function DakkapelCalculator() {
   });
 
   const totalPrice = calculateTotalPrice(configuration);
+  
+  // Update configuration with calculated price
+  useEffect(() => {
+    setConfiguration(prev => ({
+      ...prev,
+      calculatedPrice: totalPrice
+    }));
+  }, [totalPrice]);
 
   const updateType = (type: DakkapelType) => {
     setConfiguration({ ...configuration, type });
@@ -201,7 +209,7 @@ export function DakkapelCalculator() {
         <ContactFormSelector
           configuration={configuration}
           onPrevious={previousStep}
-          onNext={() => {}}
+          onNext={nextStep}
         />
       )}
     </div>

@@ -7,7 +7,6 @@ import { MoveLeft, MoveRight } from 'lucide-react';
 import { DakkapelConfiguration } from './DakkapelCalculator';
 import { toast } from 'sonner';
 import { sendEmail } from '@/config/email';
-import { calculateTotalPrice } from '@/utils/calculatorUtils';
 
 interface ContactFormSelectorProps {
   configuration: DakkapelConfiguration;
@@ -50,42 +49,24 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     }
 
     try {
-      // Calculate total price
-      const totalPrice = calculateTotalPrice(configuration);
-      
       // Alle dakkapel configuratie gegevens toevoegen aan de e-mail
       const dakkapelDetails = {
         dakkapel_type: configuration.type || "Standaard",
-        breedte: configuration.breedte ? `${configuration.breedte} cm` : "Niet opgegeven",
-        hoogte: configuration.hoogte ? `${configuration.hoogte} cm` : "Niet opgegeven",
-        aantal_ramen: configuration.aantalRamen.toString(),
+        breedte: configuration.breedte ? `${configuration.breedte} meter` : "Niet opgegeven",
+        hoogte: configuration.hoogte ? `${configuration.hoogte} meter` : "Niet opgegeven",
+        kozijnen: configuration.aantalRamen ? configuration.aantalRamen.toString() : "0",
         materiaal: configuration.materiaal || "Standaard",
-        kleur_kozijnen: configuration.kleurKozijnen || "Wit",
-        kleur_zijkanten: configuration.kleurZijkanten || "Wit", 
-        kleur_draaikiepramen: configuration.kleurDraaikiepramen || "Wit",
-        kozijn_hoogte: configuration.kozijnHoogte || "Standaard",
-        woning_zijde: configuration.woningZijde || "Achter", 
-        rc_waarde: configuration.rcWaarde || "Standaard",
-        dak_helling: `${configuration.dakHelling}° (${configuration.dakHellingType})`,
-        
-        // Opties
-        ventilatie: configuration.opties.ventilatie ? "Ja" : "Nee",
+        boeideel: "Standaard", // Default value since it's not in the configuration
+        overstek: configuration.opties.gootafwerking ? "Ja" : "Nee",
+        afvoer: false, // Default value since it's not in the configuration
+        dakbedekking: "EPDM", // Default value since it's not in the configuration
         zonwering: configuration.opties.zonwering ? "Ja" : "Nee",
-        gootafwerking: configuration.opties.gootafwerking ? "Ja" : "Nee",
-        extra_isolatie: configuration.opties.extra_isolatie ? "Ja" : "Nee",
-        extra_draaikiepraam: configuration.opties.extra_draaikiepraam ? "Ja" : "Nee",
-        horren: configuration.opties.horren ? "Ja" : "Nee",
-        elektrisch_rolluik: configuration.opties.elektrisch_rolluik ? "Ja" : "Nee",
-        verwijderen_bestaande: configuration.opties.verwijderen_bestaande ? "Ja" : "Nee",
-        afvoeren_bouwafval: configuration.opties.afvoeren_bouwafval ? "Ja" : "Nee",
-        kader_dakkapel: configuration.opties.kader_dakkapel ? "Ja" : "Nee",
-        voorbereiden_rolluiken: configuration.opties.voorbereiden_rolluiken ? "Ja" : "Nee",
-        minirooftop: configuration.opties.minirooftop ? "Ja" : "Nee",
-        dak_versteviging: configuration.opties.dak_versteviging ? "Ja" : "Nee",
-        ventilatieroosters: configuration.opties.ventilatieroosters ? "Ja" : "Nee",
-        sporenkap: configuration.opties.sporenkap ? "Ja" : "Nee",
-        
-        totaalprijs: `€${totalPrice.toFixed(2)}`
+        rolluik: configuration.opties.elektrisch_rolluik ? "Ja" : "Nee",
+        minidak: configuration.opties.minirooftop ? "Ja" : "Nee",
+        kaderDakkapel: configuration.opties.kader_dakkapel ? "Ja" : "Nee",
+        extraIsolatie: configuration.opties.extra_isolatie ? "Ja" : "Nee",
+        achterzijde: configuration.woningZijde === 'achter' ? "Ja" : "Nee",
+        totaalprijs: typeof configuration.calculatedPrice === 'number' ? `€${configuration.calculatedPrice.toFixed(2)}` : "Niet berekend",
       };
 
       // Klantgegevens voorbereiden
@@ -108,7 +89,7 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
         from_name: klantgegevens.naam,
         from_email: klantgegevens.email,
         to_name: "Refurbish Totaal Nederland",
-        subject: `Nieuwe dakkapel offerte aanvraag - € ${totalPrice.toFixed(2)}`,
+        subject: `Nieuwe dakkapel offerte aanvraag - € ${typeof configuration.calculatedPrice === 'number' ? configuration.calculatedPrice.toFixed(2) : "0,00"}`,
         service: "Dakkapel",
         
         // Toon alle veldwaarden in e-mail
