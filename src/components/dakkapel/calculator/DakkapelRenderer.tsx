@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, useTexture, Environment, SoftShadows } from '@react-three/drei';
@@ -198,11 +197,13 @@ function DakkapelModel({
   
   const windowWidth = width * 0.8 / Math.max(effectiveRamen, 1);
   
-  // Determine window positions based on number of windows
+  // Determine window positions based on number of windows - fixed with proper tuple typing
   for (let i = 0; i < effectiveRamen; i++) {
     const xPos = -width/2 + windowWidth/2 + i * windowWidth + (type === 'typeE' ? -0.1 : 0);
     const yPos = -height/20; // Slightly lower than center
-    windowPositions.push([xPos, yPos, 0.26]);
+    const zPos = 0.26;
+    // Explicitly create a tuple with exactly 3 elements
+    windowPositions.push([xPos, yPos, zPos] as [number, number, number]);
   }
 
   // Convert dakHelling to radians for the 3D rendering
@@ -245,7 +246,7 @@ function DakkapelModel({
           castShadow
         >
           <boxGeometry args={[2.4, 0.01, 0.15]} />
-          <meshStandardMaterial color={i % 2 === 0 ? "#4D3939" : "#3D2C2C"} roughness={0.9} />
+          <meshStandardMaterial color="#4D3939" roughness={0.9} />
         </mesh>
       ))}
       
