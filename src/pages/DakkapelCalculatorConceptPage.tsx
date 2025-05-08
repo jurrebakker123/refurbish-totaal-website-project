@@ -14,8 +14,10 @@ const DakkapelCalculatorConceptPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>Dakkapel Calculator Concept | Refurbish Totaal Nederland</title>
-        <meta name="robots" content="noindex, nofollow" />
+        <title>Dakkapel Calculator | Refurbish Totaal Nederland</title>
+        <meta name="description" content="Bereken direct de kosten voor uw dakkapel op maat. Pas de afmetingen, materialen en opties aan voor een nauwkeurige prijsindicatie." />
+        <meta name="keywords" content="dakkapel calculator, dakkapel kosten, dakkapel prijs, dakkapel op maat, dakkapel berekenen" />
+        <link rel="canonical" href="https://www.refurbishtotaalnederland.nl/dakkapel-calculator/" />
       </Helmet>
       
       <Header />
