@@ -38,13 +38,22 @@ const CallToActionSection = () => {
     try {
       console.log('Call To Action Section Form Submission:', formData);
 
+      // Validate form data
+      if (!formData.name || !formData.email || !formData.phone || !formData.service) {
+        toast.error("Vul alle verplichte velden in", {
+          duration: 5000,
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const result = await sendEmail({
         from_name: formData.name,
         to_name: "Refurbish Totaal Nederland",
         from_email: formData.email,
         phone: formData.phone,
         service: formData.service || "Niet opgegeven",
-        message: formData.message || "Geen bericht",
+        message: `Dienst: ${formData.service}\n\nBericht: ${formData.message || "Geen bericht"}\n\nContact: ${formData.name}, ${formData.email}, ${formData.phone}`,
         to_email: "info@refurbishtotaalnederland.nl",
         subject: `Contact aanvraag: ${formData.service || "Algemeen"}`
       });
@@ -62,7 +71,7 @@ const CallToActionSection = () => {
           message: ''
         });
       } else {
-        throw new Error("EmailJS verzending mislukt");
+        throw new Error("Email verzending mislukt");
       }
     } catch (error) {
       console.error('Call To Action Section Form Error:', error);

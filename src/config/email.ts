@@ -43,11 +43,11 @@ interface EmailParams extends Record<string, unknown> {
   tekening_beschikbaar?: string;
   
   // Bijlagen gerelateerd
-  has_attachment: boolean; // Boolean voor betere compatibiliteit
+  has_attachment?: boolean; // Boolean voor betere compatibiliteit
   tekening_naam?: string;
   
   // Kritiek voor email clients
-  reply_to: string;
+  reply_to?: string;
   
   // Template selectie
   templateId?: string;
@@ -67,6 +67,7 @@ interface EmailParams extends Record<string, unknown> {
  */
 export const sendEmail = async (templateParams: Record<string, any>) => {
   try {
+    // Log all parameters for debugging
     console.log('EmailJS verzendpoging met parameters:', {
       ...templateParams,
       tekening: templateParams.tekening ? "Bestand aanwezig" : "Geen bestand",
@@ -95,18 +96,10 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       // E-mail inhoud
       subject: templateParams.subject || "Contact via website",
       message: templateParams.message || "",
-      phone: templateParams.phone || "",
-      location: templateParams.location || "",
-      service: templateParams.service || "",
-      preferred_date: templateParams.preferred_date || "",
       
-      // Tekening link van Uploadcare
-      tekening_link: templateParams.tekening_link || "",
-      tekening_beschikbaar: templateParams.tekening_link ? "Ja" : "Nee",
-      
-      // Voor bijlagen - gewijzigd naar boolean in plaats van string
-      has_attachment: !!templateParams.tekening_link || !!templateParams.tekening, 
-      tekening_naam: templateParams.tekening_naam || "Geen bestand",
+      // Extra velden - alles kopieren uit templateParams
+      // Dit zorgt ervoor dat alle form velden worden meegestuurd naar EmailJS
+      ...templateParams,
       
       // KRITIEK voor Outlook - begin met een gegarandeerd geldig e-mailadres
       reply_to: emailConfig.contactEmail, 
@@ -121,19 +114,30 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       console.log('Geen geldig e-mailadres opgegeven, standaard gebruikt:', emailConfig.contactEmail);
     }
     
-    // Add file as a proper attachment
+    // Add file as a proper attachment if provided
     if (templateParams.tekening) {
       params._attachments = [{
-        name: templateParams.tekening_naam,
+        name: templateParams.tekening_naam || "Upload",
         data: templateParams.tekening
       }];
+      params.has_attachment = true;
+    }
+    
+    // Use tekening_link if provided
+    if (templateParams.tekening_link) {
+      params.tekening_link = templateParams.tekening_link;
+      params.has_attachment = true;
     }
     
     console.log('EmailJS verzenden met definitieve parameters:', {
-      ...params,
-      _attachments: params._attachments ? "Bestand bijgevoegd als echte bijlage" : "Geen bijlage",
-      has_attachment: params.has_attachment, // Log de boolean waarde
-      tekening_link: params.tekening_link // Log de tekening link
+      serviceId: emailConfig.serviceId,
+      templateId: templateId,
+      params: {
+        ...params,
+        _attachments: params._attachments ? "Bestand bijgevoegd als echte bijlage" : "Geen bijlage",
+        has_attachment: params.has_attachment, 
+        tekening_link: params.tekening_link 
+      }
     });
     
     // Direct emailjs gebruiken met expliciete options parameter
@@ -146,22 +150,22 @@ export const sendEmail = async (templateParams: Record<string, any>) => {
       }
     );
     
-    console.log('EmailJS succes:', result);
+    console.log('EmailJS success:', result);
     return { success: true, result };
   } catch (error: any) {
-    console.error('EmailJS fout:', error);
-    // Log meer details over de fout
-    if (error.text) console.error('EmailJS foutmelding:', error.text);
+    console.error('EmailJS error:', error);
+    // Log more details about the error
+    if (error.text) console.error('EmailJS error message:', error.text);
     return { success: false, error };
   }
 };
 
 /**
- * Helper functie om te controleren of een e-mailadres geldig is
+ * Helper function to check if an email address is valid
  */
 function isValidEmail(email: any): boolean {
   if (!email || typeof email !== 'string') return false;
-  // Basic e-mail validatie met regex
+  // Basic email validation with regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }

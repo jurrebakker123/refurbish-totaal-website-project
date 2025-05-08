@@ -6,6 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { MoveLeft, MoveRight } from 'lucide-react';
 import { DakkapelConfiguration } from './DakkapelCalculator';
 import { toast } from 'sonner';
+import { sendEmail } from '@/config/email';
+import { calculateTotalPrice } from '@/utils/calculatorUtils';
 
 interface ContactFormSelectorProps {
   configuration: DakkapelConfiguration;
@@ -33,7 +35,7 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -47,13 +49,79 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
       return;
     }
 
-    // Here you would normally send the data to the server
-    // For now, we'll just simulate a successful submission
-    setTimeout(() => {
-      toast.success("Uw aanvraag is succesvol verzonden! We nemen zo spoedig mogelijk contact met u op.");
-      onNext();
+    try {
+      // Calculate total price
+      const totalPrice = calculateTotalPrice(configuration);
+      
+      // Format configuration details for email
+      const configDetails = `
+        Type: ${configuration.type}
+        Breedte: ${configuration.breedte} cm
+        Hoogte: ${configuration.hoogte} cm
+        Materiaal: ${configuration.materiaal}
+        Aantal ramen: ${configuration.aantalRamen}
+        Kozijn hoogte: ${configuration.kozijnHoogte}
+        Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
+        Kozijnkleur: ${configuration.kleurKozijnen}
+        Zijkanten kleur: ${configuration.kleurZijkanten}
+        Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
+        RC-waarde: ${configuration.rcWaarde}
+        Woning zijde: ${configuration.woningZijde}
+        Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}
+      `;
+      
+      // Format options for email
+      const selectedOptions = Object.entries(configuration.opties)
+        .filter(([_, value]) => value)
+        .map(([key]) => key)
+        .join(', ');
+      
+      // Format contact info for the message
+      const contactInfo = `
+        Naam: ${formData.voornaam} ${formData.achternaam}
+        Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
+        Telefoon: ${formData.telefoon}
+        Email: ${formData.emailadres}
+      `;
+      
+      const emailMessage = `
+${contactInfo}
+
+DAKKAPEL CONFIGURATIE:
+${configDetails}
+
+GEKOZEN OPTIES:
+${selectedOptions || 'Geen extra opties geselecteerd'}
+
+BERICHT VAN KLANT:
+${formData.bericht || 'Geen aanvullend bericht'}
+      `;
+      
+      const result = await sendEmail({
+        from_name: `${formData.voornaam} ${formData.achternaam}`,
+        from_email: formData.emailadres,
+        to_name: "Refurbish Totaal Nederland",
+        to_email: "info@refurbishtotaalnederland.nl",
+        subject: `Dakkapel Calculator Aanvraag: €${totalPrice.toLocaleString('nl-NL')}`,
+        message: emailMessage,
+        phone: formData.telefoon,
+        location: `${formData.plaats}`,
+        service: "Dakkapel",
+        templateId: "template_ezfzaao" // Use the offerte template
+      });
+
+      if (result.success) {
+        toast.success("Uw aanvraag is succesvol verzonden! We nemen zo spoedig mogelijk contact met u op.");
+        onNext();
+      } else {
+        throw new Error("Er ging iets mis bij het verzenden");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Er is een probleem opgetreden bij het verzenden. Probeer het later opnieuw.");
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   const inputClasses = "w-full border border-gray-300 rounded-md p-3 text-black";

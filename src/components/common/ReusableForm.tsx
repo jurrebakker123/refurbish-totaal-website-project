@@ -1,9 +1,9 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { sendEmail } from '@/config/email';
+import { Link } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import { emailConfig } from '@/config/email';
-import { Link } from 'react-router-dom';
 
 type FormProps = {
   title?: string;
@@ -106,7 +106,7 @@ const ReusableForm = ({
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     // Check if terms are accepted
@@ -126,19 +126,28 @@ const ReusableForm = ({
     // Get the tekening_link value if applicable
     const teekeningLink = showFileUpload ? formData.get('tekening_link') as string : "";
     
-    // Prepare email data
-    const emailData: Record<string, any> = {
-      from_name: formData.get('naam') as string,
-      from_email: formData.get('email') as string,
-      to_name: "Refurbish Totaal Nederland",
-      to_email: emailConfig.contactEmail,
-      subject: `Nieuw bericht: ${showServiceInput ? formData.get('dienst') || "Contact" : "Contact"}`,
-      message: formData.get('bericht') as string,
-      phone: formData.get('telefoon') as string,
-      location: formData.get('woonplaats') as string,
-      preferred_date: showDateField && formData.get('datum') ? formData.get('datum') as string : "Niet opgegeven",
-      terms_accepted: "Ja"
-    };
+    // Prepare email data with more detailed logging
+    const emailData: Record<string, any> = {};
+    
+    // Collect all form fields for logging
+    const allFormFields: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      allFormFields[key] = value as string;
+    });
+    
+    console.log("All form fields collected:", allFormFields);
+    
+    // Required base fields for email
+    emailData.from_name = formData.get('naam') as string;
+    emailData.from_email = formData.get('email') as string;
+    emailData.to_name = "Refurbish Totaal Nederland";
+    emailData.to_email = emailConfig.contactEmail;
+    emailData.subject = `Nieuw bericht: ${showServiceInput ? formData.get('dienst') || "Contact" : "Contact"}`;
+    emailData.message = formData.get('bericht') as string;
+    emailData.phone = formData.get('telefoon') as string;
+    emailData.location = formData.get('woonplaats') as string;
+    emailData.preferred_date = showDateField && formData.get('datum') ? formData.get('datum') as string : "Niet opgegeven";
+    emailData.terms_accepted = "Ja";
 
     // Add service information if applicable
     if (showServiceInput) {
@@ -153,19 +162,22 @@ const ReusableForm = ({
 
     // Add additional fields to email data
     additionalFields.forEach(field => {
-      emailData[field.name] = formData.get(field.name);
+      const value = formData.get(field.name);
+      emailData[field.name] = value;
+      // Also add it with a friendlier name for email template
+      emailData[`field_${field.name}`] = value;
     });
 
     console.log("Sending email with data:", emailData);
     
-    // Send the email
-    emailjs.send(
-      emailConfig.serviceId,
-      templateId,
-      emailData,
-      { publicKey: emailConfig.publicKey }
-    ).then(
-      () => {
+    try {
+      // Send via our abstracted sendEmail function for better error handling
+      const result = await sendEmail({
+        ...emailData,
+        templateId: templateId
+      });
+      
+      if (result.success) {
         console.log('Email sent successfully');
         toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
           duration: 5000,
@@ -184,17 +196,18 @@ const ReusableForm = ({
         if (redirectPath) {
           window.location.href = redirectPath;
         }
-      },
-      (error) => {
-        console.error('Email sending failed:', error);
-        toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
-          duration: 5000,
-          position: 'top-center',
-        });
+      } else {
+        throw new Error("Email sending failed with result: " + JSON.stringify(result.error));
       }
-    ).finally(() => {
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw of neem direct contact met ons op.", {
+        duration: 5000,
+        position: 'top-center',
+      });
+    } finally {
       setIsSubmitting(false);
-    });
+    }
   };
 
   return (
