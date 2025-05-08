@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Center, useTexture, Environment, SoftShadows } from '@react-three/drei';
+import { OrbitControls, Center, Environment, SoftShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte } from './DakkapelCalculator';
 import { getKozijnHeight } from '@/utils/calculatorUtils';
@@ -90,19 +90,54 @@ function createMaterial(color: string, materialType = 'kunststof') {
   });
 }
 
-// Create a roof tile texture
-function RoofTexture() {
-  const texture = useTexture({
-    map: "https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@latest/prototype/dark.png"
-  });
+// Create a roof texture without external dependencies
+function createRoofTexture() {
+  // Create a canvas texture programmatically instead of loading from CDN
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const size = 256;
   
-  // Adjust texture parameters
-  if (texture.map) {
-    texture.map.wrapS = texture.map.wrapT = THREE.RepeatWrapping;
-    texture.map.repeat.set(5, 5);
+  canvas.width = size;
+  canvas.height = size;
+  
+  if (ctx) {
+    // Fill with base dark color
+    ctx.fillStyle = '#423939';
+    ctx.fillRect(0, 0, size, size);
+    
+    // Add some texture pattern
+    ctx.fillStyle = '#352e2e';
+    for (let i = 0; i < 20; i++) {
+      for (let j = 0; j < 20; j++) {
+        if ((i + j) % 2 === 0) {
+          ctx.fillRect(i * size/20, j * size/20, size/20, size/20);
+        }
+      }
+    }
+    
+    // Add some noise for more realistic texture
+    for (let i = 0; i < 500; i++) {
+      const x = Math.random() * size;
+      const y = Math.random() * size;
+      const radius = Math.random() * 2 + 1;
+      const color = Math.random() > 0.5 ? '#4a4040' : '#342d2d';
+      
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
   
-  return texture;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(5, 5);
+  
+  return {
+    map: texture,
+    roughness: 0.9,
+    color: '#594545'
+  };
 }
 
 function DakkapelModel({ 
@@ -184,7 +219,7 @@ function DakkapelModel({
   
   // Calculate window dimensions and positions based on number of windows and type
   const windowHeight = getKozijnHeight(kozijnHoogte).kozijn / 300; // Convert to model scale
-  const windowPositions: [number, number, number][] = [];
+  const windowPositions: Array<[number, number, number]> = [];
   
   // Handle different number of windows based on dakkapel type
   let effectiveRamen = aantalRamen;
@@ -203,7 +238,7 @@ function DakkapelModel({
     const yPos = -height/20; // Slightly lower than center
     const zPos = 0.26;
     // Explicitly create a tuple with exactly 3 elements
-    windowPositions.push([xPos, yPos, zPos] as [number, number, number]);
+    windowPositions.push([xPos, yPos, zPos]);
   }
 
   // Convert dakHelling to radians for the 3D rendering
@@ -221,8 +256,8 @@ function DakkapelModel({
   }
   // 'achter' is default (0 degrees)
 
-  // Generate roof tiles texture once
-  const roofTexture = RoofTexture();
+  // Generate roof texture without external dependencies
+  const roofTexture = createRoofTexture();
 
   return (
     <group ref={dakkapelRef} rotation={[0, houseRotation, 0]} castShadow receiveShadow>
@@ -234,7 +269,7 @@ function DakkapelModel({
         receiveShadow
       >
         <boxGeometry args={[2.4, 0.05, 2.4]} />
-        <meshStandardMaterial {...roofTexture} color="#594545" />
+        <meshStandardMaterial {...roofTexture} />
       </mesh>
       
       {/* Add roof tiles */}
