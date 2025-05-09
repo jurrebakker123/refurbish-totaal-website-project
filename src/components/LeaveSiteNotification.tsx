@@ -4,11 +4,11 @@ import { toast } from 'sonner';
 import { Coffee } from 'lucide-react';
 
 const LeaveSiteNotification = () => {
-  const [hasShown, setHasShown] = useState(true);
+  const [hasShown, setHasShown] = useState(false);
   
   useEffect(() => {
-    // No initial toast will be shown
-  }, [hasShown]);
+    // This component is empty on purpose - we're not showing notifications currently
+  }, []);
 
   return null;
 };
