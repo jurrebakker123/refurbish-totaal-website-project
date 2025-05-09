@@ -24,6 +24,7 @@ import TuinhuizenPage from "./pages/TuinhuizenPage";
 import ZonnepanelenPage from "./pages/ZonnepanelenPage";
 import DakkapelLandingPage from "./pages/DakkapelLandingPage";
 import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage";
+import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
           <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
           <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
+          <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
           <Route path="/diensten" element={<DienstenPage />} />
           <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
           <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />

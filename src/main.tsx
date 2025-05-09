@@ -7,6 +7,7 @@ import GoogleTagManager from './components/GoogleTagManager';
 import DakkapelLandingPage from './pages/DakkapelLandingPage.tsx';
 import ZonnepanelenPage from './pages/ZonnepanelenPage.tsx';
 import SolarProductDetailPage from './pages/SolarProductDetailPage.tsx';
+import IsolatieSelectiePage from './pages/IsolatieSelectiePage.tsx';
 
 // TypeScript interface for window
 declare global {
@@ -55,7 +56,18 @@ const renderBasedOnDomain = () => {
         </Routes>
       </BrowserRouter>
     );
-  } 
+  }
+  // Check for isolatie domain
+  else if (hostname === 'isolatieselectie.nl' || hostname === 'www.isolatieselectie.nl') {
+    console.log('Rendering IsolatieSelectiePage');
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<IsolatieSelectiePage />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
   // Default case for development and other domains
   else {
     console.log('Rendering default App with routing');
@@ -66,6 +78,7 @@ const renderBasedOnDomain = () => {
           <Route path="/*" element={<App />} />
           <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
           <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
+          <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
           <Route path="/product/:productId" element={<SolarProductDetailPage />} />
         </Routes>
       </BrowserRouter>
