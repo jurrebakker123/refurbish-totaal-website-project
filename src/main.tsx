@@ -62,7 +62,12 @@ const renderBasedOnDomain = () => {
     return (
       <BrowserRouter>
         <GoogleTagManager />
-        <App />
+        <Routes>
+          <Route path="/*" element={<App />} />
+          <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
+          <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
+          <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+        </Routes>
       </BrowserRouter>
     );
   }
