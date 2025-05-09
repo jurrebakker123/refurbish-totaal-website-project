@@ -29,13 +29,21 @@ window.dataLayer.push({
 // Determine which component to render based on the hostname
 const renderBasedOnDomain = () => {
   const hostname = window.location.hostname;
+  console.log('Current hostname:', hostname);
   
+  // Check for dakkapel domain
   if (hostname === 'refurbishdakkapel.nl' || hostname === 'www.refurbishdakkapel.nl') {
+    console.log('Rendering DakkapelLandingPage');
     return <DakkapelLandingPage />;
-  } else if (hostname === 'refurbishzonnepanelen.nl' || hostname === 'www.refurbishzonnepanelen.nl') {
+  } 
+  // Check for zonnepanelen domain
+  else if (hostname === 'refurbishzonnepanelen.nl' || hostname === 'www.refurbishzonnepanelen.nl') {
+    console.log('Rendering ZonnepanelenPage');
     return <ZonnepanelenPage />;
-  } else {
-    // For development and other domains, use the regular App with routing
+  } 
+  // Default case for development and other domains
+  else {
+    console.log('Rendering default App with routing');
     return (
       <BrowserRouter>
         <GoogleTagManager />
@@ -45,4 +53,8 @@ const renderBasedOnDomain = () => {
   }
 };
 
-createRoot(document.getElementById("root")!).render(renderBasedOnDomain());
+// Render the appropriate component
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  createRoot(rootElement).render(renderBasedOnDomain());
+}
