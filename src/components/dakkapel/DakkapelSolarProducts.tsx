@@ -8,74 +8,77 @@ export function DakkapelSolarProducts() {
   const solarProducts = [
     {
       id: 1,
-      title: "6 Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen + Enphase IQ8+ omvormers",
-      price: "€ 2.925,00",
-      imageUrl: "https://www.gebruiktepanelen.nl/wp-content/uploads/2023/03/6-Zonnepanelen-Jinko-400-Wp-Full-Black-PERC-Enphase-IQ7-micro-omvormers-400x400.jpg",
+      title: "Complete installatie - 10 Zonnepanelen - 4kW",
+      price: "€ 1.445,00",
+      imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       features: [
-        "6x Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen",
-        "6x Enphase IQ8+ micro-omvormers",
-        "Inclusief montagesysteem en kabels",
-        "Opbrengst: ca. 2.322 kWh/jaar"
+        "10x zonnepanelen",
+        "4kW totaal vermogen",
+        "Inclusief omvormer en montagesysteem",
+        "Complete installatie"
       ]
     },
     {
       id: 2,
-      title: "8 Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen + Enphase IQ8+ omvormers",
-      price: "€ 3.800,00",
-      imageUrl: "https://www.gebruiktepanelen.nl/wp-content/uploads/2023/03/8-Zonnepanelen-Jinko-400-Wp-Full-Black-PERC-Enphase-IQ7-micro-omvormers-400x400.jpg",
+      title: "Complete installatie - 10 zonnepanelen - Oost/West - 4kW",
+      price: "€ 1.045,00",
+      imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       features: [
-        "8x Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen",
-        "8x Enphase IQ8+ micro-omvormers",
-        "Inclusief montagesysteem en kabels",
-        "Opbrengst: ca. 3.096 kWh/jaar"
+        "10x zonnepanelen geoptimaliseerd voor Oost/West oriëntatie",
+        "4kW totaal vermogen",
+        "Inclusief omvormer en montagesysteem",
+        "Complete installatie"
       ]
     },
     {
       id: 3,
-      title: "10 Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen + Enphase IQ8+ omvormers",
-      price: "€ 4.670,00",
-      imageUrl: "https://www.gebruiktepanelen.nl/wp-content/uploads/2023/03/10-Zonnepanelen-Jinko-400-Wp-Full-Black-PERC-Enphase-IQ7-micro-omvormers-400x400.jpg",
+      title: "Complete installatie - 38 Zonnepanelen - 15kW - Platdak",
+      price: "€ 3.715,00",
+      imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       features: [
-        "10x Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen",
-        "10x Enphase IQ8+ micro-omvormers",
-        "Inclusief montagesysteem en kabels",
-        "Opbrengst: ca. 3.870 kWh/jaar"
+        "38x zonnepanelen",
+        "15kW totaal vermogen",
+        "Speciaal voor platdak montage",
+        "Inclusief omvormer en montagesysteem",
+        "Complete installatie"
       ]
     },
     {
       id: 4,
-      title: "12 Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen + Enphase IQ8+ omvormers",
-      price: "€ 5.550,00",
-      imageUrl: "https://www.gebruiktepanelen.nl/wp-content/uploads/2023/03/12-Zonnepanelen-Jinko-400-Wp-Full-Black-PERC-Enphase-IQ7-micro-omvormers-400x400.jpg",
+      title: "Complete installatie - 5 zonnepanelen - 2kW",
+      price: "€ 525,00",
+      imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       features: [
-        "12x Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen",
-        "12x Enphase IQ8+ micro-omvormers",
-        "Inclusief montagesysteem en kabels",
-        "Opbrengst: ca. 4.644 kWh/jaar"
+        "5x zonnepanelen",
+        "2kW totaal vermogen",
+        "Inclusief omvormer en montagesysteem",
+        "Ideaal voor kleinere daken",
+        "Complete installatie"
       ]
     },
     {
       id: 5,
-      title: "14 Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen + Enphase IQ8+ omvormers",
-      price: "€ 6.435,00",
-      imageUrl: "https://www.gebruiktepanelen.nl/wp-content/uploads/2023/03/14-Zonnepanelen-Jinko-400-Wp-Full-Black-PERC-Enphase-IQ7-micro-omvormers-400x400.jpg",
+      title: "Complete installatie - 8 Zonnepanelen",
+      price: "Op aanvraag",
+      imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       features: [
-        "14x Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen",
-        "14x Enphase IQ8+ micro-omvormers",
-        "Inclusief montagesysteem en kabels",
-        "Opbrengst: ca. 5.418 kWh/jaar"
+        "8x zonnepanelen",
+        "Inclusief omvormer en montagesysteem",
+        "Complete installatie",
+        "Prijs op aanvraag"
       ]
     },
     {
       id: 6,
-      title: "16 Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen + Enphase IQ8+ omvormers",
-      price: "€ 7.295,00",
-      imageUrl: "https://www.gebruiktepanelen.nl/wp-content/uploads/2023/03/16-Zonnepanelen-Jinko-400-Wp-Full-Black-PERC-Enphase-IQ7-micro-omvormers-400x400.jpg",
+      title: "Complete installatie - 48 Zonnepanelen",
+      price: "Op aanvraag",
+      imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       features: [
-        "16x Jinko Tiger Neo N-type 430 Wp Full Black zonnepanelen",
-        "16x Enphase IQ8+ micro-omvormers",
-        "Inclusief montagesysteem en kabels",
-        "Opbrengst: ca. 6.192 kWh/jaar"
+        "48x zonnepanelen",
+        "Geschikt voor grote daken",
+        "Inclusief omvormer en montagesysteem",
+        "Complete installatie",
+        "Prijs op aanvraag"
       ]
     }
   ];
@@ -87,18 +90,18 @@ export function DakkapelSolarProducts() {
           Zonnepanelen Pakketten
         </h2>
         <p className="text-center text-lg mb-12 max-w-3xl mx-auto">
-          Combineer uw dakkapel met zonnepanelen voor extra energiebesparing. Wij bieden hoogwaardige zonnepanelen sets met Enphase micro-omvormers voor optimale opbrengst.
+          Combineer uw dakkapel met zonnepanelen voor extra energiebesparing. Wij bieden complete installaties inclusief montage.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {solarProducts.map((product) => (
             <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 animate-fade-in">
               <CardHeader className="pb-4">
-                <div className="rounded-md overflow-hidden mb-4">
+                <div className="rounded-md overflow-hidden mb-4 flex justify-center">
                   <OptimizedImage
                     src={product.imageUrl}
                     alt={product.title}
-                    className="w-full h-48 object-cover"
+                    className="h-48 object-contain"
                     fallbackSrc="/placeholder.svg"
                   />
                 </div>
@@ -117,7 +120,7 @@ export function DakkapelSolarProducts() {
               <CardFooter className="flex flex-col items-start pt-2">
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
                 <Button className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors">
-                  Offerte aanvragen
+                  Opties selecteren
                 </Button>
               </CardFooter>
             </Card>
