@@ -17,20 +17,25 @@ const DakkapelLandingPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Check if we're on the dedicated domain
+  const isDedicatedDomain = 
+    window.location.hostname === 'refurbishdakkapel.nl' || 
+    window.location.hostname === 'www.refurbishdakkapel.nl';
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Refurbish Dakkapel | Professionele Dakkapellen op Maat</title>
         <meta name="description" content="Vergroot uw woonruimte met een kwalitatieve dakkapel. Compleet verzorgd met 10 jaar garantie door Refurbish Totaal Nederland." />
         <meta name="keywords" content="dakkapel, dakkapel op maat, prefab dakkapel, dakkapel plaatsen, dakkapel kosten, dakkapel renoveren" />
-        <link rel="canonical" href="https://www.refurbishtotaalnederland.nl/refurbishdakkapel/" />
+        <link rel="canonical" href={isDedicatedDomain ? "https://www.refurbishdakkapel.nl/" : "https://www.refurbishtotaalnederland.nl/refurbishdakkapel/"} />
         
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
             "name": "Refurbish Dakkapel",
-            "url": "https://www.refurbishtotaalnederland.nl/refurbishdakkapel/",
+            "url": isDedicatedDomain ? "https://www.refurbishdakkapel.nl/" : "https://www.refurbishtotaalnederland.nl/refurbishdakkapel/",
             "provider": {
               "@type": "Organization",
               "name": "Refurbish Totaal Nederland",
