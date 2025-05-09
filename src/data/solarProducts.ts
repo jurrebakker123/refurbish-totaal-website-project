@@ -1,4 +1,5 @@
 
+
 export interface SolarProduct {
   id: number;
   slug: string;
@@ -66,7 +67,14 @@ export const solarProducts: SolarProduct[] = [
       "Wij verzorgen het volledige traject, van advies tot en met de installatie, afgestemd op uw specifieke daksituatie."
     ],
     price: "€ 1.045,00",
-    imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
+    imageUrl: "public/lovable-uploads/90e13ec0-aaf8-444a-a92d-a72af8cc8d30.png",
+    additionalImages: [
+      "public/lovable-uploads/10e4891f-b115-4650-9c85-6f78b1e53888.png",
+      "public/lovable-uploads/8745f4c4-960d-4da5-b5f5-59564c7cdd33.png",
+      "public/lovable-uploads/5da5d680-5b13-440b-9aae-20e52a50a501.png",
+      "public/lovable-uploads/ab4fe583-5611-4401-93c9-7fb7d38fd340.png",
+      "public/lovable-uploads/dc6d5fa1-8797-4d60-9de0-5493bc6fe9b3.png"
+    ],
     features: [
       "10x zonnepanelen geoptimaliseerd voor Oost/West oriëntatie",
       "4kW totaal vermogen",
