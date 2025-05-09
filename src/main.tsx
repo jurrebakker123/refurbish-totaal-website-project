@@ -34,7 +34,7 @@ const renderBasedOnDomain = () => {
   
   // Check for dakkapel domain
   if (hostname === 'refurbishdakkapel.nl' || hostname === 'www.refurbishdakkapel.nl') {
-    console.log('Rendering DakkapelLandingPage with product routes');
+    console.log('Rendering DakkapelLandingPage');
     return (
       <BrowserRouter>
         <Routes>

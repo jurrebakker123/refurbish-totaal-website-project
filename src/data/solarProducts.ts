@@ -7,6 +7,7 @@ export interface SolarProduct {
   fullDescription: string[];
   price: string;
   imageUrl: string;
+  additionalImages?: string[];
   features: string[];
   specifications: {
     label: string;
@@ -29,7 +30,12 @@ export const solarProducts: SolarProduct[] = [
       "Deze installatieset met 10 zonnepanelen is ideaal voor huishoudens met een gemiddeld elektriciteitsverbruik en biedt een uitstekende balans tussen investering en opbrengst."
     ],
     price: "€ 1.445,00",
-    imageUrl: "public/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
+    imageUrl: "public/lovable-uploads/1ef85418-8169-4287-a7a9-d17396d8680b.png",
+    additionalImages: [
+      "public/lovable-uploads/eaa01620-492a-4794-b2c6-ad2b92dc3603.png",
+      "public/lovable-uploads/b080c873-1f58-400e-8855-b4cc787a6859.png",
+      "public/lovable-uploads/fb97d4bf-a1e7-428b-bd5b-37fc1b54729b.png"
+    ],
     features: [
       "10x zonnepanelen",
       "4kW totaal vermogen",

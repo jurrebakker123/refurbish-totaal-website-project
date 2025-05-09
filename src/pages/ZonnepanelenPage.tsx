@@ -7,7 +7,7 @@ import { ZonnepanelenFeatures } from '@/components/zonnepanelen/ZonnepanelenFeat
 import { ZonnepanelenVoordelen } from '@/components/zonnepanelen/ZonnepanelenVoordelen';
 import { ZonnepanelenContact } from '@/components/zonnepanelen/ZonnepanelenContact';
 import { ZonnepanelenCTA } from '@/components/zonnepanelen/ZonnepanelenCTA';
-import { DakkapelSolarProducts } from '@/components/dakkapel/DakkapelSolarProducts';
+import { ZonnepanelenProducts } from '@/components/zonnepanelen/ZonnepanelenProducts';
 import { Helmet } from 'react-helmet';
 import { CartProvider } from '@/context/CartContext';
 import ShoppingCartIcon from '@/components/common/ShoppingCartIcon';
@@ -56,7 +56,7 @@ const ZonnepanelenPage = () => {
           <ZonnepanelenHero />
           <ZonnepanelenFeatures />
           <ZonnepanelenVoordelen />
-          <DakkapelSolarProducts />
+          <ZonnepanelenProducts />
           <ZonnepanelenContact />
           <ZonnepanelenCTA />
         </main>

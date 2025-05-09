@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProductBySlug, SolarProduct } from '@/data/solarProducts';
 import { Helmet } from 'react-helmet';
@@ -13,6 +13,9 @@ import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import { CartProvider } from '@/context/CartContext';
 import ShoppingCartIcon from '@/components/common/ShoppingCartIcon';
 import NotFound from './NotFound';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 const SolarProductDetailPage = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -35,6 +38,15 @@ const SolarProductDetailPage = () => {
 
 const ProductDetail = ({ product }: { product: SolarProduct }) => {
   const { addItem } = useCart();
+  const [roofType, setRoofType] = useState<string>("pannendak");
+  const [selectedProduct, setSelectedProduct] = useState(product);
+  
+  const handleAddToCart = () => {
+    addItem({
+      ...selectedProduct,
+      roofType
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -77,6 +89,21 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
               <h1 className="text-3xl font-bold text-brand-darkGreen mb-3">{product.title}</h1>
               <p className="text-gray-700 mb-6">{product.shortDescription}</p>
               
+              {/* Roof type selection */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-md">
+                <h3 className="text-lg font-semibold mb-3">Uw soort dak</h3>
+                <RadioGroup defaultValue="pannendak" value={roofType} onValueChange={setRoofType} className="flex space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="pannendak" id="pannendak" />
+                    <Label htmlFor="pannendak">Pannendak</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="platdak" id="platdak" />
+                    <Label htmlFor="platdak">Platdak</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
               <div className="mb-6">
                 <h2 className="text-lg font-semibold mb-2">Kenmerken:</h2>
                 <ul className="space-y-1">
@@ -98,7 +125,7 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
                   <div className="flex space-x-3">
                     {product.price !== 'Op aanvraag' ? (
                       <Button 
-                        onClick={() => addItem(product)}
+                        onClick={handleAddToCart}
                         className="bg-brand-green hover:bg-brand-darkGreen transition-colors flex"
                       >
                         <ShoppingCart className="mr-2 h-5 w-5" />
@@ -121,6 +148,7 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
             <TabsList className="mb-6">
               <TabsTrigger value="description">Productbeschrijving</TabsTrigger>
               <TabsTrigger value="specifications">Specificaties</TabsTrigger>
+              <TabsTrigger value="installation">Kenmerken van de installatie</TabsTrigger>
               <TabsTrigger value="delivery">Levering & Installatie</TabsTrigger>
             </TabsList>
             <TabsContent value="description" className="p-6 bg-white rounded-lg shadow-sm">
@@ -145,6 +173,83 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
                   </tr>
                 </tbody>
               </table>
+            </TabsContent>
+            <TabsContent value="installation" className="p-6 bg-white rounded-lg shadow-sm">
+              <h3 className="text-lg font-semibold mb-3">Kenmerken van de installatie</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-medium mb-2">Zonnepanelen</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>Refurbished A-merk zonnepanelen</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>Half-cell technologie voor betere schaduw prestaties</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>12 jaar productgarantie</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>25 jaar vermogensgarantie</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Omvormer</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>A-merk omvormer (Growatt/SMA/Goodwe)</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>WiFi monitoring inbegrepen</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>10 jaar garantie</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Montagesysteem</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>Esdec ClickFit EVO voor pannendaken</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>Flatfix systeem voor platte daken</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>20 jaar garantie</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Installatie</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>Uitvoering door gecertificeerde monteurs</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>Inclusief aansluiting op meterkast</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-brand-green mr-2">✓</span>
+                      <span>5 jaar installatiegarantie</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </TabsContent>
             <TabsContent value="delivery" className="p-6 bg-white rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold mb-3">Levering</h3>
