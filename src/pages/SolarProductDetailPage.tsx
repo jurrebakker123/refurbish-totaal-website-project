@@ -42,10 +42,12 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
   const [selectedProduct, setSelectedProduct] = useState(product);
   
   const handleAddToCart = () => {
-    addItem({
+    // Create a new product object with the roofType property
+    const productWithRoofType = {
       ...selectedProduct,
-      roofType
-    });
+      roofType: roofType
+    };
+    addItem(productWithRoofType);
   };
 
   return (

@@ -16,6 +16,7 @@ export interface SolarProduct {
   warranty: string;
   delivery: string;
   installation: string;
+  roofType?: string; // Added optional roofType property
 }
 
 export const solarProducts: SolarProduct[] = [
