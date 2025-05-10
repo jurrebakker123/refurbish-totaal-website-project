@@ -1,13 +1,10 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Calculator } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
 export const DakkapelCalculatorPreview = () => {
-  return (
-    <section className="py-16 bg-gray-50">
+  return <section className="py-16 bg-gray-50">
       <div className="container max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-brand-darkGreen mb-4">
@@ -71,15 +68,10 @@ export const DakkapelCalculatorPreview = () => {
           <Card className="shadow-lg">
             <CardContent className="p-6">
               <div className="aspect-video bg-gray-100 rounded-md mb-4 flex items-center justify-center">
-                <img 
-                  src="/lovable-uploads/dakkapel-calculator-preview.png" 
-                  alt="Dakkapel Calculator" 
-                  className="max-w-full max-h-full object-cover rounded"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/placeholder.svg";
-                  }}
-                />
+                <img alt="Dakkapel Calculator" className="max-w-full max-h-full object-cover rounded" onError={e => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/placeholder.svg";
+              }} src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png" />
               </div>
               <h4 className="font-bold mb-2">Dakkapel berekenen in 5 stappen</h4>
               <ol className="space-y-2 text-sm">
@@ -113,6 +105,5 @@ export const DakkapelCalculatorPreview = () => {
           </Card>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
