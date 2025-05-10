@@ -1,27 +1,28 @@
 
 import React from 'react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const IsolatiePartners = () => {
   const partners = [
     {
       name: "KIWA",
-      logo: "https://images.unsplash.com/photo-1633409361618-c73427e4e206?ixlib=rb-4.0.1&auto=format&fit=crop&w=400&q=80"
-    },
-    {
-      name: "IKOB",
-      logo: "https://images.unsplash.com/photo-1633409361618-c73427e4e206?ixlib=rb-4.0.1&auto=format&fit=crop&w=400&q=80"
-    },
-    {
-      name: "SKG",
-      logo: "https://images.unsplash.com/photo-1633409361618-c73427e4e206?ixlib=rb-4.0.1&auto=format&fit=crop&w=400&q=80"
+      logo: "/assets/logos/kiwa-logo.svg"
     },
     {
       name: "ISSO",
-      logo: "https://images.unsplash.com/photo-1633409361618-c73427e4e206?ixlib=rb-4.0.1&auto=format&fit=crop&w=400&q=80"
+      logo: "/assets/logos/isso-logo.svg"
     },
     {
       name: "Bouwgarant",
-      logo: "https://images.unsplash.com/photo-1633409361618-c73427e4e206?ixlib=rb-4.0.1&auto=format&fit=crop&w=400&q=80"
+      logo: "/assets/logos/bouwgarant-logo.svg"
+    },
+    {
+      name: "SKG",
+      logo: "/assets/logos/skg-logo.svg"
+    },
+    {
+      name: "IKOB",
+      logo: "/assets/logos/ikob-logo.svg"
     }
   ];
 

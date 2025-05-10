@@ -6,7 +6,6 @@ import Footer from '@/components/Footer';
 import IsolatieHero from '@/components/isolatie/IsolatieHero';
 import IsolatieFeatures from '@/components/isolatie/IsolatieFeatures';
 import IsolatieServices from '@/components/isolatie/IsolatieServices';
-import IsolatieCalculator from '@/components/isolatie/IsolatieCalculator';
 import IsolatieTestimonials from '@/components/isolatie/IsolatieTestimonials';
 import IsolatieContact from '@/components/isolatie/IsolatieContact';
 import IsolatieBenefits from '@/components/isolatie/IsolatieBenefits';
@@ -60,7 +59,6 @@ const IsolatieSelectiePage = () => {
         <IsolatieBenefits />
         <IsolatieServices />
         <IsolatieFeatures />
-        <IsolatieCalculator />
         <IsolatieTestimonials />
         <IsolatiePartners />
         <IsolatieFAQ />

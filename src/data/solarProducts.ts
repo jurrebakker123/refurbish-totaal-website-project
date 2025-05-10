@@ -1,5 +1,3 @@
-
-
 export interface SolarProduct {
   id: number;
   slug: string;
@@ -32,7 +30,7 @@ export const solarProducts: SolarProduct[] = [
       "Deze installatieset met 10 zonnepanelen is ideaal voor huishoudens met een gemiddeld elektriciteitsverbruik en biedt een uitstekende balans tussen investering en opbrengst."
     ],
     price: "€ 1.445,00",
-    imageUrl: "public/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png",
+    imageUrl: "public/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png",
     additionalImages: [
       "public/lovable-uploads/eaa01620-492a-4794-b2c6-ad2b92dc3603.png",
       "public/lovable-uploads/b080c873-1f58-400e-8855-b4cc787a6859.png",
@@ -67,7 +65,7 @@ export const solarProducts: SolarProduct[] = [
       "Wij verzorgen het volledige traject, van advies tot en met de installatie, afgestemd op uw specifieke daksituatie."
     ],
     price: "€ 1.045,00",
-    imageUrl: "public/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png",
+    imageUrl: "public/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png",
     additionalImages: [
       "public/lovable-uploads/10e4891f-b115-4650-9c85-6f78b1e53888.png",
       "public/lovable-uploads/8745f4c4-960d-4da5-b5f5-59564c7cdd33.png",
@@ -105,7 +103,7 @@ export const solarProducts: SolarProduct[] = [
       "Ideaal voor bedrijven of grote huishoudens die hun energiekosten drastisch willen verlagen en willen bijdragen aan een duurzamere toekomst."
     ],
     price: "€ 3.715,00",
-    imageUrl: "public/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png",
+    imageUrl: "public/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png",
     features: [
       "38x zonnepanelen",
       "15kW totaal vermogen",
@@ -137,7 +135,7 @@ export const solarProducts: SolarProduct[] = [
       "Wij zorgen voor een snelle en professionele installatie, afgestemd op uw specifieke daksituatie, voor een optimale energieopbrengst."
     ],
     price: "€ 525,00",
-    imageUrl: "public/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png",
+    imageUrl: "public/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png",
     features: [
       "5x zonnepanelen",
       "2kW totaal vermogen",
@@ -168,7 +166,7 @@ export const solarProducts: SolarProduct[] = [
       "Deze installatie is geschikt voor verschillende daktypen en kan worden aangepast aan uw specifieke situatie en wensen."
     ],
     price: "Op aanvraag",
-    imageUrl: "public/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png",
+    imageUrl: "public/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png",
     features: [
       "8x zonnepanelen",
       "Inclusief omvormer en montagesysteem",
@@ -198,7 +196,7 @@ export const solarProducts: SolarProduct[] = [
       "Naast de financiële voordelen draagt deze installatie bij aan een aanzienlijke CO2-reductie en helpt u uw bedrijf te verduurzamen."
     ],
     price: "Op aanvraag",
-    imageUrl: "public/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png",
+    imageUrl: "public/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png",
     features: [
       "48x zonnepanelen",
       "Geschikt voor grote daken",
@@ -228,4 +226,3 @@ export const getProductBySlug = (slug: string): SolarProduct | undefined => {
 export const getProductById = (id: number): SolarProduct | undefined => {
   return solarProducts.find(product => product.id === id);
 };
-

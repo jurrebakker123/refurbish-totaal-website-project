@@ -9,7 +9,7 @@ const IsolatieHero = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center" 
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1633114128174-2f8aa49759b0?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
         }}
       >
         <div className="absolute inset-0 bg-brand-darkGreen/75"></div>
@@ -19,7 +19,7 @@ const IsolatieHero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="max-w-3xl text-white">
             <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 text-white">
-              <Shield className="h-5 w-5 mr-2" /> Erkend isolatiebedrijf • Hoogste kwaliteit
+              <Shield className="h-5 w-5 mr-2" /> KIWA gecertificeerd • Hoogste kwaliteit isolatiematerialen
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
@@ -27,8 +27,9 @@ const IsolatieHero = () => {
             </h1>
             
             <p className="text-lg md:text-xl mb-8 text-gray-200">
-              Duurzame isolatieoplossingen voor uw hele woning. Spouwmuurisolatie, dakisolatie, 
-              vloerisolatie en glasisolatie van de hoogste kwaliteit. Binnen één dag geïsoleerd.
+              Duurzame isolatieoplossingen voor uw hele woning met KIWA-gecertificeerde materialen. 
+              Spouwmuurisolatie, dakisolatie, vloerisolatie en glasisolatie van de hoogste kwaliteit. 
+              Binnen één dag geïsoleerd.
             </p>
             
             <div className="flex flex-wrap gap-4 mb-8">
@@ -42,16 +43,16 @@ const IsolatieHero = () => {
               </div>
               <div className="flex items-center">
                 <Shield className="h-5 w-5 mr-2 text-white" />
-                <span>KIWA & IKOB gecertificeerd</span>
+                <span>KIWA & ISSO gecertificeerd</span>
               </div>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <a 
-                href="#calculator" 
+                href="#contact-section" 
                 className="btn-primary group inline-flex items-center justify-center"
               >
-                Bereken uw besparing
+                Vraag vrijblijvend offerte aan
                 <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1"/>
               </a>
               <a 

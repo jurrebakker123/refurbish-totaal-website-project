@@ -7,32 +7,32 @@ const IsolatieFeatures = () => {
     {
       icon: <PhoneCall size={28} className="text-white" />,
       title: "Gratis adviesgesprek",
-      description: "Neem contact met ons op voor een vrijblijvend adviesgesprek over de isolatiemogelijkheden voor uw woning."
+      description: "Begin met een vrijblijvend adviesgesprek over de isolatiemogelijkheden voor uw woning. Onze experts luisteren naar uw wensen en situatie."
     },
     {
       icon: <Home size={28} className="text-white" />,
       title: "Inspectie ter plaatse",
-      description: "Een van onze isolatie-experts komt bij u langs om uw woning te inspecteren en de beste oplossing te bepalen."
+      description: "Een van onze isolatie-experts komt bij u langs om uw woning te inspecteren en de beste technische oplossing voor uw situatie te bepalen."
     },
     {
       icon: <ClipboardList size={28} className="text-white" />,
       title: "Gedetailleerde offerte",
-      description: "U ontvangt een gedetailleerde en transparante offerte met alle kosten en besparingsmogelijkheden."
+      description: "U ontvangt een gedetailleerde en transparante offerte met alle kosten, subsidies en besparingsmogelijkheden duidelijk uitgesplitst."
     },
     {
       icon: <Calendar size={28} className="text-white" />,
       title: "Inplanning",
-      description: "Na akkoord plannen we samen met u een geschikte datum voor de installatie van de isolatie."
+      description: "Na akkoord plannen we samen met u een geschikte datum voor de uitvoering. We houden rekening met uw agenda en wensen."
     },
     {
       icon: <Truck size={28} className="text-white" />,
       title: "Uitvoering",
-      description: "Onze gecertificeerde isolatiespecialisten voeren het werk vakkundig en netjes uit, meestal binnen één dag."
+      description: "Onze gecertificeerde isolatiespecialisten voeren het werk vakkundig en netjes uit. Wij zorgen ervoor dat alles schoon en opgeruimd achterblijft."
     },
     {
       icon: <ThumbsUp size={28} className="text-white" />,
       title: "Nazorg & garantie",
-      description: "Na oplevering ontvangt u alle garantiecertificaten en blijven wij beschikbaar voor eventuele vragen."
+      description: "Na oplevering ontvangt u alle garantiecertificaten en informatie over subsidies. Wij blijven beschikbaar voor eventuele vragen na de installatie."
     }
   ];
 
@@ -44,7 +44,7 @@ const IsolatieFeatures = () => {
             Hoe werkt het?
           </h2>
           <p className="text-lg text-gray-200 max-w-3xl mx-auto">
-            Van advies tot uitvoering: wij nemen u het hele proces uit handen.
+            Onze werkwijze is eenvoudig, transparant en klantgericht. Van advies tot en met uitvoering: wij nemen u het hele proces uit handen.
           </p>
         </div>
         

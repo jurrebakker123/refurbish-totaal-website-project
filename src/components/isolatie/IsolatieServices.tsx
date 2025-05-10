@@ -8,25 +8,25 @@ const IsolatieServices = () => {
     {
       title: "Spouwmuurisolatie",
       description: "Isoleer uw spouwmuren en bespaar direct op energiekosten. Spouwmuurisolatie houdt de warmte binnen en voorkomt vocht- en schimmelproblemen.",
-      image: "https://images.unsplash.com/photo-1618219878829-8afd92751bed?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "https://images.unsplash.com/photo-1585184394271-4c0a47dc59c9?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
       benefits: ["Tot 30% energiebesparing", "Binnen enkele uren geïnstalleerd", "Minimaal 25 jaar garantie"]
     },
     {
       title: "Dakisolatie",
       description: "Via het dak verdwijnt tot wel 30% van alle warmte. Met onze dakisolatie houdt u deze warmte binnen en bespaart u direct op uw energierekening.",
-      image: "https://images.unsplash.com/photo-1598602175928-84c456a37772?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "https://images.unsplash.com/photo-1632759145399-0e4913e71a51?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
       benefits: ["Tot 25% energiebesparing", "Keuze uit diverse materialen", "Geschikt voor alle daktypen"]
     },
     {
       title: "Vloerisolatie",
       description: "Een goed geïsoleerde vloer voelt behaaglijk aan en voorkomt koude voeten. Vloerisolatie is een eenvoudige manier om uw wooncomfort te verhogen.",
-      image: "https://images.unsplash.com/photo-1581631059762-8e715f8e8693?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "https://images.unsplash.com/photo-1603865713652-94b02a36973a?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
       benefits: ["Tot 15% energiebesparing", "Verhoogd wooncomfort", "Snel terugverdiend"]
     },
     {
       title: "HR++ Glasisolatie",
       description: "Modern HR++ glas isoleert tot 3x beter dan enkelglas. Vervang uw oude ramen en bespaar aanzienlijk op uw energierekening.",
-      image: "https://images.unsplash.com/photo-1619642332850-a0bae939a85b?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
       benefits: ["Tot 20% energiebesparing", "Verbeterde geluidsisolatie", "Verhoogde inbraakwerendheid"]
     }
   ];
@@ -72,7 +72,7 @@ const IsolatieServices = () => {
               </div>
               <div className="p-6 pt-0">
                 <a 
-                  href="#calculator" 
+                  href="#contact-section" 
                   className="btn-outline w-full text-center inline-block"
                 >
                   Meer informatie
