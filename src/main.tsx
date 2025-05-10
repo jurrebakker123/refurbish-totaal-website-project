@@ -88,15 +88,17 @@ const renderBasedOnDomain = () => {
     return (
       <BrowserRouter>
         <GoogleTagManager />
-        <Routes>
-          <Route path="/*" element={<App />} />
-          <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
-          <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
-          <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
-          <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admindashboard" element={<AdminDashboardPage />} />
-        </Routes>
+        <SidebarProvider>
+          <Routes>
+            <Route path="/*" element={<App />} />
+            <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
+            <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
+            <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
+            <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admindashboard" element={<AdminDashboardPage />} />
+          </Routes>
+        </SidebarProvider>
       </BrowserRouter>
     );
   }

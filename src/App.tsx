@@ -27,7 +27,6 @@ import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage
 import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
 import WhatsAppButton from "./components/WhatsAppButton";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
-import { SidebarProvider } from "./components/ui/sidebar";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -47,31 +46,29 @@ const App = () => {
       <TooltipProvider>
         <ScrollToTop />
         <SEOStructuredData />
-        <SidebarProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
-            <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
-            <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
-            <Route path="/diensten" element={<DienstenPage />} />
-            <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
-            <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
-            <Route path="/over-ons" element={<OverOnsPage />} />
-            <Route path="/projecten" element={<ProjectenPage />} />
-            <Route path="/projecten/:projectId" element={<Index />} />
-            <Route path="/offerte" element={<OffertePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/voorwaarden" element={<VoorwaardenPage />} />
-            <Route path="/certificaat" element={<CertificaatPage />} />
-            <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/admindashboard" element={<AdminDashboardPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </SidebarProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
+          <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
+          <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
+          <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+          <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
+          <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
+          <Route path="/diensten" element={<DienstenPage />} />
+          <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
+          <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
+          <Route path="/over-ons" element={<OverOnsPage />} />
+          <Route path="/projecten" element={<ProjectenPage />} />
+          <Route path="/projecten/:projectId" element={<Index />} />
+          <Route path="/offerte" element={<OffertePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/voorwaarden" element={<VoorwaardenPage />} />
+          <Route path="/certificaat" element={<CertificaatPage />} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admindashboard" element={<AdminDashboardPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
         <WhatsAppButton />
         <LeaveSiteNotification />
         <ChatBot />
