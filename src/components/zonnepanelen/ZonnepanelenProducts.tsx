@@ -35,7 +35,7 @@ export function ZonnepanelenProducts() {
               <CardFooter className="flex flex-col items-start pt-2 w-full">
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
                 <Link to={`/product/${product.slug}`} className="w-full">
-                  <Button className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-neutral-50">
+                  <Button className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-slate-50">
                     Opties selecteren
                   </Button>
                 </Link>
