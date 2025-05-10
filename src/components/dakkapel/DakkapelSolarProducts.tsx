@@ -21,12 +21,13 @@ export function DakkapelSolarProducts() {
           {solarProducts.map((product) => (
             <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 animate-fade-in">
               <CardHeader className="pb-4">
-                <div className="rounded-md overflow-hidden mb-4 flex justify-center">
+                <div className="rounded-md overflow-hidden mb-4 flex justify-center h-48">
                   <OptimizedImage
-                    src={product.imageUrl}
+                    src={product.imageUrl.startsWith('public/') ? product.imageUrl.replace('public/', '/') : product.imageUrl}
                     alt={product.title}
-                    className="h-48 object-contain"
+                    className="h-full w-full object-contain"
                     fallbackSrc="/placeholder.svg"
+                    style={{ maxHeight: '100%' }}
                   />
                 </div>
                 <CardTitle className="text-lg font-bold text-brand-darkGreen">{product.title}</CardTitle>
@@ -41,7 +42,7 @@ export function DakkapelSolarProducts() {
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter className="flex flex-col items-start pt-2">
+              <CardFooter className="flex flex-col items-start pt-2 w-full">
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
                 <Link to={`/product/${product.slug}`} className="w-full">
                   <Button className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors">

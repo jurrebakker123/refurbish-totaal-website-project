@@ -50,6 +50,11 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
     addItem(productWithRoofType);
   };
 
+  // Fix image paths if they start with public/
+  const mainImageUrl = product.imageUrl.startsWith('public/') 
+    ? product.imageUrl.replace('public/', '/') 
+    : product.imageUrl;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
@@ -78,7 +83,7 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <div className="flex justify-center items-center h-full">
                 <OptimizedImage
-                  src={product.imageUrl}
+                  src={mainImageUrl}
                   alt={product.title}
                   className="max-h-96 object-contain"
                   fallbackSrc="/placeholder.svg"

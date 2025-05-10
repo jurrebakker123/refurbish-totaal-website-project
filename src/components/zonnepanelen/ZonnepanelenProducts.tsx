@@ -21,12 +21,13 @@ export function ZonnepanelenProducts() {
           {solarProducts.map((product) => (
             <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 animate-fade-in relative overflow-hidden">
               <CardHeader className="pb-4">
-                <div className="rounded-md overflow-hidden mb-4 flex justify-center">
+                <div className="rounded-md overflow-hidden mb-4 flex justify-center h-48">
                   <OptimizedImage
                     src={product.imageUrl}
                     alt={product.title}
-                    className="h-48 object-contain"
+                    className="h-full w-full object-contain"
                     fallbackSrc="/placeholder.svg"
+                    style={{ maxHeight: '100%' }}
                   />
                 </div>
                 <CardTitle className="text-lg font-bold text-brand-darkGreen">{product.title}</CardTitle>

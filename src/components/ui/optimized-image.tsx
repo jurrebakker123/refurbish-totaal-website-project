@@ -25,10 +25,14 @@ export function OptimizedImage({
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);
 
+  // Fix path if it starts with public/
+  const processedSrc = imgSrc.startsWith('public/') ? imgSrc.replace('public/', '/') : imgSrc;
+
   // Reset error state when src changes
   useEffect(() => {
     if (src !== imgSrc && !hasError) {
-      setImgSrc(src);
+      const newSrc = src.startsWith('public/') ? src.replace('public/', '/') : src;
+      setImgSrc(newSrc);
       setHasError(false);
     }
   }, [src, imgSrc, hasError]);
@@ -36,14 +40,17 @@ export function OptimizedImage({
   // Pre-load image to check if it's valid
   useEffect(() => {
     const img = new Image();
-    img.src = src;
+    const srcToCheck = src.startsWith('public/') ? src.replace('public/', '/') : src;
+    img.src = srcToCheck;
+    
     img.onload = () => {
-      setImgSrc(src);
+      setImgSrc(srcToCheck);
       setHasError(false);
     };
+    
     img.onerror = () => {
       if (imgSrc !== fallbackSrc) {
-        console.log(`Image failed to load: ${imgSrc}, using fallback`);
+        console.log(`Image failed to load: ${srcToCheck}, using fallback`);
         setImgSrc(fallbackSrc);
         setHasError(true);
       }
@@ -52,7 +59,7 @@ export function OptimizedImage({
 
   const handleError = () => {
     if (imgSrc !== fallbackSrc) {
-      console.log(`Image failed to load: ${imgSrc}, using fallback`);
+      console.log(`Image failed to load: ${processedSrc}, using fallback`);
       setImgSrc(fallbackSrc);
       setHasError(true);
     }
@@ -60,7 +67,7 @@ export function OptimizedImage({
 
   return (
     <img
-      src={imgSrc}
+      src={processedSrc}
       alt={alt}
       className={className}
       style={{ objectFit, ...style }}
