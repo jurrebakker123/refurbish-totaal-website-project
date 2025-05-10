@@ -24,36 +24,56 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Fix path if it starts with public/
-  const processedSrc = imgSrc.startsWith('public/') ? imgSrc.replace('public/', '/') : imgSrc;
+  // Process the source path
+  const processPath = (path: string): string => {
+    if (path.startsWith('public/')) {
+      return path.replace('public/', '/');
+    }
+    if (path.startsWith('http') && path.includes('unsplash.com')) {
+      // Use a placeholder for unsplash images which might not be available
+      return fallbackSrc;
+    }
+    return path;
+  };
+
+  const processedSrc = processPath(imgSrc);
 
   // Reset error state when src changes
   useEffect(() => {
     if (src !== imgSrc && !hasError) {
-      const newSrc = src.startsWith('public/') ? src.replace('public/', '/') : src;
-      setImgSrc(newSrc);
+      setImgSrc(processPath(src));
       setHasError(false);
+      setIsLoading(true);
     }
   }, [src, imgSrc, hasError]);
 
   // Pre-load image to check if it's valid
   useEffect(() => {
     const img = new Image();
-    const srcToCheck = src.startsWith('public/') ? src.replace('public/', '/') : src;
+    const srcToCheck = processPath(src);
     img.src = srcToCheck;
     
-    img.onload = () => {
+    const onLoad = () => {
       setImgSrc(srcToCheck);
       setHasError(false);
+      setIsLoading(false);
     };
     
-    img.onerror = () => {
-      if (imgSrc !== fallbackSrc) {
-        console.log(`Image failed to load: ${srcToCheck}, using fallback`);
-        setImgSrc(fallbackSrc);
-        setHasError(true);
-      }
+    const onError = () => {
+      console.log(`Image failed to load: ${srcToCheck}, using fallback`);
+      setImgSrc(fallbackSrc);
+      setHasError(true);
+      setIsLoading(false);
+    };
+    
+    img.onload = onLoad;
+    img.onerror = onError;
+    
+    return () => {
+      img.onload = null;
+      img.onerror = null;
     };
   }, [src, fallbackSrc]);
 
@@ -62,20 +82,33 @@ export function OptimizedImage({
       console.log(`Image failed to load: ${processedSrc}, using fallback`);
       setImgSrc(fallbackSrc);
       setHasError(true);
+      setIsLoading(false);
     }
   };
 
+  const handleLoad = () => {
+    setIsLoading(false);
+  };
+
   return (
-    <img
-      src={processedSrc}
-      alt={alt}
-      className={className}
-      style={{ objectFit, ...style }}
-      onError={handleError}
-      loading="lazy"
-      decoding="async"
-      width={width}
-      height={height}
-    />
+    <div className="relative" style={{ minHeight: '50px' }}>
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
+          <div className="w-8 h-8 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <img
+        src={processedSrc}
+        alt={alt}
+        className={`${className} ${isLoading ? 'invisible' : 'visible'}`}
+        style={{ objectFit, ...style }}
+        onError={handleError}
+        onLoad={handleLoad}
+        loading="lazy"
+        decoding="async"
+        width={width}
+        height={height}
+      />
+    </div>
   );
 }

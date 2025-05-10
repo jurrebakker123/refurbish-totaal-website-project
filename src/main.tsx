@@ -40,7 +40,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering DakkapelLandingPage');
     return (
       <BrowserRouter>
-        <SidebarProvider>
+        <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<DakkapelLandingPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
@@ -56,7 +56,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering ZonnepanelenPage with product routes');
     return (
       <BrowserRouter>
-        <SidebarProvider>
+        <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<ZonnepanelenPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
@@ -72,7 +72,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering IsolatieSelectiePage');
     return (
       <BrowserRouter>
-        <SidebarProvider>
+        <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<IsolatieSelectiePage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
@@ -88,7 +88,7 @@ const renderBasedOnDomain = () => {
     return (
       <BrowserRouter>
         <GoogleTagManager />
-        <SidebarProvider>
+        <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/*" element={<App />} />
             <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />

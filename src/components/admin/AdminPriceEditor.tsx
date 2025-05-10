@@ -85,6 +85,14 @@ const AdminPriceEditor = () => {
         [type]: parseFloat(value) || 0
       }
     }));
+    // Save after each change for real-time updates
+    saveChanges({
+      ...prices,
+      basePrices: {
+        ...prices.basePrices,
+        [type]: parseFloat(value) || 0
+      }
+    });
   };
 
   const handleMultiplierChange = (material: string, value: string) => {
@@ -95,6 +103,14 @@ const AdminPriceEditor = () => {
         [material]: parseFloat(value) || 0
       }
     }));
+    // Save after each change for real-time updates
+    saveChanges({
+      ...prices,
+      materialMultipliers: {
+        ...prices.materialMultipliers,
+        [material]: parseFloat(value) || 0
+      }
+    });
   };
 
   const handleOptionCostChange = (option: string, value: string) => {
@@ -105,19 +121,35 @@ const AdminPriceEditor = () => {
         [option]: parseFloat(value) || 0
       }
     }));
+    // Save after each change for real-time updates
+    saveChanges({
+      ...prices,
+      optionCosts: {
+        ...prices.optionCosts,
+        [option]: parseFloat(value) || 0
+      }
+    });
   };
 
-  const handleSave = () => {
+  const saveChanges = (updatedPrices = prices) => {
     try {
-      localStorage.setItem('calculatorPrices', JSON.stringify(prices));
+      localStorage.setItem('calculatorPrices', JSON.stringify(updatedPrices));
       
       // Dispatch a storage event to notify other tabs/windows
       window.dispatchEvent(new Event('storage'));
       
-      toast.success('Prijzen succesvol opgeslagen');
+      return true;
     } catch (e) {
-      toast.error('Er is een fout opgetreden bij het opslaan');
       console.error('Failed to save prices', e);
+      return false;
+    }
+  };
+
+  const handleSave = () => {
+    if (saveChanges()) {
+      toast.success('Prijzen succesvol opgeslagen');
+    } else {
+      toast.error('Er is een fout opgetreden bij het opslaan');
     }
   };
 
@@ -144,7 +176,9 @@ const AdminPriceEditor = () => {
         const content = e.target?.result as string;
         const importedPrices = JSON.parse(content);
         setPrices(importedPrices);
-        toast.success('Prijzen succesvol geïmporteerd');
+        if (saveChanges(importedPrices)) {
+          toast.success('Prijzen succesvol geïmporteerd');
+        }
       } catch (error) {
         toast.error('Fout bij het importeren van het bestand');
         console.error('Import error:', error);

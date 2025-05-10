@@ -5,27 +5,27 @@ import { OptimizedImage } from '../ui/optimized-image';
 export function DakkapelGallery() {
   const images = [
     {
-      url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/ce310265-aaac-49aa-bff7-99a27901151a.png',
       title: 'Moderne Dakkapel'
     },
     {
-      url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/b080c873-1f58-400e-8855-b4cc787a6859.png',
       title: 'Klassieke Dakkapel'
     },
     {
-      url: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/eaa01620-492a-4794-b2c6-ad2b92dc3603.png',
       title: 'Luxe Dakkapel'
     },
     {
-      url: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/fb97d4bf-a1e7-428b-bd5b-37fc1b54729b.png',
       title: 'Dakkapel met Openslaande Deuren'
     },
     {
-      url: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png',
       title: 'Prefab Dakkapel'
     },
     {
-      url: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
+      url: '/lovable-uploads/8745f4c4-960d-4da5-b5f5-59564c7cdd33.png',
       title: 'Gerenoveerde Dakkapel'
     }
   ];

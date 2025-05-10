@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { TypeSelector } from './TypeSelector';
 import { DimensionsSelector } from './DimensionsSelector';
@@ -7,6 +8,7 @@ import { PriceDisplay } from './PriceDisplay';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
 import { ContactFormSelector } from './ContactFormSelector';
 import { DakkapelRenderer } from './DakkapelRenderer';
+import { toast } from 'sonner';
 
 export type DakkapelType = 'typeA' | 'typeB' | 'typeC' | 'typeD' | 'typeE';
 export type MaterialType = 'kunststof' | 'hout' | 'aluminium' | 'standaard' | 'kunststof_rabat' | 'kunststof_rabat_boeideel' | 'polyester_glad' | 'polyester_rabat';
@@ -87,14 +89,23 @@ export function DakkapelCalculator() {
     },
   });
   
-  // Add a state to track price changes
+  // Add states to track price changes and loading
   const [priceUpdateCounter, setPriceUpdateCounter] = useState(0);
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const totalPrice = calculateTotalPrice(configuration);
 
   // Listen for localStorage changes to refresh prices
   useEffect(() => {
     const handleStorageChange = () => {
       setPriceUpdateCounter(prev => prev + 1);
+      setIsLoadingPrices(true);
+      // Toast notification
+      toast.info('Prijzen zijn bijgewerkt', { duration: 2000 });
+      
+      // Short delay to allow prices to update
+      setTimeout(() => {
+        setIsLoadingPrices(false);
+      }, 500);
     };
     
     window.addEventListener('storage', handleStorageChange);
@@ -107,9 +118,9 @@ export function DakkapelCalculator() {
   // This will force the price to recalculate when prices are updated in admin
   useEffect(() => {
     const interval = setInterval(() => {
-      // Check if localStorage has changed every 5 seconds
+      // Check if localStorage has changed every 3 seconds
       setPriceUpdateCounter(prev => prev + 1);
-    }, 5000);
+    }, 3000);
     
     return () => clearInterval(interval);
   }, []);
@@ -163,6 +174,14 @@ export function DakkapelCalculator() {
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+      {isLoadingPrices && (
+        <div className="absolute top-0 left-0 w-full h-full bg-white/50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+            <p className="text-brand-darkGreen font-medium">Prijzen worden bijgewerkt...</p>
+          </div>
+        </div>
+      )}
+      
       {step === 1 && (
         <TypeSelector
           selectedType={configuration.type}
