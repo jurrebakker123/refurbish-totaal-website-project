@@ -30,9 +30,9 @@ const LocalBusinessSchema: React.FC<LocalBusinessSchemaProps> = ({ city, service
       : "Refurbish Totaal Nederland is uw betrouwbare partner voor professionele verbouwing en renovatie. Schilderwerk, dakrenovatie, stucwerk en meer in heel Nederland inclusief Eindhoven, Rotterdam, Breda, Amsterdam, Lelystad, Zwolle, Doetinchem en Venray.",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Niersweg 27",
-      "addressLocality": "Gennep",
-      "postalCode": "6591 CT",
+      "streetAddress": "Postbus 61",
+      "addressLocality": "Druten",
+      "postalCode": "6650 AB",
       "addressCountry": "NL"
     },
     "geo": {

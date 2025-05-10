@@ -133,7 +133,7 @@ const ContactPage = () => {
             <h2 className="text-3xl font-bold mb-8 text-center text-brand-darkGreen">Onze Locatie</h2>
             <div className="rounded-lg overflow-hidden shadow-lg">
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2435.627583012478!2d5.6000662!3d51.8926512!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c7f8a3c360349f%3A0x27f8c114d6c94a8!2sPostbus%2061%2C%206650%20AB%20Druten%2C%20Nederland!5e0!3m2!1snl!2snl!4v1713705571890!5m2!1snl!2snl"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2475.527982465717!2d5.636422977195247!3d51.667533198950525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c6fe4c25502a69%3A0xee8fa136053d95c9!2sPostbus%2061%2C%206650%20AB%20Druten!5e0!3m2!1snl!2snl!4v1719414732248!5m2!1snl!2snl"
                 width="100%" 
                 height="350"
                 style={{ border: 0 }} 

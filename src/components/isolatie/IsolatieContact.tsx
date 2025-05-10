@@ -43,7 +43,7 @@ const IsolatieContact = () => {
                   <MapPin className="h-5 w-5 text-brand-lightGreen mt-1 mr-3" />
                   <div>
                     <h4 className="font-medium mb-1">Adres</h4>
-                    <p>Niersweg 27<br />6591 CT Gennep</p>
+                    <p>Postbus 61<br />6650 AB Druten</p>
                   </div>
                 </div>
                 
