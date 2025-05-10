@@ -19,7 +19,7 @@ export function ZonnepanelenProducts() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {solarProducts.map((product) => (
-            <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 animate-fade-in">
+            <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 animate-fade-in relative overflow-hidden">
               <CardHeader className="pb-4">
                 <div className="rounded-md overflow-hidden mb-4 flex justify-center">
                   <OptimizedImage
@@ -35,13 +35,13 @@ export function ZonnepanelenProducts() {
                 <ul className="space-y-2 mb-4">
                   {product.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <span className="text-brand-green mr-2">✓</span>
+                      <span className="text-brand-green mr-2 flex-shrink-0">✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter className="flex flex-col items-start pt-2">
+              <CardFooter className="flex flex-col items-start pt-2 w-full">
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
                 <Link to={`/product/${product.slug}`} className="w-full">
                   <Button className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors">

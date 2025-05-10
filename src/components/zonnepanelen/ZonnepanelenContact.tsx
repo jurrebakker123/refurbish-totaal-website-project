@@ -6,7 +6,7 @@ import ReusableForm from '@/components/common/ReusableForm';
 
 export function ZonnepanelenContact() {
   return (
-    <section className="py-16 bg-gray-50">
+    <section id="contact-section" className="py-16 bg-gray-50">
       <div className="container">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-brand-darkGreen">
@@ -69,6 +69,20 @@ export function ZonnepanelenContact() {
               buttonText="Offerte aanvragen"
               showServiceInput={true}
               showDateField={true}
+              additionalFields={[
+                {
+                  name: 'subject',
+                  label: 'Onderwerp',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { value: 'Zonnepanelen', label: 'Zonnepanelen installatie' },
+                    { value: 'Omvormer', label: 'Omvormer vervangen' },
+                    { value: 'Offerte', label: 'Offerte aanvragen' },
+                    { value: 'Anders', label: 'Anders' }
+                  ]
+                }
+              ]}
             />
           </div>
         </div>

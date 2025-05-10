@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
-import { OfferteForm } from '@/components/offerte/OfferteForm';
+import ReusableForm from '@/components/common/ReusableForm';
 
 const IsolatieContact = () => {
   return (
@@ -78,7 +78,26 @@ const IsolatieContact = () => {
           <div>
             <div className="bg-white rounded-lg shadow-lg overflow-hidden p-8">
               <h3 className="text-2xl font-bold mb-6">Stuur ons een bericht</h3>
-              <OfferteForm />
+              <ReusableForm 
+                showFileUpload={true}
+                templateId="template_ezfzaao"
+                buttonText="Verstuur Bericht"
+                showServiceInput={true}
+                additionalFields={[
+                  {
+                    name: 'subject',
+                    label: 'Onderwerp',
+                    type: 'select',
+                    required: true,
+                    options: [
+                      { value: 'Isolatie', label: 'Isolatie informatie' },
+                      { value: 'Offerte', label: 'Offerte aanvragen' },
+                      { value: 'Planning', label: 'Planning en afspraken' },
+                      { value: 'Anders', label: 'Anders' }
+                    ]
+                  }
+                ]}
+              />
             </div>
           </div>
         </div>
