@@ -1,55 +1,29 @@
-
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-brand-gray text-white pt-16 pb-8">
+  return <footer className="bg-brand-gray text-white pt-16 pb-8">
       <div className="container">
         {/* Top Footer Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Company Info */}
           <div className="animate-fade-in">
             <div className="mb-6">
-              <img 
-                src="/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png" 
-                alt="Refurbish Totaal Nederland" 
-                className="h-24 w-auto"
-              />
+              <img src="/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png" alt="Refurbish Totaal Nederland" className="h-24 w-auto" />
             </div>
             <p className="mb-4 text-gray-300">
               Wij zijn uw betrouwbare partner voor al uw verbouwings- en renovatieprojecten in heel Nederland.
             </p>
             <div className="flex space-x-4">
-              <a 
-                href="https://www.facebook.com/profile.php?id=61575351209112" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-brand-lightGreen transition-colors"
-                aria-label="Bezoek onze Facebook pagina"
-              >
+              <a href="https://www.facebook.com/profile.php?id=61575351209112" target="_blank" rel="noopener noreferrer" className="hover:text-brand-lightGreen transition-colors" aria-label="Bezoek onze Facebook pagina">
                 <Facebook size={20} />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a 
-                href="https://www.instagram.com/refurbishtotaalnederland/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-brand-lightGreen transition-colors"
-                aria-label="Bezoek onze Instagram pagina"
-              >
+              <a href="https://www.instagram.com/refurbishtotaalnederland/" target="_blank" rel="noopener noreferrer" className="hover:text-brand-lightGreen transition-colors" aria-label="Bezoek onze Instagram pagina">
                 <Instagram size={20} />
                 <span className="sr-only">Instagram</span>
               </a>
-              <a 
-                href="https://www.linkedin.com/company/refurbish-totaal-nederland/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-brand-lightGreen transition-colors"
-                aria-label="Bezoek onze LinkedIn pagina"
-              >
+              <a href="https://www.linkedin.com/company/refurbish-totaal-nederland/" target="_blank" rel="noopener noreferrer" className="hover:text-brand-lightGreen transition-colors" aria-label="Bezoek onze LinkedIn pagina">
                 <Linkedin size={20} />
                 <span className="sr-only">LinkedIn</span>
               </a>
@@ -57,7 +31,9 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <div className="animate-fade-in" style={{
+          animationDelay: '0.1s'
+        }}>
             <h3 className="text-xl font-bold mb-4">Snelle Links</h3>
             <ul className="space-y-2">
               <li>
@@ -82,7 +58,9 @@ const Footer = () => {
           </div>
 
           {/* Services */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="animate-fade-in" style={{
+          animationDelay: '0.2s'
+        }}>
             <h3 className="text-xl font-bold mb-4">Onze Diensten</h3>
             <ul className="space-y-2">
               <li>
@@ -113,7 +91,9 @@ const Footer = () => {
           </div>
 
           {/* Contact Info */}
-          <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div className="animate-fade-in" style={{
+          animationDelay: '0.3s'
+        }}>
             <h3 className="text-xl font-bold mb-4">Contact Informatie</h3>
             <ul className="space-y-4">
               <li className="flex items-start">
@@ -125,7 +105,7 @@ const Footer = () => {
               <li className="flex items-start">
                 <a href="mailto:info@refurbishtotaal.nl" className="flex hover:text-brand-lightGreen transition-colors">
                   <Mail className="h-5 w-5 mr-2 mt-0.5 text-brand-lightGreen" />
-                  <span>info@refurbishtotaal.nl</span>
+                  <span>info@refurbishtotaalnederland.nl</span>
                 </a>
               </li>
               <li className="flex items-start">
@@ -142,12 +122,7 @@ const Footer = () => {
             <p>© {currentYear} Refurbish Totaal Nederland. Alle rechten voorbehouden.</p>
             <p>
               Ontworpen door{" "}
-              <a 
-                href="https://www.jbe-commerce.nl" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-brand-lightGreen hover:underline"
-              >
+              <a href="https://www.jbe-commerce.nl" target="_blank" rel="noopener noreferrer" className="text-brand-lightGreen hover:underline">
                 JBEcommerce
               </a>
             </p>
@@ -159,8 +134,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
