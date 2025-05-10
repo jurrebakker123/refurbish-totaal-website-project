@@ -35,7 +35,7 @@ const IsolatieContact = () => {
                   <Mail className="h-5 w-5 text-brand-lightGreen mt-1 mr-3" />
                   <div>
                     <h4 className="font-medium mb-1">E-mail</h4>
-                    <p><a href="mailto:info@isolatieselectie.nl" className="hover:text-brand-lightGreen">info@isolatieselectie.nl</a></p>
+                    <p><a href="mailto:info@refurbishtotaalnederland.nl" className="hover:text-brand-lightGreen">info@refurbishtotaalnederland.nl</a></p>
                   </div>
                 </div>
                 
