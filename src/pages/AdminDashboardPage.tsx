@@ -4,35 +4,33 @@ import { Helmet } from 'react-helmet';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import AdminLogin from '@/components/admin/AdminLogin';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboardPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { collapsed } = useSidebar();
+  const navigate = useNavigate();
   
   useEffect(() => {
     // Check if user is already logged in
     const adminToken = localStorage.getItem('adminToken');
     if (adminToken) {
       setIsAuthenticated(true);
+    } else {
+      // Redirect to login page if not authenticated
+      navigate('/login');
     }
-  }, []);
-
-  const handleLogin = (success: boolean) => {
-    setIsAuthenticated(success);
-    if (success) {
-      localStorage.setItem('adminToken', Date.now().toString());
-    }
-  };
+  }, [navigate]);
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('adminToken');
+    navigate('/login');
   };
 
   if (!isAuthenticated) {
-    return <AdminLogin onLogin={handleLogin} />;
+    return null;
   }
 
   return (

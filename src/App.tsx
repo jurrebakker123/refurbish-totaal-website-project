@@ -27,6 +27,7 @@ import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage
 import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
 import WhatsAppButton from "./components/WhatsAppButton";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminLogin from "./components/admin/AdminLogin";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -65,6 +66,7 @@ const App = () => {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/voorwaarden" element={<VoorwaardenPage />} />
           <Route path="/certificaat" element={<CertificaatPage />} />
+          <Route path="/login" element={<AdminLogin onLogin={() => {}} />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admindashboard" element={<AdminDashboardPage />} />
           <Route path="*" element={<NotFound />} />

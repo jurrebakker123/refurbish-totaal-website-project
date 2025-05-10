@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TypeSelector } from './TypeSelector';
 import { DimensionsSelector } from './DimensionsSelector';
 import { MaterialSelector } from './MaterialSelector';
@@ -90,40 +90,60 @@ export function DakkapelCalculator() {
   });
   
   // Add states to track price changes and loading
-  const [priceUpdateCounter, setPriceUpdateCounter] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
-  const totalPrice = calculateTotalPrice(configuration);
 
-  // Listen for localStorage changes to refresh prices
+  // Calculate the total price whenever the configuration changes
+  const updatePrice = useCallback(() => {
+    const calculatedPrice = calculateTotalPrice(configuration);
+    setTotalPrice(calculatedPrice);
+  }, [configuration]);
+
+  // Update price initially and when configuration changes
   useEffect(() => {
-    const handleStorageChange = () => {
-      setPriceUpdateCounter(prev => prev + 1);
-      setIsLoadingPrices(true);
-      // Toast notification
-      toast.info('Prijzen zijn bijgewerkt', { duration: 2000 });
-      
-      // Short delay to allow prices to update
-      setTimeout(() => {
-        setIsLoadingPrices(false);
-      }, 500);
+    updatePrice();
+  }, [configuration, updatePrice]);
+
+  // Handle price updates from admin panel
+  const handlePriceUpdate = useCallback(() => {
+    console.log('Price update detected in calculator');
+    setIsLoadingPrices(true);
+    
+    // Toast notification
+    toast.info('Prijzen worden bijgewerkt...', { duration: 2000 });
+    
+    // Short delay to show loading state
+    setTimeout(() => {
+      updatePrice();
+      setIsLoadingPrices(false);
+      toast.success('Prijzen zijn bijgewerkt', { duration: 2000 });
+    }, 500);
+  }, [updatePrice]);
+  
+  // Listen for localStorage changes and custom events
+  useEffect(() => {
+    // Listen for storage events (from other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'calculatorPrices') {
+        console.log('Storage event detected for calculatorPrices');
+        handlePriceUpdate();
+      }
+    };
+    
+    // Listen for custom events (from same tab)
+    const handleCustomEvent = () => {
+      console.log('Custom priceUpdate event detected');
+      handlePriceUpdate();
     };
     
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('priceUpdate', handleCustomEvent);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('priceUpdate', handleCustomEvent);
     };
-  }, []);
-  
-  // This will force the price to recalculate when prices are updated in admin
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Check if localStorage has changed every 3 seconds
-      setPriceUpdateCounter(prev => prev + 1);
-    }, 3000);
-    
-    return () => clearInterval(interval);
-  }, []);
+  }, [handlePriceUpdate]);
 
   const updateType = (type: DakkapelType) => {
     setConfiguration({ ...configuration, type });
@@ -173,10 +193,13 @@ export function DakkapelCalculator() {
   };
 
   return (
-    <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+    <div className="relative bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
       {isLoadingPrices && (
-        <div className="absolute top-0 left-0 w-full h-full bg-white/50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-50 rounded-lg">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <div className="mb-4">
+              <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
             <p className="text-brand-darkGreen font-medium">Prijzen worden bijgewerkt...</p>
           </div>
         </div>

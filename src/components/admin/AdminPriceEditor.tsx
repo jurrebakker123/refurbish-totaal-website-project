@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, DownloadCloud, UploadCloud } from 'lucide-react';
+import { Save, DownloadCloud, UploadCloud, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AdminPriceEditor = () => {
@@ -65,6 +65,8 @@ const AdminPriceEditor = () => {
     }
   });
 
+  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'success', 'error'
+
   useEffect(() => {
     // Load saved prices from localStorage if available
     const savedPrices = localStorage.getItem('calculatorPrices');
@@ -77,6 +79,7 @@ const AdminPriceEditor = () => {
     }
   }, []);
 
+  // Input change handlers
   const handleBasePriceChange = (type: string, value: string) => {
     setPrices(prev => ({
       ...prev,
@@ -85,14 +88,6 @@ const AdminPriceEditor = () => {
         [type]: parseFloat(value) || 0
       }
     }));
-    // Save after each change for real-time updates
-    saveChanges({
-      ...prices,
-      basePrices: {
-        ...prices.basePrices,
-        [type]: parseFloat(value) || 0
-      }
-    });
   };
 
   const handleMultiplierChange = (material: string, value: string) => {
@@ -103,14 +98,36 @@ const AdminPriceEditor = () => {
         [material]: parseFloat(value) || 0
       }
     }));
-    // Save after each change for real-time updates
-    saveChanges({
-      ...prices,
-      materialMultipliers: {
-        ...prices.materialMultipliers,
-        [material]: parseFloat(value) || 0
+  };
+
+  const handleRCValueChange = (rcValue: string, value: string) => {
+    setPrices(prev => ({
+      ...prev,
+      rcValueCosts: {
+        ...prev.rcValueCosts,
+        [rcValue]: parseFloat(value) || 0
       }
-    });
+    }));
+  };
+
+  const handleKozijnHoogteChange = (height: string, value: string) => {
+    setPrices(prev => ({
+      ...prev,
+      kozijnHoogteAdjustments: {
+        ...prev.kozijnHoogteAdjustments,
+        [height]: parseFloat(value) || 0
+      }
+    }));
+  };
+
+  const handleColorSurchargeChange = (color: string, value: string) => {
+    setPrices(prev => ({
+      ...prev,
+      colorSurcharges: {
+        ...prev.colorSurcharges,
+        [color]: parseFloat(value) || 0
+      }
+    }));
   };
 
   const handleOptionCostChange = (option: string, value: string) => {
@@ -121,33 +138,36 @@ const AdminPriceEditor = () => {
         [option]: parseFloat(value) || 0
       }
     }));
-    // Save after each change for real-time updates
-    saveChanges({
-      ...prices,
-      optionCosts: {
-        ...prices.optionCosts,
-        [option]: parseFloat(value) || 0
-      }
-    });
   };
 
-  const saveChanges = (updatedPrices = prices) => {
+  // Save and update prices in localStorage and dispatch a custom event
+  const saveChanges = () => {
     try {
-      localStorage.setItem('calculatorPrices', JSON.stringify(updatedPrices));
+      setSaveStatus('saving');
+      localStorage.setItem('calculatorPrices', JSON.stringify(prices));
       
-      // Dispatch a storage event to notify other tabs/windows
-      window.dispatchEvent(new Event('storage'));
+      // Create and dispatch a custom event to notify other components/tabs
+      const event = new Event('priceUpdate');
+      window.dispatchEvent(event);
       
+      // Dispatch storage event to notify other tabs
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'calculatorPrices',
+        newValue: JSON.stringify(prices)
+      }));
+      
+      setSaveStatus('success');
       return true;
     } catch (e) {
       console.error('Failed to save prices', e);
+      setSaveStatus('error');
       return false;
     }
   };
 
   const handleSave = () => {
     if (saveChanges()) {
-      toast.success('Prijzen succesvol opgeslagen');
+      toast.success('Prijzen succesvol opgeslagen en bijgewerkt');
     } else {
       toast.error('Er is een fout opgetreden bij het opslaan');
     }
@@ -176,15 +196,26 @@ const AdminPriceEditor = () => {
         const content = e.target?.result as string;
         const importedPrices = JSON.parse(content);
         setPrices(importedPrices);
-        if (saveChanges(importedPrices)) {
-          toast.success('Prijzen succesvol geïmporteerd');
-        }
+        toast.info('Prijzen geïmporteerd. Klik op Opslaan om de wijzigingen door te voeren.');
       } catch (error) {
         toast.error('Fout bij het importeren van het bestand');
         console.error('Import error:', error);
       }
     };
     reader.readAsText(file);
+  };
+
+  // Force update to test connection with calculator
+  const handleForceUpdate = () => {
+    const event = new Event('priceUpdate');
+    window.dispatchEvent(event);
+    
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'calculatorPrices',
+      newValue: localStorage.getItem('calculatorPrices')
+    }));
+    
+    toast.info('Prijzen update signaal verzonden', { duration: 2000 });
   };
 
   return (
@@ -220,22 +251,40 @@ const AdminPriceEditor = () => {
           </Button>
           
           <Button 
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={handleForceUpdate}
+          >
+            <RefreshCcw className="h-4 w-4" />
+            <span>Vernieuwen</span>
+          </Button>
+          
+          <Button 
             variant="default" 
             size="sm" 
             className="flex items-center gap-2"
             onClick={handleSave}
+            disabled={saveStatus === 'saving'}
           >
             <Save className="h-4 w-4" />
-            <span>Opslaan</span>
+            <span>
+              {saveStatus === 'saving' ? 'Opslaan...' : 
+               saveStatus === 'success' ? 'Opgeslagen!' : 
+               saveStatus === 'error' ? 'Fout!' : 
+               'Opslaan'}
+            </span>
           </Button>
         </div>
       </div>
       
       <Tabs defaultValue="basePrices">
-        <TabsList className="grid w-full grid-cols-3 mb-4">
+        <TabsList className="grid w-full grid-cols-5 mb-4">
           <TabsTrigger value="basePrices">Basis Prijzen</TabsTrigger>
-          <TabsTrigger value="materialMultipliers">Materiaal Vermenigvuldigers</TabsTrigger>
-          <TabsTrigger value="optionCosts">Optie Kosten</TabsTrigger>
+          <TabsTrigger value="materialMultipliers">Materialen</TabsTrigger>
+          <TabsTrigger value="optionCosts">Opties</TabsTrigger>
+          <TabsTrigger value="kozijnRc">Kozijn & RC</TabsTrigger>
+          <TabsTrigger value="colors">Kleuren</TabsTrigger>
         </TabsList>
         
         <TabsContent value="basePrices">
@@ -323,6 +372,106 @@ const AdminPriceEditor = () => {
                       type="number"
                       value={cost}
                       onChange={(e) => handleOptionCostChange(option, e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+            <CardFooter>
+              <Button onClick={handleSave} className="flex items-center gap-2">
+                <Save className="h-4 w-4" />
+                <span>Opslaan</span>
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="kozijnRc">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Kozijn Hoogte Aanpassingen</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(prices.kozijnHoogteAdjustments).map(([height, adjustment]) => (
+                  <div key={height} className="flex flex-col space-y-1">
+                    <label htmlFor={`height-${height}`} className="text-sm font-medium text-gray-700">
+                      {height.charAt(0).toUpperCase() + height.slice(1).replace('_', ' ')}
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                        €
+                      </span>
+                      <Input
+                        id={`height-${height}`}
+                        type="number"
+                        value={adjustment}
+                        onChange={(e) => handleKozijnHoogteChange(height, e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>RC-Waarde Kosten</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(prices.rcValueCosts).map(([rcValue, cost]) => (
+                  <div key={rcValue} className="flex flex-col space-y-1">
+                    <label htmlFor={`rc-${rcValue}`} className="text-sm font-medium text-gray-700">
+                      {rcValue.charAt(0).toUpperCase() + rcValue.slice(1).replace('_', ' ')}
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                        €
+                      </span>
+                      <Input
+                        id={`rc-${rcValue}`}
+                        type="number"
+                        value={cost}
+                        onChange={(e) => handleRCValueChange(rcValue, e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="mt-4">
+            <Button onClick={handleSave} className="flex items-center gap-2">
+              <Save className="h-4 w-4" />
+              <span>Opslaan</span>
+            </Button>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="colors">
+          <Card>
+            <CardHeader>
+              <CardTitle>Kleur Toeslagen</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(prices.colorSurcharges).map(([color, surcharge]) => (
+                <div key={color} className="flex flex-col space-y-1">
+                  <label htmlFor={`color-${color}`} className="text-sm font-medium text-gray-700">
+                    {color.charAt(0).toUpperCase() + color.slice(1).replace('_', ' ')}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                      €
+                    </span>
+                    <Input
+                      id={`color-${color}`}
+                      type="number"
+                      value={surcharge}
+                      onChange={(e) => handleColorSurchargeChange(color, e.target.value)}
                       className="pl-8"
                     />
                   </div>

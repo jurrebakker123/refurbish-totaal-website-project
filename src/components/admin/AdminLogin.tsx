@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 // This is just for demo purposes - in a real app, this should be handled securely on a backend
 const DEMO_CREDENTIALS = {
@@ -42,6 +43,7 @@ interface AdminLoginProps {
 
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -58,8 +60,17 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
     setTimeout(() => {
       if (data.username === DEMO_CREDENTIALS.username && 
           data.password === DEMO_CREDENTIALS.password) {
+        // Store auth token
+        localStorage.setItem('adminToken', Date.now().toString());
+        
+        // Call the onLogin callback
         onLogin(true);
+        
+        // Show success message
         toast.success('Succesvol ingelogd');
+        
+        // Redirect to admin dashboard
+        navigate('/admin');
       } else {
         toast.error('Ongeldige gebruikersnaam of wachtwoord');
       }

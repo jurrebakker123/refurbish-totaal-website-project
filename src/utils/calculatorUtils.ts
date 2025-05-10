@@ -11,50 +11,64 @@ const loadSavedPrices = () => {
   } catch (e) {
     console.error('Failed to load saved prices', e);
   }
-  return null;
-};
-
-// Get the stored prices or fallback to defaults
-const storedPrices = loadSavedPrices();
-
-// Base prices per dakkapel type
-const BASE_PRICES = storedPrices?.basePrices || {
-  typeA: 7060, // 1 meter (Min 1,00m - max 1,50m)
-  typeB: 7290, // 2 meter (Min 1,50m - max 3,00m)
-  typeC: 8200, // 3 meter (Min 3,00m - max 5,00m)
-  typeD: 8780, // 4 meter (Min 3,50m - max 5,50m)
-  typeE: 9330, // 5 meter (Min 3,50m - max 5,90m)
-};
-
-// Material cost multipliers
-const MATERIAL_MULTIPLIERS: Record<MaterialType, number> = storedPrices?.materialMultipliers || {
-  kunststof: 1.0,     // Standard price
-  hout: 1.2,          // 20% more expensive
-  aluminium: 1.3,     // 30% more expensive
-  standaard: 1.0,     // Standaard volkern plaat in de kleur wit of grijs
-  kunststof_rabat: 1.05, // Kunststof rabat delen (€497 additional)
-  kunststof_rabat_boeideel: 1.08, // Kunststof rabat delen incl. boeideel (€751 additional)
-  polyester_glad: 1.07, // Polyester glad (€750 additional)
-  polyester_rabat: 1.09 // Polyester rabat (€850 additional)
-};
-
-// Additional options costs
-const OPTION_COSTS = storedPrices?.optionCosts || {
-  ventilatie: 450,
-  zonwering: 850,
-  gootafwerking: 350,
-  extra_isolatie: 650,
-  extra_draaikiepraam: 192.77,
-  horren: 240,
-  elektrisch_rolluik: 281.75, // per meter
-  verwijderen_bestaande: 402.50,
-  afvoeren_bouwafval: 150,
-  kader_dakkapel: 1140.26,
-  voorbereiden_rolluiken: 125,
-  minirooftop: 3177.69,
-  dak_versteviging: 400,
-  ventilatieroosters: 120, // per meter
-  sporenkap: 275
+  
+  // Return default prices if no saved prices found or error
+  return {
+    basePrices: {
+      typeA: 7060,
+      typeB: 7290,
+      typeC: 8200,
+      typeD: 8780,
+      typeE: 9330,
+    },
+    materialMultipliers: {
+      kunststof: 1.0,
+      hout: 1.2,
+      aluminium: 1.3,
+      standaard: 1.0,
+      kunststof_rabat: 1.05,
+      kunststof_rabat_boeideel: 1.08,
+      polyester_glad: 1.07,
+      polyester_rabat: 1.09
+    },
+    optionCosts: {
+      ventilatie: 450,
+      zonwering: 850,
+      gootafwerking: 350,
+      extra_isolatie: 650,
+      extra_draaikiepraam: 192.77,
+      horren: 240,
+      elektrisch_rolluik: 281.75,
+      verwijderen_bestaande: 402.50,
+      afvoeren_bouwafval: 150,
+      kader_dakkapel: 1140.26,
+      voorbereiden_rolluiken: 125,
+      minirooftop: 3177.69,
+      dak_versteviging: 400,
+      ventilatieroosters: 120,
+      sporenkap: 275
+    },
+    rcValueCosts: {
+      standaard: 0,
+      upgrade_6_0: 218,
+      upgrade_6_5: 250
+    },
+    kozijnHoogteAdjustments: {
+      standaard: 0,
+      medium: 150,
+      large: 300,
+      extra_large: 450
+    },
+    colorSurcharges: {
+      wit: 0,
+      crème: 0,
+      grijs: 210,
+      antraciet: 210,
+      zwart: 210,
+      staalblauw: 210,
+      dennengroen: 210
+    }
+  };
 };
 
 // Type to width mapping in meters
@@ -84,52 +98,23 @@ const DEFAULT_WINDOWS = {
   typeE: 3
 };
 
-// RC Values additional costs
-const RC_VALUE_COSTS: Record<RCWaarde, number> = storedPrices?.rcValueCosts || {
-  standaard: 0, // Standard RC-value 3.5
-  upgrade_6_0: 218, // Upgrade to RC-value 6.0
-  upgrade_6_5: 250 // Extra upgrade to RC-value 6.5
-};
-
-// Kozijn Hoogte adjustments
-const KOZIJN_HOOGTE_ADJUSTMENTS: Record<KozijnHoogte, number> = storedPrices?.kozijnHoogteAdjustments || {
-  standaard: 0,    // Standaard: Hoogte kozijn 110cm - Hoogte dakkapel 145cm
-  medium: 150,     // Medium: Hoogte kozijn 120cm - Hoogte dakkapel 155cm
-  large: 300,      // Large: Hoogte kozijn 130cm - Hoogte dakkapel 165cm
-  extra_large: 450 // Extra large: Hoogte kozijn 140cm - Hoogte dakkapel 175cm
-};
-
-// Color surcharges
-const COLOR_SURCHARGES = storedPrices?.colorSurcharges || {
-  wit: 0,            // Standard white RAL9016
-  crème: 0,          // Standard cream white RAL9001
-  grijs: 210,        // Grey
-  antraciet: 210,    // Anthracite RAL7016
-  zwart: 210,        // Black RAL9005
-  staalblauw: 210,   // Steel blue RAL5011
-  dennengroen: 210   // Pine green RAL6009
-};
-
 /**
  * Calculate the total price based on the dakkapel configuration
  */
 export function calculateTotalPrice(config: DakkapelConfiguration): number {
-  // Load latest prices in case they've been updated since the component mounted
-  const latestPrices = loadSavedPrices();
+  console.log('Calculating price for configuration:', config);
   
-  // Use the latest prices if available or fall back to the stored ones
-  const basePrices = latestPrices?.basePrices || BASE_PRICES;
-  const materialMultipliers = latestPrices?.materialMultipliers || MATERIAL_MULTIPLIERS;
-  const optionCosts = latestPrices?.optionCosts || OPTION_COSTS;
+  // Always load the latest prices from localStorage for each calculation
+  const pricesData = loadSavedPrices();
   
   // Base price for the selected dakkapel type
-  const basePrice = basePrices[config.type];
+  const basePrice = pricesData.basePrices[config.type];
   
   // Width in meters for rolluik calculation
   const widthInMeters = config.breedte / 100;
   
   // Material price adjustment
-  const materialMultiplier = materialMultipliers[config.materiaal];
+  const materialMultiplier = pricesData.materialMultipliers[config.materiaal];
   
   // Optional extras calculation
   let optionsTotal = 0;
@@ -137,18 +122,18 @@ export function calculateTotalPrice(config: DakkapelConfiguration): number {
   // Add costs for each selected option
   for (const [key, isSelected] of Object.entries(config.opties)) {
     if (isSelected) {
-      const optionKey = key as keyof typeof optionCosts;
+      const optionKey = key as keyof typeof pricesData.optionCosts;
       // For electric rolluik, multiply by width
       if (optionKey === 'elektrisch_rolluik' || optionKey === 'ventilatieroosters') {
-        optionsTotal += optionCosts[optionKey] * widthInMeters;
+        optionsTotal += pricesData.optionCosts[optionKey] * widthInMeters;
       } 
       // For horren, multiply by number of windows
       else if (optionKey === 'horren') {
-        optionsTotal += optionCosts[optionKey] * config.aantalRamen;
+        optionsTotal += pricesData.optionCosts[optionKey] * config.aantalRamen;
       }
       // For all other options, add the fixed cost
       else {
-        optionsTotal += optionCosts[optionKey];
+        optionsTotal += pricesData.optionCosts[optionKey];
       }
     }
   }
@@ -158,40 +143,35 @@ export function calculateTotalPrice(config: DakkapelConfiguration): number {
   if (config.type === 'typeC') {
     // Type C comes with 2 windows as standard
     if (config.aantalRamen > 2) {
-      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 2);
+      windowsAdjustment = pricesData.optionCosts.extra_draaikiepraam * (config.aantalRamen - 2);
     }
   } else if (config.type === 'typeD') {
     // Type D comes with 2-3 windows, we'll use 2 as standard
     if (config.aantalRamen > 2) {
-      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 2);
+      windowsAdjustment = pricesData.optionCosts.extra_draaikiepraam * (config.aantalRamen - 2);
     }
   } else if (config.type === 'typeE') {
     // Type E comes with 3-4 windows, we'll use 3 as standard
     if (config.aantalRamen > 3) {
-      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 3);
+      windowsAdjustment = pricesData.optionCosts.extra_draaikiepraam * (config.aantalRamen - 3);
     }
   } else {
     // Types A and B come with 1 window as standard
     if (config.aantalRamen > 1) {
-      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 1);
+      windowsAdjustment = pricesData.optionCosts.extra_draaikiepraam * (config.aantalRamen - 1);
     }
   }
   
-  // Use latest values for other pricing components
-  const rcValueCosts = latestPrices?.rcValueCosts || RC_VALUE_COSTS;
-  const kozijnHoogteAdjustments = latestPrices?.kozijnHoogteAdjustments || KOZIJN_HOOGTE_ADJUSTMENTS;
-  const colorSurcharges = latestPrices?.colorSurcharges || COLOR_SURCHARGES;
-  
   // Add RC-value adjustment
-  const rcValueAdjustment = rcValueCosts[config.rcWaarde];
+  const rcValueAdjustment = pricesData.rcValueCosts[config.rcWaarde];
   
   // Add kozijn height adjustment
-  const kozijnHoogteAdjustment = kozijnHoogteAdjustments[config.kozijnHoogte];
+  const kozijnHoogteAdjustment = pricesData.kozijnHoogteAdjustments[config.kozijnHoogte];
   
   // Add color surcharges
-  const kozijnenKleurSurcharge = colorSurcharges[config.kleurKozijnen];
-  const zijkantenKleurSurcharge = colorSurcharges[config.kleurZijkanten];
-  const draaikiepramenKleurSurcharge = colorSurcharges[config.kleurDraaikiepramen];
+  const kozijnenKleurSurcharge = pricesData.colorSurcharges[config.kleurKozijnen];
+  const zijkantenKleurSurcharge = pricesData.colorSurcharges[config.kleurZijkanten];
+  const draaikiepramenKleurSurcharge = pricesData.colorSurcharges[config.kleurDraaikiepramen];
   
   // Calculate total price
   const totalPrice = (basePrice * materialMultiplier) + 
@@ -202,6 +182,19 @@ export function calculateTotalPrice(config: DakkapelConfiguration): number {
                       kozijnenKleurSurcharge + 
                       zijkantenKleurSurcharge + 
                       draaikiepramenKleurSurcharge;
+  
+  console.log('Calculation details:', {
+    basePrice,
+    materialMultiplier,
+    optionsTotal,
+    windowsAdjustment,
+    rcValueAdjustment,
+    kozijnHoogteAdjustment,
+    kozijnenKleurSurcharge,
+    zijkantenKleurSurcharge,
+    draaikiepramenKleurSurcharge,
+    totalPrice
+  });
   
   // Round to nearest 10
   return Math.round(totalPrice / 10) * 10;

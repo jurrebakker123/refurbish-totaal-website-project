@@ -9,6 +9,7 @@ import ZonnepanelenPage from './pages/ZonnepanelenPage.tsx';
 import SolarProductDetailPage from './pages/SolarProductDetailPage.tsx';
 import IsolatieSelectiePage from './pages/IsolatieSelectiePage.tsx';
 import AdminDashboardPage from './pages/AdminDashboardPage.tsx';
+import AdminLogin from './components/admin/AdminLogin.tsx';
 import { SidebarProvider } from './components/ui/sidebar';
 
 // TypeScript interface for window
@@ -44,6 +45,7 @@ const renderBasedOnDomain = () => {
           <Routes>
             <Route path="/" element={<DakkapelLandingPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>
@@ -60,6 +62,7 @@ const renderBasedOnDomain = () => {
           <Routes>
             <Route path="/" element={<ZonnepanelenPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>
@@ -75,6 +78,7 @@ const renderBasedOnDomain = () => {
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<IsolatieSelectiePage />} />
+            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>
@@ -95,6 +99,7 @@ const renderBasedOnDomain = () => {
             <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
             <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>

@@ -12,6 +12,7 @@ const DakkapelCalculatorConceptPage = () => {
     
     // Ensure localStorage is available and initialized for calculator prices
     if (!localStorage.getItem('calculatorPrices')) {
+      console.log('Setting default calculator prices');
       // Set default prices if not available
       const defaultPrices = {
         basePrices: {
@@ -70,6 +71,9 @@ const DakkapelCalculatorConceptPage = () => {
         }
       };
       localStorage.setItem('calculatorPrices', JSON.stringify(defaultPrices));
+      
+      // Dispatch event to notify components that prices are available
+      window.dispatchEvent(new Event('priceUpdate'));
     }
   }, []);
 
