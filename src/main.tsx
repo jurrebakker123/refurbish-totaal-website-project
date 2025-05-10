@@ -8,6 +8,8 @@ import DakkapelLandingPage from './pages/DakkapelLandingPage.tsx';
 import ZonnepanelenPage from './pages/ZonnepanelenPage.tsx';
 import SolarProductDetailPage from './pages/SolarProductDetailPage.tsx';
 import IsolatieSelectiePage from './pages/IsolatieSelectiePage.tsx';
+import AdminDashboardPage from './pages/AdminDashboardPage.tsx';
+import { SidebarProvider } from './components/ui/sidebar';
 
 // TypeScript interface for window
 declare global {
@@ -38,10 +40,13 @@ const renderBasedOnDomain = () => {
     console.log('Rendering DakkapelLandingPage');
     return (
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<DakkapelLandingPage />} />
-          <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-        </Routes>
+        <SidebarProvider>
+          <Routes>
+            <Route path="/" element={<DakkapelLandingPage />} />
+            <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+          </Routes>
+        </SidebarProvider>
       </BrowserRouter>
     );
   } 
@@ -50,10 +55,13 @@ const renderBasedOnDomain = () => {
     console.log('Rendering ZonnepanelenPage with product routes');
     return (
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<ZonnepanelenPage />} />
-          <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-        </Routes>
+        <SidebarProvider>
+          <Routes>
+            <Route path="/" element={<ZonnepanelenPage />} />
+            <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+          </Routes>
+        </SidebarProvider>
       </BrowserRouter>
     );
   }
@@ -62,9 +70,12 @@ const renderBasedOnDomain = () => {
     console.log('Rendering IsolatieSelectiePage');
     return (
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<IsolatieSelectiePage />} />
-        </Routes>
+        <SidebarProvider>
+          <Routes>
+            <Route path="/" element={<IsolatieSelectiePage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+          </Routes>
+        </SidebarProvider>
       </BrowserRouter>
     );
   }
