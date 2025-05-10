@@ -25,6 +25,7 @@ import ZonnepanelenPage from "./pages/ZonnepanelenPage";
 import DakkapelLandingPage from "./pages/DakkapelLandingPage";
 import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage";
 import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -65,6 +66,7 @@ const App = () => {
           <Route path="/certificaat" element={<CertificaatPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <WhatsAppButton />
         <LeaveSiteNotification />
         <ChatBot />
         <CursorEffects />

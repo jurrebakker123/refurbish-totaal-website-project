@@ -9,7 +9,7 @@ const IsolatieHero = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center" 
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1633114128174-2f8aa49759b0?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1607400201515-c2c41c07d307?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
         }}
       >
         <div className="absolute inset-0 bg-brand-darkGreen/75"></div>

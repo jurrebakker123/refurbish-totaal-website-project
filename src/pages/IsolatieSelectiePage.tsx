@@ -5,12 +5,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import IsolatieHero from '@/components/isolatie/IsolatieHero';
 import IsolatieFeatures from '@/components/isolatie/IsolatieFeatures';
-import IsolatieServices from '@/components/isolatie/IsolatieServices';
-import IsolatieTestimonials from '@/components/isolatie/IsolatieTestimonials';
-import IsolatieContact from '@/components/isolatie/IsolatieContact';
-import IsolatieBenefits from '@/components/isolatie/IsolatieBenefits';
 import IsolatiePartners from '@/components/isolatie/IsolatiePartners';
 import IsolatieFAQ from '@/components/isolatie/IsolatieFAQ';
+import IsolatieContact from '@/components/isolatie/IsolatieContact';
+import IsolatieBenefits from '@/components/isolatie/IsolatieBenefits';
 
 const IsolatieSelectiePage = () => {
   useEffect(() => {
@@ -57,9 +55,7 @@ const IsolatieSelectiePage = () => {
       <main className="flex-grow">
         <IsolatieHero />
         <IsolatieBenefits />
-        <IsolatieServices />
         <IsolatieFeatures />
-        <IsolatieTestimonials />
         <IsolatiePartners />
         <IsolatieFAQ />
         <IsolatieContact />
