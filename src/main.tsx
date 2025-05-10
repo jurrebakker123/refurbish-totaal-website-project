@@ -45,6 +45,7 @@ const renderBasedOnDomain = () => {
             <Route path="/" element={<DakkapelLandingPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
@@ -60,6 +61,7 @@ const renderBasedOnDomain = () => {
             <Route path="/" element={<ZonnepanelenPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
@@ -74,6 +76,7 @@ const renderBasedOnDomain = () => {
           <Routes>
             <Route path="/" element={<IsolatieSelectiePage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admindashboard" element={<AdminDashboardPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
@@ -91,6 +94,8 @@ const renderBasedOnDomain = () => {
           <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
           <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
           <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admindashboard" element={<AdminDashboardPage />} />
         </Routes>
       </BrowserRouter>
     );

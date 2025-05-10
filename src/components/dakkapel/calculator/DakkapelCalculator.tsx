@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TypeSelector } from './TypeSelector';
 import { DimensionsSelector } from './DimensionsSelector';
 import { MaterialSelector } from './MaterialSelector';
@@ -87,8 +86,33 @@ export function DakkapelCalculator() {
       sporenkap: false,
     },
   });
-
+  
+  // Add a state to track price changes
+  const [priceUpdateCounter, setPriceUpdateCounter] = useState(0);
   const totalPrice = calculateTotalPrice(configuration);
+
+  // Listen for localStorage changes to refresh prices
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setPriceUpdateCounter(prev => prev + 1);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+  
+  // This will force the price to recalculate when prices are updated in admin
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Check if localStorage has changed every 5 seconds
+      setPriceUpdateCounter(prev => prev + 1);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const updateType = (type: DakkapelType) => {
     setConfiguration({ ...configuration, type });

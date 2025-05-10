@@ -1,8 +1,24 @@
 
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte, MaterialType, RCWaarde } from '@/components/dakkapel/calculator/DakkapelCalculator';
 
+// Load prices from localStorage if available
+const loadSavedPrices = () => {
+  try {
+    const savedPrices = localStorage.getItem('calculatorPrices');
+    if (savedPrices) {
+      return JSON.parse(savedPrices);
+    }
+  } catch (e) {
+    console.error('Failed to load saved prices', e);
+  }
+  return null;
+};
+
+// Get the stored prices or fallback to defaults
+const storedPrices = loadSavedPrices();
+
 // Base prices per dakkapel type
-const BASE_PRICES = {
+const BASE_PRICES = storedPrices?.basePrices || {
   typeA: 7060, // 1 meter (Min 1,00m - max 1,50m)
   typeB: 7290, // 2 meter (Min 1,50m - max 3,00m)
   typeC: 8200, // 3 meter (Min 3,00m - max 5,00m)
@@ -11,7 +27,7 @@ const BASE_PRICES = {
 };
 
 // Material cost multipliers
-const MATERIAL_MULTIPLIERS: Record<MaterialType, number> = {
+const MATERIAL_MULTIPLIERS: Record<MaterialType, number> = storedPrices?.materialMultipliers || {
   kunststof: 1.0,     // Standard price
   hout: 1.2,          // 20% more expensive
   aluminium: 1.3,     // 30% more expensive
@@ -23,7 +39,7 @@ const MATERIAL_MULTIPLIERS: Record<MaterialType, number> = {
 };
 
 // Additional options costs
-const OPTION_COSTS = {
+const OPTION_COSTS = storedPrices?.optionCosts || {
   ventilatie: 450,
   zonwering: 850,
   gootafwerking: 350,
@@ -69,14 +85,14 @@ const DEFAULT_WINDOWS = {
 };
 
 // RC Values additional costs
-const RC_VALUE_COSTS: Record<RCWaarde, number> = {
+const RC_VALUE_COSTS: Record<RCWaarde, number> = storedPrices?.rcValueCosts || {
   standaard: 0, // Standard RC-value 3.5
   upgrade_6_0: 218, // Upgrade to RC-value 6.0
   upgrade_6_5: 250 // Extra upgrade to RC-value 6.5
 };
 
 // Kozijn Hoogte adjustments
-const KOZIJN_HOOGTE_ADJUSTMENTS: Record<KozijnHoogte, number> = {
+const KOZIJN_HOOGTE_ADJUSTMENTS: Record<KozijnHoogte, number> = storedPrices?.kozijnHoogteAdjustments || {
   standaard: 0,    // Standaard: Hoogte kozijn 110cm - Hoogte dakkapel 145cm
   medium: 150,     // Medium: Hoogte kozijn 120cm - Hoogte dakkapel 155cm
   large: 300,      // Large: Hoogte kozijn 130cm - Hoogte dakkapel 165cm
@@ -84,7 +100,7 @@ const KOZIJN_HOOGTE_ADJUSTMENTS: Record<KozijnHoogte, number> = {
 };
 
 // Color surcharges
-const COLOR_SURCHARGES = {
+const COLOR_SURCHARGES = storedPrices?.colorSurcharges || {
   wit: 0,            // Standard white RAL9016
   crème: 0,          // Standard cream white RAL9001
   grijs: 210,        // Grey
@@ -98,14 +114,22 @@ const COLOR_SURCHARGES = {
  * Calculate the total price based on the dakkapel configuration
  */
 export function calculateTotalPrice(config: DakkapelConfiguration): number {
+  // Load latest prices in case they've been updated since the component mounted
+  const latestPrices = loadSavedPrices();
+  
+  // Use the latest prices if available or fall back to the stored ones
+  const basePrices = latestPrices?.basePrices || BASE_PRICES;
+  const materialMultipliers = latestPrices?.materialMultipliers || MATERIAL_MULTIPLIERS;
+  const optionCosts = latestPrices?.optionCosts || OPTION_COSTS;
+  
   // Base price for the selected dakkapel type
-  const basePrice = BASE_PRICES[config.type];
+  const basePrice = basePrices[config.type];
   
   // Width in meters for rolluik calculation
   const widthInMeters = config.breedte / 100;
   
   // Material price adjustment
-  const materialMultiplier = MATERIAL_MULTIPLIERS[config.materiaal];
+  const materialMultiplier = materialMultipliers[config.materiaal];
   
   // Optional extras calculation
   let optionsTotal = 0;
@@ -113,18 +137,18 @@ export function calculateTotalPrice(config: DakkapelConfiguration): number {
   // Add costs for each selected option
   for (const [key, isSelected] of Object.entries(config.opties)) {
     if (isSelected) {
-      const optionKey = key as keyof typeof OPTION_COSTS;
+      const optionKey = key as keyof typeof optionCosts;
       // For electric rolluik, multiply by width
       if (optionKey === 'elektrisch_rolluik' || optionKey === 'ventilatieroosters') {
-        optionsTotal += OPTION_COSTS[optionKey] * widthInMeters;
+        optionsTotal += optionCosts[optionKey] * widthInMeters;
       } 
       // For horren, multiply by number of windows
       else if (optionKey === 'horren') {
-        optionsTotal += OPTION_COSTS[optionKey] * config.aantalRamen;
+        optionsTotal += optionCosts[optionKey] * config.aantalRamen;
       }
       // For all other options, add the fixed cost
       else {
-        optionsTotal += OPTION_COSTS[optionKey];
+        optionsTotal += optionCosts[optionKey];
       }
     }
   }
@@ -134,35 +158,40 @@ export function calculateTotalPrice(config: DakkapelConfiguration): number {
   if (config.type === 'typeC') {
     // Type C comes with 2 windows as standard
     if (config.aantalRamen > 2) {
-      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 2);
+      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 2);
     }
   } else if (config.type === 'typeD') {
     // Type D comes with 2-3 windows, we'll use 2 as standard
     if (config.aantalRamen > 2) {
-      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 2);
+      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 2);
     }
   } else if (config.type === 'typeE') {
     // Type E comes with 3-4 windows, we'll use 3 as standard
     if (config.aantalRamen > 3) {
-      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 3);
+      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 3);
     }
   } else {
     // Types A and B come with 1 window as standard
     if (config.aantalRamen > 1) {
-      windowsAdjustment = OPTION_COSTS.extra_draaikiepraam * (config.aantalRamen - 1);
+      windowsAdjustment = optionCosts.extra_draaikiepraam * (config.aantalRamen - 1);
     }
   }
   
+  // Use latest values for other pricing components
+  const rcValueCosts = latestPrices?.rcValueCosts || RC_VALUE_COSTS;
+  const kozijnHoogteAdjustments = latestPrices?.kozijnHoogteAdjustments || KOZIJN_HOOGTE_ADJUSTMENTS;
+  const colorSurcharges = latestPrices?.colorSurcharges || COLOR_SURCHARGES;
+  
   // Add RC-value adjustment
-  const rcValueAdjustment = RC_VALUE_COSTS[config.rcWaarde];
+  const rcValueAdjustment = rcValueCosts[config.rcWaarde];
   
   // Add kozijn height adjustment
-  const kozijnHoogteAdjustment = KOZIJN_HOOGTE_ADJUSTMENTS[config.kozijnHoogte];
+  const kozijnHoogteAdjustment = kozijnHoogteAdjustments[config.kozijnHoogte];
   
   // Add color surcharges
-  const kozijnenKleurSurcharge = COLOR_SURCHARGES[config.kleurKozijnen];
-  const zijkantenKleurSurcharge = COLOR_SURCHARGES[config.kleurZijkanten];
-  const draaikiepramenKleurSurcharge = COLOR_SURCHARGES[config.kleurDraaikiepramen];
+  const kozijnenKleurSurcharge = colorSurcharges[config.kleurKozijnen];
+  const zijkantenKleurSurcharge = colorSurcharges[config.kleurZijkanten];
+  const draaikiepramenKleurSurcharge = colorSurcharges[config.kleurDraaikiepramen];
   
   // Calculate total price
   const totalPrice = (basePrice * materialMultiplier) + 

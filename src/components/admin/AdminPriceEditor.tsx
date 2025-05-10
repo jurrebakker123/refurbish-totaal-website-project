@@ -42,6 +42,26 @@ const AdminPriceEditor = () => {
       dak_versteviging: 400,
       ventilatieroosters: 120,
       sporenkap: 275
+    },
+    rcValueCosts: {
+      standaard: 0,
+      upgrade_6_0: 218,
+      upgrade_6_5: 250
+    },
+    kozijnHoogteAdjustments: {
+      standaard: 0,
+      medium: 150,
+      large: 300,
+      extra_large: 450
+    },
+    colorSurcharges: {
+      wit: 0,
+      crème: 0,
+      grijs: 210,
+      antraciet: 210,
+      zwart: 210,
+      staalblauw: 210,
+      dennengroen: 210
     }
   });
 
@@ -90,6 +110,10 @@ const AdminPriceEditor = () => {
   const handleSave = () => {
     try {
       localStorage.setItem('calculatorPrices', JSON.stringify(prices));
+      
+      // Dispatch a storage event to notify other tabs/windows
+      window.dispatchEvent(new Event('storage'));
+      
       toast.success('Prijzen succesvol opgeslagen');
     } catch (e) {
       toast.error('Er is een fout opgetreden bij het opslaan');

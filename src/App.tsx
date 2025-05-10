@@ -68,6 +68,7 @@ const App = () => {
             <Route path="/voorwaarden" element={<VoorwaardenPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admindashboard" element={<AdminDashboardPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </SidebarProvider>
