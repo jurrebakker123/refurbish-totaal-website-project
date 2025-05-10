@@ -26,8 +26,8 @@ import { useNavigate } from 'react-router-dom';
 
 // This is just for demo purposes - in a real app, this should be handled securely on a backend
 const DEMO_CREDENTIALS = {
-  username: 'admin',
-  password: 'refurbishadmin'
+  username: 'refurbishadmin',
+  password: 'R3furbi$h2025'
 };
 
 const loginFormSchema = z.object({
@@ -137,11 +137,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-2">
-          <div className="text-xs text-center text-gray-500">
-            <p>Demo login: username: admin | password: refurbishadmin</p>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   );

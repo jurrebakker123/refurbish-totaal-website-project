@@ -66,9 +66,8 @@ const App = () => {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/voorwaarden" element={<VoorwaardenPage />} />
           <Route path="/certificaat" element={<CertificaatPage />} />
-          <Route path="/login" element={<AdminLogin onLogin={() => {}} />} />
+          <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admindashboard" element={<AdminDashboardPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <WhatsAppButton />

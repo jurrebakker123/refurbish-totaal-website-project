@@ -144,19 +144,24 @@ const AdminPriceEditor = () => {
   const saveChanges = () => {
     try {
       setSaveStatus('saving');
+      // Store the prices in localStorage
       localStorage.setItem('calculatorPrices', JSON.stringify(prices));
       
-      // Create and dispatch a custom event to notify other components/tabs
-      const event = new Event('priceUpdate');
-      window.dispatchEvent(event);
+      // Create and dispatch a custom event for same-window components
+      const priceUpdateEvent = new CustomEvent('priceUpdate');
+      window.dispatchEvent(priceUpdateEvent);
       
-      // Dispatch storage event to notify other tabs
-      window.dispatchEvent(new StorageEvent('storage', {
+      // Force a localStorage event to notify other tabs
+      const storageEvent = new StorageEvent('storage', {
         key: 'calculatorPrices',
         newValue: JSON.stringify(prices)
-      }));
+      });
+      window.dispatchEvent(storageEvent);
       
+      // Indicate success
       setSaveStatus('success');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+      
       return true;
     } catch (e) {
       console.error('Failed to save prices', e);
@@ -174,16 +179,57 @@ const AdminPriceEditor = () => {
   };
 
   const handleExport = () => {
-    const dataStr = JSON.stringify(prices, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const exportFileDefaultName = 'calculator-prijzen.json';
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    
-    toast.success('Prijzen geëxporteerd als JSON bestand');
+    try {
+      // Create Excel-compatible CSV
+      let csvContent = "data:text/csv;charset=utf-8,";
+      
+      // Create headers for each section
+      csvContent += "Type,Basisprijs\n";
+      Object.entries(prices.basePrices).forEach(([type, price]) => {
+        csvContent += `${type},${price}\n`;
+      });
+      
+      csvContent += "\nMateriaal,Vermenigvuldiger\n";
+      Object.entries(prices.materialMultipliers).forEach(([material, multiplier]) => {
+        csvContent += `${material},${multiplier}\n`;
+      });
+      
+      csvContent += "\nOptie,Kosten\n";
+      Object.entries(prices.optionCosts).forEach(([option, cost]) => {
+        csvContent += `${option},${cost}\n`;
+      });
+      
+      csvContent += "\nRC-Waarde,Kosten\n";
+      Object.entries(prices.rcValueCosts).forEach(([value, cost]) => {
+        csvContent += `${value},${cost}\n`;
+      });
+      
+      csvContent += "\nKozijn Hoogte,Aanpassing\n";
+      Object.entries(prices.kozijnHoogteAdjustments).forEach(([height, adjustment]) => {
+        csvContent += `${height},${adjustment}\n`;
+      });
+      
+      csvContent += "\nKleur,Toeslag\n";
+      Object.entries(prices.colorSurcharges).forEach(([color, surcharge]) => {
+        csvContent += `${color},${surcharge}\n`;
+      });
+      
+      // Create download link
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "dakkapel_prijzen.csv");
+      document.body.appendChild(link);
+      
+      // Trigger download
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success('Excel-bestand geëxporteerd');
+    } catch (err) {
+      console.error('Export failed:', err);
+      toast.error('Exporteren mislukt');
+    }
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,13 +253,16 @@ const AdminPriceEditor = () => {
 
   // Force update to test connection with calculator
   const handleForceUpdate = () => {
-    const event = new Event('priceUpdate');
-    window.dispatchEvent(event);
+    // Create and dispatch custom event
+    const priceUpdateEvent = new CustomEvent('priceUpdate');
+    window.dispatchEvent(priceUpdateEvent);
     
-    window.dispatchEvent(new StorageEvent('storage', {
+    // Force storage event for other tabs
+    const storageEvent = new StorageEvent('storage', {
       key: 'calculatorPrices',
       newValue: localStorage.getItem('calculatorPrices')
-    }));
+    });
+    window.dispatchEvent(storageEvent);
     
     toast.info('Prijzen update signaal verzonden', { duration: 2000 });
   };

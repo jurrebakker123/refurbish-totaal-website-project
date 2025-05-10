@@ -95,8 +95,10 @@ export function DakkapelCalculator() {
 
   // Calculate the total price whenever the configuration changes
   const updatePrice = useCallback(() => {
+    console.log('Updating prices with current configuration...');
     const calculatedPrice = calculateTotalPrice(configuration);
     setTotalPrice(calculatedPrice);
+    console.log(`New calculated price: ${calculatedPrice}`);
   }, [configuration]);
 
   // Update price initially and when configuration changes
@@ -136,8 +138,12 @@ export function DakkapelCalculator() {
       handlePriceUpdate();
     };
     
+    // Add event listeners
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('priceUpdate', handleCustomEvent);
+    
+    // Test if events are working
+    console.log('Event listeners for price updates installed');
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
@@ -267,7 +273,16 @@ export function DakkapelCalculator() {
         <ContactFormSelector
           configuration={configuration}
           onPrevious={previousStep}
-          onNext={() => {}}
+          onNext={() => {
+            // Send email or notification about completed configuration
+            toast.success('Uw aanvraag is succesvol verzonden! Wij nemen zo spoedig mogelijk contact met u op.', {
+              duration: 5000,
+            });
+            // Reset to step 1 after submission
+            setTimeout(() => {
+              setStep(1);
+            }, 5000);
+          }}
         />
       )}
     </div>

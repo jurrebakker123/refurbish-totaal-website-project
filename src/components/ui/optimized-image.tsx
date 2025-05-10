@@ -30,23 +30,15 @@ export function OptimizedImage({
   const processPath = (path: string): string => {
     if (!path) return fallbackSrc;
     
+    // If it's a local lovable upload, ensure it has the correct path
+    if (path.includes('lovable-uploads') && !path.startsWith('/')) {
+      return '/' + path;
+    }
+    
     if (path.startsWith('public/')) {
       return path.replace('public/', '/');
     }
-    if (path.startsWith('http') && path.includes('unsplash.com')) {
-      // Check if unsplash image URL is valid
-      fetch(path)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return path;
-        })
-        .catch(() => {
-          setImgSrc(fallbackSrc);
-          setHasError(true);
-        });
-    }
+    
     return path;
   };
 

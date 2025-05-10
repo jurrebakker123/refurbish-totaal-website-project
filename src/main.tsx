@@ -11,6 +11,7 @@ import IsolatieSelectiePage from './pages/IsolatieSelectiePage.tsx';
 import AdminDashboardPage from './pages/AdminDashboardPage.tsx';
 import AdminLogin from './components/admin/AdminLogin.tsx';
 import { SidebarProvider } from './components/ui/sidebar';
+import DakkapelCalculatorConceptPage from './pages/DakkapelCalculatorConceptPage.tsx';
 
 // TypeScript interface for window
 declare global {
@@ -47,7 +48,9 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/admindashboard" element={<AdminDashboardPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/offerte" element={<OffertePage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
@@ -64,7 +67,9 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/admindashboard" element={<AdminDashboardPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/offerte" element={<OffertePage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
@@ -80,7 +85,9 @@ const renderBasedOnDomain = () => {
             <Route path="/" element={<IsolatieSelectiePage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/admindashboard" element={<AdminDashboardPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/offerte" element={<OffertePage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
@@ -101,13 +108,18 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/admindashboard" element={<AdminDashboardPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
     );
   }
 };
+
+// Import contact and offerte pages to use in route configuration
+import ContactPage from './pages/ContactPage.tsx';
+import OffertePage from './pages/OffertePage.tsx';
 
 // Render the appropriate component
 const rootElement = document.getElementById("root");

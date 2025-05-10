@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail } from 'lucide-react';
+import { Phone, Mail, Calculator } from 'lucide-react';
 
 export function DakkapelCTA() {
   return (
@@ -29,14 +29,24 @@ export function DakkapelCTA() {
               <Mail className="h-5 w-5" />
               <span>Offerte Aanvragen</span>
             </Link>
-          </div>
-          
-          {/* Hidden link to concept calculator - Visible only in development */}
-          <div className="mt-8 text-sm opacity-50 hover:opacity-100 transition-opacity">
-            <Link to="/dakkapel-calculator-concept" className="underline">
-              Dakkapel Calculator (Concept)
+            <Link 
+              to="/dakkapel-calculator" 
+              className="bg-white/20 text-white hover:bg-white/30 px-8 py-3 rounded-md font-medium inline-flex items-center justify-center gap-2"
+            >
+              <Calculator className="h-5 w-5" />
+              <span>Dakkapel Calculator</span>
             </Link>
           </div>
+        </div>
+      </div>
+      
+      <div className="container mt-16">
+        <div className="border-t border-white/20 pt-8">
+          <p className="text-center text-sm text-white/60">
+            <Link to="/dakkapel-calculator" className="underline hover:text-white">
+              Bereken zelf de kosten van uw dakkapel met onze handige calculator
+            </Link>
+          </p>
         </div>
       </div>
     </section>
