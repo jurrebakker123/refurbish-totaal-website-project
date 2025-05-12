@@ -1,10 +1,10 @@
+
 /**
  * Utilities for exporting and importing data to/from Excel/CSV format
  */
 
 /**
  * Convert a JSON price structure to CSV format for Excel export
- * with well-formatted, descriptive headers
  * 
  * @param priceData The calculator price data object
  * @returns CSV string ready for download
@@ -12,105 +12,41 @@
 export const convertPricesToCSV = (priceData: any): string => {
   let csvContent = "";
   
-  // Document title and metadata
-  csvContent += "DAKKAPEL CALCULATOR PRIJSOVERZICHT\n";
-  csvContent += "Refurbish Totaal Nederland\n";
-  csvContent += "Gegenereerd op: " + new Date().toLocaleDateString('nl-NL') + "\n\n";
-  
   // Base Prices
-  csvContent += "BASISPRIJZEN PER TYPE\n";
-  csvContent += "Type,Omschrijving,Basisprijs (€)\n";
-  Object.entries(priceData.basePrices).map(([type, price]) => {
-    const descriptions: {[key: string]: string} = {
-      typeA: "Klein (tot 1.5m breed)",
-      typeB: "Medium (1.5m tot 3m breed)",
-      typeC: "Groot (3m tot 5m breed)",
-      typeD: "Extra groot (3.5m tot 5.5m breed)",
-      typeE: "XXL (3.5m tot 5.9m breed)"
-    };
-    csvContent += `${type},${descriptions[type] || type},${price}\n`;
+  csvContent += "DAKKAPEL CALCULATOR PRIJZEN\n\n";
+  csvContent += "Type,Basisprijs (€)\n";
+  Object.entries(priceData.basePrices).forEach(([type, price]) => {
+    csvContent += `${type},${price}\n`;
   });
   
   // Material Multipliers
-  csvContent += "\nMATERIAAL VERMENIGVULDIGERS\n";
-  csvContent += "Materiaal Code,Materiaal Omschrijving,Vermenigvuldiger\n";
-  const materialDescriptions: {[key: string]: string} = {
-    kunststof: "Kunststof standaard",
-    hout: "Houten uitvoering",
-    aluminium: "Aluminium uitvoering",
-    standaard: "Standaard afwerking",
-    kunststof_rabat: "Kunststof rabat",
-    kunststof_rabat_boeideel: "Kunststof rabat met boeideel",
-    polyester_glad: "Polyester glad",
-    polyester_rabat: "Polyester rabat"
-  };
+  csvContent += "\nMateriaal,Vermenigvuldiger\n";
   Object.entries(priceData.materialMultipliers).forEach(([material, multiplier]) => {
-    csvContent += `${material},${materialDescriptions[material] || material},${multiplier}\n`;
+    csvContent += `${material},${multiplier}\n`;
   });
   
   // Option Costs
-  csvContent += "\nOPTIE KOSTEN\n";
-  csvContent += "Optie Code,Optie Omschrijving,Kosten (€)\n";
-  const optionDescriptions: {[key: string]: string} = {
-    ventilatie: "Ventilatiesysteem",
-    zonwering: "Zonwering",
-    gootafwerking: "Gootafwerking",
-    extra_isolatie: "Extra isolatie",
-    extra_draaikiepraam: "Extra draaikiepraam (per stuk)",
-    horren: "Horren (per stuk)",
-    elektrisch_rolluik: "Elektrisch rolluik (per meter)",
-    verwijderen_bestaande: "Verwijderen bestaande dakkapel",
-    afvoeren_bouwafval: "Afvoeren bouwafval",
-    kader_dakkapel: "Kader dakkapel",
-    voorbereiden_rolluiken: "Voorbereiden rolluiken",
-    minirooftop: "Mini rooftop",
-    dak_versteviging: "Dak versteviging",
-    ventilatieroosters: "Ventilatieroosters (per meter)",
-    sporenkap: "Sporenkap"
-  };
+  csvContent += "\nOptie,Kosten (€)\n";
   Object.entries(priceData.optionCosts).forEach(([option, cost]) => {
-    csvContent += `${option},${optionDescriptions[option] || option},${cost}\n`;
+    csvContent += `${option},${cost}\n`;
   });
   
   // RC Value Costs
-  csvContent += "\nRC-WAARDE KOSTEN\n";
-  csvContent += "RC-Waarde Code,RC-Waarde Omschrijving,Kosten (€)\n";
-  const rcDescriptions: {[key: string]: string} = {
-    standaard: "Standaard isolatiewaarde",
-    upgrade_6_0: "Upgrade naar RC 6.0",
-    upgrade_6_5: "Upgrade naar RC 6.5"
-  };
+  csvContent += "\nRC-Waarde,Kosten (€)\n";
   Object.entries(priceData.rcValueCosts).forEach(([value, cost]) => {
-    csvContent += `${value},${rcDescriptions[value] || value},${cost}\n`;
+    csvContent += `${value},${cost}\n`;
   });
   
   // Kozijn Hoogte Adjustments
-  csvContent += "\nKOZIJN HOOGTE AANPASSINGEN\n";
-  csvContent += "Hoogte Code,Hoogte Omschrijving,Aanpassing (€)\n";
-  const heightDescriptions: {[key: string]: string} = {
-    standaard: "Standaard (kozijn 110cm)",
-    medium: "Medium (kozijn 120cm)",
-    large: "Large (kozijn 130cm)",
-    extra_large: "Extra large (kozijn 140cm)"
-  };
+  csvContent += "\nKozijn Hoogte,Aanpassing (€)\n";
   Object.entries(priceData.kozijnHoogteAdjustments).forEach(([height, adjustment]) => {
-    csvContent += `${height},${heightDescriptions[height] || height},${adjustment}\n`;
+    csvContent += `${height},${adjustment}\n`;
   });
   
   // Color Surcharges
-  csvContent += "\nKLEUR TOESLAGEN\n";
-  csvContent += "Kleurcode,Kleur Omschrijving,Toeslag (€)\n";
-  const colorDescriptions: {[key: string]: string} = {
-    wit: "Wit (standaard)",
-    crème: "Crème",
-    grijs: "Grijs",
-    antraciet: "Antraciet",
-    zwart: "Zwart",
-    staalblauw: "Staalblauw",
-    dennengroen: "Dennengroen"
-  };
+  csvContent += "\nKleur,Toeslag (€)\n";
   Object.entries(priceData.colorSurcharges).forEach(([color, surcharge]) => {
-    csvContent += `${color},${colorDescriptions[color] || color},${surcharge}\n`;
+    csvContent += `${color},${surcharge}\n`;
   });
   
   return csvContent;
@@ -118,6 +54,8 @@ export const convertPricesToCSV = (priceData: any): string => {
 
 /**
  * Generate an Excel download from calculator price data
+ * 
+ * @param priceData The calculator price data object
  */
 export const downloadPricesAsExcel = () => {
   try {
@@ -137,9 +75,8 @@ export const downloadPricesAsExcel = () => {
     const link = document.createElement('a');
     
     // Set link properties
-    const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
     link.setAttribute('href', url);
-    link.setAttribute('download', `dakkapel_prijzen_${date}.csv`);
+    link.setAttribute('download', 'dakkapel_calculator_prijzen.csv');
     link.style.visibility = 'hidden';
     
     // Add to document, click and remove
