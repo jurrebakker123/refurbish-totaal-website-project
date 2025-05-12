@@ -5,15 +5,15 @@ import { OptimizedImage } from '../ui/optimized-image';
 export function TuinhuizenGallery() {
   const images = [
     {
-      url: '/lovable-uploads/697faa77-7496-4169-8de7-36d88898a467.png',
+      url: 'https://images.unsplash.com/photo-1595422656482-983894d3a3f4?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       title: 'Modern Tuinhuis'
     },
     {
-      url: '/lovable-uploads/504b25db-f625-4ccd-9e93-6970157c6bf6.png',
+      url: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       title: 'Klassiek Tuinhuis'
     },
     {
-      url: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png',
+      url: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80',
       title: 'Luxe Tuinhuis'
     }
   ];
@@ -35,7 +35,7 @@ export function TuinhuizenGallery() {
                 src={image.url} 
                 alt={image.title} 
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                fallbackSrc="/lovable-uploads/504b25db-f625-4ccd-9e93-6970157c6bf6.png"
+                fallbackSrc="/placeholder.svg"
               />
               <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <h3 className="text-white text-xl font-bold">{image.title}</h3>
