@@ -12,7 +12,7 @@ interface Message {
 }
 
 const ChatBot = () => {
-  const phoneNumber = "31854444255";
+  const phoneNumber = "31630136079";
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);

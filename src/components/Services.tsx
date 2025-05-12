@@ -11,7 +11,7 @@ const services = [
     title: 'Kozijntechniek',
     description: 'Levering en plaatsing van hoogwaardige kozijnen in hout, kunststof of aluminium voor een betere uitstraling en isolatie.',
     link: '/diensten/kozijntechniek',
-    image: 'https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
+    image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
   },
   {
     id: 'isolatietechniek',
@@ -19,7 +19,7 @@ const services = [
     title: 'Isolatietechniek',
     description: 'Effectieve isolatieoplossingen die uw woning comfortabeler maken en energiekosten verlagen.',
     link: '/diensten/isolatietechniek',
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png'
   },
   {
     id: 'dakkapel',
@@ -27,7 +27,7 @@ const services = [
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
-    image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/ce310265-aaac-49aa-bff7-99a27901151a.png'
   },
   {
     id: 'schilderwerk',
@@ -35,7 +35,7 @@ const services = [
     title: 'Schilderwerk',
     description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
     link: '/diensten/schilderwerk',
-    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/ab4fe583-5611-4401-93c9-7fb7d38fd340.png'
   },
   {
     id: 'dakrenovatie',
@@ -43,7 +43,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: 'https://images.unsplash.com/photo-1632759145351-1d170f2a2d24?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/dc6d5fa1-8797-4d60-9de0-5493bc6fe9b3.png'
   },
   {
     id: 'stukadoren',
@@ -51,7 +51,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: 'https://images.unsplash.com/photo-1604857864317-2344f52026ce?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/ab4fe583-5611-4401-93c9-7fb7d38fd340.png'
   },
   {
     id: 'installatietechniek',
@@ -59,7 +59,7 @@ const services = [
     title: 'Installatietechniek',
     description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
     link: '/diensten/installatietechniek',
-    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
+    image: '/lovable-uploads/10e4891f-b115-4650-9c85-6f78b1e53888.png'
   },
   {
     id: 'aan-en-verbouw',
@@ -67,7 +67,7 @@ const services = [
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
-    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
+    image: '/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png'
   },
   {
     id: 'behangen',
@@ -75,7 +75,7 @@ const services = [
     title: 'Behangen',
     description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
     link: '/diensten/behangen',
-    image: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png'
   },
   {
     id: 'pvc-vloeren',
@@ -83,7 +83,7 @@ const services = [
     title: 'PVC Vloeren',
     description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
     link: '/diensten/pvc-vloeren',
-    image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png'
   }
 ];
 

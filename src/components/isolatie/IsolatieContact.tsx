@@ -58,7 +58,7 @@ const IsolatieContact = () => {
 
                 <div className="mt-4">
                   <a
-                    href="https://wa.me/31854444255"
+                    href="https://wa.me/31630136079"
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Contact via WhatsApp"

@@ -8,25 +8,25 @@ const IsolatieServices = () => {
     {
       title: "Spouwmuurisolatie",
       description: "Isoleer uw spouwmuren en bespaar direct op energiekosten. Spouwmuurisolatie houdt de warmte binnen en voorkomt vocht- en schimmelproblemen.",
-      image: "https://images.unsplash.com/photo-1585184394271-4c0a47dc59c9?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png",
       benefits: ["Tot 30% energiebesparing", "Binnen enkele uren geïnstalleerd", "Minimaal 25 jaar garantie"]
     },
     {
       title: "Dakisolatie",
       description: "Via het dak verdwijnt tot wel 30% van alle warmte. Met onze dakisolatie houdt u deze warmte binnen en bespaart u direct op uw energierekening.",
-      image: "https://images.unsplash.com/photo-1632759145399-0e4913e71a51?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "/lovable-uploads/90e13ec0-aaf8-444a-a92d-a72af8cc8d30.png",
       benefits: ["Tot 25% energiebesparing", "Keuze uit diverse materialen", "Geschikt voor alle daktypen"]
     },
     {
       title: "Vloerisolatie",
       description: "Een goed geïsoleerde vloer voelt behaaglijk aan en voorkomt koude voeten. Vloerisolatie is een eenvoudige manier om uw wooncomfort te verhogen.",
-      image: "https://images.unsplash.com/photo-1603865713652-94b02a36973a?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "/lovable-uploads/1ef85418-8169-4287-a7a9-d17396d8680b.png",
       benefits: ["Tot 15% energiebesparing", "Verhoogd wooncomfort", "Snel terugverdiend"]
     },
     {
       title: "HR++ Glasisolatie",
       description: "Modern HR++ glas isoleert tot 3x beter dan enkelglas. Vervang uw oude ramen en bespaar aanzienlijk op uw energierekening.",
-      image: "https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.1&auto=format&fit=crop&w=1080&q=80",
+      image: "/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png",
       benefits: ["Tot 20% energiebesparing", "Verbeterde geluidsisolatie", "Verhoogde inbraakwerendheid"]
     }
   ];
