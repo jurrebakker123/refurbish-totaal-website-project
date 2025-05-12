@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProductBySlug, SolarProduct } from '@/data/solarProducts';
@@ -122,6 +121,15 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
                   ))}
                 </ul>
               </div>
+
+              {/* Yearly savings information */}
+              {product.yearlySavings && (
+                <div className="mb-6 p-4 bg-brand-green/10 rounded-md">
+                  <p className="font-medium text-brand-darkGreen">
+                    Jaarlijkse besparing van circa {product.yearlySavings} bij een kWh prijs van {product.kwhPrice}
+                  </p>
+                </div>
+              )}
               
               <div className="mb-6 p-4 bg-gray-50 rounded-md">
                 <div className="flex items-center justify-between">
@@ -163,6 +171,14 @@ const ProductDetail = ({ product }: { product: SolarProduct }) => {
                 {product.fullDescription.map((paragraph, index) => (
                   <p key={index} className="mb-4">{paragraph}</p>
                 ))}
+                
+                {/* Adding yearly savings information in the description as well */}
+                {product.yearlySavings && (
+                  <p className="font-medium text-brand-darkGreen mt-4">
+                    Deze installatie heeft een totaalvermogen van {product.specifications.find(spec => spec.label === "Totaal vermogen")?.value || ""}. 
+                    Met deze installatie heeft u een jaarlijkse besparing van circa {product.yearlySavings} bij een kWh prijs van {product.kwhPrice}.
+                  </p>
+                )}
               </div>
             </TabsContent>
             <TabsContent value="specifications" className="p-6 bg-white rounded-lg shadow-sm">

@@ -40,6 +40,13 @@ export function ZonnepanelenProducts() {
                     </li>
                   ))}
                 </ul>
+                
+                {/* Add yearly savings information */}
+                {product.yearlySavings && (
+                  <p className="text-sm text-brand-darkGreen font-medium mt-2 bg-brand-green/10 p-2 rounded">
+                    Jaarlijkse besparing: {product.yearlySavings} bij {product.kwhPrice}/kWh
+                  </p>
+                )}
               </CardContent>
               <CardFooter className="flex flex-col items-start pt-2 w-full">
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>

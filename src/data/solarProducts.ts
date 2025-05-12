@@ -16,7 +16,9 @@ export interface SolarProduct {
   warranty: string;
   delivery: string;
   installation: string;
-  roofType?: string; // Added optional roofType property
+  roofType?: string;
+  yearlySavings?: string; // Added yearly savings property
+  kwhPrice?: string;      // Added kWh price property
 }
 
 export const solarProducts: SolarProduct[] = [
@@ -53,7 +55,9 @@ export const solarProducts: SolarProduct[] = [
     ],
     warranty: "12 jaar op de panelen, 10 jaar op de omvormer, 5 jaar installatiegarantie",
     delivery: "Binnen 2-3 weken na goedkeuring offerte",
-    installation: "Inclusief complete installatie door gecertificeerde monteurs"
+    installation: "Inclusief complete installatie door gecertificeerde monteurs",
+    yearlySavings: "€ 1.382,-",
+    kwhPrice: "€ 0,35"
   },
   {
     id: 2,
@@ -91,7 +95,9 @@ export const solarProducts: SolarProduct[] = [
     ],
     warranty: "12 jaar op de panelen, 10 jaar op de omvormer, 5 jaar installatiegarantie",
     delivery: "Binnen 2-3 weken na goedkeuring offerte",
-    installation: "Inclusief complete installatie door gecertificeerde monteurs"
+    installation: "Inclusief complete installatie door gecertificeerde monteurs",
+    yearlySavings: "€ 1.382,-",
+    kwhPrice: "€ 0,35"
   },
   {
     id: 3,
@@ -123,7 +129,9 @@ export const solarProducts: SolarProduct[] = [
     ],
     warranty: "12 jaar op de panelen, 10 jaar op de omvormer, 5 jaar installatiegarantie",
     delivery: "Binnen 3-4 weken na goedkeuring offerte",
-    installation: "Inclusief complete installatie door gecertificeerde monteurs"
+    installation: "Inclusief complete installatie door gecertificeerde monteurs",
+    yearlySavings: "€ 5.175,-",
+    kwhPrice: "€ 0,35"
   },
   {
     id: 4,
@@ -154,7 +162,9 @@ export const solarProducts: SolarProduct[] = [
     ],
     warranty: "12 jaar op de panelen, 10 jaar op de omvormer, 5 jaar installatiegarantie",
     delivery: "Binnen 1-2 weken na goedkeuring offerte",
-    installation: "Inclusief complete installatie door gecertificeerde monteurs"
+    installation: "Inclusief complete installatie door gecertificeerde monteurs",
+    yearlySavings: "€ 690,-",
+    kwhPrice: "€ 0,35"
   },
   {
     id: 5,
@@ -184,7 +194,9 @@ export const solarProducts: SolarProduct[] = [
     ],
     warranty: "12 jaar op de panelen, 10 jaar op de omvormer, 5 jaar installatiegarantie",
     delivery: "Binnen 2-3 weken na goedkeuring offerte",
-    installation: "Inclusief complete installatie door gecertificeerde monteurs"
+    installation: "Inclusief complete installatie door gecertificeerde monteurs",
+    yearlySavings: "€ 1.105,-",
+    kwhPrice: "€ 0,35"
   },
   {
     id: 6,
@@ -216,7 +228,9 @@ export const solarProducts: SolarProduct[] = [
     ],
     warranty: "12 jaar op de panelen, 10 jaar op de omvormer, 5 jaar installatiegarantie",
     delivery: "In overleg na sitescan en offerte",
-    installation: "Inclusief professionele installatie en inbedrijfstelling"
+    installation: "Inclusief professionele installatie en inbedrijfstelling",
+    yearlySavings: "€ 6.624,-",
+    kwhPrice: "€ 0,35"
   }
 ];
 
