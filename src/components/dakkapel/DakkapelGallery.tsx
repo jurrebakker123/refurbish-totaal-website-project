@@ -35,7 +35,7 @@ export function DakkapelGallery() {
                   src={image.url}
                   alt={image.title}
                   className="w-full h-full object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                 />
               </div>
               <div className="p-4">

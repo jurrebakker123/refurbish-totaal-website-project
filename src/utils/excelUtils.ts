@@ -53,6 +53,42 @@ export const convertPricesToCSV = (priceData: any): string => {
 };
 
 /**
+ * Generate an Excel download from calculator price data
+ * 
+ * @param priceData The calculator price data object
+ */
+export const downloadPricesAsExcel = () => {
+  try {
+    // Get data from localStorage
+    const savedPrices = localStorage.getItem('calculatorPrices');
+    if (!savedPrices) {
+      console.error('No calculator prices found in localStorage');
+      return;
+    }
+    
+    const priceData = JSON.parse(savedPrices);
+    const csvContent = convertPricesToCSV(priceData);
+    
+    // Create a blob and download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    // Set link properties
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'dakkapel_calculator_prijzen.csv');
+    link.style.visibility = 'hidden';
+    
+    // Add to document, click and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Error generating Excel export:', error);
+  }
+};
+
+/**
  * Parse a CSV file into a price data structure
  * This is a simple implementation - in real applications
  * you would want a more robust CSV parser
@@ -71,6 +107,22 @@ export const parseCSVToPrices = (csvText: string): any | null => {
     return null;
   } catch (error) {
     console.error('Failed to parse CSV:', error);
+    return null;
+  }
+};
+
+/**
+ * Get the current calculator prices as an object ready for display
+ */
+export const getCurrentPricesTable = () => {
+  try {
+    const savedPrices = localStorage.getItem('calculatorPrices');
+    if (!savedPrices) {
+      return null;
+    }
+    return JSON.parse(savedPrices);
+  } catch (error) {
+    console.error('Error getting current prices:', error);
     return null;
   }
 };

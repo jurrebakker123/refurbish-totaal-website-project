@@ -61,7 +61,7 @@ const IsolatietechniekPage = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+              backgroundImage: `url('/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png')`,
             }}
           >
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
@@ -97,10 +97,10 @@ const IsolatietechniekPage = () => {
               <div className="lg:col-span-5">
                 <div className="rounded-lg overflow-hidden shadow-lg">
                   <OptimizedImage
-                    src="https://images.unsplash.com/photo-1614181740406-8bb775a83bbe?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                    src="/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png"
                     alt="Isolatietechniek"
                     className="w-full h-auto"
-                    fallbackSrc="/placeholder.svg"
+                    fallbackSrc="/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png"
                   />
                 </div>
               </div>
@@ -182,10 +182,10 @@ const IsolatietechniekPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  src="/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png"
                   alt="Spouwmuurisolatie"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Spouwmuurisolatie</h3>
@@ -193,10 +193,10 @@ const IsolatietechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1587271407850-8d438ca9fdf2?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  src="/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png"
                   alt="Vloerisolatie"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Vloerisolatie</h3>
@@ -204,10 +204,10 @@ const IsolatietechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1614181740406-8bb775a83bbe?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  src="/lovable-uploads/65376561-53c2-4dd6-bec2-df8e66a4be99.png"
                   alt="Dakisolatie"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Dakisolatie</h3>

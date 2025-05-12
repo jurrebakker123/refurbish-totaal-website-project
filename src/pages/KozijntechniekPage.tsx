@@ -61,7 +61,7 @@ const KozijntechniekPage = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80')`,
+              backgroundImage: `url('/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png')`,
             }}
           >
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
@@ -97,10 +97,10 @@ const KozijntechniekPage = () => {
               <div className="lg:col-span-5">
                 <div className="rounded-lg overflow-hidden shadow-lg">
                   <OptimizedImage
-                    src="https://images.unsplash.com/photo-1520699661610-917f64724730?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80"
+                    src="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                     alt="Kozijntechniek"
                     className="w-full h-auto"
-                    fallbackSrc="/placeholder.svg"
+                    fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                   />
                 </div>
               </div>
@@ -138,10 +138,10 @@ const KozijntechniekPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80"
+                  src="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                   alt="Kunststof kozijnen"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Kunststof kozijnen</h3>
@@ -149,10 +149,10 @@ const KozijntechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1527498348926-888801f0a493?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80"
+                  src="/lovable-uploads/5da5d680-5b13-440b-9aae-20e52a50a501.png"
                   alt="Houten kozijnen"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Houten kozijnen</h3>
@@ -160,10 +160,10 @@ const KozijntechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1599164156733-b4f0a7231fde?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80"
+                  src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
                   alt="Aluminium kozijnen"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/placeholder.svg"
+                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Aluminium kozijnen</h3>

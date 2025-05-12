@@ -1,14 +1,25 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { DakkapelCalculator } from '@/components/dakkapel/calculator/DakkapelCalculator';
 import { Helmet } from 'react-helmet';
 import { Toaster } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { downloadPricesAsExcel } from '@/utils/excelUtils';
 
 const DakkapelCalculatorConceptPage = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Check if user is admin (very simple check - in production you would use a proper auth system)
+    const checkAdminStatus = () => {
+      const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+      setIsAdmin(isLoggedIn);
+    };
     
     // Initialize or validate localStorage for calculator prices
     const initializeCalculatorPrices = () => {
@@ -105,6 +116,7 @@ const DakkapelCalculatorConceptPage = () => {
       }
     };
     
+    checkAdminStatus();
     initializeCalculatorPrices();
   }, []);
 
@@ -125,6 +137,19 @@ const DakkapelCalculatorConceptPage = () => {
           <p className="text-center text-md mb-8 max-w-2xl mx-auto text-brand-lightGreen font-medium">
             Nieuw: Bekijk een 3D-weergave van uw dakkapel terwijl u de instellingen aanpast!
           </p>
+          
+          {isAdmin && (
+            <div className="mb-8 flex justify-center">
+              <Button 
+                onClick={downloadPricesAsExcel}
+                className="flex items-center gap-2"
+              >
+                <Download size={16} />
+                Download Prijzen als Excel
+              </Button>
+            </div>
+          )}
+          
           <DakkapelCalculator />
         </div>
       </main>
