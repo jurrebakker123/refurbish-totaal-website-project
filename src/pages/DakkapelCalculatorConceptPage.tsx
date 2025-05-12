@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -138,17 +137,16 @@ const DakkapelCalculatorConceptPage = () => {
             Nieuw: Bekijk een 3D-weergave van uw dakkapel terwijl u de instellingen aanpast!
           </p>
           
-          {isAdmin && (
-            <div className="mb-8 flex justify-center">
-              <Button 
-                onClick={downloadPricesAsExcel}
-                className="flex items-center gap-2"
-              >
-                <Download size={16} />
-                Download Prijzen als Excel
-              </Button>
-            </div>
-          )}
+          {/* Download Button - Always visible now */}
+          <div className="mb-8 flex justify-center">
+            <Button 
+              onClick={downloadPricesAsExcel}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+            >
+              <Download size={16} />
+              Download Prijzenlijst (Excel)
+            </Button>
+          </div>
           
           <DakkapelCalculator />
         </div>
