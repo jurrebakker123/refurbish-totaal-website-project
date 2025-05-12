@@ -4,8 +4,17 @@ import { downloadPricesAsExcel } from '@/utils/excelUtils';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 
+interface PriceData {
+  basePrices: Record<string, number>;
+  materialMultipliers: Record<string, number>;
+  optionCosts: Record<string, number>;
+  rcValueCosts: Record<string, number>;
+  kozijnHoogteAdjustments: Record<string, number>;
+  colorSurcharges: Record<string, number>;
+}
+
 const DakkapelPricesTable = () => {
-  const [priceData, setPriceData] = useState<any>(null);
+  const [priceData, setPriceData] = useState<PriceData | null>(null);
 
   useEffect(() => {
     try {
@@ -51,7 +60,7 @@ const DakkapelPricesTable = () => {
                 {Object.entries(priceData.basePrices).map(([type, price]) => (
                   <tr key={type} className="hover:bg-gray-50">
                     <td className="border p-2">{type}</td>
-                    <td className="border p-2">{price}</td>
+                    <td className="border p-2">{String(price)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -74,7 +83,7 @@ const DakkapelPricesTable = () => {
                 {Object.entries(priceData.materialMultipliers).map(([material, multiplier]) => (
                   <tr key={material} className="hover:bg-gray-50">
                     <td className="border p-2">{material}</td>
-                    <td className="border p-2">{multiplier}</td>
+                    <td className="border p-2">{String(multiplier)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -97,7 +106,7 @@ const DakkapelPricesTable = () => {
                 {Object.entries(priceData.optionCosts).map(([option, cost]) => (
                   <tr key={option} className="hover:bg-gray-50">
                     <td className="border p-2">{option}</td>
-                    <td className="border p-2">{cost}</td>
+                    <td className="border p-2">{String(cost)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -120,7 +129,7 @@ const DakkapelPricesTable = () => {
                 {Object.entries(priceData.rcValueCosts).map(([value, cost]) => (
                   <tr key={value} className="hover:bg-gray-50">
                     <td className="border p-2">{value}</td>
-                    <td className="border p-2">{cost}</td>
+                    <td className="border p-2">{String(cost)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -143,7 +152,7 @@ const DakkapelPricesTable = () => {
                 {Object.entries(priceData.kozijnHoogteAdjustments).map(([height, adjustment]) => (
                   <tr key={height} className="hover:bg-gray-50">
                     <td className="border p-2">{height}</td>
-                    <td className="border p-2">{adjustment}</td>
+                    <td className="border p-2">{String(adjustment)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -166,7 +175,7 @@ const DakkapelPricesTable = () => {
                 {Object.entries(priceData.colorSurcharges).map(([color, surcharge]) => (
                   <tr key={color} className="hover:bg-gray-50">
                     <td className="border p-2">{color}</td>
-                    <td className="border p-2">{surcharge}</td>
+                    <td className="border p-2">{String(surcharge)}</td>
                   </tr>
                 ))}
               </tbody>
