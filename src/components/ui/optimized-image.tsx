@@ -1,6 +1,4 @@
-
 import React, { useState, useEffect } from 'react';
-
 interface OptimizedImageProps {
   src: string;
   alt: string;
@@ -11,7 +9,6 @@ interface OptimizedImageProps {
   width?: number;
   height?: number;
 }
-
 export function OptimizedImage({
   src,
   alt,
@@ -20,7 +17,7 @@ export function OptimizedImage({
   style = {},
   objectFit = 'cover',
   width,
-  height,
+  height
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -29,21 +26,19 @@ export function OptimizedImage({
   // Process the source path
   const processPath = (path: string): string => {
     if (!path) return fallbackSrc;
-    
+
     // If it's a local lovable upload, ensure it has the correct path
     if (path.includes('lovable-uploads') && !path.startsWith('/')) {
       return '/' + path;
     }
-    
     if (path.startsWith('public/')) {
       return path.replace('public/', '/');
     }
-    
+
     // If it's an unsplash URL, add a fallback mechanism
     if (path.includes('unsplash.com')) {
       return fallbackSrc;
     }
-    
     return path;
   };
 
@@ -63,30 +58,16 @@ export function OptimizedImage({
     setHasError(true);
     setIsLoading(false);
   };
-
   const handleLoad = () => {
     setIsLoading(false);
   };
-
-  return (
-    <div className="relative" style={{ minHeight: '50px', ...style }}>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
+  return <div className="relative" style={{
+    minHeight: '50px',
+    ...style
+  }}>
+      {isLoading && <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
           <div className="w-8 h-8 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-      <img
-        src={processPath(imgSrc)}
-        alt={alt}
-        className={`${className} ${isLoading ? 'invisible' : 'visible'}`}
-        style={{ objectFit, ...style }}
-        onError={handleError}
-        onLoad={handleLoad}
-        loading="lazy"
-        decoding="async"
-        width={width}
-        height={height}
-      />
-    </div>
-  );
+        </div>}
+      
+    </div>;
 }
