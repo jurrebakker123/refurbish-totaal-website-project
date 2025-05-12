@@ -7,19 +7,17 @@ import { Toaster } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadPricesAsExcel } from '@/utils/excelUtils';
-
 const DakkapelCalculatorConceptPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     // Check if user is admin (very simple check - in production you would use a proper auth system)
     const checkAdminStatus = () => {
       const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
       setIsAdmin(isLoggedIn);
     };
-    
+
     // Initialize or validate localStorage for calculator prices
     const initializeCalculatorPrices = () => {
       try {
@@ -36,7 +34,7 @@ const DakkapelCalculatorConceptPage = () => {
                 typeB: 7290,
                 typeC: 8200,
                 typeD: 8780,
-                typeE: 9330,
+                typeE: 9330
               },
               materialMultipliers: {
                 kunststof: 1.0,
@@ -87,7 +85,7 @@ const DakkapelCalculatorConceptPage = () => {
               }
             };
             localStorage.setItem('calculatorPrices', JSON.stringify(defaultPrices));
-            
+
             // Dispatch event to notify components that prices are available
             const event = new Event('priceUpdate');
             window.dispatchEvent(event);
@@ -114,13 +112,10 @@ const DakkapelCalculatorConceptPage = () => {
         console.error('Error accessing localStorage', error);
       }
     };
-    
     checkAdminStatus();
     initializeCalculatorPrices();
   }, []);
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Dakkapel Calculator | Refurbish Totaal Nederland</title>
         <meta name="description" content="Bereken eenvoudig de kosten van uw dakkapel op maat. Pas afmetingen, materialen en opties aan voor een nauwkeurige prijsindicatie." />
@@ -139,13 +134,7 @@ const DakkapelCalculatorConceptPage = () => {
           
           {/* Download Button - Always visible now */}
           <div className="mb-8 flex justify-center">
-            <Button 
-              onClick={downloadPricesAsExcel}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-            >
-              <Download size={16} />
-              Download Prijzenlijst (Excel)
-            </Button>
+            
           </div>
           
           <DakkapelCalculator />
@@ -153,8 +142,6 @@ const DakkapelCalculatorConceptPage = () => {
       </main>
       <Footer />
       <Toaster position="top-center" richColors closeButton />
-    </div>
-  );
+    </div>;
 };
-
 export default DakkapelCalculatorConceptPage;
