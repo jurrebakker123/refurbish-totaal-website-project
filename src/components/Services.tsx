@@ -1,10 +1,26 @@
 
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper } from 'lucide-react';
+import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper, Shield, Thermometer } from 'lucide-react';
 import React from 'react';
 import { OptimizedImage } from './ui/optimized-image';
 
 const services = [
+  {
+    id: 'kozijntechniek',
+    icon: <Shield className="h-12 w-12 text-brand-lightGreen mb-4" />,
+    title: 'Kozijntechniek',
+    description: 'Levering en plaatsing van hoogwaardige kozijnen in hout, kunststof of aluminium voor een betere uitstraling en isolatie.',
+    link: '/diensten/kozijntechniek',
+    image: 'https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
+  },
+  {
+    id: 'isolatietechniek',
+    icon: <Thermometer className="h-12 w-12 text-brand-lightGreen mb-4" />,
+    title: 'Isolatietechniek',
+    description: 'Effectieve isolatieoplossingen die uw woning comfortabeler maken en energiekosten verlagen.',
+    link: '/diensten/isolatietechniek',
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  },
   {
     id: 'dakkapel',
     icon: <Home className="h-12 w-12 text-brand-lightGreen mb-4" />,

@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 const Footer = () => {
@@ -54,6 +55,9 @@ const Footer = () => {
               <li>
                 <Link to="/contact" className="hover:text-brand-lightGreen transition-colors hover-underline">Contact</Link>
               </li>
+              <li>
+                <Link to="/dakkapel-calculator" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakkapel Calculator</Link>
+              </li>
             </ul>
           </div>
 
@@ -63,6 +67,12 @@ const Footer = () => {
         }}>
             <h3 className="text-xl font-bold mb-4">Onze Diensten</h3>
             <ul className="space-y-2">
+              <li>
+                <Link to="/diensten/kozijntechniek" className="hover:text-brand-lightGreen transition-colors hover-underline">Kozijntechniek</Link>
+              </li>
+              <li>
+                <Link to="/diensten/isolatietechniek" className="hover:text-brand-lightGreen transition-colors hover-underline">Isolatietechniek</Link>
+              </li>
               <li>
                 <Link to="/diensten/dakkapel" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakkapel</Link>
               </li>

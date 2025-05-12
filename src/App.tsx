@@ -28,6 +28,8 @@ import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
 import WhatsAppButton from "./components/WhatsAppButton";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLogin from "./components/admin/AdminLogin";
+import KozijntechniekPage from "./pages/KozijntechniekPage";
+import IsolatietechniekPage from "./pages/IsolatietechniekPage";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -56,6 +58,8 @@ const App = () => {
           <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
           <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
           <Route path="/diensten" element={<DienstenPage />} />
+          <Route path="/diensten/kozijntechniek" element={<KozijntechniekPage />} />
+          <Route path="/diensten/isolatietechniek" element={<IsolatietechniekPage />} />
           <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
           <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
           <Route path="/over-ons" element={<OverOnsPage />} />

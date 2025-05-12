@@ -1,12 +1,30 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
-import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Check, Wallpaper } from 'lucide-react';
+import { 
+  Brush, Home, Construction, Wrench, Building, SquareGanttChart, 
+  Check, Wallpaper, Shield, Thermometer
+} from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const diensten = [{
+  id: 'kozijntechniek',
+  icon: <Shield size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Kozijntechniek',
+  description: 'Bij Refurbish Totaal Nederland verzorgen wij het vervangen, herstellen en plaatsen van kozijnen met vakmanschap en oog voor detail. Of het nu gaat om hout, kunststof of aluminium kozijnen, wij leveren maatwerkoplossingen die passen bij de stijl van uw woning en bijdragen aan energiezuinigheid en comfort.',
+  features: ['Vakkundige demontage en plaatsing van kozijnen', 'Inmeten en leveren van maatwerk kozijnen (nieuwbouw of renovatie)', 'Toepassing van hoogwaardige isolatieglas-systemen (HR++, triple)', 'Herstel van houtrot of het moderniseren van bestaande kozijnen', 'Integratie van ventilatieroosters en zonwering indien gewenst', 'Perfecte afwerking, zowel binnen als buiten'],
+  image: 'https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
+}, {
+  id: 'isolatietechniek',
+  icon: <Thermometer size={48} className="text-brand-lightGreen mb-6" />,
+  title: 'Isolatietechniek',
+  description: 'Energie besparen begint bij goede isolatie. Refurbish Totaal Nederland biedt doeltreffende isolatieoplossingen voor woningen en bedrijfspanden die comfort verhogen en energiekosten verlagen. Onze aanpak is technisch onderbouwd, duurzaam en afgestemd op uw situatie.',
+  features: ['Spouwmuurisolatie met hoogwaardige inblaas- of schuimisolatie', 'Vloerisolatie met drukvaste isolatieplaten of gespoten schuim', 'Dak- en zolderisolatie (aan de binnen- of buitenzijde)', 'Isolatie van dakkapellen, uitbouwen en houten vloeren', 'Thermografische inspecties en advies op maat', 'Erkende producten en systemen zoals het ATI Pro Isolatie Systeem'],
+  image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+}, {
   id: 'dakkapel',
   icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Dakkapel',

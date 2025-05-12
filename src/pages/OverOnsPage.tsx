@@ -39,19 +39,13 @@ const OverOnsPage = () => {
                 <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Ons Verhaal</h2>
                   <p className="text-lg text-gray-700 mb-6">
-                    Refurbish Totaal Nederland werd in 2024 opgericht door Gerard Groeneveld met een duidelijke visie: 
-                    renovatie- en verbouwprojecten met de hoogste kwaliteitsnormen uitvoeren en daarbij een uitstekende 
-                    service bieden aan onze klanten.
+                    Refurbish Totaal Nederland is in 2024 opgericht door Gerard Groeneveld, met als doel om renovatie-, verbouw- en verduurzamingsprojecten uit te voeren volgens hoge kwaliteitsnormen én met persoonlijke aandacht voor de klant. Vanuit zijn jarenlange ervaring in de bouwsector merkte Gerard dat er behoefte was aan een partij die vakmanschap, betrouwbaarheid en complete ontzorging kon combineren.
                   </p>
                   <p className="text-lg text-gray-700 mb-6">
-                    Gerard begon zijn carrière in de bouwsector en heeft uitgebreide ervaring opgedaan in diverse 
-                    aspecten van renovatie en verbouwing voordat hij besloot om Refurbish Totaal Nederland op te richten. 
-                    Zijn passie voor vakmanschap en oog voor detail vormen nog steeds de kern van ons bedrijf.
+                    Wat begon als een visie van één ondernemer, groeide al snel uit tot een krachtig netwerk van zelfstandige vakspecialisten. Samen vormen wij een multidisciplinair team dat klaarstaat voor zowel particuliere als zakelijke opdrachtgevers. Onze expertise beslaat onder andere kozijntechniek, isolatietechniek, schilderwerk, dakrenovatie, stucadoren, installatietechniek, aan- en verbouw, behangen en PVC vloeren.
                   </p>
                   <p className="text-lg text-gray-700">
-                    Hoewel we een jong bedrijf zijn, brengt ons team een schat aan ervaring met zich mee op het gebied van 
-                    schilderwerk, dakrenovatie, stucadoren, installatietechniek, aan- en verbouw, behangen en PVC vloeren. 
-                    We zijn trots op ons vermogen om totaaloplossingen te bieden voor zowel particuliere als zakelijke klanten.
+                    Hoewel we als bedrijf nog jong zijn, bundelen we tientallen jaren aan praktijkervaring. Wij geloven in samenwerken op basis van vertrouwen, vakkennis en gedeelde verantwoordelijkheid — en dat merkt u in elk project dat we uitvoeren. Refurbish Totaal Nederland staat voor heldere communicatie, kwalitatieve uitvoering en een duurzaam resultaat.
                   </p>
                 </div>
 
@@ -62,6 +56,20 @@ const OverOnsPage = () => {
                     verbouwingsbehoeften te voldoen:
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-start">
+                      <CheckCircle className="h-6 w-6 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-semibold text-lg">Kozijntechniek</h3>
+                        <p className="text-gray-600">Levering en plaatsing van hoogwaardige kozijnen, ramen en deuren.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-6 w-6 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-semibold text-lg">Isolatietechniek</h3>
+                        <p className="text-gray-600">Effectieve isolatieoplossingen voor optimaal comfort en energiebesparing.</p>
+                      </div>
+                    </div>
                     <div className="flex items-start">
                       <CheckCircle className="h-6 w-6 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
                       <div>
@@ -121,8 +129,7 @@ const OverOnsPage = () => {
                 <div className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Onze Aanpak</h2>
                   <p className="text-lg text-gray-700 mb-6">
-                    Bij Refurbish Totaal Nederland geloven we in transparantie, communicatie en kwaliteit. 
-                    Onze werkwijze is erop gericht om u als klant centraal te stellen:
+                    Bij Refurbish Totaal Nederland staat de klant écht centraal. Wij geloven dat succesvolle renovatie- en verduurzamingsprojecten beginnen met heldere communicatie, vakmanschap en wederzijds vertrouwen. Onze aanpak is transparant, gestructureerd en resultaatgericht — met oog voor detail én de mens achter het project.
                   </p>
                   <div className="space-y-6">
                     <div className="flex items-start">
@@ -131,7 +138,7 @@ const OverOnsPage = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-xl mb-2">Persoonlijke benadering</h3>
-                        <p className="text-gray-700">We luisteren naar uw wensen en behoeften om een op maat gemaakte oplossing te bieden.</p>
+                        <p className="text-gray-700">We starten elk traject met een goed gesprek. Door te luisteren naar uw wensen, ideeën en prioriteiten kunnen we een oplossing op maat bieden die perfect aansluit bij uw situatie.</p>
                       </div>
                     </div>
                     <div className="flex items-start">
@@ -139,8 +146,8 @@ const OverOnsPage = () => {
                         <ThumbsUp className="h-6 w-6 text-brand-darkGreen" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-xl mb-2">Kwaliteit voorop</h3>
-                        <p className="text-gray-700">We gebruiken alleen hoogwaardige materialen en werken met ervaren vakmensen.</p>
+                        <h3 className="font-semibold text-xl mb-2">Kwaliteit als standaard</h3>
+                        <p className="text-gray-700">Wij werken uitsluitend met hoogwaardige materialen en ervaren vakspecialisten. Of het nu gaat om schilderwerk, installatietechniek of bouwkundige aanpassingen — wij leveren vakwerk dat staat en blijft staan.</p>
                       </div>
                     </div>
                     <div className="flex items-start">
@@ -148,8 +155,8 @@ const OverOnsPage = () => {
                         <Users className="h-6 w-6 text-brand-darkGreen" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-xl mb-2">Betrouwbaarheid</h3>
-                        <p className="text-gray-700">Wij komen onze afspraken na en zijn transparant gedurende het hele proces.</p>
+                        <h3 className="font-semibold text-xl mb-2">Betrouwbaarheid & transparantie</h3>
+                        <p className="text-gray-700">Afspraak is afspraak. Tijdens het hele proces houden wij u op de hoogte van de voortgang en maken we duidelijke afspraken over planning, budget en uitvoering.</p>
                       </div>
                     </div>
                     <div className="flex items-start">
@@ -157,11 +164,14 @@ const OverOnsPage = () => {
                         <TrendingUp className="h-6 w-6 text-brand-darkGreen" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-xl mb-2">Innovatie</h3>
-                        <p className="text-gray-700">We blijven op de hoogte van de nieuwste technieken en materialen om u de beste oplossingen te bieden.</p>
+                        <h3 className="font-semibold text-xl mb-2">Vooruitstrevend & efficiënt</h3>
+                        <p className="text-gray-700">Wij volgen de nieuwste technieken, materialen en duurzame oplossingen op de voet. Zo bieden we u altijd de meest efficiënte en toekomstbestendige aanpak.</p>
                       </div>
                     </div>
                   </div>
+                  <p className="text-lg text-gray-700 mt-6">
+                    Met deze aanpak zorgen we ervoor dat ieder project soepel verloopt en het eindresultaat voldoet aan de hoogste verwachtingen.
+                  </p>
                 </div>
               </div>
 

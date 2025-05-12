@@ -7,6 +7,12 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const dienstenItems = [{
+  title: 'Kozijntechniek',
+  path: '/diensten/kozijntechniek'
+}, {
+  title: 'Isolatietechniek',
+  path: '/diensten/isolatietechniek'
+}, {
   title: 'Dakkapel',
   path: '/diensten/dakkapel'
 }, {

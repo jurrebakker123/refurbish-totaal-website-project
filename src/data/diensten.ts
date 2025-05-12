@@ -8,8 +8,12 @@ import aanEnVerbouw from './diensten/aan-en-verbouw';
 import behangen from './diensten/behangen';
 import pvcVloeren from './diensten/pvc-vloeren';
 import dakkapel from './diensten/dakkapel';
+import kozijntechniek from './diensten/kozijntechniek';
+import isolatietechniek from './diensten/isolatietechniek';
 
 const diensten: DienstenRecord = {
+  'kozijntechniek': kozijntechniek,
+  'isolatietechniek': isolatietechniek,
   'dakkapel': dakkapel,
   'schilderwerk': schilderwerk,
   'dakrenovatie': dakrenovatie,
