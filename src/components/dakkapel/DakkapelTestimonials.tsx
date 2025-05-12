@@ -79,7 +79,7 @@ const DakkapelTestimonials = () => {
             </p>
             
             <a 
-              href="https://g.page/r/CX-UvINH1PMVEAI/review" 
+              href="https://g.page/r/CaugvSM-hsKnEAI/review" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-white border border-gray-300 px-6 py-3 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors shadow-sm"
