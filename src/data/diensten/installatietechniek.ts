@@ -6,15 +6,13 @@ import React from 'react';
 const installatietechniek: DienstData = {
   title: 'Installatietechniek',
   description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
-  longDescription: 'Onze gecertificeerde installateurs zorgen voor veilige en betrouwbare elektra- en loodgietersinstallaties voor zowel nieuwbouw als renovatieprojecten. Wij werken volgens de laatste normen en veiligheidsvoorschriften.',
+  longDescription: 'Refurbish Totaal Nederland levert betrouwbare en toekomstgerichte oplossingen op het gebied van installatietechniek. Onze gecertificeerde vakmensen verzorgen complete installaties en aanpassingen binnen renovatie- en verbouwprojecten, met oog voor comfort, veiligheid en energie-efficiëntie.',
   icon: React.createElement(Wrench, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    'Elektra aanleggen of vernieuwen',
-    'Groepenkast vervangen of uitbreiden',
-    'Water- en gasleidingen aanleggen of vervangen',
-    'Badkamer en toilet installaties',
-    'Vloerverwarming aanleggen',
-    'Domotica en slimme huisinstallaties'
+    'Elektrotechniek: aanleg, uitbreiding en vernieuwing van elektrische installaties volgens NEN-normen',
+    'Airconditioning: levering, installatie en onderhoud van energiezuinige aircosystemen',
+    'Zonnepanelen: advies, plaatsing en aansluiting van PV-installaties met monitoring',
+    'Loodgieterswerk: leidingwerk voor water en gas, sanitairinstallaties en afvoersystemen'
   ],
   benefits: [
     'Veilige en betrouwbare installaties',

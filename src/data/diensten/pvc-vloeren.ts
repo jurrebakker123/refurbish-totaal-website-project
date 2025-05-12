@@ -6,15 +6,14 @@ import React from 'react';
 const pvcVloeren: DienstData = {
   title: 'PVC Vloeren',
   description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
-  longDescription: 'PVC vloeren zijn niet alleen mooi en stijlvol, maar ook duurzaam en onderhoudsvriendelijk. Ons team van specialisten zorgt voor perfect geplaatste PVC vloeren in elke ruimte van uw woning of bedrijfspand.',
+  longDescription: 'Een PVC vloer is de perfecte combinatie van uitstraling, comfort en duurzaamheid. Refurbish Totaal Nederland levert en installeert hoogwaardige PVC vloeren die geschikt zijn voor zowel particuliere woningen als commerciële ruimtes. Met een ruim aanbod in dessins, kleuren en legpatronen creëren wij elke gewenste sfeer — van modern tot klassiek.',
   icon: React.createElement(SquareGanttChart, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    'PVC vloeren in diverse dessins en kwaliteiten',
-    'Egaliseren van ondervloeren',
-    'Vloerverwarming geschikte PVC vloeren',
-    'Click PVC en vaste PVC vloeren',
-    'Onderhoud en reparatie van PVC vloeren',
-    'Verwijderen van oude vloerbedekking'
+    'Levering van kwalitatieve PVC vloeren (stroken, tegels, visgraat, betonlook e.a.)',
+    'Vakkundige egalisatie van de ondervloer',
+    'Verlijmen of zwevend leggen van de vloer, afhankelijk van de situatie',
+    'Afwerking met plinten, profielen en drempels',
+    'Advies over onderhoud, geluiddemping en vloerverwarming'
   ],
   benefits: [
     'Duurzame en slijtvaste vloeren',

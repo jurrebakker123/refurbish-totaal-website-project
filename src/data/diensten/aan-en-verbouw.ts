@@ -6,15 +6,14 @@ import React from 'react';
 const aanEnVerbouw: DienstData = {
   title: 'Aan- en verbouw',
   description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
-  longDescription: 'Ons team van ervaren bouwvakkers, timmerlieden en projectleiders zorgt voor een zorgeloze aan- of verbouwing van uw woning. Van het eerste ontwerp tot de laatste afwerking, wij nemen alle zorgen uit handen.',
+  longDescription: 'Of het nu gaat om extra ruimte, meer comfort of een volledige herindeling van uw woning of bedrijfspand — bij Refurbish Totaal Nederland realiseren we aan- en verbouwingen van A tot Z. Wij combineren bouwkundige expertise met praktische oplossingen, volledig afgestemd op uw wensen en budget.',
   icon: React.createElement(Building, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    'Uitbouwen en aanbouwen realiseren',
-    'Dakkapellen en dakopbouwen',
-    'Muren doorbreken en dragende constructies',
-    'Garage ombouwen tot woonruimte',
-    'Indeling van woning wijzigen',
-    'Funderingsherstel'
+    'Uitbouwen, opbouwen en aanbouwen',
+    'Interne verbouwingen (wanden verplaatsen, vloeren vernieuwen, plafonds aanpassen)',
+    'Constructieve aanpassingen in overleg met constructeur of architect',
+    'Vergunningstrajectbegeleiding indien nodig',
+    'Complete coördinatie van bouwproces en onderaannemers'
   ],
   benefits: [
     'Meer woonruimte en comfort',

@@ -6,15 +6,14 @@ import React from 'react';
 const dakrenovatie: DienstData = {
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
-  longDescription: 'Een goed onderhouden dak is essentieel voor de bescherming van uw woning. Ons ervaren team voert alle soorten dakrenovaties uit, van het vervangen van enkele dakpannen tot complete dakvernieuwing inclusief isolatie.',
+  longDescription: 'Een betrouwbaar dak is essentieel voor de bescherming en duurzaamheid van elke woning of bedrijfsruimte. Refurbish Totaal Nederland levert complete dakrenovaties op maat, waarbij veiligheid, isolatie en levensduur centraal staan.',
   icon: React.createElement(Home, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    'Vernieuwen van dakbedekking (pannen, leien, bitumen)',
-    'Isolatie van hellende en platte daken',
-    'Dakkapellen plaatsen of renoveren',
-    'Dakgoten repareren of vervangen',
-    'Lood- en zinkwerk vernieuwen',
-    'Velux dakramen plaatsen'
+    'Vervanging van dakbedekking (bitumen, dakpannen, EPDM, etc.)',
+    'Herstel of vernieuwing van dakconstructies',
+    'Isolatieverbetering volgens de nieuwste normen (binnenzijde of buitenzijde)',
+    'Aanbrengen van dakdoorvoeren, dakramen of dakkapellen',
+    'Lood-, zink- en dakgootwerkzaamheden'
   ],
   benefits: [
     'Energiebesparing door betere isolatie',
@@ -37,7 +36,7 @@ const dakrenovatie: DienstData = {
       answer: 'Voor een reguliere dakrenovatie waarbij de afmetingen en contouren niet veranderen is meestal geen vergunning nodig. Bij het plaatsen van dakkapellen of het wijzigen van de dakconstructie is wel een vergunning vereist. Wij kunnen u hierbij adviseren.' 
     }
   ],
-  image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: 'https://images.unsplash.com/photo-1632759145399-0e4913e71a51?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 };
 
 export default dakrenovatie;

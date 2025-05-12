@@ -6,15 +6,14 @@ import React from 'react';
 const behangen: DienstData = {
   title: 'Behangen',
   description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
-  longDescription: 'Ons team van ervaren behangers zorgt ervoor dat uw wanden een prachtige afwerking krijgen met behang naar keuze. Van klassiek tot modern, van effen tot met patroon - wij zorgen voor een perfect eindresultaat.',
+  longDescription: 'Met behang geeft u uw interieur snel een unieke en stijlvolle uitstraling. Refurbish Totaal Nederland verzorgt vakkundig behangwerk voor zowel woningen als zakelijke ruimtes. Van klassiek tot modern, van een enkele accentmuur tot een volledige ruimte — wij zorgen voor een strak en duurzaam resultaat.',
   icon: React.createElement(Wallpaper, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    'Behang verwijderen en ondergrond voorbereiden',
-    'Aanbrengen van luxe behang en wandbekleding',
-    'Fotobehang op maat',
-    'Vliesbehang en traditioneel behang',
-    'Textiel- en vinylbehang',
-    'Reparatie van bestaand behangwerk'
+    'Aanbrengen van diverse soorten behang (papier, vinyl, textiel, glasweefsel, fotobehang)',
+    'Voorbewerking van ondergronden: egaliseren, reinigen en gronden',
+    'Advies over materiaalkeuze, dessins en kleurcombinaties',
+    'Nauwkeurige afwerking bij hoeken, aansluitingen en stopcontacten',
+    'Herstellen of verwijderen van oud behang'
   ],
   benefits: [
     'Snelle en effectieve woningmetamorfose',

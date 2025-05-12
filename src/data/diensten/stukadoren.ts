@@ -6,15 +6,14 @@ import React from 'react';
 const stukadoren: DienstData = {
   title: 'Stukadoren',
   description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
-  longDescription: 'Onze stukadoors zorgen voor perfect geëgaliseerde wanden en plafonds die de basis vormen voor een mooie afwerking van uw interieur. Wij verzorgen zowel traditioneel stucwerk als decoratieve technieken.',
+  longDescription: 'Strakke wanden en plafonds vormen de basis van een verzorgd interieur. Refurbish Totaal Nederland levert hoogwaardig stucwerk voor zowel renovatie- als nieuwbouwprojecten. Onze ervaren stucadoors zorgen voor een perfect afgewerkte ondergrond, klaar voor verdere afwerking of direct als eindresultaat.',
   icon: React.createElement(Construction, { size: 48, className: "text-brand-lightGreen mb-6" }),
   features: [
-    'Gladpleisterwerk voor wanden en plafonds',
-    'Renovatiestucwerk bij scheuren en beschadigingen',
-    'Sierlijsten en ornamenten aanbrengen',
-    'Spachtelputz en structuurwerk',
-    'Venetiaans stucwerk en tadelakt',
-    'Betonlook wanden en vloeren'
+    'Glad pleisterwerk (sausklaar of behangklaar)',
+    'Sierpleister (spachtelputz, schuurwerk, betonlook)',
+    'Cementgebonden en vochtbestendige afwerkingen voor natte ruimtes',
+    'Reparatie en egalisatie van beschadigde muren en plafonds',
+    'Naadloze afwerking voor een strak en modern resultaat'
   ],
   benefits: [
     'Strakke en egale ondergrond voor verdere afwerking',
@@ -37,7 +36,7 @@ const stukadoren: DienstData = {
       answer: 'Ja, wij gebruiken speciale vochtbestendige stucmortel voor badkamers en andere vochtige ruimtes. Ook kunnen we waterafstotende afwerkingen toepassen.' 
     }
   ],
-  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+  image: 'https://images.unsplash.com/photo-1604857864317-2344f52026ce?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 };
 
 export default stukadoren;
