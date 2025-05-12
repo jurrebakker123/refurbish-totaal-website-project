@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { DakkapelHero } from '@/components/dakkapel/DakkapelHero';
+import { DakkapelCalculatorPromo } from '@/components/dakkapel/DakkapelCalculatorPromo';
 import { DakkapelVoordelen } from '@/components/dakkapel/DakkapelVoordelen';
 import { DakkapelProcess } from '@/components/dakkapel/DakkapelProcess';
 import { DakkapelTypes } from '@/components/dakkapel/DakkapelTypes';
@@ -56,6 +57,7 @@ const DakkapelLandingPage = () => {
         </div>
         <main className="flex-grow">
           <DakkapelHero />
+          <DakkapelCalculatorPromo />
           <DakkapelVoordelen />
           <DakkapelTypes />
           <DakkapelProcess />
