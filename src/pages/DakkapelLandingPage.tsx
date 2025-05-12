@@ -10,6 +10,7 @@ import { DakkapelGallery } from '@/components/dakkapel/DakkapelGallery';
 import { DakkapelFAQ } from '@/components/dakkapel/DakkapelFAQ';
 import { DakkapelCTA } from '@/components/dakkapel/DakkapelCTA';
 import { DakkapelCalculatorPreview } from '@/components/dakkapel/DakkapelCalculatorPreview';
+import DakkapelTestimonials from '@/components/dakkapel/DakkapelTestimonials';
 import { Helmet } from 'react-helmet';
 import { CartProvider } from '@/context/CartContext';
 import ShoppingCartIcon from '@/components/common/ShoppingCartIcon';
@@ -61,6 +62,7 @@ const DakkapelLandingPage = () => {
           <DakkapelProcess />
           <DakkapelCalculatorPreview />
           <DakkapelGallery />
+          <DakkapelTestimonials />
           <DakkapelFAQ />
           <DakkapelCTA />
         </main>
