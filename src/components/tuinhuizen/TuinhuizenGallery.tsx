@@ -1,15 +1,9 @@
 
-import React, { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { GardenHouseModel } from './3d/GardenHouseModel';
-import { GardenScene } from './3d/GardenScene';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 export function TuinhuizenGallery() {
-  const [autoRotate, setAutoRotate] = useState(true);
-
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="container">
@@ -19,43 +13,19 @@ export function TuinhuizenGallery() {
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
             Een stijlvolle combinatie van berging en overkapping met zwart/douglas hout.
-            Bekijk het model vanuit alle hoeken.
+            Bekijk onze foto-impressie.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <AspectRatio ratio={16/10} className="bg-sky-50">
-              <Canvas 
-                shadows 
-                dpr={[1, 2]} 
-                gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }} 
-                camera={{ position: [7, 4, 7], fov: 50 }}
-              >
-                <GardenScene />
-                <GardenHouseModel autoRotate={autoRotate} />
-                <OrbitControls 
-                  enablePan={false}
-                  maxPolarAngle={Math.PI / 2 - 0.1}
-                  minPolarAngle={Math.PI / 8}
-                  maxDistance={15}
-                  minDistance={4}
-                  onStart={() => setAutoRotate(false)}
-                />
-              </Canvas>
+              <img 
+                src="/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png" 
+                alt="Tuinhuis vooraanzicht" 
+                className="w-full h-full object-cover"
+              />
             </AspectRatio>
-            
-            <div className="p-4 bg-gray-50 border-t">
-              <button
-                onClick={() => setAutoRotate(!autoRotate)}
-                className="text-sm px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
-                {autoRotate ? "Rotatie stoppen" : "Automatisch roteren"}
-              </button>
-              <p className="text-sm text-gray-500 mt-2">
-                Tip: Klik en sleep om het model te draaien, scroll om in/uit te zoomen
-              </p>
-            </div>
           </div>
           
           <div className="space-y-6">
