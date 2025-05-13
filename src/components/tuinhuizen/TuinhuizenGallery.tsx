@@ -1,8 +1,8 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { OptimizedImage } from '@/components/ui/optimized-image';
+import { Slider } from '@/components/ui/slider';
+import { SlidersHorizontal, RotateCcw } from 'lucide-react';
 
 // Define the angles for our 360-degree view
 const ANGLES = [
@@ -18,6 +18,7 @@ const ANGLES = [
 
 export function TuinhuizenGallery() {
   const [currentAngleIndex, setCurrentAngleIndex] = useState(0);
+  const [sliderValue, setSliderValue] = useState(0); // New state for slider
   const [isDragging, setIsDragging] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
   const startXRef = useRef(0);
@@ -32,7 +33,11 @@ export function TuinhuizenGallery() {
     if (!autoRotate) return;
     
     const interval = setInterval(() => {
-      setCurrentAngleIndex(prev => (prev + 1) % ANGLES.length);
+      setCurrentAngleIndex(prev => {
+        const newIndex = (prev + 1) % ANGLES.length;
+        setSliderValue(ANGLES[newIndex].degree); // Update slider when auto-rotating
+        return newIndex;
+      });
     }, 1000);
     
     return () => clearInterval(interval);
@@ -50,12 +55,33 @@ export function TuinhuizenGallery() {
       
       setCurrentAngleIndex(prev => {
         const next = (prev + direction + ANGLES.length) % ANGLES.length;
+        setSliderValue(ANGLES[next].degree); // Update slider value when dragging
         return next;
       });
       
       // Reset start position
       startXRef.current = clientX;
     }
+  };
+  
+  // Function to handle slider change
+  const handleSliderChange = (value: number[]) => {
+    const newValue = value[0];
+    setSliderValue(newValue);
+    
+    // Find the closest angle in our ANGLES array
+    let closestIndex = 0;
+    let closestDiff = Math.abs(ANGLES[0].degree - newValue);
+    
+    ANGLES.forEach((angle, index) => {
+      const diff = Math.abs(angle.degree - newValue);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestIndex = index;
+      }
+    });
+    
+    setCurrentAngleIndex(closestIndex);
   };
   
   // Mouse event handlers
@@ -126,9 +152,7 @@ export function TuinhuizenGallery() {
                   {/* 360 degree view indicator */}
                   <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded-full text-xs">
                     <span className="flex items-center">
-                      <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                      </svg>
+                      <RotateCcw className="h-4 w-4 mr-1" />
                       360°
                     </span>
                   </div>
@@ -152,13 +176,39 @@ export function TuinhuizenGallery() {
               </div>
             </AspectRatio>
             
+            {/* Slider control for rotation */}
+            <div className="px-6 py-4 bg-white border-t border-gray-100">
+              <div className="flex items-center gap-3 mb-3">
+                <SlidersHorizontal className="h-5 w-5 text-gray-500" />
+                <span className="text-sm font-medium">Draai het tuinhuis</span>
+                <span className="ml-auto text-sm font-medium">{Math.floor(currentImage.degree)}°</span>
+              </div>
+              
+              <Slider
+                value={[sliderValue]}
+                min={0}
+                max={359}
+                step={1}
+                onValueChange={handleSliderChange}
+                className="py-2"
+              />
+            </div>
+            
             <div className="p-4 bg-gray-50 border-t">
               <div className="flex justify-between items-center">
                 <button
                   onClick={() => setAutoRotate(!autoRotate)}
-                  className="text-sm px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors"
+                  className="text-sm px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors flex items-center gap-1"
                 >
-                  {autoRotate ? "Rotatie stoppen" : "Automatisch roteren"}
+                  {autoRotate ? (
+                    <>
+                      <RotateCcw className="h-4 w-4" /> Rotatie stoppen
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="h-4 w-4" /> Automatisch roteren
+                    </>
+                  )}
                 </button>
                 
                 <div className="text-sm text-gray-500">
