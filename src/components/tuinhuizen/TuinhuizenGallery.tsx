@@ -29,7 +29,7 @@ export function TuinhuizenGallery() {
               <Canvas 
                 shadows 
                 dpr={[1, 2]} 
-                gl={{ antialias: true }} 
+                gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }} 
                 camera={{ position: [7, 4, 7], fov: 50 }}
               >
                 <GardenScene />
@@ -110,10 +110,10 @@ export function TuinhuizenGallery() {
               <Carousel className="w-full max-w-md">
                 <CarouselContent>
                   {[
-                    '/lovable-uploads/33476cb2-cc9e-44d6-8401-288c1a3cf6e6.png',
-                    '/lovable-uploads/e632305e-de71-4e39-ac65-2e0bb9fb20ea.png',
-                    '/lovable-uploads/4c8890ba-a204-43ec-978b-99a977ccd6ae.png',
-                    '/lovable-uploads/80306d05-7941-4133-8d63-76968fad7e37.png'
+                    '/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png',
+                    '/lovable-uploads/0f924302-ce62-4b4d-bd49-46be5ab319c5.png',
+                    '/lovable-uploads/3095a7de-a421-46ee-97ff-ff3df4675b7a.png',
+                    '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png'
                   ].map((src, index) => (
                     <CarouselItem key={index}>
                       <div className="p-1">

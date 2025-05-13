@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Environment, Sky } from '@react-three/drei';
+import { Environment, Sky, Cloud } from '@react-three/drei';
 
 export function GardenScene() {
   return (
@@ -12,12 +12,12 @@ export function GardenScene() {
       <fog attach="fog" args={['#e8f0ff', 15, 35]} />
       
       {/* Ambient light for general illumination */}
-      <ambientLight intensity={0.7} color="#ffffff" />
+      <ambientLight intensity={0.6} color="#ffffff" />
       
       {/* Main directional light (sunlight) */}
       <directionalLight 
         position={[5, 10, 5]} 
-        intensity={1.5} 
+        intensity={1.2} 
         castShadow 
         shadow-mapSize={[2048, 2048]}
         shadow-camera-far={50}
@@ -29,7 +29,26 @@ export function GardenScene() {
       />
       
       {/* Secondary fill light to reduce harsh shadows */}
-      <directionalLight position={[-5, 8, -5]} intensity={0.5} color="#b0c4de" />
+      <directionalLight position={[-5, 8, -5]} intensity={0.3} color="#b0c4de" />
+      
+      {/* Clouds for more realistic sky */}
+      <Cloud 
+        opacity={0.8}
+        speed={0.4} 
+        width={20} 
+        depth={1.5} 
+        segments={20}
+        position={[-10, 15, -10]}
+      />
+      
+      <Cloud 
+        opacity={0.7}
+        speed={0.3} 
+        width={15} 
+        depth={2} 
+        segments={20}
+        position={[10, 12, -15]}
+      />
       
       {/* Sky dome for realistic outdoor appearance */}
       <Sky 
