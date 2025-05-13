@@ -9,13 +9,13 @@ export function GardenScene() {
       {/* Realistic sky blue background */}
       <color attach="background" args={['#87ceeb']} />
       
-      {/* Atmospheric fog for distance */}
+      {/* Atmospheric fog for depth perception */}
       <fog attach="fog" args={['#e8f0ff', 15, 35]} />
       
-      {/* Simulate natural daylight */}
+      {/* Ambient light for general illumination */}
       <ambientLight intensity={0.6} color="#ffffff" />
       
-      {/* Main sunlight */}
+      {/* Main directional light (sunlight) */}
       <directionalLight 
         position={[5, 10, 5]} 
         intensity={1.2} 
@@ -29,10 +29,10 @@ export function GardenScene() {
         color="#fffaea"
       />
       
-      {/* Secondary fill light */}
+      {/* Secondary fill light to reduce harsh shadows */}
       <directionalLight position={[-5, 8, -5]} intensity={0.4} color="#b0c4de" />
       
-      {/* Realistic sky */}
+      {/* Sky dome for realistic outdoor appearance */}
       <Sky 
         distance={450000} 
         sunPosition={[5, 10, 5]} 
@@ -44,7 +44,7 @@ export function GardenScene() {
         mieDirectionalG={0.8}
       />
       
-      {/* HDRI environment for realistic reflections */}
+      {/* HDRI environment for realistic reflections on materials */}
       <Environment preset="park" />
     </>
   );
