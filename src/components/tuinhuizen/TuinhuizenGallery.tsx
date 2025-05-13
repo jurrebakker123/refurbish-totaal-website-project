@@ -1,28 +1,64 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 
+// Define the angles for our 360-degree view
+const ANGLES = [
+  { degree: 0, src: '/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png' },
+  { degree: 45, src: '/lovable-uploads/0f924302-ce62-4b4d-bd49-46be5ab319c5.png' },
+  { degree: 90, src: '/lovable-uploads/3095a7de-a421-46ee-97ff-ff3df4675b7a.png' },
+  { degree: 135, src: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png' },
+  { degree: 180, src: '/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png' },
+  { degree: 225, src: '/lovable-uploads/0f924302-ce62-4b4d-bd49-46be5ab319c5.png' },
+  { degree: 270, src: '/lovable-uploads/3095a7de-a421-46ee-97ff-ff3df4675b7a.png' },
+  { degree: 315, src: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png' },
+];
+
 export function TuinhuizenGallery() {
-  const [rotationDegrees, setRotationDegrees] = useState(0);
+  const [currentAngleIndex, setCurrentAngleIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
   const startXRef = useRef(0);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Get current image based on angle index
+  const currentImage = ANGLES[currentAngleIndex];
   
   // Auto-rotation effect
-  React.useEffect(() => {
+  useEffect(() => {
     if (!autoRotate) return;
     
     const interval = setInterval(() => {
-      setRotationDegrees(prev => (prev + 1) % 360);
-    }, 100);
+      setCurrentAngleIndex(prev => (prev + 1) % ANGLES.length);
+    }, 1000);
     
     return () => clearInterval(interval);
   }, [autoRotate]);
+
+  // Calculate which angle to show based on drag position
+  const updateAngleFromDrag = (clientX: number) => {
+    if (!containerRef.current) return;
+    
+    const deltaX = clientX - startXRef.current;
+    
+    if (Math.abs(deltaX) > 20) { // Threshold to prevent tiny movements
+      // Determine direction
+      const direction = deltaX > 0 ? -1 : 1; // Negative for right drag (clockwise), positive for left drag (counterclockwise)
+      
+      setCurrentAngleIndex(prev => {
+        const next = (prev + direction + ANGLES.length) % ANGLES.length;
+        return next;
+      });
+      
+      // Reset start position
+      startXRef.current = clientX;
+    }
+  };
   
-  // Mouse event handlers for manual rotation
+  // Mouse event handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setAutoRotate(false);
@@ -31,45 +67,32 @@ export function TuinhuizenGallery() {
   
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    
-    const deltaX = e.clientX - startXRef.current;
-    const rotationChange = deltaX * 0.5; // Adjust sensitivity
-    
-    setRotationDegrees(prev => {
-      const newRotation = prev + rotationChange;
-      return newRotation % 360;
-    });
-    
-    startXRef.current = e.clientX;
+    updateAngleFromDrag(e.clientX);
   };
   
   const handleMouseUp = () => {
     setIsDragging(false);
   };
-
-  // Touch event handlers for mobile
+  
+  // Touch event handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
     setAutoRotate(false);
     startXRef.current = e.touches[0].clientX;
   };
-
+  
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
-    
-    const deltaX = e.touches[0].clientX - startXRef.current;
-    const rotationChange = deltaX * 0.5;
-    
-    setRotationDegrees(prev => {
-      const newRotation = prev + rotationChange;
-      return newRotation % 360;
-    });
-    
-    startXRef.current = e.touches[0].clientX;
+    updateAngleFromDrag(e.touches[0].clientX);
   };
-
+  
   const handleTouchEnd = () => {
     setIsDragging(false);
+  };
+
+  // Handle image load
+  const handleImageLoad = () => {
+    setImageLoaded(true);
   };
 
   return (
@@ -89,7 +112,7 @@ export function TuinhuizenGallery() {
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <AspectRatio ratio={16/10} className="bg-sky-50">
               <div 
-                ref={imageContainerRef}
+                ref={containerRef}
                 className="w-full h-full relative cursor-grab active:cursor-grabbing"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
@@ -99,30 +122,50 @@ export function TuinhuizenGallery() {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                <div 
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    transform: `rotate(${rotationDegrees}deg)`,
-                    transition: isDragging ? 'none' : 'transform 0.1s ease'
-                  }}
-                >
-                  <OptimizedImage 
-                    src="/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png" 
-                    alt="Tuinhuis vooraanzicht" 
+                <div className="w-full h-full flex items-center justify-center">
+                  {/* 360 degree view indicator */}
+                  <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded-full text-xs">
+                    <span className="flex items-center">
+                      <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                      </svg>
+                      360°
+                    </span>
+                  </div>
+                  
+                  {/* Loading indicator */}
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-80">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-darkGreen"></div>
+                    </div>
+                  )}
+                  
+                  {/* Current angle image */}
+                  <img 
+                    src={currentImage.src} 
+                    alt={`Tuinhuis vanuit ${currentImage.degree}°`}
                     className="w-full h-full object-cover"
+                    style={{ display: imageLoaded ? 'block' : 'none' }}
+                    onLoad={handleImageLoad}
                   />
                 </div>
               </div>
             </AspectRatio>
             
             <div className="p-4 bg-gray-50 border-t">
-              <button
-                onClick={() => setAutoRotate(!autoRotate)}
-                className="text-sm px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
-                {autoRotate ? "Rotatie stoppen" : "Automatisch roteren"}
-              </button>
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => setAutoRotate(!autoRotate)}
+                  className="text-sm px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors"
+                >
+                  {autoRotate ? "Rotatie stoppen" : "Automatisch roteren"}
+                </button>
+                
+                <div className="text-sm text-gray-500">
+                  {Math.floor(currentImage.degree)}°
+                </div>
+              </div>
+              
               <p className="text-sm text-gray-500 mt-2">
                 Tip: Klik en sleep om het tuinhuis te draaien
               </p>
@@ -192,7 +235,7 @@ export function TuinhuizenGallery() {
                           <img 
                             src={src} 
                             alt={`Tuinhuis impressie ${index + 1}`} 
-                            className="w-full h-auto aspect-square object-cover object-center"
+                            className="w-full h-full aspect-square object-cover object-center"
                           />
                         </div>
                       </div>
