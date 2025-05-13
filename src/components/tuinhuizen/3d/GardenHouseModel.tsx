@@ -241,16 +241,32 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
         </mesh>
         
         {/* Table Legs */}
-        {[[-0.55, 0.2, -0.35], [0.55, 0.2, -0.35], [-0.55, 0.2, 0.35], [0.55, 0.2, 0.35]].map((pos, idx) => (
-          <mesh key={`table-leg-${idx}`} position={[pos[0], pos[1] + 0.2, pos[2] + HOUSE_DEPTH/2 - 0.5]}>
+        {[
+          [-0.55, 0.2, -0.35],
+          [0.55, 0.2, -0.35],
+          [-0.55, 0.2, 0.35],
+          [0.55, 0.2, 0.35]
+        ].map((pos, idx) => (
+          <mesh 
+            key={`table-leg-${idx}`} 
+            position={[pos[0], pos[1] + 0.2, pos[2] + HOUSE_DEPTH/2 - 0.5] as [number, number, number]}
+          >
             <boxGeometry args={[0.06, 0.8, 0.06]} />
             <meshStandardMaterial color={TABLE_COLOR} />
           </mesh>
         ))}
         
         {/* Chairs around table */}
-        {[[-0.6, 0, -0.8], [0.6, 0, -0.8], [-0.6, 0, 0.6], [0.6, 0, 0.6]].map((pos, idx) => (
-          <group key={`chair-${idx}`} position={[pos[0], 0.25, pos[2] + HOUSE_DEPTH/2 - 0.5]}>
+        {[
+          [-0.6, 0, -0.8],
+          [0.6, 0, -0.8],
+          [-0.6, 0, 0.6],
+          [0.6, 0, 0.6]
+        ].map((pos, idx) => (
+          <group 
+            key={`chair-${idx}`} 
+            position={[pos[0], 0.25, pos[2] + HOUSE_DEPTH/2 - 0.5] as [number, number, number]}
+          >
             {/* Chair seat */}
             <mesh>
               <boxGeometry args={[0.5, 0.05, 0.5]} />
@@ -264,8 +280,16 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
             </mesh>
             
             {/* Chair legs */}
-            {[[-0.22, -0.25, -0.22], [0.22, -0.25, -0.22], [-0.22, -0.25, 0.22], [0.22, -0.25, 0.22]].map((legPos, legIdx) => (
-              <mesh key={`chair-${idx}-leg-${legIdx}`} position={legPos}>
+            {[
+              [-0.22, -0.25, -0.22],
+              [0.22, -0.25, -0.22],
+              [-0.22, -0.25, 0.22],
+              [0.22, -0.25, 0.22]
+            ].map((legPos, legIdx) => (
+              <mesh 
+                key={`chair-${idx}-leg-${legIdx}`} 
+                position={legPos as [number, number, number]}
+              >
                 <boxGeometry args={[0.04, 0.5, 0.04]} />
                 <meshStandardMaterial color={CHAIR_COLOR} />
               </mesh>
