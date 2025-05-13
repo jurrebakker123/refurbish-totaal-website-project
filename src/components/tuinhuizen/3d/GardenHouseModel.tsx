@@ -119,8 +119,12 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
           [HOUSE_WIDTH/2 - FRAME_THICKNESS/2, HOUSE_HEIGHT * 0.75, HOUSE_DEPTH/2 + OVERHANG_DEPTH/2],
           [HOUSE_WIDTH/2 - FRAME_THICKNESS/2, HOUSE_HEIGHT * 0.75, HOUSE_DEPTH/2 + OVERHANG_DEPTH * 0.9]
         ].map((position, index) => (
-          <mesh key={`beam-overhang-${index}`} position={position as [number, number, number]}>
-            <boxGeometry args={[FRAME_THICKNESS, FRAME_THICKNESS, HOUSE_DEPTH * 0.3]} rotation={[0, Math.PI / 4, 0]} />
+          <mesh 
+            key={`beam-overhang-${index}`} 
+            position={position as [number, number, number]} 
+            rotation={[0, Math.PI / 4, 0]}
+          >
+            <boxGeometry args={[FRAME_THICKNESS, FRAME_THICKNESS, HOUSE_DEPTH * 0.3]} />
             <meshStandardMaterial {...woodMaterial} />
           </mesh>
         ))}
