@@ -66,7 +66,7 @@ function GardenHouseModel(props: any) {
         [-HOUSE_WIDTH/2 + FRAME_THICKNESS/2, HOUSE_HEIGHT/2, HOUSE_DEPTH/2 - FRAME_THICKNESS/2],
         [HOUSE_WIDTH/2 - FRAME_THICKNESS/2, HOUSE_HEIGHT/2, HOUSE_DEPTH/2 - FRAME_THICKNESS/2]
       ].map((position, index) => (
-        <mesh key={`post-${index}`} position={position}>
+        <mesh key={`post-${index}`} position={position as [number, number, number]}>
           <boxGeometry args={[FRAME_THICKNESS, HOUSE_HEIGHT, FRAME_THICKNESS]} />
           <meshStandardMaterial color={WOOD_COLOR} />
         </mesh>
@@ -81,7 +81,7 @@ function GardenHouseModel(props: any) {
       ].map((position, index) => {
         const isLong = index < 2;
         return (
-          <mesh key={`beam-top-${index}`} position={position}>
+          <mesh key={`beam-top-${index}`} position={position as [number, number, number]}>
             <boxGeometry args={[isLong ? HOUSE_WIDTH - FRAME_THICKNESS : FRAME_THICKNESS, FRAME_THICKNESS, isLong ? FRAME_THICKNESS : HOUSE_DEPTH - FRAME_THICKNESS]} />
             <meshStandardMaterial color={WOOD_COLOR} />
           </mesh>
@@ -164,7 +164,7 @@ function GardenHouseModel(props: any) {
         [0.3, 0.3, -0.5],
         [-0.3, 0.3, 0.5]
       ].map((position, index) => (
-        <group key={`chair-${index}`} position={position}>
+        <group key={`chair-${index}`} position={position as [number, number, number]}>
           {/* Chair seat */}
           <mesh position={[0, 0, 0]}>
             <cylinderGeometry args={[0.2, 0.2, 0.05, 12]} />
@@ -267,7 +267,7 @@ export function TuinhuizenGallery() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <AspectRatio ratio={16/10} className="bg-sky-50">
-              <Canvas shadows gl={{ antialias: true, physicallyCorrectLights: true }}>
+              <Canvas shadows gl={{ antialias: true }}>
                 <Scene />
               </Canvas>
             </AspectRatio>
@@ -339,3 +339,4 @@ export function TuinhuizenGallery() {
     </section>
   );
 }
+
