@@ -242,7 +242,7 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
         
         {/* Table Legs */}
         {[[-0.55, 0.2, -0.35], [0.55, 0.2, -0.35], [-0.55, 0.2, 0.35], [0.55, 0.2, 0.35]].map((pos, idx) => (
-          <mesh key={`table-leg-${idx}`} position={[pos[0] + 0, pos[1] + 0.4 - 0.2, pos[2] + HOUSE_DEPTH/2 - 0.5]}>
+          <mesh key={`table-leg-${idx}`} position={[pos[0], pos[1] + 0.2, pos[2] + HOUSE_DEPTH/2 - 0.5]}>
             <boxGeometry args={[0.06, 0.8, 0.06]} />
             <meshStandardMaterial color={TABLE_COLOR} />
           </mesh>
@@ -250,7 +250,7 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
         
         {/* Chairs around table */}
         {[[-0.6, 0, -0.8], [0.6, 0, -0.8], [-0.6, 0, 0.6], [0.6, 0, 0.6]].map((pos, idx) => (
-          <group key={`chair-${idx}`} position={[pos[0] + 0, 0.25, pos[2] + HOUSE_DEPTH/2 - 0.5]}>
+          <group key={`chair-${idx}`} position={[pos[0], 0.25, pos[2] + HOUSE_DEPTH/2 - 0.5]}>
             {/* Chair seat */}
             <mesh>
               <boxGeometry args={[0.5, 0.05, 0.5]} />
