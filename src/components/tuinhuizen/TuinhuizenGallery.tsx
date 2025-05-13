@@ -26,7 +26,12 @@ export function TuinhuizenGallery() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <AspectRatio ratio={16/10} className="bg-sky-50">
-              <Canvas shadows dpr={[1, 2]} camera={{ position: [7, 4, 7], fov: 50 }}>
+              <Canvas 
+                shadows 
+                dpr={[1, 2]} 
+                gl={{ antialias: true }} 
+                camera={{ position: [7, 4, 7], fov: 50 }}
+              >
                 <GardenScene />
                 <GardenHouseModel autoRotate={autoRotate} />
                 <OrbitControls 

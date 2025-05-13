@@ -11,16 +11,16 @@ export const FLOOR_DEPTH = 0.05;
 export const BORDER_TRIM_WIDTH = 0.2; // Width of wooden trim
 
 // Colors
-export const WOOD_COLOR = '#e3a868'; // Douglas wood color - warmer tone as in images
-export const DARK_WOOD_COLOR = '#b07941'; // Darker wood for accents
-export const WALLS_COLOR = '#1a1a1a'; // Almost black walls as shown in images
+export const WOOD_COLOR = '#b07941'; // Douglas wood color - darker, more rich tone
+export const DARK_WOOD_COLOR = '#8B5A2B'; // Darker wood for accents
+export const WALLS_COLOR = '#111111'; // Darker black walls for more contrast
 export const GLASS_COLOR = '#afc4cc';
 export const ROOF_COLOR = '#222222'; // Dark EPDM color
-export const GRASS_COLOR = '#4caf50';
-export const FLOOR_COLOR = '#d5d5d5'; // Light concrete terrace
-export const DOOR_COLOR = '#1a1a1a'; // Same as walls
+export const GRASS_COLOR = '#3a8238'; // Richer grass color
+export const FLOOR_COLOR = '#c9c9c9'; // Light concrete terrace
+export const DOOR_COLOR = '#111111'; // Same as walls
 export const DOOR_HANDLE_COLOR = '#c0c0c0'; // Silver
-export const WINDOW_FRAME_COLOR = '#e3a868'; // Same as wood color
-export const LAMP_COLOR = '#8b572a'; // Bronze/copper color for hanging lamp
-export const TABLE_COLOR = '#e3a868'; // Wood table
-export const CHAIR_COLOR = '#1a1a1a'; // Black chairs
+export const WINDOW_FRAME_COLOR = '#b07941'; // Same as wood color
+export const LAMP_COLOR = '#b07941'; // Matching wood color for hanging lamp
+export const TABLE_COLOR = '#b07941'; // Wood table
+export const CHAIR_COLOR = '#111111'; // Black chairs
