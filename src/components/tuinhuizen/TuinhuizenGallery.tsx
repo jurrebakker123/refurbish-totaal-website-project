@@ -1,9 +1,77 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function TuinhuizenGallery() {
+  const [rotationDegrees, setRotationDegrees] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const startXRef = useRef(0);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-rotation effect
+  React.useEffect(() => {
+    if (!autoRotate) return;
+    
+    const interval = setInterval(() => {
+      setRotationDegrees(prev => (prev + 1) % 360);
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [autoRotate]);
+  
+  // Mouse event handlers for manual rotation
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setAutoRotate(false);
+    startXRef.current = e.clientX;
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - startXRef.current;
+    const rotationChange = deltaX * 0.5; // Adjust sensitivity
+    
+    setRotationDegrees(prev => {
+      const newRotation = prev + rotationChange;
+      return newRotation % 360;
+    });
+    
+    startXRef.current = e.clientX;
+  };
+  
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Touch event handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setAutoRotate(false);
+    startXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.touches[0].clientX - startXRef.current;
+    const rotationChange = deltaX * 0.5;
+    
+    setRotationDegrees(prev => {
+      const newRotation = prev + rotationChange;
+      return newRotation % 360;
+    });
+    
+    startXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="container">
@@ -13,19 +81,52 @@ export function TuinhuizenGallery() {
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
             Een stijlvolle combinatie van berging en overkapping met zwart/douglas hout.
-            Bekijk onze foto-impressie.
+            Bekijk het tuinhuis vanuit alle hoeken.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <AspectRatio ratio={16/10} className="bg-sky-50">
-              <img 
-                src="/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png" 
-                alt="Tuinhuis vooraanzicht" 
-                className="w-full h-full object-cover"
-              />
+              <div 
+                ref={imageContainerRef}
+                className="w-full h-full relative cursor-grab active:cursor-grabbing"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    transform: `rotate(${rotationDegrees}deg)`,
+                    transition: isDragging ? 'none' : 'transform 0.1s ease'
+                  }}
+                >
+                  <OptimizedImage 
+                    src="/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png" 
+                    alt="Tuinhuis vooraanzicht" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             </AspectRatio>
+            
+            <div className="p-4 bg-gray-50 border-t">
+              <button
+                onClick={() => setAutoRotate(!autoRotate)}
+                className="text-sm px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition-colors"
+              >
+                {autoRotate ? "Rotatie stoppen" : "Automatisch roteren"}
+              </button>
+              <p className="text-sm text-gray-500 mt-2">
+                Tip: Klik en sleep om het tuinhuis te draaien
+              </p>
+            </div>
           </div>
           
           <div className="space-y-6">
