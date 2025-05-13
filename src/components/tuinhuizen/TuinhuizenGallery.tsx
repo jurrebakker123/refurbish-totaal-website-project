@@ -1,19 +1,20 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Slider } from '@/components/ui/slider';
 import { SlidersHorizontal, RotateCcw } from 'lucide-react';
 
-// Define the angles for our 360-degree view
+// Define the angles for our 360-degree view with new images
 const ANGLES = [
-  { degree: 0, src: '/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png' },
-  { degree: 45, src: '/lovable-uploads/0f924302-ce62-4b4d-bd49-46be5ab319c5.png' },
-  { degree: 90, src: '/lovable-uploads/3095a7de-a421-46ee-97ff-ff3df4675b7a.png' },
-  { degree: 135, src: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png' },
-  { degree: 180, src: '/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png' },
-  { degree: 225, src: '/lovable-uploads/0f924302-ce62-4b4d-bd49-46be5ab319c5.png' },
-  { degree: 270, src: '/lovable-uploads/3095a7de-a421-46ee-97ff-ff3df4675b7a.png' },
-  { degree: 315, src: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png' },
+  { degree: 0, src: '/lovable-uploads/a6112a45-bfd2-4d20-b496-8dc7a87d8142.png' },
+  { degree: 45, src: '/lovable-uploads/d67ca9bb-8389-42de-a068-52cf63d8b04a.png' },
+  { degree: 90, src: '/lovable-uploads/2436d289-2c67-4857-89ad-61736ba3dc09.png' },
+  { degree: 135, src: '/lovable-uploads/f73444a4-98da-45bd-b6aa-7cd2faa43809.png' },
+  { degree: 180, src: '/lovable-uploads/1d399cd4-9b33-4b0d-8c07-f6314f8b5a6a.png' },
+  { degree: 225, src: '/lovable-uploads/3fb04066-dfc7-400c-9fda-28e2a97979a4.png' },
+  { degree: 270, src: '/lovable-uploads/0e7822c5-5fb3-4431-868f-04b3c7ca0be1.png' },
+  { degree: 315, src: '/lovable-uploads/0271be36-660a-4b52-bf9a-b9d16efce0c5.png' },
 ];
 
 export function TuinhuizenGallery() {
@@ -274,10 +275,14 @@ export function TuinhuizenGallery() {
               <Carousel className="w-full max-w-md">
                 <CarouselContent>
                   {[
-                    '/lovable-uploads/78a350aa-89ea-4904-8e38-ceac9f29cf02.png',
-                    '/lovable-uploads/0f924302-ce62-4b4d-bd49-46be5ab319c5.png',
-                    '/lovable-uploads/3095a7de-a421-46ee-97ff-ff3df4675b7a.png',
-                    '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png'
+                    '/lovable-uploads/a6112a45-bfd2-4d20-b496-8dc7a87d8142.png',
+                    '/lovable-uploads/d67ca9bb-8389-42de-a068-52cf63d8b04a.png',
+                    '/lovable-uploads/2436d289-2c67-4857-89ad-61736ba3dc09.png',
+                    '/lovable-uploads/f73444a4-98da-45bd-b6aa-7cd2faa43809.png',
+                    '/lovable-uploads/1d399cd4-9b33-4b0d-8c07-f6314f8b5a6a.png',
+                    '/lovable-uploads/3fb04066-dfc7-400c-9fda-28e2a97979a4.png',
+                    '/lovable-uploads/0271be36-660a-4b52-bf9a-b9d16efce0c5.png',
+                    '/lovable-uploads/0e7822c5-5fb3-4431-868f-04b3c7ca0be1.png'
                   ].map((src, index) => (
                     <CarouselItem key={index}>
                       <div className="p-1">
