@@ -62,9 +62,9 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set(3, 3);
     
-    // Adjust texture properties
-    woodTexture.encoding = THREE.sRGBEncoding;
-    floorTexture.encoding = THREE.sRGBEncoding;
+    // Updated texture properties to be compatible with Three.js v0.176.0
+    woodTexture.colorSpace = THREE.SRGBColorSpace;
+    floorTexture.colorSpace = THREE.SRGBColorSpace;
   }, [woodTexture, floorTexture]);
 
   // Enhanced materials with better textures
@@ -272,7 +272,7 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
           
           {/* Door handle */}
           <mesh position={[-0.45, 0, -0.05]} castShadow>
-            <cylinderGeometry args={[0.02, 0.02, 0.15, 8]} rotation={[0, 0, Math.PI/2]} />
+            <cylinderGeometry args={[0.02, 0.02, 0.15, 8]} />
             <meshStandardMaterial color={DOOR_HANDLE_COLOR} metalness={0.8} roughness={0.2} />
           </mesh>
         </group>
@@ -348,8 +348,9 @@ export function GardenHouseModel({ autoRotate = false }: GardenHouseModelProps) 
           <meshStandardMaterial color={CHAIR_COLOR} />
         </mesh>
         
+        {/* Fixed: Using sphereGeometry instead of hemisphereGeometry */}
         <mesh position={[0, HOUSE_HEIGHT - 0.9, HOUSE_DEPTH/2 - 0.8]} castShadow>
-          <hemisphereGeometry args={[0.2, 0.25, 16, 4]} />
+          <sphereGeometry args={[0.2, 16, 8]} />
           <meshStandardMaterial color={LAMP_COLOR} roughness={0.4} metalness={0.7} />
           
           {/* Light source inside lamp */}
