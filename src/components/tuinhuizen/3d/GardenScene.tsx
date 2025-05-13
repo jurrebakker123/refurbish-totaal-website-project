@@ -6,14 +6,19 @@ import { Environment, Sky } from '@react-three/drei';
 export function GardenScene() {
   return (
     <>
-      <color attach="background" args={['#b1d8ff']} />
-      <fog attach="fog" args={['#b1d8ff', 15, 35]} />
+      {/* Realistic sky blue background */}
+      <color attach="background" args={['#87ceeb']} />
       
-      {/* Natuurlijk daglicht simuleren */}
-      <ambientLight intensity={0.6} color="#e1eaff" />
+      {/* Atmospheric fog for distance */}
+      <fog attach="fog" args={['#e8f0ff', 15, 35]} />
+      
+      {/* Simulate natural daylight */}
+      <ambientLight intensity={0.6} color="#ffffff" />
+      
+      {/* Main sunlight */}
       <directionalLight 
-        position={[10, 12, 8]} 
-        intensity={1} 
+        position={[5, 10, 5]} 
+        intensity={1.2} 
         castShadow 
         shadow-mapSize={[2048, 2048]}
         shadow-camera-far={50}
@@ -23,22 +28,24 @@ export function GardenScene() {
         shadow-camera-bottom={-10}
         color="#fffaea"
       />
-      <directionalLight position={[-10, 8, 5]} intensity={0.5} color="#c2d6ff" />
       
-      {/* Realistische hemel toevoegen */}
+      {/* Secondary fill light */}
+      <directionalLight position={[-5, 8, -5]} intensity={0.4} color="#b0c4de" />
+      
+      {/* Realistic sky */}
       <Sky 
         distance={450000} 
-        sunPosition={[10, 5, 5]} 
-        inclination={0.45} 
+        sunPosition={[5, 10, 5]} 
+        inclination={0.6} 
         azimuth={0.25} 
-        turbidity={8}
-        rayleigh={1}
+        turbidity={10}
+        rayleigh={0.5}
         mieCoefficient={0.005}
         mieDirectionalG={0.8}
       />
       
-      {/* HDRI-omgeving voor realistische reflecties */}
-      <Environment preset="sunset" />
+      {/* HDRI environment for realistic reflections */}
+      <Environment preset="park" />
     </>
   );
 }

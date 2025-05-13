@@ -8,5 +8,6 @@ export const SERVICES = [
   'Aan- en verbouw',
   'Behangen',
   'PVC Vloeren',
+  'Tuinhuis',
   'Anders'
 ] as const;

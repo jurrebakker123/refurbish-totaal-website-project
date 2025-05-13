@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { GardenHouseModel } from './3d/GardenHouseModel';
 import { GardenScene } from './3d/GardenScene';
@@ -26,13 +26,13 @@ export function TuinhuizenGallery() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <AspectRatio ratio={16/10} className="bg-sky-50">
-              <Canvas shadows dpr={[1, 2]}>
+              <Canvas shadows dpr={[1, 2]} camera={{ position: [7, 4, 7], fov: 50 }}>
                 <GardenScene />
                 <GardenHouseModel autoRotate={autoRotate} />
                 <OrbitControls 
                   enablePan={false}
                   maxPolarAngle={Math.PI / 2 - 0.1}
-                  minPolarAngle={Math.PI / 6}
+                  minPolarAngle={Math.PI / 8}
                   maxDistance={15}
                   minDistance={4}
                   onStart={() => setAutoRotate(false)}
@@ -105,11 +105,10 @@ export function TuinhuizenGallery() {
               <Carousel className="w-full max-w-md">
                 <CarouselContent>
                   {[
-                    '/lovable-uploads/191b7e07-7bc6-4a2b-b984-d5b4bedb7875.png',
-                    '/lovable-uploads/e4d081e7-d3f8-4e19-b2bf-0bf8c01f0dce.png',
-                    '/lovable-uploads/86f735a8-487e-43c0-9703-193520a0aec0.png',
-                    '/lovable-uploads/b0ef8923-8feb-4345-b99d-97e499ab8959.png',
-                    '/lovable-uploads/01cb10c8-0224-459f-bf26-96fe9ce61fa8.png'
+                    '/lovable-uploads/33476cb2-cc9e-44d6-8401-288c1a3cf6e6.png',
+                    '/lovable-uploads/e632305e-de71-4e39-ac65-2e0bb9fb20ea.png',
+                    '/lovable-uploads/4c8890ba-a204-43ec-978b-99a977ccd6ae.png',
+                    '/lovable-uploads/80306d05-7941-4133-8d63-76968fad7e37.png'
                   ].map((src, index) => (
                     <CarouselItem key={index}>
                       <div className="p-1">
