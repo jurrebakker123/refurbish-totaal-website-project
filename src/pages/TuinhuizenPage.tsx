@@ -37,10 +37,10 @@ const TuinhuizenPage = () => {
       <Header />
       <main className="flex-grow">
         <TuinhuizenHero />
-        <TuinhuizenGallery />
         <TuinhuizenFeatures />
-        <TuinhuizenContact />
+        <TuinhuizenGallery />
         <TuinhuizenCTA />
+        <TuinhuizenContact />
       </main>
       <Footer />
     </div>
