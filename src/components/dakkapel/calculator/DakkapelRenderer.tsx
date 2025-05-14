@@ -151,9 +151,6 @@ function DakkapelModel({
   // Convert dakHelling to radians for the 3D rendering
   const dakHellingRadians = (dakHelling * Math.PI) / 180;
   
-  // Calculate the roof angle to visualize the dakHelling
-  const roofAngle = Math.PI / 2 - dakHellingRadians;
-
   // Adjustments based on house side (woningZijde)
   let houseRotation = 0;
   if (woningZijde === 'voor') {
@@ -165,39 +162,6 @@ function DakkapelModel({
 
   return (
     <group ref={dakkapelRef} rotation={[0, houseRotation, 0]}>
-      {/* Roof base with dynamic dakHelling */}
-      <mesh position={[0, -0.5, 0]} rotation={[roofAngle, 0, 0]}>
-        <boxGeometry args={[2, 0.1, 2]} />
-        <meshStandardMaterial color="#8B4513" />
-      </mesh>
-      
-      {/* Sporenkap if selected */}
-      {showSporenkap && (
-        <group position={[0, -0.45, 0]} rotation={[roofAngle, 0, 0]}>
-          {/* Wooden beams structure */}
-          {Array.from({ length: 5 }).map((_, i) => (
-            <mesh key={`sporenkap-${i}`} position={[-0.8 + i * 0.4, 0, 0]}>
-              <boxGeometry args={[0.05, 0.12, 1.8]} />
-              <meshStandardMaterial color="#5D4037" />
-            </mesh>
-          ))}
-          <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[2, 0.01, 1.8]} />
-            <meshStandardMaterial color="#8D6E63" opacity={0.7} transparent={true} />
-          </mesh>
-        </group>
-      )}
-      
-      {/* Extra Isolatie if selected - INSIDE the walls */}
-      {showExtraIsolatie && (
-        <group>
-          <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[width - 0.1, height - 0.1, 0.48]} />
-            <meshStandardMaterial color="#ffca99" opacity={0.7} transparent={true} />
-          </mesh>
-        </group>
-      )}
-      
       {/* Dakkapel base */}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[width, height, 0.5]} />
@@ -505,3 +469,4 @@ export function DakkapelRenderer({
     </div>
   );
 }
+
