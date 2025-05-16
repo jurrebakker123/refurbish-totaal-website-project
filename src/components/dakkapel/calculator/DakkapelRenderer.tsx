@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Center, useTexture } from '@react-three/drei';
+import { OrbitControls, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte } from './DakkapelCalculator';
 import { getKozijnHeight } from '@/utils/calculatorUtils';
@@ -47,61 +47,16 @@ function getColorHex(colorName: string = 'wit'): string {
 
 function getMaterialColor(materiaal: string = 'kunststof'): string {
   const materialMap: Record<string, string> = {
-    'kunststof': '#f5f2e3', // Cream color like in reference
-    'hout': '#e6d2b5',
-    'aluminium': '#d9d9d9',
-    'standaard': '#f5f2e3',
-    'kunststof_rabat': '#f2eee0',
-    'kunststof_rabat_boeideel': '#f0ece0',
-    'polyester_glad': '#f8f6f0',
-    'polyester_rabat': '#f5f3eb',
+    'kunststof': '#ffffff',
+    'hout': '#b5651d',
+    'aluminium': '#a8a8a8',
+    'standaard': '#f5f5f5',
+    'kunststof_rabat': '#efefef',
+    'kunststof_rabat_boeideel': '#eeeeee',
+    'polyester_glad': '#f8f8f8',
+    'polyester_rabat': '#f0f0f0',
   };
-  return materialMap[materiaal] || '#f5f2e3';
-}
-
-// Roof component to display tiled roof like in the reference
-function RoofModel({ dakHelling = 45 }) {
-  // Convert dakHelling to radians
-  const roofAngleRad = (dakHelling * Math.PI) / 180;
-  const roofMesh = useRef<THREE.Mesh>(null);
-  
-  // Get texture for the roof tiles
-  const texture = useTexture({
-    map: '/placeholder.svg', // Replace with actual roof tile texture if available
-  });
-  
-  return (
-    <group position={[0, -0.5, -0.5]}>
-      {/* Sloped roof */}
-      <mesh ref={roofMesh} rotation={[-roofAngleRad, 0, 0]} position={[0, -0.5, -1.8]} receiveShadow>
-        <planeGeometry args={[6, 6]} />
-        <meshStandardMaterial 
-          color="#333333" 
-          roughness={0.8} 
-          metalness={0.1}
-        />
-      </mesh>
-      
-      {/* Add roof tile details */}
-      {Array.from({ length: 20 }).map((_, rowIndex) => (
-        Array.from({ length: 10 }).map((_, colIndex) => (
-          <mesh 
-            key={`tile-${rowIndex}-${colIndex}`}
-            position={[
-              -2.5 + colIndex * 0.5,
-              -0.5 - 0.1 * Math.sin(roofAngleRad) * rowIndex,
-              -1.8 - 0.25 * Math.cos(roofAngleRad) * rowIndex
-            ]}
-            rotation={[-roofAngleRad, 0, 0]}
-            scale={[0.48, 0.2, 0.01]}
-          >
-            <boxGeometry args={[1, 1, 0.1]} />
-            <meshStandardMaterial color="#222222" roughness={0.9} />
-          </mesh>
-        ))
-      ))}
-    </group>
-  );
+  return materialMap[materiaal] || '#ffffff';
 }
 
 function DakkapelModel({ 
@@ -136,9 +91,8 @@ function DakkapelModel({
   
   // Set camera position based on dakkapel size
   useEffect(() => {
-    camera.position.z = 3;
-    camera.position.y = 0.5; 
-    camera.position.x = 2;
+    camera.position.z = Math.max(2.5, breedte / 300);
+    camera.position.y = 0; // Reset camera vertical position
   }, [breedte, camera]);
   
   // Normalize dimensions for the 3D model
@@ -154,8 +108,8 @@ function DakkapelModel({
   // Basic animation
   useFrame(({ clock }) => {
     if (dakkapelRef.current) {
-      // Very slight "breathing" animation
-      dakkapelRef.current.position.y += Math.sin(clock.getElapsedTime() * 0.5) * 0.0001;
+      // Apply a very slight rotation for a "breathing" effect
+      dakkapelRef.current.rotation.y += 0.001;
     }
 
     // Animate the rolluik if shown
@@ -182,7 +136,7 @@ function DakkapelModel({
     }
   });
   
-  // Calculate window dimensions and positions based on number of windows
+  // Calculate window dimensions and positions based on number of windows and type
   const windowHeight = getKozijnHeight(kozijnHoogte).kozijn / 300; // Convert to model scale
   const windowPositions: [number, number, number][] = [];
   const windowWidth = width * 0.8 / Math.max(aantalRamen, 1);
@@ -194,6 +148,9 @@ function DakkapelModel({
     windowPositions.push([xPos, yPos, 0.26]);
   }
 
+  // Convert dakHelling to radians for the 3D rendering
+  const dakHellingRadians = (dakHelling * Math.PI) / 180;
+  
   // Adjustments based on house side (woningZijde)
   let houseRotation = 0;
   if (woningZijde === 'voor') {
@@ -204,155 +161,219 @@ function DakkapelModel({
   // 'achter' is default (0 degrees)
 
   return (
-    <>
-      <RoofModel dakHelling={dakHelling} />
+    <group ref={dakkapelRef} rotation={[0, houseRotation, 0]}>
+      {/* Dakkapel base */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[width, height, 0.5]} />
+        <meshStandardMaterial color={zijkantenColor} />
+      </mesh>
       
-      <group ref={dakkapelRef} rotation={[0, houseRotation, 0]} position={[0, 0, 0]}>
-        {/* Main dakkapel body with realistic shape */}
-        <group>
-          {/* Dakkapel frame/box */}
-          <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[width, height, 0.5]} />
-            <meshStandardMaterial color={dakkapelColor} />
+      {/* Roof reinforcement for solar panels if selected */}
+      {showDakVersteviging && (
+        <group position={[0, height/2 + 0.05, 0]}>
+          <mesh>
+            <boxGeometry args={[width, 0.05, 0.5]} />
+            <meshStandardMaterial color="#777777" />
           </mesh>
-          
-          {/* Top/roof part */}
-          <mesh position={[0, height/2 + 0.05, 0]}>
-            <boxGeometry args={[width + 0.1, 0.1, 0.6]} />
-            <meshStandardMaterial color="#c0c0c0" /> {/* Roof cap color */}
-          </mesh>
-          
-          {/* Front panel with nicer finish */}
-          <mesh position={[0, 0, 0.25]}>
-            <boxGeometry args={[width, height, 0.02]} />
-            <meshStandardMaterial 
-              color={dakkapelColor} 
-              roughness={0.2}
-              metalness={0}
-            />
-          </mesh>
-          
-          {/* Side panels with slight extension */}
-          <mesh position={[-width/2 - 0.05, 0, 0]}>
-            <boxGeometry args={[0.1, height, 0.5]} />
-            <meshStandardMaterial color={zijkantenColor} />
-          </mesh>
-          
-          <mesh position={[width/2 + 0.05, 0, 0]}>
-            <boxGeometry args={[0.1, height, 0.5]} />
-            <meshStandardMaterial color={zijkantenColor} />
-          </mesh>
-
-          {/* Drainage pipe like in the reference image */}
-          {showGootafwerking && (
-            <mesh position={[width/2 - 0.05, -height/2 + 0.2, 0.2]} rotation={[0, 0, 0]}>
-              <cylinderGeometry args={[0.03, 0.03, height, 8]} />
-              <meshStandardMaterial color="#c0c0c0" />
+          {/* Reinforcement beams */}
+          {Array.from({ length: 3 }).map((_, i) => (
+            <mesh key={`beam-${i}`} position={[-width/3 + i * (width/3), -0.1, 0]}>
+              <boxGeometry args={[0.05, 0.2, 0.5]} />
+              <meshStandardMaterial color="#555555" />
             </mesh>
-          )}
-          
-          {/* Windows based on aantal ramen and kozijnHoogte */}
-          {windowPositions.map((pos, index) => (
-            <group key={`window-${index}`} position={pos}>
-              {/* Window frame with more realistic appearance */}
-              <mesh>
-                <boxGeometry args={[windowWidth * 0.95, windowHeight, 0.03]} />
-                <meshStandardMaterial 
-                  color={kozijnenColor} 
-                  roughness={0.3}
-                  metalness={0}
-                />
-              </mesh>
-              
-              {/* Window glass with reflection */}
-              <mesh position={[0, 0, 0.02]}>
-                <boxGeometry args={[windowWidth * 0.85, windowHeight * 0.9, 0.01]} />
-                <meshStandardMaterial 
-                  color="#a5d8ff" 
-                  transparent 
-                  opacity={0.7} 
-                  roughness={0.1}
-                  metalness={0.3}
-                  envMapIntensity={1.5}
-                />
-              </mesh>
-              
-              {/* Window handle with better appearance */}
-              <mesh position={[windowWidth * 0.3, 0, 0.035]} rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[0.01, 0.01, 0.08, 8]} />
-                <meshStandardMaterial 
-                  color={draaikiepramenColor} 
-                  metalness={0.6}
-                  roughness={0.2}
-                />
-              </mesh>
-
-              {/* Horren if selected */}
-              {showHorren && (
-                <mesh position={[0, 0, 0.035]}>
-                  <boxGeometry args={[windowWidth * 0.83, windowHeight * 0.88, 0.002]} />
-                  <meshStandardMaterial color="#dddddd" wireframe={true} transparent={true} opacity={0.5} />
-                </mesh>
-              )}
-            </group>
           ))}
-          
-          {/* Ventilation system if selected */}
-          {showVentilatie && (
-            <group position={[0, height/2 - 0.1, 0.26]}>
-              <mesh>
-                <boxGeometry args={[width * 0.8, 0.05, 0.02]} />
-                <meshStandardMaterial color="#aaaaaa" />
-              </mesh>
-              {/* Ventilation grills */}
-              {Array.from({ length: 10 }).map((_, i) => (
-                <mesh key={`vent-${i}`} position={[-width * 0.35 + i * width * 0.08, 0, 0.02]}>
-                  <cylinderGeometry args={[0.01, 0.01, 0.05, 8]} />
-                  <meshStandardMaterial color="#555555" />
-                </mesh>
-              ))}
-            </group>
-          )}
-          
-          {/* Zonwering if selected */}
-          {showZonwering && (
-            <mesh position={[0, height/2 + 0.1, 0.3]}>
-              <boxGeometry args={[width, 0.1, 0.6]} />
-              <meshStandardMaterial color="#888888" />
+        </group>
+      )}
+      
+      {/* Mini Rooftop (invisible AC) if selected */}
+      {showMinirooftop && (
+        <group position={[0, height/2 + 0.1, 0]}>
+          <mesh>
+            <boxGeometry args={[width * 0.3, 0.15, 0.3]} />
+            <meshStandardMaterial color="#666666" />
+          </mesh>
+          {/* Ventilation grills */}
+          <mesh position={[0, 0, 0.16]}>
+            <boxGeometry args={[width * 0.28, 0.12, 0.01]} />
+            <meshStandardMaterial color="#444444" />
+          </mesh>
+          {/* Small AC logo */}
+          <mesh position={[0, 0.08, 0.16]} rotation={[Math.PI/2, 0, 0]}>
+            <planeGeometry args={[0.15, 0.15]} />
+            <meshBasicMaterial>
+              <canvasTexture attach="map" args={[(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 64;
+                canvas.height = 64;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fillRect(0, 0, 64, 64);
+                  ctx.font = 'bold 24px Arial';
+                  ctx.fillStyle = '#0066cc';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillText('AC', 32, 32);
+                }
+                return canvas;
+              })()]} />
+            </meshBasicMaterial>
+          </mesh>
+        </group>
+      )}
+      
+      {/* Front panel */}
+      <mesh position={[0, 0, 0.25]}>
+        <boxGeometry args={[width, height, 0.02]} />
+        <meshStandardMaterial color={dakkapelColor} />
+      </mesh>
+
+      {/* Ventilation system if selected */}
+      {showVentilatie && (
+        <group position={[0, height/2 - 0.1, 0.26]}>
+          <mesh>
+            <boxGeometry args={[width * 0.8, 0.05, 0.02]} />
+            <meshStandardMaterial color="#aaaaaa" />
+          </mesh>
+          {/* Ventilation grills */}
+          {Array.from({ length: 10 }).map((_, i) => (
+            <mesh key={`vent-${i}`} position={[-width * 0.35 + i * width * 0.08, 0, 0.02]}>
+              <cylinderGeometry args={[0.01, 0.01, 0.05, 8]} />
+              <meshStandardMaterial color="#555555" />
             </mesh>
-          )}
+          ))}
+        </group>
+      )}
+      
+      {/* Ventilation grills if selected */}
+      {showVentilatieroosters && (
+        <group position={[0, height/4 + 0.05, 0.265]}>
+          <mesh>
+            <boxGeometry args={[width * 0.9, 0.04, 0.01]} />
+            <meshStandardMaterial color="#cccccc" />
+          </mesh>
+          {/* Small vents across the width */}
+          {Array.from({ length: Math.floor(width * 20) }).map((_, i) => (
+            <mesh key={`vent-small-${i}`} position={[-width * 0.45 + i * 0.05, 0, 0.01]}>
+              <boxGeometry args={[0.02, 0.035, 0.005]} />
+              <meshStandardMaterial color="#999999" />
+            </mesh>
+          ))}
+        </group>
+      )}
+
+      {/* Gutter finishing if selected */}
+      {showGootafwerking && (
+        <group position={[0, height/2 + 0.05, 0.2]}>
+          <mesh>
+            <boxGeometry args={[width + 0.1, 0.08, 0.1]} />
+            <meshStandardMaterial color="#999999" />
+          </mesh>
+          {/* Detailed gutter pipe */}
+          <mesh position={[width/2 - 0.1, -height/4, 0.05]}>
+            <cylinderGeometry args={[0.03, 0.03, height/2, 8]} />
+            <meshStandardMaterial color="#888888" />
+          </mesh>
+        </group>
+      )}
+
+      {/* Windows based on aantal ramen and kozijnHoogte */}
+      {windowPositions.map((pos, index) => (
+        <group key={`window-${index}`} position={pos}>
+          {/* Window frame */}
+          <mesh>
+            <boxGeometry args={[windowWidth * 0.95, windowHeight, 0.03]} />
+            <meshStandardMaterial color={kozijnenColor} />
+          </mesh>
           
-          {/* Electric rolluik if selected */}
-          {showRolluik && (
-            <group>
-              {/* Rolluik housing */}
-              <mesh position={[0, height/2 + 0.05, 0.3]}>
-                <boxGeometry args={[width, 0.08, 0.1]} />
-                <meshStandardMaterial color="#555555" />
-              </mesh>
-              
-              {/* Rolluik curtain - animated */}
-              <mesh 
-                ref={rolluikRef} 
-                position={[0, 0, 0.26]} 
-                scale={[1, 0.5, 1]}
-              >
-                <boxGeometry args={[width - 0.05, height, 0.01]} />
-                <meshStandardMaterial color="#cccccc" />
-                
-                {/* Horizontal slats for the rolluik */}
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <mesh key={`slat-${i}`} position={[0, height/2 - i * (height/10) - 0.05, 0.005]}>
-                    <boxGeometry args={[width - 0.05, 0.02, 0.005]} />
-                    <meshStandardMaterial color="#999999" />
-                  </mesh>
-                ))}
-              </mesh>
-            </group>
+          {/* Window glass */}
+          <mesh position={[0, 0, 0.02]}>
+            <boxGeometry args={[windowWidth * 0.85, windowHeight * 0.9, 0.01]} />
+            <meshStandardMaterial color="#a5d8ff" transparent opacity={0.7} />
+          </mesh>
+          
+          {/* Window handles - different color for draaikiepramen */}
+          <mesh position={[windowWidth * 0.3, 0, 0.035]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.01, 0.01, 0.08, 8]} />
+            <meshStandardMaterial color={draaikiepramenColor} />
+          </mesh>
+
+          {/* Horren if selected */}
+          {showHorren && (
+            <mesh position={[0, 0, 0.035]}>
+              <boxGeometry args={[windowWidth * 0.83, windowHeight * 0.88, 0.002]} />
+              <meshStandardMaterial color="#dddddd" wireframe={true} transparent={true} opacity={0.5} />
+            </mesh>
           )}
         </group>
-      </group>
-    </>
+      ))}
+      
+      {/* Zonwering if selected */}
+      {showZonwering && (
+        <mesh position={[0, height/2 + 0.1, 0.3]}>
+          <boxGeometry args={[width, 0.1, 0.6]} />
+          <meshStandardMaterial color="#888888" />
+        </mesh>
+      )}
+      
+      {/* Electric rolluik if selected */}
+      {showRolluik && (
+        <group>
+          {/* Rolluik housing */}
+          <mesh position={[0, height/2 + 0.05, 0.3]}>
+            <boxGeometry args={[width, 0.08, 0.1]} />
+            <meshStandardMaterial color="#555555" />
+          </mesh>
+          
+          {/* Rolluik curtain - animated */}
+          <mesh 
+            ref={rolluikRef} 
+            position={[0, 0, 0.26]} 
+            scale={[1, 0.5, 1]}
+          >
+            <boxGeometry args={[width - 0.05, height, 0.01]} />
+            <meshStandardMaterial color="#cccccc" />
+            
+            {/* Horizontal slats for the rolluik */}
+            {Array.from({ length: 12 }).map((_, i) => (
+              <mesh key={`slat-${i}`} position={[0, height/2 - i * (height/10) - 0.05, 0.005]}>
+                <boxGeometry args={[width - 0.05, 0.02, 0.005]} />
+                <meshStandardMaterial color="#999999" />
+              </mesh>
+            ))}
+          </mesh>
+        </group>
+      )}
+
+      {/* Kader dakkapel if selected - reduce white space between dakkapel and frame */}
+      {showKaderDakkapel && (
+        <group>
+          {/* Top frame */}
+          <mesh position={[0, height/2 + 0.01, 0.25]}>
+            <boxGeometry args={[width + 0.08, 0.05, 0.055]} />
+            <meshStandardMaterial color="#444444" />
+          </mesh>
+          
+          {/* Bottom frame */}
+          <mesh position={[0, -height/2 - 0.01, 0.25]}>
+            <boxGeometry args={[width + 0.08, 0.05, 0.055]} />
+            <meshStandardMaterial color="#444444" />
+          </mesh>
+          
+          {/* Left frame */}
+          <mesh position={[-width/2 - 0.04, 0, 0.25]}>
+            <boxGeometry args={[0.05, height, 0.055]} />
+            <meshStandardMaterial color="#444444" />
+          </mesh>
+          
+          {/* Right frame */}
+          <mesh position={[width/2 + 0.04, 0, 0.25]}>
+            <boxGeometry args={[0.05, height, 0.055]} />
+            <meshStandardMaterial color="#444444" />
+          </mesh>
+        </group>
+      )}
+    </group>
   );
 }
 
@@ -406,10 +427,10 @@ export function DakkapelRenderer({
   const effectiveKozijnHoogte = configuration?.kozijnHoogte || kozijnHoogte || 'standaard';
 
   return (
-    <div className="w-full h-full min-h-[400px] bg-gray-50 rounded-md overflow-hidden">
-      <Canvas shadows camera={{ position: [2, 0.5, 3], fov: 50 }}>
+    <div className="w-full h-full min-h-[300px] bg-gray-50 rounded-md overflow-hidden">
+      <Canvas camera={{ position: [0, 0, 2.5], fov: 50 }}>
         <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={0.8} castShadow />
+        <directionalLight position={[5, 5, 5]} intensity={0.8} />
         <directionalLight position={[-5, 5, -5]} intensity={0.4} />
         <Center>
           <DakkapelModel 
@@ -448,3 +469,4 @@ export function DakkapelRenderer({
     </div>
   );
 }
+
