@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Center, useTexture } from '@react-three/drei';
+import { OrbitControls, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte } from './DakkapelCalculator';
 import { getKozijnHeight } from '@/utils/calculatorUtils';
@@ -59,15 +59,6 @@ function getMaterialColor(materiaal: string = 'kunststof'): string {
   return materialMap[materiaal] || '#ffffff';
 }
 
-// Define a reusable roof tile texture component
-function RoofTexture() {
-  const texture = useTexture({
-    map: '/lovable-uploads/8dee90a3-2594-46de-a447-3debe7a44ab0.png',
-  });
-  
-  return texture;
-}
-
 function DakkapelModel({ 
   breedte = 300, 
   hoogte = 175, 
@@ -118,7 +109,7 @@ function DakkapelModel({
   useFrame(({ clock }) => {
     if (dakkapelRef.current) {
       // Apply a very slight rotation for a "breathing" effect
-      dakkapelRef.current.rotation.y += 0.0003;
+      dakkapelRef.current.rotation.y += 0.001;
     }
 
     // Animate the rolluik if shown
@@ -156,6 +147,9 @@ function DakkapelModel({
     const yPos = -height/20; // Slightly lower than center
     windowPositions.push([xPos, yPos, 0.26]);
   }
+
+  // Convert dakHelling to radians for the 3D rendering
+  const dakHellingRadians = (dakHelling * Math.PI) / 180;
   
   // Adjustments based on house side (woningZijde)
   let houseRotation = 0;
@@ -166,19 +160,8 @@ function DakkapelModel({
   }
   // 'achter' is default (0 degrees)
 
-  // Use the RoofTexture component
-  const roofTextureProps = useTexture({
-    map: '/lovable-uploads/8dee90a3-2594-46de-a447-3debe7a44ab0.png',
-  });
-
   return (
     <group ref={dakkapelRef} rotation={[0, houseRotation, 0]}>
-      {/* Roof tiles underneath the dakkapel */}
-      <mesh position={[0, 0, -0.4]} rotation={[dakHelling * Math.PI / 180, 0, 0]}>
-        <planeGeometry args={[width * 4, width * 4]} />
-        <meshStandardMaterial {...roofTextureProps} color="#222222" />
-      </mesh>
-
       {/* Dakkapel base */}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[width, height, 0.5]} />
@@ -213,6 +196,28 @@ function DakkapelModel({
           <mesh position={[0, 0, 0.16]}>
             <boxGeometry args={[width * 0.28, 0.12, 0.01]} />
             <meshStandardMaterial color="#444444" />
+          </mesh>
+          {/* Small AC logo */}
+          <mesh position={[0, 0.08, 0.16]} rotation={[Math.PI/2, 0, 0]}>
+            <planeGeometry args={[0.15, 0.15]} />
+            <meshBasicMaterial>
+              <canvasTexture attach="map" args={[(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 64;
+                canvas.height = 64;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fillRect(0, 0, 64, 64);
+                  ctx.font = 'bold 24px Arial';
+                  ctx.fillStyle = '#0066cc';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillText('AC', 32, 32);
+                }
+                return canvas;
+              })()]} />
+            </meshBasicMaterial>
           </mesh>
         </group>
       )}
@@ -422,9 +427,9 @@ export function DakkapelRenderer({
   const effectiveKozijnHoogte = configuration?.kozijnHoogte || kozijnHoogte || 'standaard';
 
   return (
-    <div className="w-full h-full min-h-[300px] bg-white rounded-md overflow-hidden">
+    <div className="w-full h-full min-h-[300px] bg-gray-50 rounded-md overflow-hidden">
       <Canvas camera={{ position: [0, 0, 2.5], fov: 50 }}>
-        <ambientLight intensity={0.7} />
+        <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={0.8} />
         <directionalLight position={[-5, 5, -5]} intensity={0.4} />
         <Center>
@@ -459,11 +464,9 @@ export function DakkapelRenderer({
           minZoom={1.5}
           maxPolarAngle={Math.PI / 1.5}
           minPolarAngle={Math.PI / 8}
-          enablePan={false}
-          autoRotate={false}
-          autoRotateSpeed={0.5}
         />
       </Canvas>
     </div>
   );
 }
+
