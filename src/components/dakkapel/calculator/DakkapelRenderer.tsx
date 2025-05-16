@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Center } from '@react-three/drei';
+import { OrbitControls, Center, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { DakkapelConfiguration, DakkapelType, KozijnHoogte } from './DakkapelCalculator';
 import { getKozijnHeight } from '@/utils/calculatorUtils';
@@ -59,6 +59,15 @@ function getMaterialColor(materiaal: string = 'kunststof'): string {
   return materialMap[materiaal] || '#ffffff';
 }
 
+// Define a reusable roof tile texture component
+function RoofTexture() {
+  const texture = useTexture({
+    map: '/lovable-uploads/8dee90a3-2594-46de-a447-3debe7a44ab0.png',
+  });
+  
+  return texture;
+}
+
 function DakkapelModel({ 
   breedte = 300, 
   hoogte = 175, 
@@ -109,7 +118,7 @@ function DakkapelModel({
   useFrame(({ clock }) => {
     if (dakkapelRef.current) {
       // Apply a very slight rotation for a "breathing" effect
-      dakkapelRef.current.rotation.y += 0.001;
+      dakkapelRef.current.rotation.y += 0.0003;
     }
 
     // Animate the rolluik if shown
@@ -157,58 +166,18 @@ function DakkapelModel({
   }
   // 'achter' is default (0 degrees)
 
+  // Use the RoofTexture component
+  const roofTextureProps = useTexture({
+    map: '/lovable-uploads/8dee90a3-2594-46de-a447-3debe7a44ab0.png',
+  });
+
   return (
     <group ref={dakkapelRef} rotation={[0, houseRotation, 0]}>
-      {/* Roof tiles surrounding the dakkapel */}
-      <group position={[0, 0, -0.2]}>
-        {/* Left roof section */}
-        <mesh position={[-width - 0.4, 0, 0]} rotation={[0, 0, 0]}>
-          <planeGeometry args={[width * 1.5, height * 2.5]} />
-          <meshStandardMaterial color="#222222">
-            <texture
-              attach="map"
-              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
-              repeat={[10, 10]}
-            />
-          </meshStandardMaterial>
-        </mesh>
-
-        {/* Right roof section */}
-        <mesh position={[width + 0.4, 0, 0]} rotation={[0, 0, 0]}>
-          <planeGeometry args={[width * 1.5, height * 2.5]} />
-          <meshStandardMaterial color="#222222">
-            <texture
-              attach="map"
-              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
-              repeat={[10, 10]}
-            />
-          </meshStandardMaterial>
-        </mesh>
-
-        {/* Bottom roof section */}
-        <mesh position={[0, -height - 0.2, 0]} rotation={[0, 0, 0]}>
-          <planeGeometry args={[width * 4, height]} />
-          <meshStandardMaterial color="#222222">
-            <texture
-              attach="map"
-              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
-              repeat={[10, 10]}
-            />
-          </meshStandardMaterial>
-        </mesh>
-
-        {/* Top roof section */}
-        <mesh position={[0, height + 0.2, 0]} rotation={[0, 0, 0]}>
-          <planeGeometry args={[width * 4, height]} />
-          <meshStandardMaterial color="#222222">
-            <texture
-              attach="map"
-              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
-              repeat={[10, 10]}
-            />
-          </meshStandardMaterial>
-        </mesh>
-      </group>
+      {/* Roof tiles underneath the dakkapel */}
+      <mesh position={[0, 0, -0.4]} rotation={[dakHelling * Math.PI / 180, 0, 0]}>
+        <planeGeometry args={[width * 4, width * 4]} />
+        <meshStandardMaterial {...roofTextureProps} color="#222222" />
+      </mesh>
 
       {/* Dakkapel base */}
       <mesh position={[0, 0, 0]}>
@@ -244,28 +213,6 @@ function DakkapelModel({
           <mesh position={[0, 0, 0.16]}>
             <boxGeometry args={[width * 0.28, 0.12, 0.01]} />
             <meshStandardMaterial color="#444444" />
-          </mesh>
-          {/* Small AC logo */}
-          <mesh position={[0, 0.08, 0.16]} rotation={[Math.PI/2, 0, 0]}>
-            <planeGeometry args={[0.15, 0.15]} />
-            <meshBasicMaterial>
-              <canvasTexture attach="map" args={[(() => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 64;
-                canvas.height = 64;
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                  ctx.fillStyle = '#ffffff';
-                  ctx.fillRect(0, 0, 64, 64);
-                  ctx.font = 'bold 24px Arial';
-                  ctx.fillStyle = '#0066cc';
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'middle';
-                  ctx.fillText('AC', 32, 32);
-                }
-                return canvas;
-              })()]} />
-            </meshBasicMaterial>
           </mesh>
         </group>
       )}
@@ -475,9 +422,9 @@ export function DakkapelRenderer({
   const effectiveKozijnHoogte = configuration?.kozijnHoogte || kozijnHoogte || 'standaard';
 
   return (
-    <div className="w-full h-full min-h-[300px] bg-gray-50 rounded-md overflow-hidden">
+    <div className="w-full h-full min-h-[300px] bg-white rounded-md overflow-hidden">
       <Canvas camera={{ position: [0, 0, 2.5], fov: 50 }}>
-        <ambientLight intensity={0.6} />
+        <ambientLight intensity={0.7} />
         <directionalLight position={[5, 5, 5]} intensity={0.8} />
         <directionalLight position={[-5, 5, -5]} intensity={0.4} />
         <Center>
@@ -512,6 +459,9 @@ export function DakkapelRenderer({
           minZoom={1.5}
           maxPolarAngle={Math.PI / 1.5}
           minPolarAngle={Math.PI / 8}
+          enablePan={false}
+          autoRotate={false}
+          autoRotateSpeed={0.5}
         />
       </Canvas>
     </div>
