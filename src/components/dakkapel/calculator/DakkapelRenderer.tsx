@@ -147,9 +147,6 @@ function DakkapelModel({
     const yPos = -height/20; // Slightly lower than center
     windowPositions.push([xPos, yPos, 0.26]);
   }
-
-  // Convert dakHelling to radians for the 3D rendering
-  const dakHellingRadians = (dakHelling * Math.PI) / 180;
   
   // Adjustments based on house side (woningZijde)
   let houseRotation = 0;
@@ -469,4 +466,3 @@ export function DakkapelRenderer({
     </div>
   );
 }
-
