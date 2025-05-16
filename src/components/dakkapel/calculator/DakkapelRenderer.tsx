@@ -159,6 +159,57 @@ function DakkapelModel({
 
   return (
     <group ref={dakkapelRef} rotation={[0, houseRotation, 0]}>
+      {/* Roof tiles surrounding the dakkapel */}
+      <group position={[0, 0, -0.2]}>
+        {/* Left roof section */}
+        <mesh position={[-width - 0.4, 0, 0]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[width * 1.5, height * 2.5]} />
+          <meshStandardMaterial color="#222222">
+            <texture
+              attach="map"
+              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
+              repeat={[10, 10]}
+            />
+          </meshStandardMaterial>
+        </mesh>
+
+        {/* Right roof section */}
+        <mesh position={[width + 0.4, 0, 0]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[width * 1.5, height * 2.5]} />
+          <meshStandardMaterial color="#222222">
+            <texture
+              attach="map"
+              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
+              repeat={[10, 10]}
+            />
+          </meshStandardMaterial>
+        </mesh>
+
+        {/* Bottom roof section */}
+        <mesh position={[0, -height - 0.2, 0]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[width * 4, height]} />
+          <meshStandardMaterial color="#222222">
+            <texture
+              attach="map"
+              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
+              repeat={[10, 10]}
+            />
+          </meshStandardMaterial>
+        </mesh>
+
+        {/* Top roof section */}
+        <mesh position={[0, height + 0.2, 0]} rotation={[0, 0, 0]}>
+          <planeGeometry args={[width * 4, height]} />
+          <meshStandardMaterial color="#222222">
+            <texture
+              attach="map"
+              url="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJHSURBVHgB7d2xbcJgEIbhH4mSgpKegZIZGIEpmIAZGIWOho6eDWAFeguQZXMXy4AQshzf+z1S5OiQkV9dFIIBAAAAAAAAAAAAAAAAAAAA8AkWsjJLreV3MpIXTRNb1bVTU11jEdVY9lo/aax7JRpAu3Le5e/B5O+YK3mXpW4I5krU4wM4yELRBiBao2wNEK1RugaI1ihZA7xGW6kv0RoFT4CnaCsV8oQn2gu4yKdFu8EAzHQxsLTCI7DiAcykaGluRFZjNWasaB9h1AYZxkocPnl7dP28Pfxfv5jVWFtFO4HJIjVWtAYoPgKr+AisxgisUGMFni6uFO0NnM1qrNQp8EGbFoj2Bs7CGmON8SroVvP2iHaDs4nUWJcP/r0ab/nP1pdoDXA2q7FSLwD9aeH48F+NV+NiJa4xb4+JFL0xY8V6DENjLDDGQmPMNcZMAAAAAAAAAAAAAAAAAAAAAAAAAAAAdm6pmxU+hVprrTEW+nwDrbXW2sW5dx8+mbAfy81zc+3eZJXDa+e/N2+fid3t3BP2ze2jJ2juM7G77yi2mrunprlXALibrK/J+pksl+Z9+fWb5mpL8zg/eh5c+x/4mWzuJu9dY6nHDcBvmvNbxULjfKK5L3cfwOtQGL7dcDpXI3k2wMNhMPx0/rDcGejgfPh2NGxof/RLOHwLUZ+EyeaSKVkDJJNtAJLJNgDJZBuAZLINQDLZEvhdwXPg+B8C0Y4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/OQfBJUG0gT8KC4AAAAASUVORK5CYII=" 
+              repeat={[10, 10]}
+            />
+          </meshStandardMaterial>
+        </mesh>
+      </group>
+
       {/* Dakkapel base */}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[width, height, 0.5]} />
