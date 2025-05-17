@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
@@ -128,7 +127,7 @@ export function TuinhuizenGallery() {
       <div className="container">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-brand-darkGreen">
-            Modern Douglas Tuinhuis – 500 cm breed
+            Plano tuinhuis – 500 cm breed
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
             Een stijlvolle combinatie van berging en overkapping met zwart/douglas hout.
