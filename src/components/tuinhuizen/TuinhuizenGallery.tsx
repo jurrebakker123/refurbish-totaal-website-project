@@ -14,7 +14,8 @@ const ANGLES = [
   { degree: 180, src: '/lovable-uploads/1d399cd4-9b33-4b0d-8c07-f6314f8b5a6a.png' },
   { degree: 225, src: '/lovable-uploads/3fb04066-dfc7-400c-9fda-28e2a97979a4.png' },
   { degree: 270, src: '/lovable-uploads/0e7822c5-5fb3-4431-868f-04b3c7ca0be1.png' },
-  { degree: 315, src: '/lovable-uploads/0271be36-660a-4b52-bf9a-b9d16efce0c5.png' },
+  // Replacing the problematic 315 degree image with another angle image
+  { degree: 315, src: '/lovable-uploads/f73444a4-98da-45bd-b6aa-7cd2faa43809.png' },
 ];
 
 export function TuinhuizenGallery() {
