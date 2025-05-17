@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Slider } from '@/components/ui/slider';
-import { SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { SlidersHorizontal, RotateCcw, EuroIcon } from 'lucide-react';
 
 // Define the angles for our 360-degree view with new images
 const ANGLES = [
@@ -133,6 +133,11 @@ export function TuinhuizenGallery() {
             Een stijlvolle combinatie van berging en overkapping met zwart/douglas hout.
             Bekijk het tuinhuis vanuit alle hoeken.
           </p>
+          <div className="mt-4 inline-flex items-center justify-center px-6 py-3 bg-brand-darkGreen text-white rounded-lg text-xl font-semibold">
+            <span className="mr-2">Vanaf</span>
+            <span>€1.999,99</span>
+            <span className="ml-1 text-sm">ex btw</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -264,6 +269,12 @@ export function TuinhuizenGallery() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                   <span>EPDM dakbedekking met aluminium randafwerking</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span>Prijs: vanaf €1.999,99 ex btw</span>
                 </li>
               </ul>
             </div>
