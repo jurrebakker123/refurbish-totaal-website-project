@@ -13,6 +13,19 @@ import {
   ArrowDown 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useForm } from 'react-hook-form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Step types
 type ConfigStep = 'intro' | 'width' | 'roofPitch' | 'model' | 'material' | 'colors' | 'extras' | 'deliveryTime' | 'contact';
@@ -45,7 +58,6 @@ interface DakkapelConfiguration {
     boeien: ColorOption;
     zijwanden: ColorOption;
     kozijnen: ColorOption;
-    draaiendeDelen: ColorOption;
   };
   extras: {
     ventilatieroosters: boolean;
@@ -63,6 +75,23 @@ interface DakkapelConfiguration {
   };
 }
 
+// Form schema
+const contactFormSchema = z.object({
+  name: z.string().min(2, {
+    message: "Naam moet minimaal 2 tekens bevatten",
+  }),
+  email: z.string().email({
+    message: "Ongeldig e-mailadres",
+  }),
+  phone: z.string().min(10, {
+    message: "Ongeldig telefoonnummer",
+  }),
+  address: z.string().min(5, {
+    message: "Vul een geldig adres in",
+  }),
+  comment: z.string().optional(),
+});
+
 export const DakkapelConfigurator: React.FC = () => {
   // Current step state
   const [currentStep, setCurrentStep] = useState<ConfigStep>('intro');
@@ -76,8 +105,7 @@ export const DakkapelConfigurator: React.FC = () => {
     colors: {
       boeien: 'wit',
       zijwanden: 'wit',
-      kozijnen: 'wit',
-      draaiendeDelen: 'wit'
+      kozijnen: 'wit'
     },
     extras: {
       ventilatieroosters: false,
@@ -93,6 +121,18 @@ export const DakkapelConfigurator: React.FC = () => {
       address: '',
       comment: ''
     }
+  });
+
+  // Setup form
+  const form = useForm<z.infer<typeof contactFormSchema>>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      comment: "",
+    },
   });
 
   // Width options
@@ -269,19 +309,8 @@ export const DakkapelConfigurator: React.FC = () => {
     setConfiguration({ ...configuration, deliveryTime: timeValue });
   };
 
-  const handleContactChange = (field: keyof typeof configuration.contact, value: string) => {
-    setConfiguration({
-      ...configuration,
-      contact: {
-        ...configuration.contact,
-        [field]: value
-      }
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted', configuration);
+  const onSubmit = (values: z.infer<typeof contactFormSchema>) => {
+    console.log('Form submitted', { ...configuration, contact: values });
     // Here you would typically send the data to your backend
     alert('Uw aanvraag is verstuurd! Wij nemen zo spoedig mogelijk contact met u op.');
     // Reset form or navigate away
@@ -291,51 +320,70 @@ export const DakkapelConfigurator: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep]);
+  
+  // Update preview image based on selections
+  const getDakkapelPreviewImage = () => {
+    // For now just return the uploaded example image
+    return '/lovable-uploads/7637419b-43f3-4013-b688-d06efaec5329.png';
+  };
 
   return (
     <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Configuration Overview */}
       <div className="bg-gray-50 p-4 border-b">
-        <h3 className="font-semibold text-lg mb-2">Overzicht van uw samenstelling</h3>
+        <h3 className="font-semibold text-base mb-2">Overzicht van uw samenstelling</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
           {configuration.width && (
             <div className="p-2 bg-white rounded shadow-sm">
-              <p className="text-gray-500">Breedte</p>
-              <p className="font-medium">{configuration.width.range}</p>
+              <p className="text-gray-500 text-xs">Breedte</p>
+              <p className="font-medium text-sm">{configuration.width.range}</p>
             </div>
           )}
           {configuration.roofPitch && (
             <div className="p-2 bg-white rounded shadow-sm">
-              <p className="text-gray-500">Dakhelling</p>
-              <p className="font-medium">
+              <p className="text-gray-500 text-xs">Dakhelling</p>
+              <p className="font-medium text-sm">
                 {roofPitchOptions.find(o => o.value === configuration.roofPitch)?.label}
               </p>
             </div>
           )}
           {configuration.model && (
             <div className="p-2 bg-white rounded shadow-sm">
-              <p className="text-gray-500">Model</p>
-              <p className="font-medium">
+              <p className="text-gray-500 text-xs">Model</p>
+              <p className="font-medium text-sm">
                 {modelOptions.find(o => o.id === configuration.model)?.name}
               </p>
             </div>
           )}
           {configuration.material && (
             <div className="p-2 bg-white rounded shadow-sm">
-              <p className="text-gray-500">Materiaal</p>
-              <p className="font-medium">
+              <p className="text-gray-500 text-xs">Materiaal</p>
+              <p className="font-medium text-sm">
                 {materialOptions.find(o => o.value === configuration.material)?.label}
               </p>
             </div>
           )}
         </div>
         
-        {/* Price indication */}
-        <div className="mt-4 text-right">
-          <p className="text-sm text-gray-500">Geschatte prijs vanaf:</p>
-          <p className="text-xl font-bold text-brand-darkGreen">
-            {formatPrice(calculatePrice())}
-          </p>
+        <div className="flex flex-col md:flex-row gap-4 mt-4 items-center">
+          {/* Preview image */}
+          {(configuration.width || configuration.model) && (
+            <div className="rounded-md overflow-hidden w-full md:w-1/2 h-40 bg-white">
+              <img 
+                src={getDakkapelPreviewImage()}
+                alt="Dakkapel voorbeeld" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          {/* Price indication */}
+          <div className="mt-2 md:mt-0 w-full md:w-1/2 text-right">
+            <p className="text-sm text-gray-500">Geschatte prijs vanaf:</p>
+            <p className="text-xl font-bold text-brand-darkGreen">
+              {formatPrice(calculatePrice())}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -343,17 +391,17 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Intro Step */}
         {currentStep === 'intro' && (
           <div className="text-center max-w-3xl mx-auto py-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Configureer uw dakkapel</h2>
-            <p className="text-lg mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Configureer uw dakkapel</h2>
+            <p className="text-base mb-6">
               Stel gratis en vrijblijvend uw ideale dakkapel samen, op basis van uw woning en wensen.
             </p>
-            <p className="text-brand-lightGreen font-semibold mb-8">
+            <p className="text-brand-lightGreen font-semibold mb-8 text-sm">
               Configureer uw dakkapel binnen 1 minuut
             </p>
             <Button 
               onClick={nextStep} 
               size="lg"
-              className="font-medium text-lg px-8 py-6 h-auto"
+              className="font-medium text-base px-8 py-5 h-auto"
             >
               Start met samenstellen <ChevronRight className="ml-2" />
             </Button>
@@ -363,23 +411,23 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 1: Width */}
         {currentStep === 'width' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
               <Ruler className="mr-2" /> Stap 1: Hoe breed moet uw dakkapel worden?
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {widthOptions.map((option, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all",
+                    "border rounded-lg p-3 cursor-pointer transition-all",
                     configuration.width?.range === option.range 
                       ? "border-brand-lightGreen bg-brand-lightGreen bg-opacity-10" 
                       : "hover:border-brand-lightGreen"
                   )}
                   onClick={() => handleWidthChange(option)}
                 >
-                  <div className="h-20 flex items-center justify-center mb-2 relative">
+                  <div className="h-16 flex items-center justify-center mb-2 relative">
                     <div className="w-full h-4 bg-gray-200 relative">
                       <div 
                         className="absolute h-8 border-l-2 border-r-2 border-gray-500 bg-gray-100 bg-opacity-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
@@ -387,8 +435,8 @@ export const DakkapelConfigurator: React.FC = () => {
                       ></div>
                     </div>
                   </div>
-                  <h3 className="font-medium text-center">{option.range}</h3>
-                  <p className="text-center text-brand-darkGreen font-semibold mt-2">
+                  <h3 className="font-medium text-sm text-center">{option.range}</h3>
+                  <p className="text-center text-brand-darkGreen font-semibold mt-1 text-sm">
                     vanaf {formatPrice(option.price)}
                   </p>
                 </div>
@@ -400,27 +448,27 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 2: Roof Pitch */}
         {currentStep === 'roofPitch' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
               <Triangle className="mr-2" /> Stap 2: Wat is de helling van uw dak?
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {roofPitchOptions.map((option, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all flex flex-col",
+                    "border rounded-lg p-3 cursor-pointer transition-all flex flex-col",
                     configuration.roofPitch === option.value 
                       ? "border-brand-lightGreen bg-brand-lightGreen bg-opacity-10" 
                       : "hover:border-brand-lightGreen"
                   )}
                   onClick={() => handleRoofPitchChange(option.value)}
                 >
-                  <div className="h-20 flex items-center justify-center mb-2 relative">
+                  <div className="h-16 flex items-center justify-center mb-2 relative">
                     {option.value !== 'unknown' ? (
                       <div className="relative">
                         <Triangle 
-                          size={60}
+                          size={48}
                           className="text-gray-400"
                           style={{ 
                             transform: `rotate(${
@@ -432,10 +480,10 @@ export const DakkapelConfigurator: React.FC = () => {
                         />
                       </div>
                     ) : (
-                      <div className="text-3xl text-gray-300">?</div>
+                      <div className="text-2xl text-gray-300">?</div>
                     )}
                   </div>
-                  <h3 className="font-medium text-center mt-auto">{option.label}</h3>
+                  <h3 className="font-medium text-sm text-center mt-auto">{option.label}</h3>
                   {option.value === 'unknown' && (
                     <p className="text-xs text-center text-gray-500 mt-1">Wij meten dit gratis voor u in</p>
                   )}
@@ -448,30 +496,30 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 3: Model */}
         {currentStep === 'model' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
               <Home className="mr-2" /> Stap 3: Welk model spreekt u aan?
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {modelOptions.map((option, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all",
+                    "border rounded-lg p-3 cursor-pointer transition-all",
                     configuration.model === option.id 
                       ? "border-brand-lightGreen bg-brand-lightGreen bg-opacity-10" 
                       : "hover:border-brand-lightGreen"
                   )}
                   onClick={() => handleModelChange(option.id)}
                 >
-                  <div className="h-40 mb-4 overflow-hidden rounded-lg">
+                  <div className="h-36 mb-3 overflow-hidden rounded-lg">
                     <img 
                       src={option.imageUrl} 
                       alt={option.name} 
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h3 className="font-medium text-center">{option.name}</h3>
+                  <h3 className="font-medium text-sm text-center">{option.name}</h3>
                 </div>
               ))}
             </div>
@@ -481,39 +529,39 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 4: Material */}
         {currentStep === 'material' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Stap 4: Kies uw afwerkmateriaal</h2>
+            <h2 className="text-xl font-bold mb-4">Stap 4: Kies uw afwerkmateriaal</h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {materialOptions.map((option, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all",
+                    "border rounded-lg p-3 cursor-pointer transition-all",
                     configuration.material === option.value 
                       ? "border-brand-lightGreen bg-brand-lightGreen bg-opacity-10" 
                       : "hover:border-brand-lightGreen"
                   )}
                   onClick={() => handleMaterialChange(option.value)}
                 >
-                  <div className="h-32 flex items-center justify-center mb-2 bg-gray-100 rounded">
+                  <div className="h-28 flex items-center justify-center mb-2 bg-gray-100 rounded">
                     {/* Material illustration - placeholders */}
                     {option.value === 'keralit' && (
-                      <div className="w-32 h-16 bg-gray-200 rounded flex items-center justify-center">
+                      <div className="w-28 h-14 bg-gray-200 rounded flex items-center justify-center">
                         Keralit
                       </div>
                     )}
                     {option.value === 'hout' && (
-                      <div className="w-32 h-16 bg-amber-100 rounded flex items-center justify-center">
+                      <div className="w-28 h-14 bg-amber-100 rounded flex items-center justify-center">
                         Hout
                       </div>
                     )}
                     {option.value === 'zink' && (
-                      <div className="w-32 h-16 bg-gray-300 rounded flex items-center justify-center">
+                      <div className="w-28 h-14 bg-gray-300 rounded flex items-center justify-center">
                         Zink
                       </div>
                     )}
                   </div>
-                  <h3 className="font-medium text-center">{option.label}</h3>
+                  <h3 className="font-medium text-sm text-center">{option.label}</h3>
                 </div>
               ))}
             </div>
@@ -523,20 +571,20 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 5: Colors */}
         {currentStep === 'colors' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
               <Palette className="mr-2" /> Stap 5: Kies uw kleuren
             </h2>
             
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Boeien colors */}
               <div>
-                <h3 className="font-medium mb-2">Boeien:</h3>
+                <h3 className="font-medium text-sm mb-2">Boeien:</h3>
                 <div className="flex flex-wrap gap-3">
                   {colorOptions.map(color => (
                     <div
                       key={color}
                       className={cn(
-                        "w-12 h-12 rounded-full cursor-pointer flex items-center justify-center",
+                        "w-10 h-10 rounded-full cursor-pointer flex items-center justify-center",
                         configuration.colors.boeien === color ? "ring-2 ring-offset-2 ring-brand-lightGreen" : ""
                       )}
                       style={{ 
@@ -552,7 +600,7 @@ export const DakkapelConfigurator: React.FC = () => {
                       onClick={() => handleColorChange('boeien', color)}
                     >
                       {configuration.colors.boeien === color && (
-                        <Check className="text-white" />
+                        <Check className="text-white h-4 w-4" />
                       )}
                     </div>
                   ))}
@@ -561,13 +609,13 @@ export const DakkapelConfigurator: React.FC = () => {
               
               {/* Zijwanden colors */}
               <div>
-                <h3 className="font-medium mb-2">Zijwanden:</h3>
+                <h3 className="font-medium text-sm mb-2">Zijwanden:</h3>
                 <div className="flex flex-wrap gap-3">
                   {colorOptions.map(color => (
                     <div
                       key={color}
                       className={cn(
-                        "w-12 h-12 rounded-full cursor-pointer flex items-center justify-center",
+                        "w-10 h-10 rounded-full cursor-pointer flex items-center justify-center",
                         configuration.colors.zijwanden === color ? "ring-2 ring-offset-2 ring-brand-lightGreen" : ""
                       )}
                       style={{ 
@@ -583,7 +631,7 @@ export const DakkapelConfigurator: React.FC = () => {
                       onClick={() => handleColorChange('zijwanden', color)}
                     >
                       {configuration.colors.zijwanden === color && (
-                        <Check className="text-white" />
+                        <Check className="text-white h-4 w-4" />
                       )}
                     </div>
                   ))}
@@ -592,13 +640,13 @@ export const DakkapelConfigurator: React.FC = () => {
               
               {/* Kozijnen colors */}
               <div>
-                <h3 className="font-medium mb-2">Kozijnen:</h3>
+                <h3 className="font-medium text-sm mb-2">Kozijnen:</h3>
                 <div className="flex flex-wrap gap-3">
                   {colorOptions.map(color => (
                     <div
                       key={color}
                       className={cn(
-                        "w-12 h-12 rounded-full cursor-pointer flex items-center justify-center",
+                        "w-10 h-10 rounded-full cursor-pointer flex items-center justify-center",
                         configuration.colors.kozijnen === color ? "ring-2 ring-offset-2 ring-brand-lightGreen" : ""
                       )}
                       style={{ 
@@ -614,38 +662,7 @@ export const DakkapelConfigurator: React.FC = () => {
                       onClick={() => handleColorChange('kozijnen', color)}
                     >
                       {configuration.colors.kozijnen === color && (
-                        <Check className="text-white" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Draaiende delen colors */}
-              <div>
-                <h3 className="font-medium mb-2">Draaiende delen:</h3>
-                <div className="flex flex-wrap gap-3">
-                  {colorOptions.map(color => (
-                    <div
-                      key={color}
-                      className={cn(
-                        "w-12 h-12 rounded-full cursor-pointer flex items-center justify-center",
-                        configuration.colors.draaiendeDelen === color ? "ring-2 ring-offset-2 ring-brand-lightGreen" : ""
-                      )}
-                      style={{ 
-                        backgroundColor: color === 'wit' ? 'white' : 
-                                          color === 'crème' ? '#f5f5dc' :
-                                          color === 'blauw' ? '#1e3a8a' :
-                                          color === 'groen' ? '#166534' :
-                                          color === 'antraciet' ? '#374151' :
-                                          color === 'kwartsgrijs' ? '#9ca3af' : 
-                                          '#e5e7eb',
-                        border: color === 'wit' ? '1px solid #e5e7eb' : 'none'
-                      }}
-                      onClick={() => handleColorChange('draaiendeDelen', color)}
-                    >
-                      {configuration.colors.draaiendeDelen === color && (
-                        <Check className="text-white" />
+                        <Check className="text-white h-4 w-4" />
                       )}
                     </div>
                   ))}
@@ -658,11 +675,11 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 6: Extras */}
         {currentStep === 'extras' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
               <Check className="mr-2" /> Stap 6: Wilt u extra opties?
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { id: 'ventilatieroosters', label: 'Ventilatieroosters', price: 250 },
                 { id: 'zonwering', label: 'Zonwering (Somfy-Ilmo motor)', price: 800 },
@@ -672,7 +689,7 @@ export const DakkapelConfigurator: React.FC = () => {
                 <div 
                   key={option.id}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all",
+                    "border rounded-lg p-3 cursor-pointer transition-all",
                     configuration.extras[option.id as keyof typeof configuration.extras] 
                       ? "border-brand-lightGreen bg-brand-lightGreen bg-opacity-10" 
                       : "hover:border-brand-lightGreen"
@@ -682,18 +699,18 @@ export const DakkapelConfigurator: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div className={cn(
-                        "w-6 h-6 rounded border flex items-center justify-center mr-3",
+                        "w-5 h-5 rounded border flex items-center justify-center mr-3",
                         configuration.extras[option.id as keyof typeof configuration.extras]
                           ? "bg-brand-lightGreen border-brand-lightGreen" 
                           : "border-gray-300"
                       )}>
                         {configuration.extras[option.id as keyof typeof configuration.extras] && (
-                          <Check className="text-white h-4 w-4" />
+                          <Check className="text-white h-3 w-3" />
                         )}
                       </div>
-                      <span className="font-medium">{option.label}</span>
+                      <span className="font-medium text-sm">{option.label}</span>
                     </div>
-                    <span className="text-brand-darkGreen font-semibold">
+                    <span className="text-brand-darkGreen font-semibold text-sm">
                       + {formatPrice(option.price)}
                     </span>
                   </div>
@@ -706,29 +723,29 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 7: Delivery Time */}
         {currentStep === 'deliveryTime' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
               <Calendar className="mr-2" /> Stap 7: Wat is uw gewenste uitvoeringsmoment?
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {deliveryTimeOptions.map((option, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "border rounded-lg p-4 cursor-pointer transition-all",
+                    "border rounded-lg p-3 cursor-pointer transition-all",
                     configuration.deliveryTime === option.value 
                       ? "border-brand-lightGreen bg-brand-lightGreen bg-opacity-10" 
                       : "hover:border-brand-lightGreen"
                   )}
                   onClick={() => handleDeliveryTimeChange(option.value)}
                 >
-                  <div className="h-16 flex items-center justify-center mb-2">
+                  <div className="h-14 flex items-center justify-center mb-2">
                     <Calendar className={cn(
-                      "h-10 w-10",
+                      "h-8 w-8",
                       configuration.deliveryTime === option.value ? "text-brand-lightGreen" : "text-gray-400"
                     )} />
                   </div>
-                  <h3 className="font-medium text-center">{option.label}</h3>
+                  <h3 className="font-medium text-sm text-center">{option.label}</h3>
                 </div>
               ))}
             </div>
@@ -738,102 +755,109 @@ export const DakkapelConfigurator: React.FC = () => {
         {/* Step 8: Contact Form */}
         {currentStep === 'contact' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Stap 8: Uw gegevens</h2>
-            <p className="mb-6 text-gray-600">
+            <h2 className="text-xl font-bold mb-4">Stap 8: Uw gegevens</h2>
+            <p className="mb-4 text-gray-600 text-sm">
               Vul uw gegevens in zodat wij een offerte op maat kunnen sturen.
             </p>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Naam *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    required
-                    value={configuration.contact.name}
-                    onChange={(e) => handleContactChange('name', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Naam *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Uw naam" {...field} className="text-sm" />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">E-mail *</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="uw@email.nl" {...field} className="text-sm" />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Telefoon *</FormLabel>
+                        <FormControl>
+                          <Input type="tel" placeholder="06 12345678" {...field} className="text-sm" />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Adres *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Straat, nummer, postcode, plaats" {...field} className="text-sm" />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    E-mail *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    value={configuration.contact.email}
-                    onChange={(e) => handleContactChange('email', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="comment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm">Opmerkingen</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Eventuele opmerkingen of vragen"
+                          {...field}
+                          className="resize-none h-24 text-sm"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
                 
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Telefoon *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    required
-                    value={configuration.contact.phone}
-                    onChange={(e) => handleContactChange('phone', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                  />
+                <div className="pt-4">
+                  <Button 
+                    type="submit" 
+                    className="w-full md:w-auto text-sm"
+                  >
+                    Offerte aanvragen
+                  </Button>
                 </div>
-                
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                    Adres *
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    required
-                    value={configuration.contact.address}
-                    onChange={(e) => handleContactChange('address', e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1">
-                  Opmerkingen
-                </label>
-                <textarea
-                  id="comment"
-                  rows={3}
-                  value={configuration.contact.comment}
-                  onChange={(e) => handleContactChange('comment', e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-transparent"
-                ></textarea>
-              </div>
-              
-              <div className="pt-4">
-                <Button 
-                  type="submit" 
-                  className="w-full md:w-auto"
-                >
-                  Offerte aanvragen
-                </Button>
-              </div>
-            </form>
+              </form>
+            </Form>
           </div>
         )}
 
         {/* Navigation buttons */}
         {currentStep !== 'intro' && (
-          <div className="mt-8 pt-4 border-t flex justify-between">
+          <div className="mt-6 pt-4 border-t flex justify-between">
             <Button
               variant="outline"
               onClick={prevStep}
-              className="flex items-center"
+              className="flex items-center text-sm"
             >
               <ChevronLeft className="mr-1" /> Terug
             </Button>
@@ -841,7 +865,7 @@ export const DakkapelConfigurator: React.FC = () => {
             {currentStep !== 'contact' && (
               <Button
                 onClick={nextStep}
-                className="flex items-center"
+                className="flex items-center text-sm"
                 disabled={
                   (currentStep === 'width' && !configuration.width) ||
                   (currentStep === 'roofPitch' && !configuration.roofPitch) ||
@@ -859,3 +883,4 @@ export const DakkapelConfigurator: React.FC = () => {
     </div>
   );
 };
+
