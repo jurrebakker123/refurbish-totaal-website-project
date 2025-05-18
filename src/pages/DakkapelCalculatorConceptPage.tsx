@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { DakkapelCalculator } from '@/components/dakkapel/calculator/DakkapelCalculator';
+import { DakkapelConfigurator } from '@/components/dakkapel/calculator/DakkapelConfigurator';
 import { Helmet } from 'react-helmet';
 import { Toaster } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -123,21 +123,13 @@ const DakkapelCalculatorConceptPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>Dakkapel Calculator | Refurbish Totaal Nederland</title>
-        <meta name="description" content="Bereken eenvoudig de kosten van uw dakkapel op maat. Pas afmetingen, materialen en opties aan voor een nauwkeurige prijsindicatie." />
+        <title>Dakkapel Configurator | Refurbish Totaal Nederland</title>
+        <meta name="description" content="Configureer eenvoudig uw ideale dakkapel op maat. Pas afmetingen, materialen en opties aan voor een nauwkeurige prijsindicatie en direct een offerte." />
       </Helmet>
       
       <Header />
-      <main className="flex-grow">
-        <div className="container py-8 md:py-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Dakkapel Calculator</h1>
-          <p className="text-center text-lg mb-8 max-w-3xl mx-auto">
-            Bereken direct de indicatieprijs voor uw dakkapel op maat. Pas de afmetingen en opties aan om een nauwkeurige prijsindicatie te krijgen.
-          </p>
-          <p className="text-center text-md mb-8 max-w-2xl mx-auto text-brand-lightGreen font-medium">
-            Nieuw: Bekijk een 3D-weergave van uw dakkapel terwijl u de instellingen aanpast!
-          </p>
-          
+      <main className="flex-grow bg-gray-50 py-8 md:py-12">
+        <div className="container">
           {isAdmin && (
             <div className="mb-8 flex justify-center">
               <Button 
@@ -150,7 +142,7 @@ const DakkapelCalculatorConceptPage = () => {
             </div>
           )}
           
-          <DakkapelCalculator />
+          <DakkapelConfigurator />
         </div>
       </main>
       <Footer />
