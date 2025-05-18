@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Center } from '@react-three/drei';
@@ -136,7 +135,7 @@ function DakkapelModel({
     }
   });
   
-  // Calculate window dimensions and positions based on number of windows and type
+  // Calculate window dimensions and positions based on number of windows
   const windowHeight = getKozijnHeight(kozijnHoogte).kozijn / 300; // Convert to model scale
   const windowPositions: [number, number, number][] = [];
   const windowWidth = width * 0.8 / Math.max(aantalRamen, 1);
@@ -147,12 +146,6 @@ function DakkapelModel({
     const yPos = -height/20; // Slightly lower than center
     windowPositions.push([xPos, yPos, 0.26]);
   }
-
-  // Convert dakHelling to radians for the 3D rendering
-  const dakHellingRadians = (dakHelling * Math.PI) / 180;
-  
-  // Calculate the roof angle to visualize the dakHelling
-  const roofAngle = Math.PI / 2 - dakHellingRadians;
 
   // Adjustments based on house side (woningZijde)
   let houseRotation = 0;
@@ -165,15 +158,15 @@ function DakkapelModel({
 
   return (
     <group ref={dakkapelRef} rotation={[0, houseRotation, 0]}>
-      {/* Roof base with dynamic dakHelling */}
-      <mesh position={[0, -0.5, 0]} rotation={[roofAngle, 0, 0]}>
-        <boxGeometry args={[2, 0.1, 2]} />
-        <meshStandardMaterial color="#8B4513" />
+      {/* Ground plane for context - simplified, no sloped roof */}
+      <mesh position={[0, -0.55, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[2, 2]} />
+        <meshStandardMaterial color="#8B4513" opacity={0.3} transparent={true} />
       </mesh>
       
       {/* Sporenkap if selected */}
       {showSporenkap && (
-        <group position={[0, -0.45, 0]} rotation={[roofAngle, 0, 0]}>
+        <group position={[0, -0.45, 0]}>
           {/* Wooden beams structure */}
           {Array.from({ length: 5 }).map((_, i) => (
             <mesh key={`sporenkap-${i}`} position={[-0.8 + i * 0.4, 0, 0]}>
