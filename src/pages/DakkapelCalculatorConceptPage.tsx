@@ -128,10 +128,10 @@ const DakkapelCalculatorConceptPage = () => {
       </Helmet>
       
       <Header />
-      <main className="flex-grow bg-gray-50 py-8 md:py-12">
+      <main className="flex-grow bg-gray-50 py-6 md:py-10">
         <div className="container">
           {isAdmin && (
-            <div className="mb-8 flex justify-center">
+            <div className="mb-6 flex justify-center">
               <Button 
                 onClick={downloadPricesAsExcel}
                 className="flex items-center gap-2"
