@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadPricesAsExcel } from '@/utils/excelUtils';
+import { DakkapelGallery } from '@/components/dakkapel/DakkapelGallery360';
 
 const DakkapelCalculatorConceptPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -142,7 +143,10 @@ const DakkapelCalculatorConceptPage = () => {
             </div>
           )}
           
-          <DakkapelConfigurator />
+          <DakkapelGallery />
+          <div className="mt-12">
+            <DakkapelConfigurator />
+          </div>
         </div>
       </main>
       <Footer />
