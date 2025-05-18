@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 interface OptimizedImageProps {
   src: string;
@@ -62,28 +61,13 @@ export function OptimizedImage({
   const handleLoad = () => {
     setIsLoading(false);
   };
-  return (
-    <div className={`relative ${className}`} style={{
-      minHeight: '50px',
-      ...style
-    }}>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+  return <div className="relative" style={{
+    minHeight: '50px',
+    ...style
+  }}>
+      {isLoading && <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
-      )}
-      <img
-        src={processPath(imgSrc)}
-        alt={alt}
-        className={`${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300 w-full h-full`}
-        style={{
-          objectFit,
-          width: width ? `${width}px` : '100%',
-          height: height ? `${height}px` : '100%',
-        }}
-        onError={handleError}
-        onLoad={handleLoad}
-      />
-    </div>
-  );
+        </div>}
+      
+    </div>;
 }
