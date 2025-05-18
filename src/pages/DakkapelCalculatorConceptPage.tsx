@@ -1,158 +1,120 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { DakkapelCalculator } from '@/components/dakkapel/calculator/DakkapelCalculator';
 import { Helmet } from 'react-helmet';
 import { Toaster } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-import { downloadPricesAsExcel } from '@/utils/excelUtils';
+import { InteractiveDakkapelCalculator } from '@/components/dakkapel/calculator/InteractiveDakkapelCalculator';
+import { CheckCircle } from 'lucide-react';
 
 const DakkapelCalculatorConceptPage = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    
-    // Check if user is admin (very simple check - in production you would use a proper auth system)
-    const checkAdminStatus = () => {
-      const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-      setIsAdmin(isLoggedIn);
-    };
-    
-    // Initialize or validate localStorage for calculator prices
-    const initializeCalculatorPrices = () => {
-      try {
-        // Check if localStorage is available
-        if (typeof localStorage !== 'undefined') {
-          // Check if data already exists
-          const savedPrices = localStorage.getItem('calculatorPrices');
-          if (!savedPrices) {
-            console.log('Setting default calculator prices');
-            // Set default prices if not available
-            const defaultPrices = {
-              basePrices: {
-                typeA: 7060,
-                typeB: 7290,
-                typeC: 8200,
-                typeD: 8780,
-                typeE: 9330,
-              },
-              materialMultipliers: {
-                kunststof: 1.0,
-                hout: 1.2,
-                aluminium: 1.3,
-                standaard: 1.0,
-                kunststof_rabat: 1.05,
-                kunststof_rabat_boeideel: 1.08,
-                polyester_glad: 1.07,
-                polyester_rabat: 1.09
-              },
-              optionCosts: {
-                ventilatie: 450,
-                zonwering: 850,
-                gootafwerking: 350,
-                extra_isolatie: 650,
-                extra_draaikiepraam: 192.77,
-                horren: 240,
-                elektrisch_rolluik: 281.75,
-                verwijderen_bestaande: 402.50,
-                afvoeren_bouwafval: 150,
-                kader_dakkapel: 1140.26,
-                voorbereiden_rolluiken: 125,
-                minirooftop: 3177.69,
-                dak_versteviging: 400,
-                ventilatieroosters: 120,
-                sporenkap: 275
-              },
-              rcValueCosts: {
-                standaard: 0,
-                upgrade_6_0: 218,
-                upgrade_6_5: 250
-              },
-              kozijnHoogteAdjustments: {
-                standaard: 0,
-                medium: 150,
-                large: 300,
-                extra_large: 450
-              },
-              colorSurcharges: {
-                wit: 0,
-                crème: 0,
-                grijs: 210,
-                antraciet: 210,
-                zwart: 210,
-                staalblauw: 210,
-                dennengroen: 210
-              }
-            };
-            localStorage.setItem('calculatorPrices', JSON.stringify(defaultPrices));
-            
-            // Dispatch event to notify components that prices are available
-            const event = new Event('priceUpdate');
-            window.dispatchEvent(event);
-          } else {
-            // Validate saved prices and ensure all required fields exist
-            try {
-              const parsedPrices = JSON.parse(savedPrices);
-              // Check for minimal required structure
-              if (!parsedPrices.basePrices || !parsedPrices.materialMultipliers || !parsedPrices.optionCosts) {
-                console.warn('Incomplete price data found, resetting to defaults');
-                localStorage.removeItem('calculatorPrices');
-                // Call self recursively to set defaults
-                initializeCalculatorPrices();
-              }
-            } catch (parseError) {
-              console.error('Invalid JSON in saved prices', parseError);
-              localStorage.removeItem('calculatorPrices');
-              // Call self recursively to set defaults
-              initializeCalculatorPrices();
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error accessing localStorage', error);
-      }
-    };
-    
-    checkAdminStatus();
-    initializeCalculatorPrices();
-  }, []);
+  const [startConfig, setStartConfig] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Helmet>
-        <title>Dakkapel Calculator | Refurbish Totaal Nederland</title>
-        <meta name="description" content="Bereken eenvoudig de kosten van uw dakkapel op maat. Pas afmetingen, materialen en opties aan voor een nauwkeurige prijsindicatie." />
+        <title>Dakkapel Configurator | Refurbish Totaal Nederland</title>
+        <meta 
+          name="description" 
+          content="Configureer gratis en vrijblijvend uw ideale dakkapel binnen 1 minuut, op basis van uw woning en wensen. Direct een persoonlijke offerte op maat." 
+        />
       </Helmet>
       
       <Header />
+
       <main className="flex-grow">
-        <div className="container py-8 md:py-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Dakkapel Calculator</h1>
-          <p className="text-center text-lg mb-8 max-w-3xl mx-auto">
-            Bereken direct de indicatieprijs voor uw dakkapel op maat. Pas de afmetingen en opties aan om een nauwkeurige prijsindicatie te krijgen.
-          </p>
-          <p className="text-center text-md mb-8 max-w-2xl mx-auto text-brand-lightGreen font-medium">
-            Nieuw: Bekijk een 3D-weergave van uw dakkapel terwijl u de instellingen aanpast!
-          </p>
-          
-          {isAdmin && (
-            <div className="mb-8 flex justify-center">
-              <Button 
-                onClick={downloadPricesAsExcel}
-                className="flex items-center gap-2"
+        {!startConfig ? (
+          <div className="container max-w-5xl mx-auto py-16 px-4">
+            <div className="text-center mb-10">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-brand-darkGreen">
+                Configureer uw dakkapel
+              </h1>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Stel gratis en vrijblijvend uw ideale dakkapel samen, op basis van uw woning en wensen.
+              </p>
+              
+              <div className="flex flex-wrap justify-center gap-4 mt-8 mb-10">
+                <div className="flex items-center text-brand-darkGreen">
+                  <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen" />
+                  <span>Configureer binnen 1 minuut</span>
+                </div>
+                <div className="flex items-center text-brand-darkGreen">
+                  <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen" />
+                  <span>Direct prijsindicatie</span>
+                </div>
+                <div className="flex items-center text-brand-darkGreen">
+                  <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen" />
+                  <span>Persoonlijke offerte op maat</span>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setStartConfig(true)}
+                className="bg-brand-lightGreen hover:bg-opacity-90 text-white font-medium py-3 px-8 rounded-md text-lg shadow-lg transform transition hover:scale-105"
               >
-                <Download size={16} />
-                Download Prijzen als Excel
-              </Button>
+                Start met samenstellen
+              </button>
             </div>
-          )}
-          
-          <DakkapelCalculator />
-        </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="font-bold text-xl mb-4 text-brand-darkGreen">Waarom een dakkapel?</h2>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Tot 40% meer woonruimte</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Meer daglicht in uw woning</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Verhoging van uw woningwaarde</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Binnen één dag geplaatst</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>10 jaar garantie</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="font-bold text-xl mb-4 text-brand-darkGreen">Onze voordelen</h2>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Gratis inmeten</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Hoogwaardige materialen</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Eigen productiefaciliteit</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>Eigen montageteams</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 mr-2 text-brand-lightGreen shrink-0 mt-0.5" />
+                    <span>A-kwaliteit isolatiematerialen</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <InteractiveDakkapelCalculator onBack={() => setStartConfig(false)} />
+        )}
       </main>
+      
       <Footer />
       <Toaster position="top-center" richColors closeButton />
     </div>
