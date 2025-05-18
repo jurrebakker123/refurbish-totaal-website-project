@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { WidthStep } from './steps/WidthStep';
 import { RoofAngleStep } from './steps/RoofAngleStep';
@@ -51,6 +52,7 @@ export interface StepProps {
   nextStep: () => void;
   prevStep?: () => void;
   currentPrice: number;
+  submitConfigurator?: () => Promise<void>; // Added submitConfigurator as optional
 }
 
 export const DakkapelConfigurator: React.FC = () => {
