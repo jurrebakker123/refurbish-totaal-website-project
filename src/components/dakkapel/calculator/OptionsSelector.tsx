@@ -1,11 +1,9 @@
-
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DakkapelOptions, DakkapelConfiguration, KozijnHoogte, WoningZijde, KleurOptie } from './DakkapelCalculator';
 import { MoveRight, MoveLeft, CheckCircle } from 'lucide-react';
-import { DakkapelRenderer } from './DakkapelRenderer';
 import { 
   Select,
   SelectContent,
