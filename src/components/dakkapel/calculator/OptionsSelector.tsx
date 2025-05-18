@@ -1,9 +1,11 @@
+
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DakkapelOptions, DakkapelConfiguration, KozijnHoogte, WoningZijde, KleurOptie } from './DakkapelCalculator';
 import { MoveRight, MoveLeft, CheckCircle } from 'lucide-react';
+import { DakkapelRenderer } from './DakkapelRenderer';
 import { 
   Select,
   SelectContent,
@@ -168,16 +170,26 @@ export function OptionsSelector({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold mb-3">Configureer uw dakkapel</h2>
-        <p className="mb-5 text-gray-600 text-sm">
+        <h2 className="text-2xl font-bold mb-4">Configureer uw dakkapel</h2>
+        <p className="mb-6 text-gray-600">
           Pas alle opties aan naar uw wensen.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="h-[350px] border-2 border-dashed border-gray-300 bg-gray-50 rounded-md">
+          <DakkapelRenderer 
+            configuration={configuration} 
+            showRolluik={selectedOptions.elektrisch_rolluik} 
+          />
+          <div className="text-center text-sm text-gray-600 mt-2">
+            3D visualisatie (draai met muis)
+          </div>
+        </div>
+
         <div className="space-y-6">
           <div className="space-y-4">
-            <label className="font-medium text-gray-800 text-sm">Bepaal de hoogte van het kozijn</label>
+            <label className="font-medium text-gray-800">Bepaal de hoogte van het kozijn</label>
             <Select
               value={kozijnHoogte}
               onValueChange={handleKozijnHoogteChange}
@@ -189,7 +201,7 @@ export function OptionsSelector({
                 {kozijnHoogteOptions.map((optie) => (
                   <SelectItem key={optie.value} value={optie.value}>
                     <div>
-                      <div className="text-sm">{optie.label}</div>
+                      <div>{optie.label}</div>
                       <div className="text-xs text-gray-500">{optie.description}</div>
                     </div>
                   </SelectItem>
@@ -199,7 +211,7 @@ export function OptionsSelector({
           </div>
 
           <div className="space-y-4">
-            <label className="font-medium text-gray-800 text-sm">Aan welke zijde van de woning wilt u een dakkapel?</label>
+            <label className="font-medium text-gray-800">Aan welke zijde van de woning wilt u een dakkapel?</label>
             <Select
               value={woningZijde}
               onValueChange={handleWoningZijdeChange}
@@ -211,7 +223,7 @@ export function OptionsSelector({
                 {woningZijdeOptions.map((optie) => (
                   <SelectItem key={optie.value} value={optie.value}>
                     <div>
-                      <div className="text-sm">{optie.label}</div>
+                      <div>{optie.label}</div>
                       <div className="text-xs text-gray-500">{optie.description}</div>
                     </div>
                   </SelectItem>
@@ -221,7 +233,7 @@ export function OptionsSelector({
           </div>
 
           <div className="space-y-4">
-            <label className="font-medium text-gray-800 text-sm">Aantal ramen</label>
+            <label className="font-medium text-gray-800">Aantal ramen</label>
             <Select
               value={aantalRamen.toString()}
               onValueChange={(value) => onChange({}, parseInt(value))}
@@ -240,7 +252,7 @@ export function OptionsSelector({
           </div>
 
           <div className="space-y-4">
-            <label className="font-medium text-gray-800 text-sm">Welke kleur voor de draaikiepramen?</label>
+            <label className="font-medium text-gray-800">Welke kleur voor de draaikiepramen?</label>
             <Select
               value={kleurDraaikiepramen}
               onValueChange={handleKleurDraaikiepramenChange}
@@ -252,7 +264,7 @@ export function OptionsSelector({
                 {kleurOpties.map((kleur) => (
                   <SelectItem key={kleur.value} value={kleur.value}>
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-sm">{kleur.label}</span>
+                      <span>{kleur.label}</span>
                       {kleur.price > 0 && (
                         <span className="text-xs text-brand-darkGreen">+ €{kleur.price}</span>
                       )}
@@ -268,7 +280,7 @@ export function OptionsSelector({
       <div className="space-y-4">
         {/* Toggle options with Switch */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-start space-x-4 p-3 border rounded-md hover:bg-gray-50">
+          <div className="flex items-start space-x-4 p-4 border rounded-md hover:bg-gray-50">
             <div className="flex items-center h-5 mt-1">
               <Switch 
                 checked={selectedOptions.kader_dakkapel} 
@@ -278,18 +290,18 @@ export function OptionsSelector({
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="kader_dakkapel" className="font-medium text-gray-900 cursor-pointer text-sm">
+                <label htmlFor="kader_dakkapel" className="font-medium text-gray-900 cursor-pointer">
                   Wilt u een kader dakkapel?
                 </label>
-                <span className="text-xs font-medium text-brand-darkGreen">
+                <span className="text-sm font-medium text-brand-darkGreen">
                   + €1.140,26
                 </span>
               </div>
-              <p className="text-gray-600 text-xs">Fraai afgewerkt kader rondom de dakkapel</p>
+              <p className="text-gray-600 text-sm">Fraai afgewerkt kader rondom de dakkapel</p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-4 p-3 border rounded-md hover:bg-gray-50">
+          <div className="flex items-start space-x-4 p-4 border rounded-md hover:bg-gray-50">
             <div className="flex items-center h-5 mt-1">
               <Switch 
                 checked={selectedOptions.minirooftop} 
@@ -299,18 +311,18 @@ export function OptionsSelector({
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="minirooftop" className="font-medium text-gray-900 cursor-pointer text-sm">
+                <label htmlFor="minirooftop" className="font-medium text-gray-900 cursor-pointer">
                   Wilt u een minirooftop (niet zichtbare airco)?
                 </label>
-                <span className="text-xs font-medium text-brand-darkGreen">
+                <span className="text-sm font-medium text-brand-darkGreen">
                   + €3.177,69
                 </span>
               </div>
-              <p className="text-gray-600 text-xs">Onzichtbare airconditioning geïntegreerd in uw dakkapel</p>
+              <p className="text-gray-600 text-sm">Onzichtbare airconditioning geïntegreerd in uw dakkapel</p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-4 p-3 border rounded-md hover:bg-gray-50">
+          <div className="flex items-start space-x-4 p-4 border rounded-md hover:bg-gray-50">
             <div className="flex items-center h-5 mt-1">
               <Switch 
                 checked={selectedOptions.dak_versteviging} 
@@ -320,20 +332,20 @@ export function OptionsSelector({
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="dak_versteviging" className="font-medium text-gray-900 cursor-pointer text-sm">
+                <label htmlFor="dak_versteviging" className="font-medium text-gray-900 cursor-pointer">
                   Versteviging dak t.b.v. zonnepanelen?
                 </label>
-                <span className="text-xs font-medium text-brand-darkGreen">
+                <span className="text-sm font-medium text-brand-darkGreen">
                   + €400,-
                 </span>
               </div>
-              <p className="text-gray-600 text-xs">Extra versteviging voor het plaatsen van zonnepanelen</p>
+              <p className="text-gray-600 text-sm">Extra versteviging voor het plaatsen van zonnepanelen</p>
             </div>
           </div>
 
           {/* Show this option conditionally if electric shutters are selected */}
           {selectedOptions.elektrisch_rolluik && (
-            <div className="flex items-start space-x-4 p-3 border rounded-md hover:bg-gray-50 bg-gray-50">
+            <div className="flex items-start space-x-4 p-4 border rounded-md hover:bg-gray-50 bg-gray-50">
               <div className="flex items-center h-5 mt-1">
                 <Switch 
                   checked={selectedOptions.voorbereiden_rolluiken} 
@@ -344,14 +356,14 @@ export function OptionsSelector({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="voorbereiden_rolluiken" className="font-medium text-gray-900 text-sm">
+                  <label htmlFor="voorbereiden_rolluiken" className="font-medium text-gray-900">
                     Voorbereidingen treffen voor rolluiken
                   </label>
-                  <span className="text-xs font-medium text-brand-darkGreen">
+                  <span className="text-sm font-medium text-brand-darkGreen">
                     Inbegrepen
                   </span>
                 </div>
-                <p className="text-gray-600 text-xs">Automatisch inbegrepen bij elektrische rolluiken</p>
+                <p className="text-gray-600 text-sm">Automatisch inbegrepen bij elektrische rolluiken</p>
               </div>
             </div>
           )}
@@ -361,7 +373,7 @@ export function OptionsSelector({
         {options.map((option) => {
           const optionId = option.id as keyof DakkapelOptions;
           return (
-            <div key={option.id} className="flex items-start space-x-4 p-3 border rounded-md hover:bg-gray-50">
+            <div key={option.id} className="flex items-start space-x-4 p-4 border rounded-md hover:bg-gray-50">
               <Checkbox 
                 id={option.id}
                 checked={selectedOptions[optionId]} 
@@ -372,15 +384,15 @@ export function OptionsSelector({
                 <div className="flex items-center justify-between">
                   <label 
                     htmlFor={option.id} 
-                    className="font-medium text-gray-900 cursor-pointer text-sm"
+                    className="font-medium text-gray-900 cursor-pointer"
                   >
                     {option.label}
                   </label>
-                  <span className="text-xs font-medium text-brand-darkGreen">
+                  <span className="text-sm font-medium text-brand-darkGreen">
                     {formatPrice(option.price, option.unit)}
                   </span>
                 </div>
-                <p className="text-gray-600 text-xs">{option.description}</p>
+                <p className="text-gray-600 text-sm">{option.description}</p>
               </div>
             </div>
           );
@@ -391,14 +403,12 @@ export function OptionsSelector({
         <Button 
           variant="outline" 
           onClick={onPrevious}
-          size="sm"
         >
           <MoveLeft className="mr-2 h-4 w-4" /> Vorige
         </Button>
         <Button 
           onClick={onNext} 
           className="bg-brand-lightGreen hover:bg-opacity-90"
-          size="sm"
         >
           Bekijk Resultaat <MoveRight className="ml-2 h-4 w-4" />
         </Button>

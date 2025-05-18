@@ -31,16 +31,24 @@ export function GardenScene() {
       {/* Secondary fill light to reduce harsh shadows */}
       <directionalLight position={[-5, 8, -5]} intensity={0.3} color="#b0c4de" />
       
-      {/* Simplified Cloud properties to match the actual API */}
+      {/* Updated Cloud properties to match the current API */}
       <Cloud 
         opacity={0.8}
         speed={0.4}
+        width={20}
+        depth={1.5}
+        segments={20}
+        depthTest={false}
         position={[-10, 15, -10]}
       />
       
       <Cloud 
         opacity={0.7}
         speed={0.3}
+        width={15}
+        depth={1.5}
+        segments={20}
+        depthTest={false}
         position={[10, 12, -15]}
       />
       

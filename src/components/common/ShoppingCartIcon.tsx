@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { ShoppingCart, X, Trash, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
 const ShoppingCartIcon = () => {
   const {
     cart,
@@ -11,11 +13,26 @@ const ShoppingCartIcon = () => {
     clearCart
   } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  
   const toggleCart = () => {
     setIsOpen(!isOpen);
   };
-  return <div className="relative">
-      
+  
+  return (
+    <div className="relative">
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={toggleCart}
+        className="relative p-2"
+      >
+        <ShoppingCart className="h-5 w-5" />
+        {cart.items.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {cart.items.length}
+          </span>
+        )}
+      </Button>
       
 
       {isOpen && <div className="absolute right-0 top-12 w-96 max-w-[90vw] bg-white rounded-md shadow-lg z-50 p-4">
@@ -70,6 +87,8 @@ const ShoppingCartIcon = () => {
               </div>
             </>}
         </div>}
-    </div>;
+    </div>
+  );
 };
+
 export default ShoppingCartIcon;
