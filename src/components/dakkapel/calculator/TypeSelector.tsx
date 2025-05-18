@@ -57,63 +57,45 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
   const renderDakkapelIcon = (type: DakkapelType) => {
     switch(type) {
       case 'typeA':
-        // Simple flat roof dakkapel with one window
-        return (
-          <div className="flex flex-col items-center justify-center h-28 w-full">
-            <div className="w-32 h-4 bg-gray-400"></div>
-            <div className="w-28 h-20 border-2 border-gray-400 flex items-center justify-center">
-              <div className="w-16 h-16 border border-gray-500"></div>
-            </div>
-          </div>
-        );
       case 'typeB':
-        // Wider flat roof dakkapel with one window
+        // Simple flat roof dakkapel
         return (
           <div className="flex flex-col items-center justify-center h-28 w-full">
-            <div className="w-36 h-4 bg-gray-400"></div>
-            <div className="w-32 h-20 border-2 border-gray-400 flex items-center justify-center">
-              <div className="w-16 h-16 border border-gray-500"></div>
-            </div>
+            <div className="w-32 h-4 bg-blue-300 mb-0"></div>
+            <div className="w-28 h-20 border-2 border-blue-300"></div>
           </div>
         );
       case 'typeC':
-        // Flat roof dakkapel with two windows
-        return (
-          <div className="flex flex-col items-center justify-center h-28 w-full">
-            <div className="w-36 h-4 bg-gray-400"></div>
-            <div className="w-32 h-20 border-2 border-gray-400 flex items-center justify-center gap-1">
-              <div className="w-14 h-16 border border-gray-500"></div>
-              <div className="w-14 h-16 border border-gray-500"></div>
-            </div>
-          </div>
-        );
       case 'typeD':
-        // Wider flat roof dakkapel with two windows
+        // Simple sloped roof dakkapel
         return (
           <div className="flex flex-col items-center justify-center h-28 w-full">
-            <div className="w-40 h-4 bg-gray-400"></div>
-            <div className="w-36 h-20 border-2 border-gray-400 flex items-center justify-center gap-3">
-              <div className="w-14 h-16 border border-gray-500"></div>
-              <div className="w-14 h-16 border border-gray-500"></div>
+            <div className="relative w-32 h-14">
+              <div className="absolute bottom-0 left-0 w-0 h-0 border-l-16 border-r-16 border-b-14 border-l-transparent border-r-transparent border-b-blue-300"></div>
+              <div className="absolute bottom-0 w-full h-1 bg-blue-300"></div>
             </div>
+            <div className="w-28 h-16 border-2 border-blue-300"></div>
           </div>
         );
       case 'typeE':
-        // Flat roof dakkapel with two windows and panel
+        // Double nokverhoging
         return (
           <div className="flex flex-col items-center justify-center h-28 w-full">
-            <div className="w-44 h-4 bg-gray-400"></div>
-            <div className="w-40 h-20 border-2 border-gray-400 flex items-center justify-center gap-2">
-              <div className="w-12 h-16 border border-gray-500"></div>
-              <div className="w-12 h-16 border border-gray-500"></div>
-              <div className="w-10 h-16 bg-gray-300"></div>
+            <div className="relative w-32 h-14 flex justify-center">
+              <div className="w-14 h-14 relative">
+                <div className="absolute w-14 h-14 border-t-14 border-l-7 border-r-7 border-t-blue-300 border-l-transparent border-r-transparent"></div>
+              </div>
+              <div className="w-14 h-14 relative">
+                <div className="absolute w-14 h-14 border-t-14 border-l-7 border-r-7 border-t-blue-300 border-l-transparent border-r-transparent"></div>
+              </div>
             </div>
+            <div className="w-28 h-14 border-2 border-blue-300"></div>
           </div>
         );
       default:
         return (
           <div className="flex items-center justify-center h-28 w-full">
-            <Home size={48} className="text-gray-400" />
+            <Home size={48} className="text-blue-300" />
           </div>
         );
     }
