@@ -35,20 +35,14 @@ export function GardenScene() {
       <Cloud 
         opacity={0.8}
         speed={0.4}
-        width={20}
-        depth={1.5}
         segments={20}
-        depthTest={false}
         position={[-10, 15, -10]}
       />
       
       <Cloud 
         opacity={0.7}
         speed={0.3}
-        width={15}
-        depth={1.5}
         segments={20}
-        depthTest={false}
         position={[10, 12, -15]}
       />
       

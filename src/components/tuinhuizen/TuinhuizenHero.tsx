@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Phone, Mail } from 'lucide-react';
@@ -23,8 +24,11 @@ export function TuinhuizenHero() {
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight animate-fade-in">
             Uw Specialist in Premium Tuinhuizen op Maat
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-100 animate-fade-in max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
+          <p className="text-xl md:text-2xl mb-4 text-gray-100 animate-fade-in max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
             Vakmanschap, kwaliteit en persoonlijke service voor uw droomtuinhuis
+          </p>
+          <p className="text-xl md:text-3xl mb-8 text-white font-semibold animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            Basismodel vanaf €1.999,00 inclusief btw
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <a 

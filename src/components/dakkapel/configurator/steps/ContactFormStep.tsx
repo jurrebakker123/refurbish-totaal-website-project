@@ -1,201 +1,184 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { StepProps } from '../DakkapelConfigurator';
-import { ArrowLeft, Send } from 'lucide-react';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Naam is verplicht' }),
-  email: z.string().email({ message: 'Voer een geldig e-mailadres in' }),
-  phone: z.string().min(10, { message: 'Voer een geldig telefoonnummer in' }),
-  address: z.string().min(5, { message: 'Adres is verplicht' }),
-  postalCode: z.string().min(6, { message: 'Voer een geldige postcode in' }),
-  city: z.string().min(2, { message: 'Woonplaats is verplicht' }),
-  comments: z.string().optional()
+const contactFormSchema = z.object({
+  name: z.string().min(2, "Naam is verplicht"),
+  email: z.string().email("Voer een geldig e-mailadres in"),
+  phone: z.string().min(10, "Voer een geldig telefoonnummer in"),
+  address: z.string().min(5, "Adres is verplicht"),
+  postalCode: z.string().min(6, "Postcode is verplicht"),
+  city: z.string().min(2, "Plaats is verplicht"),
+  comments: z.string().optional(),
 });
+
+type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export const ContactFormStep: React.FC<StepProps> = ({ 
   configuration, 
   updateConfiguration, 
-  nextStep, 
-  prevStep,
-  currentPrice
+  submitConfigurator, 
+  currentPrice 
 }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors } 
+  } = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      postalCode: '',
-      city: '',
-      comments: ''
+      name: configuration.contact?.name || '',
+      email: configuration.contact?.email || '',
+      phone: configuration.contact?.phone || '',
+      address: configuration.contact?.address || '',
+      postalCode: configuration.contact?.postalCode || '',
+      city: configuration.contact?.city || '',
+      comments: configuration.contact?.comments || '',
     }
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: ContactFormValues) => {
+    setIsSubmitting(true);
+    
     // Update the configuration with the contact details
-    updateConfiguration({ contact: values });
+    updateConfiguration({ 
+      contact: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        postalCode: data.postalCode,
+        city: data.city,
+        comments: data.comments || '',
+      } 
+    });
     
-    // This would normally submit the form to a backend API
-    console.log('Form submitted with values:', values);
-    console.log('Complete configuration:', { ...configuration, contact: values });
-    
-    // Show success message
-    toast.success('Bedankt! Uw offerte is verzonden.');
-    
-    // Call nextStep to complete the process
-    nextStep();
+    try {
+      // Submit the entire configuration
+      await submitConfigurator();
+      setSubmitSuccess(true);
+      toast.success("Offerte aanvraag succesvol verzonden!");
+    } catch (error) {
+      console.error("Failed to submit configurator:", error);
+      toast.error("Er is een fout opgetreden bij het verzenden van uw aanvraag. Probeer het later nog eens.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (submitSuccess) {
+    return (
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-4 text-brand-darkGreen">Aanvraag verzonden!</h2>
+        <p className="mb-6 text-lg">Bedankt voor uw aanvraag. We nemen zo snel mogelijk contact met u op.</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-brand-darkGreen">Stap 8 - Uw gegevens</h2>
-      <p className="mb-6 text-lg">Bijna klaar! Vul uw gegevens in voor een persoonlijke offerte.</p>
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Naam *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Uw volledige naam" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>E-mailadres *</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="uw@emailadres.nl" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Telefoonnummer *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="06-12345678" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Adres *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Straatnaam en huisnummer" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="postalCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Postcode *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1234 AB" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Woonplaats *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Uw woonplaats" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          
-          <FormField
-            control={form.control}
-            name="comments"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Extra wensen of opmerkingen</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Heeft u extra wensen of opmerkingen? Laat het ons weten."
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Optioneel - Laat ons weten als u nog specifieke vragen of verzoeken heeft.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+      <h2 className="text-2xl font-bold mb-6 text-brand-darkGreen">Laat uw gegevens achter</h2>
+      <p className="mb-6 text-lg">Vul uw contactgegevens in, zodat we u een passende offerte kunnen sturen.</p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Naam</label>
+          <input
+            type="text"
+            id="name"
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen ${errors.name ? 'border-red-500' : ''}`}
+            {...register("name")}
           />
-          
-          <div className="pt-4">
-            <p className="text-sm text-gray-500 mb-6">
-              Door op 'Offerte aanvragen' te klikken gaat u akkoord met onze algemene voorwaarden en privacy policy.
-              Wij gebruiken uw gegevens alleen om contact met u op te nemen over uw offerte.
-            </p>
-            
-            <div className="flex justify-between mt-10">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="border border-gray-300 hover:bg-gray-100 text-gray-700 px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300"
-              >
-                <ArrowLeft size={18} />
-                <span>Vorige stap</span>
-              </button>
-              
-              <button
-                type="submit"
-                className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300"
-              >
-                <span>Offerte aanvragen</span>
-                <Send size={18} />
-              </button>
+          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">E-mailadres</label>
+          <input
+            type="email"
+            id="email"
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen ${errors.email ? 'border-red-500' : ''}`}
+            {...register("email")}
+          />
+          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Telefoonnummer</label>
+          <input
+            type="tel"
+            id="phone"
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen ${errors.phone ? 'border-red-500' : ''}`}
+            {...register("phone")}
+          />
+          {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="address" className="block text-sm font-medium text-gray-700">Adres</label>
+          <input
+            type="text"
+            id="address"
+            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen ${errors.address ? 'border-red-500' : ''}`}
+            {...register("address")}
+          />
+          {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address.message}</p>}
+        </div>
+
+        <div>
+          <div className="flex space-x-4">
+            <div className="w-1/2">
+              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">Postcode</label>
+              <input
+                type="text"
+                id="postalCode"
+                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen ${errors.postalCode ? 'border-red-500' : ''}`}
+                {...register("postalCode")}
+              />
+              {errors.postalCode && <p className="mt-1 text-sm text-red-500">{errors.postalCode.message}</p>}
+            </div>
+
+            <div className="w-1/2">
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700">Plaats</label>
+              <input
+                type="text"
+                id="city"
+                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen ${errors.city ? 'border-red-500' : ''}`}
+                {...register("city")}
+              />
+              {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city.message}</p>}
             </div>
           </div>
-        </form>
-      </Form>
+        </div>
+
+        <div>
+          <label htmlFor="comments" className="block text-sm font-medium text-gray-700">Opmerkingen (optioneel)</label>
+          <textarea
+            id="comments"
+            rows={3}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-lightGreen focus:ring-brand-lightGreen"
+            {...register("comments")}
+          />
+        </div>
+
+        <div className="flex justify-end mt-8">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300"
+          >
+            <span>{isSubmitting ? 'Verzenden...' : 'Vraag offerte aan'}</span>
+            {!isSubmitting && <ArrowRight size={18} />}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

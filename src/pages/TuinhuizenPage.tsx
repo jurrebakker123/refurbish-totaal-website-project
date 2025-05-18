@@ -15,7 +15,7 @@ const TuinhuizenPage = () => {
       <Helmet>
         <title>Tuinhuisbouwer.nl | Premium Tuinhuizen op Maat</title>
         <meta name="description" content="Specialist in hoogwaardige tuinhuizen, overkappingen en buitenverblijven. Vakmanschap, kwaliteit en persoonlijke service voor uw droomtuinhuis." />
-        <meta name="keywords" content="tuinhuis, overkapping, buitenverblijf, tuinverblijf, douglas hout, maatwerk tuinhuis" />
+        <meta name="keywords" content="tuinhuis, overkapping, buitenverblijf, tuinverblijf, douglas hout, maatwerk tuinhuis, Plano Tuinhuis" />
         
         <script type="application/ld+json">
           {JSON.stringify({
@@ -28,7 +28,7 @@ const TuinhuizenPage = () => {
               "name": "Refurbish Totaal Nederland",
               "url": "https://www.refurbishtotaalnederland.nl"
             },
-            "description": "Specialist in hoogwaardige tuinhuizen, overkappingen en buitenverblijven. Vakmanschap, kwaliteit en persoonlijke service voor uw droomtuinhuis.",
+            "description": "Specialist in hoogwaardige tuinhuizen, overkappingen en buitenverblijven. Vakmanschap, kwaliteit en persoonlijke service voor uw droomtuinhuis. Basismodel vanaf €1.999,00 inclusief btw.",
             "areaServed": "Nederland"
           })}
         </script>
