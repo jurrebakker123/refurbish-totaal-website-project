@@ -248,7 +248,7 @@ export function TuinhuizenGallery() {
                   <svg className="h-6 w-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
-                  <span>Prijs: vanaf €1.999,99 ex btw</span>
+                  <span>Prijs: Basismodel vanaf €1.999,00 inclusief  btw</span>
                 </li>
               </ul>
             </div>
