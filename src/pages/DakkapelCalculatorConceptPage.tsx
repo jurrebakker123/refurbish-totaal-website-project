@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +7,6 @@ import { Toaster } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadPricesAsExcel } from '@/utils/excelUtils';
-import { DakkapelGallery } from '@/components/dakkapel/DakkapelGallery360';
 
 const DakkapelCalculatorConceptPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -136,6 +134,7 @@ const DakkapelCalculatorConceptPage = () => {
               <Button 
                 onClick={downloadPricesAsExcel}
                 className="flex items-center gap-2"
+                size="sm"
               >
                 <Download size={16} />
                 Download Prijzen als Excel
@@ -143,8 +142,7 @@ const DakkapelCalculatorConceptPage = () => {
             </div>
           )}
           
-          <DakkapelGallery />
-          <div className="mt-12">
+          <div className="mt-6">
             <DakkapelConfigurator />
           </div>
         </div>
