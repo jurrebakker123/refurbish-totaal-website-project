@@ -3,8 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DakkapelType, DakkapelConfiguration } from './DakkapelCalculator';
-import { MoveRight, MoveLeft, CheckCircle } from 'lucide-react';
-import { DakkapelRenderer } from './DakkapelRenderer';
+import { MoveRight, MoveLeft, CheckCircle, Home, Triangle } from 'lucide-react';
 import { getWidthRangeForType } from '@/utils/calculatorUtils';
 
 interface TypeSelectorProps {
@@ -53,6 +52,54 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
       windowCount: 'twee draaikiepramen en dicht paneel'
     }
   ];
+  
+  // Function to render the icon for each type
+  const renderDakkapelIcon = (type: DakkapelType) => {
+    switch(type) {
+      case 'typeA':
+      case 'typeB':
+        // Simple flat roof dakkapel
+        return (
+          <div className="flex flex-col items-center justify-center h-28 w-full">
+            <div className="w-32 h-4 bg-blue-300 mb-0"></div>
+            <div className="w-28 h-20 border-2 border-blue-300"></div>
+          </div>
+        );
+      case 'typeC':
+      case 'typeD':
+        // Simple sloped roof dakkapel
+        return (
+          <div className="flex flex-col items-center justify-center h-28 w-full">
+            <div className="relative w-32 h-14">
+              <div className="absolute bottom-0 left-0 w-0 h-0 border-l-16 border-r-16 border-b-14 border-l-transparent border-r-transparent border-b-blue-300"></div>
+              <div className="absolute bottom-0 w-full h-1 bg-blue-300"></div>
+            </div>
+            <div className="w-28 h-16 border-2 border-blue-300"></div>
+          </div>
+        );
+      case 'typeE':
+        // Double nokverhoging
+        return (
+          <div className="flex flex-col items-center justify-center h-28 w-full">
+            <div className="relative w-32 h-14 flex justify-center">
+              <div className="w-14 h-14 relative">
+                <div className="absolute w-14 h-14 border-t-14 border-l-7 border-r-7 border-t-blue-300 border-l-transparent border-r-transparent"></div>
+              </div>
+              <div className="w-14 h-14 relative">
+                <div className="absolute w-14 h-14 border-t-14 border-l-7 border-r-7 border-t-blue-300 border-l-transparent border-r-transparent"></div>
+              </div>
+            </div>
+            <div className="w-28 h-14 border-2 border-blue-300"></div>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center justify-center h-28 w-full">
+            <Home size={48} className="text-blue-300" />
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -63,79 +110,69 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* 3D Preview */}
-        <div className="md:col-span-1 h-[350px] border-2 border-dashed border-gray-300 bg-gray-50 rounded-md">
-          <DakkapelRenderer 
-            configuration={{
-              ...configuration,
-              type: selectedType
-            }}
-          />
-          <div className="text-center text-sm text-gray-600 mt-2">
-            3D visualisatie (draai met muis)
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {types.map((type) => {
+          // Manually set the width ranges for each type
+          let minWidth = "1,00";
+          let maxWidth = "1,50";
+          
+          switch (type.id) {
+            case 'typeA':
+              minWidth = "1,00";
+              maxWidth = "1,50";
+              break;
+            case 'typeB':
+              minWidth = "1,50";
+              maxWidth = "3,00";
+              break;
+            case 'typeC':
+              minWidth = "3,00";
+              maxWidth = "3,50";
+              break;
+            case 'typeD':
+              minWidth = "3,50";
+              maxWidth = "5,50";
+              break;
+            case 'typeE':
+              minWidth = "3,50";
+              maxWidth = "5,90";
+              break;
+          }
 
-        {/* Type selection cards */}
-        <div className="md:col-span-2 grid grid-cols-1 gap-4">
-          {types.map((type) => {
-            // Manually set the width ranges for each type
-            let minWidth = "1,00";
-            let maxWidth = "1,50";
-            
-            switch (type.id) {
-              case 'typeA':
-                minWidth = "1,00";
-                maxWidth = "1,50";
-                break;
-              case 'typeB':
-                minWidth = "1,50";
-                maxWidth = "3,00";
-                break;
-              case 'typeC':
-                minWidth = "3,00";
-                maxWidth = "3,50";
-                break;
-              case 'typeD':
-                minWidth = "3,50";
-                maxWidth = "5,50";
-                break;
-              case 'typeE':
-                minWidth = "3,50";
-                maxWidth = "5,90";
-                break;
-            }
-
-            return (
-              <Card 
-                key={type.id} 
-                className={`cursor-pointer transition-all hover:shadow-md ${
-                  selectedType === type.id ? 'border-2 border-brand-lightGreen shadow-md' : 'border border-gray-200'
-                }`}
-                onClick={() => onChange(type.id)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <h3 className="font-bold text-lg">{type.name}</h3>
-                    {selectedType === type.id && (
-                      <CheckCircle className="h-5 w-5 text-brand-lightGreen" />
-                    )}
+          return (
+            <Card 
+              key={type.id} 
+              className={`cursor-pointer transition-all hover:shadow-md ${
+                selectedType === type.id ? 'border-2 border-brand-lightGreen shadow-md' : 'border border-gray-200'
+              }`}
+              onClick={() => onChange(type.id)}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <h3 className="font-bold text-lg">{type.name}</h3>
+                  {selectedType === type.id && (
+                    <CheckCircle className="h-5 w-5 text-brand-lightGreen" />
+                  )}
+                </div>
+                
+                {/* Dakkapel icon */}
+                <div className="flex justify-center my-4">
+                  {renderDakkapelIcon(type.id)}
+                </div>
+                
+                <p className="text-gray-600 text-center">{type.description}</p>
+                <div className="mt-4">
+                  <div className="text-sm text-gray-500">
+                    Min {minWidth} m - max {maxWidth} m
                   </div>
-                  <p className="text-gray-600 mt-2">{type.description}</p>
-                  <div className="mt-4">
-                    <div className="text-sm text-gray-500">
-                      Min {minWidth} m - max {maxWidth} m
-                    </div>
-                    <div className="font-medium text-brand-darkGreen">
-                      Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
-                    </div>
+                  <div className="font-medium text-brand-darkGreen">
+                    Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="flex justify-between mt-6">
