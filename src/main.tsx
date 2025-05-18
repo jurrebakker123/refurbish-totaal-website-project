@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -12,6 +11,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage.tsx';
 import AdminLogin from './components/admin/AdminLogin.tsx';
 import { SidebarProvider } from './components/ui/sidebar';
 import DakkapelCalculatorConceptPage from './pages/DakkapelCalculatorConceptPage.tsx';
+import DakkapelCalculatorPage from './pages/DakkapelCalculatorPage.tsx';
 
 // TypeScript interface for window
 declare global {
@@ -48,7 +48,7 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelLandingPage />} /> 
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -68,7 +68,7 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelLandingPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -87,7 +87,7 @@ const renderBasedOnDomain = () => {
             <Route path="/" element={<IsolatieSelectiePage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelLandingPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -111,7 +111,7 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelLandingPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
           </Routes>
         </SidebarProvider>
