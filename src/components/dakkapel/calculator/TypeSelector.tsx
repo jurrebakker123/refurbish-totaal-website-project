@@ -54,15 +54,6 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
     }
   ];
 
-  // New simplified model illustrations
-  const modelIllustrations = {
-    'typeA': '/lovable-uploads/ea63b045-9d0d-4409-b624-bea6bfa4a895.png', 
-    'typeB': '/lovable-uploads/ea63b045-9d0d-4409-b624-bea6bfa4a895.png',
-    'typeC': '/lovable-uploads/ea63b045-9d0d-4409-b624-bea6bfa4a895.png',
-    'typeD': '/lovable-uploads/ea63b045-9d0d-4409-b624-bea6bfa4a895.png',
-    'typeE': '/lovable-uploads/ea63b045-9d0d-4409-b624-bea6bfa4a895.png',
-  };
-
   return (
     <div className="space-y-8">
       <div>
@@ -125,31 +116,19 @@ export function TypeSelector({ selectedType, onChange, onNext, onPrevious, confi
                 onClick={() => onChange(type.id)}
               >
                 <CardContent className="p-6">
-                  <div className="flex flex-col">
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-bold text-lg">{type.name}</h3>
-                      {selectedType === type.id && (
-                        <CheckCircle className="h-5 w-5 text-brand-lightGreen" />
-                      )}
+                  <div className="flex items-start justify-between">
+                    <h3 className="font-bold text-lg">{type.name}</h3>
+                    {selectedType === type.id && (
+                      <CheckCircle className="h-5 w-5 text-brand-lightGreen" />
+                    )}
+                  </div>
+                  <p className="text-gray-600 mt-2">{type.description}</p>
+                  <div className="mt-4">
+                    <div className="text-sm text-gray-500">
+                      Min {minWidth} m - max {maxWidth} m
                     </div>
-                    
-                    {/* Simple blue dakkapel illustration */}
-                    <div className="h-32 mb-4 flex items-center justify-center">
-                      <img 
-                        src={modelIllustrations[type.id]} 
-                        alt={type.name} 
-                        className="h-24 object-contain" 
-                      />
-                    </div>
-                    
-                    <p className="text-gray-600">{type.description}</p>
-                    <div className="mt-4">
-                      <div className="text-sm text-gray-500">
-                        Min {minWidth} m - max {maxWidth} m
-                      </div>
-                      <div className="font-medium text-brand-darkGreen">
-                        Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
-                      </div>
+                    <div className="font-medium text-brand-darkGreen">
+                      Vanaf €{type.basePrice.toLocaleString('nl-NL')},-
                     </div>
                   </div>
                 </CardContent>
