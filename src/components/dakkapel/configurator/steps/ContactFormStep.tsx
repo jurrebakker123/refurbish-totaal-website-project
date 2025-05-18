@@ -61,10 +61,15 @@ export const ContactFormStep: React.FC<StepProps> = ({
     });
     
     try {
-      // Submit the entire configuration
-      await submitConfigurator();
-      setSubmitSuccess(true);
-      toast.success("Offerte aanvraag succesvol verzonden!");
+      // Submit the entire configuration if the function exists
+      if (submitConfigurator) {
+        await submitConfigurator();
+        setSubmitSuccess(true);
+        toast.success("Offerte aanvraag succesvol verzonden!");
+      } else {
+        console.error("submitConfigurator function is not provided");
+        toast.error("Er is een probleem met het verzenden van uw aanvraag. Probeer het later nog eens.");
+      }
     } catch (error) {
       console.error("Failed to submit configurator:", error);
       toast.error("Er is een fout opgetreden bij het verzenden van uw aanvraag. Probeer het later nog eens.");

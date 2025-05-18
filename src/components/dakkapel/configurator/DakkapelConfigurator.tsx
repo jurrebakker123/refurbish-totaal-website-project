@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { WidthStep } from './steps/WidthStep';
 import { RoofAngleStep } from './steps/RoofAngleStep';
@@ -136,6 +135,18 @@ export const DakkapelConfigurator: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  const submitConfigurator = async (): Promise<void> => {
+    // This is where you would implement the submission logic
+    // For example, sending the configuration to a backend API
+    return new Promise((resolve) => {
+      // Simulate an API call with a timeout
+      setTimeout(() => {
+        console.log("Configuration submitted:", configuration);
+        resolve();
+      }, 1500);
+    });
+  };
+
   const currentPrice = calculatePrice();
 
   return (
@@ -211,6 +222,7 @@ export const DakkapelConfigurator: React.FC = () => {
               nextStep={() => {}} 
               prevStep={prevStep} 
               currentPrice={currentPrice}
+              submitConfigurator={submitConfigurator}
             />
           )}
         </div>
