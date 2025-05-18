@@ -167,28 +167,6 @@ export function OptionsSelector({
     { value: 'dennengroen', label: 'Dennengroen (RAL6009)', price: 210 },
   ];
 
-  // Get image based on selected options
-  const getDakkapelImage = () => {
-    // Base image paths
-    const baseImages = {
-      standard: '/lovable-uploads/b080c873-1f58-400e-8855-b4cc787a6859.png',
-      zonwering: '/lovable-uploads/f73444a4-98da-45bd-b6aa-7cd2faa43809.png',
-      rolluik: '/lovable-uploads/ec9928bc-599a-4ee3-904b-0e26aebc326c.png',
-      kader: '/lovable-uploads/e4d081e7-d3f8-4e19-b2bf-0bf8c01f0dce.png'
-    };
-
-    // Logic to determine which image to show based on options
-    if (selectedOptions.kader_dakkapel) {
-      return baseImages.kader;
-    } else if (selectedOptions.elektrisch_rolluik) {
-      return baseImages.rolluik;
-    } else if (selectedOptions.zonwering) {
-      return baseImages.zonwering;
-    } else {
-      return baseImages.standard;
-    }
-  };
-
   return (
     <div className="space-y-8">
       <div>
@@ -198,18 +176,7 @@ export function OptionsSelector({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="h-[350px] border-2 border-gray-300 bg-gray-50 rounded-md overflow-hidden">
-          <img 
-            src={getDakkapelImage()}
-            alt="Dakkapel voorbeeld" 
-            className="w-full h-full object-cover"
-          />
-          <div className="text-center text-sm text-gray-600 mt-2">
-            Voorbeeld dakkapel
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
         <div className="space-y-6">
           <div className="space-y-4">
             <label className="font-medium text-gray-800 text-sm">Bepaal de hoogte van het kozijn</label>
