@@ -49,6 +49,7 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
@@ -68,6 +69,7 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
@@ -86,6 +88,7 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
