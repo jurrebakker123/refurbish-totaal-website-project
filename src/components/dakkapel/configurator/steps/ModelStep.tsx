@@ -2,37 +2,62 @@
 import React from 'react';
 import { StepProps, DakkapelModel } from '../DakkapelConfigurator';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const modelOptions: Array<{
   value: DakkapelModel;
   label: string;
   description: string;
-  imagePath: string;
+  iconSvg: JSX.Element;
 }> = [
   { 
     value: 'flat', 
     label: 'Dakkapel plat dak', 
     description: 'Meest gekozen model',
-    imagePath: '/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png'
+    iconSvg: (
+      <svg width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 70 L100 70 L100 40 L60 20 L20 40 Z" fill="#a9d0f5" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="20" y1="70" x2="20" y2="90" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="100" y1="70" x2="100" y2="90" stroke="#1a73e8" strokeWidth="2" />
+      </svg>
+    )
   },
   { 
     value: 'sloped', 
     label: 'Dakkapel schuin dak', 
     description: 'Past bij traditionele woningen',
-    imagePath: '/lovable-uploads/b080c873-1f58-400e-8855-b4cc787a6859.png'
+    iconSvg: (
+      <svg width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 70 L100 70 L100 40 L60 10 L20 40 Z" fill="#a9d0f5" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="20" y1="70" x2="20" y2="90" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="100" y1="70" x2="100" y2="90" stroke="#1a73e8" strokeWidth="2" />
+        <path d="M30 55 L90 55 L90 35 L60 25 L30 35 Z" fill="#d6eaff" />
+      </svg>
+    )
   },
   { 
     value: 'double-ridge', 
     label: 'Dubbele nokverhoging', 
     description: 'Voor maximale ruimte',
-    imagePath: '/lovable-uploads/86f735a8-487e-43c0-9703-193520a0aec0.png'
+    iconSvg: (
+      <svg width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 70 L100 70 L100 40 L60 10 L20 40 Z" fill="#a9d0f5" stroke="#1a73e8" strokeWidth="2" />
+        <path d="M30 62 L90 62 L90 35 L60 15 L30 35 Z" fill="#d6eaff" stroke="#1a73e8" strokeWidth="1" />
+        <line x1="20" y1="70" x2="20" y2="90" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="100" y1="70" x2="100" y2="90" stroke="#1a73e8" strokeWidth="2" />
+      </svg>
+    )
   },
   { 
     value: 'single-ridge', 
     label: 'Eenzijdige nokverhoging', 
     description: 'Voor extra hoogte',
-    imagePath: '/lovable-uploads/043aad9c-d5e0-4412-b651-a4bcff75a4c2.png'
+    iconSvg: (
+      <svg width="120" height="100" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 70 L100 70 L100 30 L60 20 L20 40 Z" fill="#a9d0f5" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="20" y1="70" x2="20" y2="90" stroke="#1a73e8" strokeWidth="2" />
+        <line x1="100" y1="70" x2="100" y2="90" stroke="#1a73e8" strokeWidth="2" />
+      </svg>
+    )
   }
 ];
 
@@ -60,12 +85,10 @@ export const ModelStep: React.FC<StepProps> = ({
                 : 'border-gray-200 hover:border-brand-lightGreen'}
             `}
           >
-            <div className="aspect-[4/3] relative bg-gray-50">
-              <OptimizedImage
-                src={option.imagePath}
-                alt={option.label}
-                className="w-full h-full object-contain p-4"
-              />
+            <div className="aspect-[4/3] relative flex items-center justify-center bg-white p-4">
+              <div className="w-full h-full flex items-center justify-center">
+                {option.iconSvg}
+              </div>
               {configuration.model === option.value && (
                 <div className="absolute top-2 right-2 h-6 w-6 bg-brand-lightGreen rounded-full flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
