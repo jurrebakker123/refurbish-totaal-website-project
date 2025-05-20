@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Phone, Mail, Cube } from 'lucide-react';
+import { ChevronRight, Phone, Mail, Box } from 'lucide-react';
 
 export function TuinhuizenHero() {
   return <section className="relative min-h-[90vh] flex items-center">
@@ -39,7 +39,7 @@ export function TuinhuizenHero() {
           
           <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <Link to="/tuinhuizen-model" className="text-white hover:text-brand-lightGreen transition-colors flex items-center justify-center gap-2 group">
-              <Cube className="h-5 w-5" />
+              <Box className="h-5 w-5" />
               <span>Bekijk 3D model</span>
               <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
