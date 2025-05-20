@@ -1,99 +1,72 @@
 
-import React, { useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Center, OrbitControls } from '@react-three/drei';
+import React, { useRef, useEffect } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
+import { Center, OrbitControls, useGLTF } from '@react-three/drei';
 import { GardenHouseModel } from './GardenHouseModel';
 import { GardenScene } from './GardenScene';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import * as THREE from 'three';
 
-// Scene component with a ref to access the Three.js objects
-const SceneContent = ({ onSceneReady }) => {
-  const sceneRef = useRef();
+const ExportButton = ({ onExport }: { onExport: () => void }) => {
+  return (
+    <button 
+      onClick={onExport}
+      className="absolute top-4 right-4 z-10 bg-brand-darkGreen hover:bg-green-800 text-white py-2 px-4 rounded-md shadow-md transition-colors"
+    >
+      Export as GLB
+    </button>
+  );
+};
+
+const SceneExporter = () => {
+  const { scene } = useThree();
   
-  React.useEffect(() => {
-    if (sceneRef.current) {
-      onSceneReady(sceneRef.current);
-    }
-  }, [onSceneReady]);
+  // Function to export the current scene to GLB
+  const exportGLB = () => {
+    const exporter = new GLTFExporter();
+    
+    // Process the scene for export (clone to prevent modifying the original)
+    const exportScene = scene.clone();
+    
+    // Export as binary GLB
+    exporter.parse(
+      exportScene,
+      (buffer) => {
+        // Create a Blob from the GLB buffer
+        const blob = new Blob([buffer as ArrayBuffer], { type: 'application/octet-stream' });
+        
+        // Create a download link and trigger it
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'garden_house.glb';
+        link.click();
+        
+        // Clean up
+        URL.revokeObjectURL(link.href);
+      },
+      (error) => {
+        console.error('An error occurred during export:', error);
+      },
+      { binary: true } // Export as GLB (binary)
+    );
+  };
   
   return (
-    <group ref={sceneRef}>
-      <GardenScene />
-      <Center>
-        <GardenHouseModel autoRotate={false} />
-      </Center>
-    </group>
+    <>
+      <ExportButton onExport={exportGLB} />
+    </>
   );
 };
 
 export function GardenHouseExporter() {
-  const [processing, setProcessing] = useState(false);
-  const sceneRef = useRef(null);
-  
-  // Store a ref to the scene
-  const handleSceneReady = (sceneObject) => {
-    sceneRef.current = sceneObject;
-  };
-  
-  // Function to export the current scene to GLB
-  const exportGLB = () => {
-    if (!sceneRef.current) {
-      console.error('Scene reference not available');
-      return;
-    }
-    
-    setProcessing(true);
-    
-    try {
-      // Create a clone of the scene to export
-      const clonedScene = sceneRef.current.clone();
-      
-      // Create exporter
-      const exporter = new GLTFExporter();
-      
-      // Export as binary GLB
-      exporter.parse(
-        clonedScene,
-        (buffer) => {
-          // Create a Blob from the GLB buffer
-          const blob = new Blob([buffer], { type: 'application/octet-stream' });
-          
-          // Create a download link and trigger it
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = 'garden_house.glb';
-          link.click();
-          
-          // Clean up
-          URL.revokeObjectURL(link.href);
-          setProcessing(false);
-        },
-        (error) => {
-          console.error('An error occurred during export:', error);
-          setProcessing(false);
-        },
-        { binary: true } // Export as GLB (binary)
-      );
-    } catch (error) {
-      console.error('Export failed:', error);
-      setProcessing(false);
-    }
-  };
-  
   return (
     <div className="relative w-full h-[80vh] bg-sky-50 rounded-lg overflow-hidden shadow-xl">
-      {/* Export button outside the Canvas */}
-      <button 
-        onClick={exportGLB}
-        disabled={processing}
-        className="absolute top-4 right-4 z-10 bg-brand-darkGreen hover:bg-green-800 text-white py-2 px-4 rounded-md shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {processing ? 'Exporting...' : 'Export as GLB'}
-      </button>
-      
       <Canvas camera={{ position: [8, 4, 8], fov: 40 }} shadows>
-        <SceneContent onSceneReady={handleSceneReady} />
+        <GardenScene />
+        <Center>
+          <GardenHouseModel autoRotate={false} />
+        </Center>
+        <SceneExporter />
         <OrbitControls 
           enablePan={true}
           enableZoom={true}
