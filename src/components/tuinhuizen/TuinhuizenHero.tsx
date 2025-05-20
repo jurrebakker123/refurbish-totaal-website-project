@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Phone, Mail, CubeIcon } from 'lucide-react';
+import { ChevronRight, Phone, Mail, Cube } from 'lucide-react';
 
 export function TuinhuizenHero() {
   return <section className="relative min-h-[90vh] flex items-center">
@@ -39,14 +39,7 @@ export function TuinhuizenHero() {
           
           <div className="mt-8 animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <Link to="/tuinhuizen-model" className="text-white hover:text-brand-lightGreen transition-colors flex items-center justify-center gap-2 group">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
-                <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
-                <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-              </svg>
+              <Cube className="h-5 w-5" />
               <span>Bekijk 3D model</span>
               <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
