@@ -1,4 +1,3 @@
-
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,6 +20,7 @@ import CookieConsent from "./components/CookieConsent";
 import LeaveSiteNotification from "./components/LeaveSiteNotification";
 import SEOStructuredData from "./components/SEOStructuredData";
 import TuinhuizenPage from "./pages/TuinhuizenPage";
+import TuinhuizenModelPage from "./pages/TuinhuizenModelPage";
 import ZonnepanelenPage from "./pages/ZonnepanelenPage";
 import DakkapelLandingPage from "./pages/DakkapelLandingPage";
 import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage";
@@ -52,6 +52,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
+          <Route path="/tuinhuizen-model" element={<TuinhuizenModelPage />} />
           <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
           <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
           <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
