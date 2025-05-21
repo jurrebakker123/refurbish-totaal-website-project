@@ -1,10 +1,9 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Center, OrbitControls, useGLTF } from '@react-three/drei';
+import { Center, OrbitControls } from '@react-three/drei';
 import { GardenHouseModel } from './GardenHouseModel';
 import { GardenScene } from './GardenScene';
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import * as THREE from 'three';
 
 // Component that contains the export button (outside of the Canvas)
@@ -20,15 +19,15 @@ const ExportButton = ({ onExport }: { onExport: () => void }) => {
 };
 
 // Scene component that has access to Three.js scene
-const SceneContent = ({ sceneRef }: { sceneRef: React.RefObject<THREE.Group> }) => {
+const SceneContent = ({ onSceneReady }: { onSceneReady: (scene: THREE.Scene) => void }) => {
   const { scene } = useThree();
   
-  // Store the scene in the ref so it can be accessed outside
-  useEffect(() => {
-    if (sceneRef.current) {
-      sceneRef.current = scene;
+  // Store the scene via callback when it's ready
+  React.useEffect(() => {
+    if (scene) {
+      onSceneReady(scene);
     }
-  }, [scene, sceneRef]);
+  }, [scene, onSceneReady]);
   
   return (
     <>
@@ -41,46 +40,55 @@ const SceneContent = ({ sceneRef }: { sceneRef: React.RefObject<THREE.Group> }) 
 };
 
 export function GardenHouseExporter() {
-  // Create a ref to hold the Three.js scene
-  const sceneRef = useRef<THREE.Group | THREE.Scene | null>(null);
+  // Use state to store the scene reference
+  const [scene, setScene] = useState<THREE.Scene | null>(null);
+  
+  // Function to handle scene initialization
+  const handleSceneReady = (newScene: THREE.Scene) => {
+    setScene(newScene);
+  };
   
   // Function to export the scene as GLB
-  const exportGLB = () => {
-    if (!sceneRef.current) {
+  const exportGLB = async () => {
+    if (!scene) {
       console.error("No scene available to export");
       return;
     }
     
-    const exporter = new GLTFExporter();
-    
-    // Process the scene for export (clone to prevent modifying the original)
-    const scene = sceneRef.current;
-    
-    // Export as binary GLB
-    exporter.parse(
-      scene,
-      (buffer) => {
-        if (buffer instanceof ArrayBuffer) {
-          // Create a Blob from the GLB buffer
-          const blob = new Blob([buffer], { type: 'application/octet-stream' });
-          
-          // Create a download link and trigger it
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = 'garden_house.glb';
-          link.click();
-          
-          // Clean up
-          URL.revokeObjectURL(link.href);
-        } else {
-          console.error("Unexpected export result:", buffer);
-        }
-      },
-      (error) => {
-        console.error('An error occurred during export:', error);
-      },
-      { binary: true } // Export as GLB (binary)
-    );
+    try {
+      // Dynamically import the GLTFExporter to avoid TypeScript errors
+      const { GLTFExporter } = await import('three/examples/jsm/exporters/GLTFExporter');
+      
+      const exporter = new GLTFExporter();
+      
+      // Export as binary GLB
+      exporter.parse(
+        scene,
+        (buffer) => {
+          if (buffer instanceof ArrayBuffer) {
+            // Create a Blob from the GLB buffer
+            const blob = new Blob([buffer], { type: 'application/octet-stream' });
+            
+            // Create a download link and trigger it
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'garden_house.glb';
+            link.click();
+            
+            // Clean up
+            URL.revokeObjectURL(link.href);
+          } else {
+            console.error("Unexpected export result:", buffer);
+          }
+        },
+        (error) => {
+          console.error('An error occurred during export:', error);
+        },
+        { binary: true } // Export as GLB (binary)
+      );
+    } catch (error) {
+      console.error("Failed to load GLTFExporter:", error);
+    }
   };
   
   return (
@@ -89,7 +97,7 @@ export function GardenHouseExporter() {
       <ExportButton onExport={exportGLB} />
       
       <Canvas camera={{ position: [8, 4, 8], fov: 40 }} shadows>
-        <SceneContent sceneRef={sceneRef} />
+        <SceneContent onSceneReady={handleSceneReady} />
         <OrbitControls 
           enablePan={true}
           enableZoom={true}

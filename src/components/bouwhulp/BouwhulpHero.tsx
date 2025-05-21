@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Phone, Mail, Tool } from 'lucide-react';
+import { ChevronRight, Phone, Mail, Wrench } from 'lucide-react';
 
 export function BouwhulpHero() {
   return (
@@ -14,7 +14,7 @@ export function BouwhulpHero() {
       <div className="container relative z-10 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center justify-center p-3 bg-white rounded-lg mb-8">
-            <Tool className="h-8 w-8 text-brand-darkGreen" />
+            <Wrench className="h-8 w-8 text-brand-darkGreen" />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight animate-fade-in">
             Professionele Bouwhulp Op Maat
