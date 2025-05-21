@@ -1,3 +1,4 @@
+
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -12,6 +13,7 @@ import AdminLogin from './components/admin/AdminLogin.tsx';
 import { SidebarProvider } from './components/ui/sidebar';
 import DakkapelCalculatorConceptPage from './pages/DakkapelCalculatorConceptPage.tsx';
 import DakkapelCalculatorPage from './pages/DakkapelCalculatorPage.tsx';
+import BouwhulpPage from './pages/BouwhulpPage.tsx';
 
 // TypeScript interface for window
 declare global {
@@ -77,6 +79,24 @@ const renderBasedOnDomain = () => {
       </BrowserRouter>
     );
   }
+  // Check for bouwhulp domain
+  else if (hostname === 'refurbishbouwhulp.nl' || hostname === 'www.refurbishbouwhulp.nl') {
+    console.log('Rendering BouwhulpPage');
+    return (
+      <BrowserRouter>
+        <SidebarProvider defaultCollapsed={true}>
+          <Routes>
+            <Route path="/" element={<BouwhulpPage />} />
+            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/offerte" element={<OffertePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
+          </Routes>
+        </SidebarProvider>
+      </BrowserRouter>
+    );
+  }
   // Check for isolatie domain
   else if (hostname === 'isolatieselectie.nl' || hostname === 'www.isolatieselectie.nl') {
     console.log('Rendering IsolatieSelectiePage');
@@ -107,6 +127,7 @@ const renderBasedOnDomain = () => {
             <Route path="/*" element={<App />} />
             <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
             <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
+            <Route path="/refurbishbouwhulp" element={<BouwhulpPage />} />
             <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
@@ -123,6 +144,7 @@ const renderBasedOnDomain = () => {
 // Import contact and offerte pages to use in route configuration
 import ContactPage from './pages/ContactPage.tsx';
 import OffertePage from './pages/OffertePage.tsx';
+import DienstDetailPage from './pages/DienstDetailPage.tsx';
 
 // Render the appropriate component
 const rootElement = document.getElementById("root");

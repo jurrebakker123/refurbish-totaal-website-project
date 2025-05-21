@@ -1,3 +1,4 @@
+
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -30,6 +31,7 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLogin from "./components/admin/AdminLogin";
 import KozijntechniekPage from "./pages/KozijntechniekPage";
 import IsolatietechniekPage from "./pages/IsolatietechniekPage";
+import BouwhulpPage from "./pages/BouwhulpPage";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -55,6 +57,7 @@ const App = () => {
           <Route path="/tuinhuizen-model" element={<TuinhuizenModelPage />} />
           <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
           <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
+          <Route path="/refurbishbouwhulp" element={<BouwhulpPage />} />
           <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
           <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
           <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
