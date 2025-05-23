@@ -1,4 +1,3 @@
-
 export interface DakkapelConfiguratie {
   id: string;
   created_at: string;
@@ -64,6 +63,29 @@ export interface DakkapelCalculatorAanvraag {
 
 export type AnyRequestItem = DakkapelConfiguratie | DakkapelCalculatorAanvraag;
 
-export interface QuoteItem extends AnyRequestItem {
+// Improved QuoteItem interface with proper type checking
+export interface QuoteItem {
+  id: string;
   isCalculator: boolean;
+  totaal_prijs?: number;
+  
+  // Common properties for both types
+  created_at: string;
+  telefoon: string;
+  postcode: string;
+  plaats: string;
+  materiaal: string;
+  status: string;
+  
+  // Properties from Calculator
+  voornaam?: string;
+  achternaam?: string;
+  emailadres?: string;
+  
+  // Properties from Configurator
+  naam?: string;
+  email?: string;
+  
+  // Other properties that might be accessed
+  [key: string]: any;
 }

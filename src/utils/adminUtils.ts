@@ -133,7 +133,7 @@ export const updateRequestDetails = async (
 };
 
 export const sendQuoteEmail = async (
-  item: any, 
+  item: QuoteItem, 
   isCalculator: boolean, 
   customMessage?: string
 ): Promise<boolean> => {

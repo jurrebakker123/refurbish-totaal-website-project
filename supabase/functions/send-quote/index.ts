@@ -26,6 +26,8 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { requestId, type, customMessage }: SendQuoteRequest = await req.json();
     
+    console.log("Quote request received:", { requestId, type, messageLength: customMessage?.length || 0 });
+    
     // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -44,8 +46,12 @@ const handler = async (req: Request): Promise<Response> => {
         .eq('id', requestId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching calculator data:", error);
+        throw error;
+      }
       requestData = data;
+      console.log("Calculator data fetched:", requestData ? "success" : "null");
     } else {
       tableName = 'dakkapel_configuraties';
       const { data, error } = await supabaseClient
@@ -54,8 +60,12 @@ const handler = async (req: Request): Promise<Response> => {
         .eq('id', requestId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching configurator data:", error);
+        throw error;
+      }
       requestData = data;
+      console.log("Configurator data fetched:", requestData ? "success" : "null");
     }
 
     if (!requestData) {
@@ -118,6 +128,9 @@ const handler = async (req: Request): Promise<Response> => {
       `<p style="font-size: 18px; font-weight: bold; color: #2563eb;">Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
       '<p>Prijs wordt binnenkort meegedeeld.</p>';
 
+    const customMessageHtml = customMessage ? 
+      `<div style="margin: 20px 0; white-space: pre-line;">${customMessage.replace(/\n/g, '<br/>')}</div>` : '';
+
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background-color: #059669; color: white; padding: 20px; text-align: center;">
@@ -125,20 +138,13 @@ const handler = async (req: Request): Promise<Response> => {
         </div>
         
         <div style="padding: 20px; background-color: #f9f9f9;">
-          <p>Beste ${customerName},</p>
-          
-          <p>Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u de offerte voor uw aanvraag.</p>
+          ${customMessageHtml}
           
           ${productDetails}
           
           <div style="background-color: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
             ${priceInfo}
           </div>
-          
-          ${customMessage ? `<div style="background-color: #e0f2fe; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3>Persoonlijk bericht:</h3>
-            <p>${customMessage}</p>
-          </div>` : ''}
           
           <p><strong>Uw adresgegevens:</strong><br>
           ${customerAddress}</p>
@@ -153,9 +159,6 @@ const handler = async (req: Request): Promise<Response> => {
               Telefoon: 085-1301578
             </p>
           </div>
-          
-          <p>Met vriendelijke groet,<br>
-          Het team van Refurbish Totaal Nederland</p>
         </div>
         
         <div style="background-color: #059669; color: white; padding: 10px; text-align: center; font-size: 12px;">
@@ -164,12 +167,15 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
+    console.log("Preparing to send email to:", customerEmail);
+
     // Send email
     const emailResponse = await resend.emails.send({
       from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
       to: [customerEmail],
-      subject: `Offerte Dakkapel - ${customerName}`,
+      subject: `Offerte Dakkapel - Refurbish Totaal Nederland`,
       html: emailHtml,
+      reply_to: "info@refurbishtotaalnederland.nl",
     });
 
     console.log("Quote email sent successfully:", emailResponse);
