@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { CursorEffects } from "@/components/CursorEffects";
 import GoogleTagManager from "@/components/GoogleTagManager";
@@ -43,39 +43,37 @@ function App() {
       <CartProvider>
         <TooltipProvider>
           <Toaster />
-          <BrowserRouter>
-            <CursorEffects />
-            <GoogleTagManager />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/diensten" element={<DienstenPage />} />
-              <Route path="/diensten/:slug" element={<DienstDetailPage />} />
-              <Route path="/offerte" element={<OffertePage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/over-ons" element={<OverOnsPage />} />
-              <Route path="/projecten" element={<ProjectenPage />} />
-              <Route path="/voorwaarden" element={<VoorwaardenPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="/dakkapel" element={<DakkapelLandingPage />} />
-              <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-              <Route path="/dakkapel-configurator" element={<DakkapelCalculatorConceptPage />} />
-              <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
-              <Route path="/isolatietechniek" element={<IsolatietechniekPage />} />
-              <Route path="/kozijntechniek" element={<KozijntechniekPage />} />
-              <Route path="/zonnepanelen" element={<ZonnepanelenPage />} />
-              <Route path="/tuinhuizen" element={<TuinhuizenPage />} />
-              <Route path="/tuinhuizen/model/:id" element={<TuinhuizenModelPage />} />
-              <Route path="/bouwhulp" element={<BouwhulpPage />} />
-              <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
-              <Route path="/certificaat" element={<CertificaatPage />} />
-              <Route path="/admin-login" element={<AdminLogin />} />
-              <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <CookieConsent />
-            <WhatsAppButton />
-            <LeaveSiteNotification />
-          </BrowserRouter>
+          <CursorEffects />
+          <GoogleTagManager />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/diensten" element={<DienstenPage />} />
+            <Route path="/diensten/:slug" element={<DienstDetailPage />} />
+            <Route path="/offerte" element={<OffertePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/over-ons" element={<OverOnsPage />} />
+            <Route path="/projecten" element={<ProjectenPage />} />
+            <Route path="/voorwaarden" element={<VoorwaardenPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/dakkapel" element={<DakkapelLandingPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
+            <Route path="/dakkapel-configurator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
+            <Route path="/isolatietechniek" element={<IsolatietechniekPage />} />
+            <Route path="/kozijntechniek" element={<KozijntechniekPage />} />
+            <Route path="/zonnepanelen" element={<ZonnepanelenPage />} />
+            <Route path="/tuinhuizen" element={<TuinhuizenPage />} />
+            <Route path="/tuinhuizen/model/:id" element={<TuinhuizenModelPage />} />
+            <Route path="/bouwhulp" element={<BouwhulpPage />} />
+            <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
+            <Route path="/certificaat" element={<CertificaatPage />} />
+            <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <CookieConsent />
+          <WhatsAppButton />
+          <LeaveSiteNotification />
         </TooltipProvider>
       </CartProvider>
     </QueryClientProvider>
