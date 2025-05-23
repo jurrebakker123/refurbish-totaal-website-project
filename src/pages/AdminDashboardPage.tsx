@@ -92,119 +92,101 @@ const AdminDashboardPage = () => {
   const [activeTab, setActiveTab] = useState('aanvragen');
   const navigate = useNavigate();
 
-  // Automatische login functie voor ontwikkeling
-  const autoLogin = async () => {
+  // Verbeterde auto-login functie
+  const ensureAdminAccess = async () => {
     try {
-      // Controleer eerst of er al een sessie is
-      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Starting admin access check...');
       
-      if (!session) {
-        // Eerst uitloggen om schone staat te garanderen
-        await supabase.auth.signOut();
+      // Forceer uitloggen en schoon op
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Wacht even
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Test credentials
+      const testEmail = 'admin@refurbishtotaal.nl';
+      const testPassword = 'AdminRefurbish2024!';
+      
+      console.log('Attempting to sign up admin user...');
+      
+      // Probeer eerst te registreren
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: testEmail,
+        password: testPassword,
+      });
+      
+      if (signUpError && !signUpError.message.includes('already registered')) {
+        console.error('Sign up error:', signUpError);
+        throw signUpError;
+      }
+      
+      console.log('Sign up completed, now signing in...');
+      
+      // Probeer in te loggen
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: testEmail,
+        password: testPassword,
+      });
+      
+      if (signInError) {
+        console.error('Sign in error:', signInError);
+        throw signInError;
+      }
+      
+      console.log('Sign in successful:', signInData);
+      
+      if (signInData.user) {
+        // Voeg gebruiker toe aan admin_users tabel als deze nog niet bestaat
+        console.log('Adding user to admin_users table...');
         
-        // Auto-login met test account
-        const testEmail = 'admin@test.com';
-        const testPassword = 'admin123';
+        const { data: adminExists, error: adminCheckError } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('id', signInData.user.id)
+          .single();
+          
+        if (adminCheckError && adminCheckError.code !== 'PGRST116') {
+          console.error('Error checking admin user:', adminCheckError);
+        }
         
-        // Probeer in te loggen
-        const { data, error } = await supabase.auth.signUp({
-          email: testEmail,
-          password: testPassword,
-        });
-        
-        if (error) {
-          // Als registratie niet lukt (bijv. omdat account al bestaat), probeer dan in te loggen
-          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-            email: testEmail,
-            password: testPassword,
-          });
-          
-          if (loginError) {
-            console.error('Login error:', loginError);
-            toast.error('Automatisch inloggen mislukt');
-            return false;
-          }
-          
-          // Voeg gebruiker toe aan admin_users als deze nog niet bestaat
-          const { data: adminExists } = await supabase
-            .from('admin_users')
-            .select('*')
-            .eq('id', loginData.user?.id)
-            .single();
-            
-          if (!adminExists && loginData.user) {
-            await supabase
-              .from('admin_users')
-              .insert({
-                id: loginData.user.id,
-                created_at: new Date().toISOString()
-              });
-          }
-          
-          return loginData.user !== null;
-        } else if (data.user) {
-          // Voeg nieuwe gebruiker toe aan admin_users
-          await supabase
+        if (!adminExists) {
+          const { error: insertError } = await supabase
             .from('admin_users')
             .insert({
-              id: data.user.id,
+              id: signInData.user.id,
               created_at: new Date().toISOString()
             });
             
-          toast.success('Test admin account aangemaakt en ingelogd');
-          return true;
+          if (insertError) {
+            console.error('Error inserting admin user:', insertError);
+          } else {
+            console.log('Admin user created successfully');
+          }
         }
-      } else {
-        // Er is al een sessie, controleer of het een admin is
+        
+        toast.success('Automatisch ingelogd als admin!');
+        setIsAdmin(true);
         return true;
       }
-    } catch (e) {
-      console.error('Auto login error:', e);
+    } catch (error: any) {
+      console.error('Auto login error:', error);
+      toast.error('Automatisch inloggen mislukt: ' + error.message);
       return false;
     }
   };
 
   useEffect(() => {
-    const initAdminCheck = async () => {
-      // Probeer auto-login
-      const loginSuccess = await autoLogin();
-      
-      if (loginSuccess) {
-        // Na succesvolle login, check admin toegang
-        await checkAdminAccess();
+    const initAdmin = async () => {
+      const success = await ensureAdminAccess();
+      if (success) {
+        await loadData();
       } else {
-        // Als auto-login mislukt, redirect naar login pagina
         navigate('/admin-login');
       }
     };
     
-    initAdminCheck();
+    initAdmin();
   }, [navigate]);
-
-  const checkAdminAccess = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      toast.error("U moet ingelogd zijn om toegang te krijgen tot het admin dashboard");
-      navigate('/admin-login');
-      return;
-    }
-
-    const { data: adminUser, error } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (error || !adminUser) {
-      toast.error("U heeft geen toegang tot het admin dashboard");
-      navigate('/admin-login');
-      return;
-    }
-
-    setIsAdmin(true);
-    loadData();
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -275,25 +257,12 @@ const AdminDashboardPage = () => {
     }
   };
 
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="text-center p-6">
-            <h2 className="text-xl font-bold mb-4">Toegang geweigerd</h2>
-            <p>U heeft geen toegang tot het admin dashboard.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (loading) {
+  if (!isAdmin || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Gegevens laden...</p>
+          <p>Admin toegang wordt ingesteld...</p>
         </div>
       </div>
     );
