@@ -150,10 +150,17 @@ export const sendQuoteEmail = async (
 
     if (error) {
       console.error('Error sending quote:', error);
-      throw error;
+      toast.error(`Fout bij het verzenden van offerte: ${error.message || 'API Error'}`);
+      return false;
     }
 
     console.log('Quote sent successfully:', data);
+    
+    if (!data.success) {
+      toast.error(`Fout bij het verzenden van offerte: ${data.error || 'Onbekende fout'}`);
+      return false;
+    }
+    
     toast.success("Offerte succesvol verzonden naar de klant!");
     return true;
   } catch (error: any) {

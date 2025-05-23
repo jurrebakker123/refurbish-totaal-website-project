@@ -3,7 +3,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,6 +25,14 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    if (!resendApiKey) {
+      throw new Error("RESEND_API_KEY is not configured in Supabase secrets");
+    }
+
+    if (!resend) {
+      throw new Error("Failed to initialize Resend client");
+    }
+
     const { requestId, type, customMessage }: SendQuoteRequest = await req.json();
     
     console.log("Quote request received:", { requestId, type, messageLength: customMessage?.length || 0 });
