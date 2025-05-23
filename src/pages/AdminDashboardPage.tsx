@@ -18,6 +18,8 @@ import { Eye, Edit, Mail, CheckCircle, Clock, AlertCircle, Download } from 'luci
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import DakkapelPricesTable from '@/components/admin/DakkapelPricesTable';
+import { useNavigate } from 'react-router-dom';
+import AdminHeader from '@/components/admin/AdminHeader';
 
 interface DakkapelConfiguratie {
   id: string;
@@ -87,17 +89,104 @@ const AdminDashboardPage = () => {
   const [calculatorAanvragen, setCalculatorAanvragen] = useState<DakkapelCalculatorAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activeTab, setActiveTab] = useState('aanvragen'); // New state for active tab
+  const [activeTab, setActiveTab] = useState('aanvragen');
+  const navigate = useNavigate();
+
+  // Automatische login functie voor ontwikkeling
+  const autoLogin = async () => {
+    try {
+      // Controleer eerst of er al een sessie is
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // Eerst uitloggen om schone staat te garanderen
+        await supabase.auth.signOut();
+        
+        // Auto-login met test account
+        const testEmail = 'admin@test.com';
+        const testPassword = 'admin123';
+        
+        // Probeer in te loggen
+        const { data, error } = await supabase.auth.signUp({
+          email: testEmail,
+          password: testPassword,
+        });
+        
+        if (error) {
+          // Als registratie niet lukt (bijv. omdat account al bestaat), probeer dan in te loggen
+          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+            email: testEmail,
+            password: testPassword,
+          });
+          
+          if (loginError) {
+            console.error('Login error:', loginError);
+            toast.error('Automatisch inloggen mislukt');
+            return false;
+          }
+          
+          // Voeg gebruiker toe aan admin_users als deze nog niet bestaat
+          const { data: adminExists } = await supabase
+            .from('admin_users')
+            .select('*')
+            .eq('id', loginData.user?.id)
+            .single();
+            
+          if (!adminExists && loginData.user) {
+            await supabase
+              .from('admin_users')
+              .insert({
+                id: loginData.user.id,
+                created_at: new Date().toISOString()
+              });
+          }
+          
+          return loginData.user !== null;
+        } else if (data.user) {
+          // Voeg nieuwe gebruiker toe aan admin_users
+          await supabase
+            .from('admin_users')
+            .insert({
+              id: data.user.id,
+              created_at: new Date().toISOString()
+            });
+            
+          toast.success('Test admin account aangemaakt en ingelogd');
+          return true;
+        }
+      } else {
+        // Er is al een sessie, controleer of het een admin is
+        return true;
+      }
+    } catch (e) {
+      console.error('Auto login error:', e);
+      return false;
+    }
+  };
 
   useEffect(() => {
-    checkAdminAccess();
-  }, []);
+    const initAdminCheck = async () => {
+      // Probeer auto-login
+      const loginSuccess = await autoLogin();
+      
+      if (loginSuccess) {
+        // Na succesvolle login, check admin toegang
+        await checkAdminAccess();
+      } else {
+        // Als auto-login mislukt, redirect naar login pagina
+        navigate('/admin-login');
+      }
+    };
+    
+    initAdminCheck();
+  }, [navigate]);
 
   const checkAdminAccess = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
       toast.error("U moet ingelogd zijn om toegang te krijgen tot het admin dashboard");
+      navigate('/admin-login');
       return;
     }
 
@@ -109,11 +198,18 @@ const AdminDashboardPage = () => {
 
     if (error || !adminUser) {
       toast.error("U heeft geen toegang tot het admin dashboard");
+      navigate('/admin-login');
       return;
     }
 
     setIsAdmin(true);
     loadData();
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin-login');
+    toast.success("U bent uitgelogd");
   };
 
   const loadData = async () => {
@@ -204,168 +300,172 @@ const AdminDashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-        
-        <Tabs defaultValue="aanvragen" className="space-y-6" onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="aanvragen">Dakkapel Aanvragen ({calculatorAanvragen.length + configuraties.length})</TabsTrigger>
-            <TabsTrigger value="prijzen">Prijsbeheer</TabsTrigger>
-          </TabsList>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <AdminHeader onLogout={handleLogout} />
+
+      <div className="flex-1 p-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
           
-          <TabsContent value="aanvragen" className="space-y-6">
-            <h2 className="text-2xl font-bold">Calculator Aanvragen</h2>
+          <Tabs defaultValue="aanvragen" className="space-y-6" onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="aanvragen">Dakkapel Aanvragen ({calculatorAanvragen.length + configuraties.length})</TabsTrigger>
+              <TabsTrigger value="prijzen">Prijsbeheer</TabsTrigger>
+            </TabsList>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Calculator Aanvragen ({calculatorAanvragen.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Datum</TableHead>
-                        <TableHead>Naam</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Telefoon</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Acties</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {calculatorAanvragen.length === 0 ? (
+            <TabsContent value="aanvragen" className="space-y-6">
+              <h2 className="text-2xl font-bold">Calculator Aanvragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Calculator Aanvragen ({calculatorAanvragen.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-4">
-                            Geen calculator aanvragen gevonden
-                          </TableCell>
+                          <TableHead>Datum</TableHead>
+                          <TableHead>Naam</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Telefoon</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Acties</TableHead>
                         </TableRow>
-                      ) : (
-                        calculatorAanvragen.map((aanvraag) => (
-                          <TableRow key={aanvraag.id}>
-                            <TableCell>
-                              {format(new Date(aanvraag.created_at), 'dd MMM yyyy', { locale: nl })}
-                            </TableCell>
-                            <TableCell>
-                              {aanvraag.voornaam} {aanvraag.achternaam}
-                            </TableCell>
-                            <TableCell>{aanvraag.emailadres}</TableCell>
-                            <TableCell>{aanvraag.telefoon}</TableCell>
-                            <TableCell>{aanvraag.type}</TableCell>
-                            <TableCell>{getStatusBadge(aanvraag.status)}</TableCell>
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'in_behandeling')}
-                                >
-                                  <Clock className="h-4 w-4 mr-1" />
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'offerte_verzonden')}
-                                >
-                                  <Mail className="h-4 w-4 mr-1" />
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'afgehandeld')}
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
-                                </Button>
-                              </div>
+                      </TableHeader>
+                      <TableBody>
+                        {calculatorAanvragen.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={7} className="text-center py-4">
+                              Geen calculator aanvragen gevonden
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <h2 className="text-2xl font-bold mt-8">Configurator Aanvragen</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Configurator Aanvragen ({configuraties.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Datum</TableHead>
-                        <TableHead>Naam</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Telefoon</TableHead>
-                        <TableHead>Model</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Acties</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {configuraties.length === 0 ? (
+                        ) : (
+                          calculatorAanvragen.map((aanvraag) => (
+                            <TableRow key={aanvraag.id}>
+                              <TableCell>
+                                {format(new Date(aanvraag.created_at), 'dd MMM yyyy', { locale: nl })}
+                              </TableCell>
+                              <TableCell>
+                                {aanvraag.voornaam} {aanvraag.achternaam}
+                              </TableCell>
+                              <TableCell>{aanvraag.emailadres}</TableCell>
+                              <TableCell>{aanvraag.telefoon}</TableCell>
+                              <TableCell>{aanvraag.type}</TableCell>
+                              <TableCell>{getStatusBadge(aanvraag.status)}</TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'in_behandeling')}
+                                  >
+                                    <Clock className="h-4 w-4 mr-1" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'offerte_verzonden')}
+                                  >
+                                    <Mail className="h-4 w-4 mr-1" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'afgehandeld')}
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <h2 className="text-2xl font-bold mt-8">Configurator Aanvragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Configurator Aanvragen ({configuraties.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-4">
-                            Geen configurator aanvragen gevonden
-                          </TableCell>
+                          <TableHead>Datum</TableHead>
+                          <TableHead>Naam</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Telefoon</TableHead>
+                          <TableHead>Model</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Acties</TableHead>
                         </TableRow>
-                      ) : (
-                        configuraties.map((config) => (
-                          <TableRow key={config.id}>
-                            <TableCell>
-                              {format(new Date(config.created_at), 'dd MMM yyyy', { locale: nl })}
-                            </TableCell>
-                            <TableCell>{config.naam}</TableCell>
-                            <TableCell>{config.email}</TableCell>
-                            <TableCell>{config.telefoon}</TableCell>
-                            <TableCell>{config.model}</TableCell>
-                            <TableCell>{getStatusBadge(config.status)}</TableCell>
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => updateStatus('dakkapel_configuraties', config.id, 'in_behandeling')}
-                                >
-                                  <Clock className="h-4 w-4 mr-1" />
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => updateStatus('dakkapel_configuraties', config.id, 'offerte_verzonden')}
-                                >
-                                  <Mail className="h-4 w-4 mr-1" />
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => updateStatus('dakkapel_configuraties', config.id, 'afgehandeld')}
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
-                                </Button>
-                              </div>
+                      </TableHeader>
+                      <TableBody>
+                        {configuraties.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={7} className="text-center py-4">
+                              Geen configurator aanvragen gevonden
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="prijzen">
-            <DakkapelPricesTable />
-          </TabsContent>
-        </Tabs>
+                        ) : (
+                          configuraties.map((config) => (
+                            <TableRow key={config.id}>
+                              <TableCell>
+                                {format(new Date(config.created_at), 'dd MMM yyyy', { locale: nl })}
+                              </TableCell>
+                              <TableCell>{config.naam}</TableCell>
+                              <TableCell>{config.email}</TableCell>
+                              <TableCell>{config.telefoon}</TableCell>
+                              <TableCell>{config.model}</TableCell>
+                              <TableCell>{getStatusBadge(config.status)}</TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => updateStatus('dakkapel_configuraties', config.id, 'in_behandeling')}
+                                  >
+                                    <Clock className="h-4 w-4 mr-1" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => updateStatus('dakkapel_configuraties', config.id, 'offerte_verzonden')}
+                                  >
+                                    <Mail className="h-4 w-4 mr-1" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => updateStatus('dakkapel_configuraties', config.id, 'afgehandeld')}
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="prijzen">
+              <DakkapelPricesTable />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
