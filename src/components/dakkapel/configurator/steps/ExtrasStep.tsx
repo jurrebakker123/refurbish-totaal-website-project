@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { StepProps } from '../DakkapelConfigurator';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Wind, Sun, Shield, Snowflake } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { OptimizedImage } from '@/components/ui/optimized-image';
 
 const extraOptions = [
   { 
@@ -11,28 +10,28 @@ const extraOptions = [
     name: 'Ventilatieroosters', 
     description: 'Zorgt voor goede luchtcirculatie', 
     price: 350,
-    image: '/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png'
+    icon: <Wind className="h-16 w-16 text-brand-darkGreen" />
   },
   { 
     id: 'sunShade', 
     name: 'Zonwering (Somfy-Ilmo motor)', 
     description: 'Houdt de warmte buiten', 
     price: 850,
-    image: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png'
+    icon: <Sun className="h-16 w-16 text-brand-darkGreen" />
   },
   { 
     id: 'insectScreens', 
     name: 'Horren', 
     description: 'Houdt insecten buiten', 
     price: 250,
-    image: '/lovable-uploads/043aad9c-d5e0-4412-b651-a4bcff75a4c2.png'
+    icon: <Shield className="h-16 w-16 text-brand-darkGreen" />
   },
   { 
     id: 'airConditioning', 
     name: 'Airco', 
     description: 'Voor optimaal klimaatbeheer', 
     price: 1500,
-    image: '/lovable-uploads/ab4fe583-5611-4401-93c9-7fb7d38fd340.png'
+    icon: <Snowflake className="h-16 w-16 text-brand-darkGreen" />
   }
 ];
 
@@ -85,12 +84,8 @@ export const ExtrasStep: React.FC<StepProps> = ({
                   <p className="text-sm text-gray-600 mb-2">{option.description}</p>
                   <p className="text-sm font-medium text-brand-darkGreen">+ €{option.price.toLocaleString('nl-NL')},-</p>
                 </div>
-                <div className="w-20 h-20 ml-3">
-                  <OptimizedImage 
-                    src={option.image}
-                    alt={option.name}
-                    className="w-full h-full object-contain"
-                  />
+                <div className="w-20 h-20 ml-3 flex items-center justify-center">
+                  {option.icon}
                 </div>
               </div>
             </div>
