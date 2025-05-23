@@ -4,10 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
-
-// Meer uitgebreide logging
-console.log("Starting send-quote function with RESEND_API_KEY:", resendApiKey ? "Present (not showing for security)" : "Missing");
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
+console.log("Starting send-quote function with RESEND_API_KEY:", resendApiKey ? "Present" : "Missing");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,12 +25,14 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("Processing quote request...");
+
     if (!resendApiKey) {
-      console.error("RESEND_API_KEY is not configured in Supabase secrets");
+      console.error("RESEND_API_KEY is not configured");
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: "RESEND_API_KEY is not configured in Supabase secrets" 
+          error: "Email service not configured" 
         }),
         {
           status: 500,
@@ -42,29 +41,14 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    if (!resend) {
-      console.error("Failed to initialize Resend client");
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Failed to initialize Resend client" 
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
+    const resend = new Resend(resendApiKey);
     const { requestId, type, customMessage }: SendQuoteRequest = await req.json();
     
-    console.log("Quote request received:", { requestId, type, messageLength: customMessage?.length || 0 });
+    console.log("Quote request received:", { requestId, type });
     
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
-    
-    console.log("Supabase URL and Key:", supabaseUrl ? "URL present" : "URL missing", supabaseKey ? "Key present" : "Key missing");
     
     if (!supabaseUrl || !supabaseKey) {
       throw new Error("Missing Supabase credentials");
@@ -72,24 +56,24 @@ const handler = async (req: Request): Promise<Response> => {
     
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-    // We gebruiken alleen 'configurator' type
-    const tableName = 'dakkapel_configuraties';
-    const { data, error } = await supabaseClient
-      .from(tableName)
+    // Fetch configurator data
+    console.log("Fetching configurator data for ID:", requestId);
+    const { data: requestData, error } = await supabaseClient
+      .from('dakkapel_configuraties')
       .select('*')
       .eq('id', requestId)
       .single();
     
     if (error) {
       console.error("Error fetching configurator data:", error);
-      throw error;
+      throw new Error(`Database error: ${error.message}`);
     }
-    requestData = data;
-    console.log("Configurator data fetched:", requestData ? "success" : "null");
 
     if (!requestData) {
       throw new Error('Aanvraag niet gevonden');
     }
+
+    console.log("Request data found:", requestData.naam, requestData.email);
 
     // Prepare email content
     const customerName = requestData.naam;
@@ -161,70 +145,60 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    console.log("Preparing to send email to:", customerEmail);
-    console.log("Email From: Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>");
+    console.log("Sending email to:", customerEmail);
 
-    // Test met extra logging
-    try {
-      // Send email
-      const emailResponse = await resend.emails.send({
-        from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
-        to: [customerEmail],
-        subject: `Offerte Dakkapel - Refurbish Totaal Nederland`,
-        html: emailHtml,
-        reply_to: "info@refurbishtotaalnederland.nl",
-      });
+    // Send email
+    const emailResponse = await resend.emails.send({
+      from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
+      to: [customerEmail],
+      subject: `Offerte Dakkapel - ${requestData.model}`,
+      html: emailHtml,
+      reply_to: "info@refurbishtotaalnederland.nl",
+    });
 
-      console.log("Email response from Resend:", emailResponse);
+    console.log("Email response:", emailResponse);
 
-      // Update the status in the database
-      const { error: updateError } = await supabaseClient
-        .from(tableName)
-        .update({
-          status: 'offerte_verzonden',
-          offerte_verzonden_op: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', requestId);
-
-      if (updateError) {
-        console.error('Error updating status:', updateError);
-        throw updateError;
-      }
-
-      return new Response(JSON.stringify({ 
-        success: true, 
-        message: 'Offerte succesvol verzonden',
-        emailResponse 
-      }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
-      });
-    } catch (emailError: any) {
-      console.error("Specific error with email sending:", emailError);
-      console.error("Email error details:", emailError.message, emailError.name);
-      
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: `Email verzending mislukt: ${emailError.message}`,
-        details: emailError
-      }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
-      });
+    if (emailResponse.error) {
+      console.error("Resend error:", emailResponse.error);
+      throw new Error(`Email sending failed: ${emailResponse.error.message}`);
     }
+
+    // Update the status in the database
+    console.log("Updating request status...");
+    const { error: updateError } = await supabaseClient
+      .from('dakkapel_configuraties')
+      .update({
+        status: 'offerte_verzonden',
+        offerte_verzonden_op: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', requestId);
+
+    if (updateError) {
+      console.error('Error updating status:', updateError);
+      throw updateError;
+    }
+
+    console.log("Quote sent successfully!");
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: 'Offerte succesvol verzonden',
+      emailId: emailResponse.data?.id
+    }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders,
+      },
+    });
+
   } catch (error: any) {
     console.error("Error in send-quote function:", error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error.message || 'Onbekende fout'
       }),
       {
         status: 500,

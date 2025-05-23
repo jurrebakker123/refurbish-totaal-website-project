@@ -125,16 +125,17 @@ export const sendQuoteEmail = async (
       }
     });
 
+    console.log('Quote function response:', data, 'Error:', error);
+
     if (error) {
-      console.error('Error sending quote:', error);
+      console.error('Error calling function:', error);
       toast.error(`Fout bij het verzenden van offerte: ${error.message || 'API Error'}`);
       return false;
     }
 
-    console.log('Quote sent successfully:', data);
-    
-    if (!data.success) {
-      toast.error(`Fout bij het verzenden van offerte: ${data.error || 'Onbekende fout'}`);
+    if (!data || !data.success) {
+      console.error('Function returned error:', data);
+      toast.error(`Fout bij het verzenden van offerte: ${data?.error || 'Onbekende fout'}`);
       return false;
     }
     
