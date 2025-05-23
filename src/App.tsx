@@ -54,8 +54,8 @@ function App() {
             <Route path="/voorwaarden" element={<VoorwaardenPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/dakkapel" element={<DakkapelLandingPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-            <Route path="/dakkapel-configurator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
             <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
             <Route path="/isolatietechniek" element={<IsolatietechniekPage />} />
             <Route path="/kozijntechniek" element={<KozijntechniekPage />} />

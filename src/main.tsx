@@ -49,8 +49,8 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
@@ -69,8 +69,8 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
@@ -106,8 +106,8 @@ const renderBasedOnDomain = () => {
             <Route path="/" element={<IsolatieSelectiePage />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
@@ -131,8 +131,8 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
           </Routes>
         </SidebarProvider>
       </BrowserRouter>
