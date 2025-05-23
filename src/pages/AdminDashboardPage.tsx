@@ -135,7 +135,7 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const updateStatus = async (table: string, id: string, status: string) => {
+  const updateStatus = async (table: 'dakkapel_configuraties' | 'dakkapel_calculator_aanvragen', id: string, status: string) => {
     const { error } = await supabase
       .from(table)
       .update({ 

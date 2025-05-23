@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -48,7 +47,7 @@ const renderBasedOnDomain = () => {
           <Routes>
             <Route path="/" element={<DakkapelLandingPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
+            <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
@@ -68,7 +67,7 @@ const renderBasedOnDomain = () => {
           <Routes>
             <Route path="/" element={<ZonnepanelenPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
+            <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
@@ -87,7 +86,7 @@ const renderBasedOnDomain = () => {
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<BouwhulpPage />} />
-            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
+            <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -105,7 +104,7 @@ const renderBasedOnDomain = () => {
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<IsolatieSelectiePage />} />
-            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
+            <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
@@ -130,7 +129,7 @@ const renderBasedOnDomain = () => {
             <Route path="/refurbishbouwhulp" element={<BouwhulpPage />} />
             <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
+            <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />

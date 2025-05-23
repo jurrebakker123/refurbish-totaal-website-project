@@ -54,7 +54,7 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
       // Calculate total price
       const totalPrice = calculateTotalPrice(configuration);
       
-      // Save to Supabase database first
+      // Save to Supabase database first - fix column names to match schema
       const { error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert({
@@ -71,15 +71,15 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
           breedte: configuration.breedte,
           hoogte: configuration.hoogte,
           materiaal: configuration.materiaal,
-          aantalRamen: configuration.aantalRamen,
-          kozijnHoogte: configuration.kozijnHoogte,
-          dakHelling: configuration.dakHelling,
-          dakHellingType: configuration.dakHellingType,
-          kleurKozijnen: configuration.kleurKozijnen,
-          kleurZijkanten: configuration.kleurZijkanten,
-          kleurDraaikiepramen: configuration.kleurDraaikiepramen,
-          rcWaarde: configuration.rcWaarde,
-          woningZijde: configuration.woningZijde,
+          aantalramen: configuration.aantalRamen, // Fixed: use lowercase column name
+          kozijnhoogte: configuration.kozijnHoogte, // Fixed: use lowercase column name
+          dakhelling: configuration.dakHelling, // Fixed: use lowercase column name
+          dakhellingtype: configuration.dakHellingType, // Fixed: use lowercase column name
+          kleurkozijnen: configuration.kleurKozijnen, // Fixed: use lowercase column name
+          kleurzijkanten: configuration.kleurZijkanten, // Fixed: use lowercase column name
+          kleurdraaikiepramen: configuration.kleurDraaikiepramen, // Fixed: use lowercase column name
+          rcwaarde: configuration.rcWaarde, // Fixed: use lowercase column name
+          woningzijde: configuration.woningZijde, // Fixed: use lowercase column name
           opties: configuration.opties,
           totaal_prijs: totalPrice,
           status: 'nieuw'
