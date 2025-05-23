@@ -67,6 +67,7 @@ export const ContactFormStep: React.FC<StepProps> = ({
       const { error } = await supabase
         .from('dakkapel_configuraties')
         .insert({
+          naam: data.name,  // Adding the required 'naam' field
           email: data.email,
           telefoon: data.phone,
           adres: data.address,
