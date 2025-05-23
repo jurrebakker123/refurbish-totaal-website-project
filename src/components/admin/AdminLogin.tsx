@@ -11,7 +11,46 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Registreer de gebruiker
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Voeg de gebruiker toe aan admin_users tabel
+        const { error: adminError } = await supabase
+          .from('admin_users')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString()
+          });
+
+        if (adminError) {
+          console.error('Error adding to admin_users:', adminError);
+          // Continue anyway, user is created
+        }
+
+        toast.success("Admin account succesvol aangemaakt! U kunt nu inloggen.");
+        setIsSignUp(false);
+      }
+    } catch (error: any) {
+      toast.error("Fout bij registreren: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,10 +90,12 @@ const AdminLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center">Admin Login</CardTitle>
+          <CardTitle className="text-center">
+            {isSignUp ? 'Admin Registreren' : 'Admin Login'}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1">
                 Email
@@ -84,9 +125,18 @@ const AdminLogin = () => {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Inloggen...' : 'Inloggen'}
+              {loading ? (isSignUp ? 'Registreren...' : 'Inloggen...') : (isSignUp ? 'Registreren' : 'Inloggen')}
             </Button>
           </form>
+          
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              {isSignUp ? 'Al een account? Inloggen' : 'Nog geen account? Registreren'}
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>
