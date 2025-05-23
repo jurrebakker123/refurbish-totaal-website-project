@@ -14,11 +14,30 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Eye, Edit, Mail, CheckCircle, Clock, AlertCircle, Download } from 'lucide-react';
+import { 
+  Eye, 
+  Edit, 
+  Mail, 
+  CheckCircle, 
+  Clock, 
+  AlertCircle, 
+  Download,
+  RefreshCw 
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
 import { useNavigate } from 'react-router-dom';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input';
 
 interface DakkapelConfiguratie {
   id: string;
@@ -88,6 +107,10 @@ const AdminDashboardPage = () => {
   const [calculatorAanvragen, setCalculatorAanvragen] = useState<DakkapelCalculatorAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('aanvragen');
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [notes, setNotes] = useState('');
+  const [price, setPrice] = useState('');
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,7 +122,7 @@ const AdminDashboardPage = () => {
     console.log('Starting to load admin dashboard data...');
     
     try {
-      // Load configurator data - geen RLS check, gewoon alle data ophalen
+      // Load configurator data
       console.log('Loading configurator data...');
       const { data: configData, error: configError } = await supabase
         .from('dakkapel_configuraties')
@@ -115,7 +138,7 @@ const AdminDashboardPage = () => {
         console.log(`Loaded ${configData?.length || 0} configurations`);
       }
 
-      // Load calculator data - geen RLS check, gewoon alle data ophalen
+      // Load calculator data
       console.log('Loading calculator data...');
       const { data: calcData, error: calcError } = await supabase
         .from('dakkapel_calculator_aanvragen')
@@ -170,6 +193,53 @@ const AdminDashboardPage = () => {
     loadData(); // Herlaad data
   };
 
+  const updateItemDetails = async () => {
+    if (!selectedItem) return;
+    
+    const isCalculator = 'emailadres' in selectedItem;
+    const table = isCalculator ? 'dakkapel_calculator_aanvragen' : 'dakkapel_configuraties';
+    
+    const updateData: any = {};
+    
+    if (notes.trim()) {
+      updateData.notities = notes;
+    }
+    
+    if (price.trim()) {
+      const priceValue = parseFloat(price.replace(',', '.'));
+      if (!isNaN(priceValue)) {
+        updateData.totaal_prijs = priceValue;
+      }
+    }
+    
+    if (Object.keys(updateData).length === 0) {
+      setIsDetailOpen(false);
+      return;
+    }
+    
+    const { error } = await supabase
+      .from(table)
+      .update(updateData)
+      .eq('id', selectedItem.id);
+    
+    if (error) {
+      console.error('Update error:', error);
+      toast.error("Fout bij het bijwerken van gegevens: " + error.message);
+      return;
+    }
+    
+    toast.success("Gegevens succesvol bijgewerkt");
+    loadData();
+    setIsDetailOpen(false);
+  };
+
+  const openDetails = (item: any) => {
+    setSelectedItem(item);
+    setNotes(item.notities || '');
+    setPrice(item.totaal_prijs ? item.totaal_prijs.toString() : '');
+    setIsDetailOpen(true);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'nieuw':
@@ -183,6 +253,166 @@ const AdminDashboardPage = () => {
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
+  };
+
+  const renderDetailContent = () => {
+    if (!selectedItem) return null;
+    
+    const isCalculator = 'emailadres' in selectedItem;
+    const contactInfo = isCalculator ? (
+      <div>
+        <p><strong>Naam:</strong> {selectedItem.voornaam} {selectedItem.achternaam}</p>
+        <p><strong>Email:</strong> {selectedItem.emailadres}</p>
+        <p><strong>Telefoon:</strong> {selectedItem.telefoon}</p>
+        <p><strong>Adres:</strong> {selectedItem.straatnaam} {selectedItem.huisnummer}, {selectedItem.postcode} {selectedItem.plaats}</p>
+      </div>
+    ) : (
+      <div>
+        <p><strong>Naam:</strong> {selectedItem.naam}</p>
+        <p><strong>Email:</strong> {selectedItem.email}</p>
+        <p><strong>Telefoon:</strong> {selectedItem.telefoon}</p>
+        <p><strong>Adres:</strong> {selectedItem.adres}, {selectedItem.postcode} {selectedItem.plaats}</p>
+      </div>
+    );
+    
+    const productInfo = isCalculator ? (
+      <div>
+        <p><strong>Type:</strong> {selectedItem.type}</p>
+        <p><strong>Afmetingen:</strong> {selectedItem.breedte}cm x {selectedItem.hoogte}cm</p>
+        <p><strong>Materiaal:</strong> {selectedItem.materiaal}</p>
+        <p><strong>Dakhelling:</strong> {selectedItem.dakhelling}° ({selectedItem.dakhellingtype})</p>
+        <p><strong>Aantal ramen:</strong> {selectedItem.aantalramen}</p>
+        <p><strong>Kozijnhoogte:</strong> {selectedItem.kozijnhoogte}</p>
+        <p><strong>Kleuren:</strong> Kozijnen: {selectedItem.kleurkozijnen}, Zijkanten: {selectedItem.kleurzijkanten}, Draaikiepramen: {selectedItem.kleurdraaikiepramen}</p>
+        <p><strong>RC-waarde:</strong> {selectedItem.rcwaarde}</p>
+        <p><strong>Woningzijde:</strong> {selectedItem.woningzijde}</p>
+      </div>
+    ) : (
+      <div>
+        <p><strong>Model:</strong> {selectedItem.model}</p>
+        <p><strong>Breedte:</strong> {selectedItem.breedte}cm</p>
+        <p><strong>Materiaal:</strong> {selectedItem.materiaal}</p>
+        <p><strong>Dakhelling:</strong> {selectedItem.dakhelling ? `${selectedItem.dakhelling}° (${selectedItem.dakhelling_type})` : 'Niet opgegeven'}</p>
+        <p><strong>Kleuren:</strong> Kozijn: {selectedItem.kleur_kozijn}, Zijkanten: {selectedItem.kleur_zijkanten}, Draaikiepramen: {selectedItem.kleur_draaikiepramen}</p>
+        <p><strong>Opties:</strong></p>
+        <ul>
+          <li>Ventilatierooster: {selectedItem.ventilationgrids ? 'Ja' : 'Nee'}</li>
+          <li>Zonwering: {selectedItem.sunshade ? 'Ja' : 'Nee'}</li>
+          <li>Insectenhorren: {selectedItem.insectscreens ? 'Ja' : 'Nee'}</li>
+          <li>Airconditioning: {selectedItem.airconditioning ? 'Ja' : 'Nee'}</li>
+        </ul>
+      </div>
+    );
+    
+    return (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Contactgegevens</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {contactInfo}
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {productInfo}
+            </CardContent>
+          </Card>
+        </div>
+        
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Bericht/Opmerkingen</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{isCalculator ? selectedItem.bericht : selectedItem.opmerkingen || 'Geen opmerkingen'}</p>
+          </CardContent>
+        </Card>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Notities voor intern gebruik</label>
+            <textarea 
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Interne notities..."
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Prijs (€)</label>
+            <Input
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="0,00"
+              className="mb-4"
+            />
+            
+            <div className="flex justify-between">
+              <div>
+                <p className="text-sm"><strong>Status:</strong> {selectedItem.status}</p>
+                {selectedItem.offerte_verzonden_op && (
+                  <p className="text-sm"><strong>Offerte verzonden:</strong> {format(new Date(selectedItem.offerte_verzonden_op), 'dd MMM yyyy')}</p>
+                )}
+                {selectedItem.afgehandeld_op && (
+                  <p className="text-sm"><strong>Afgehandeld op:</strong> {format(new Date(selectedItem.afgehandeld_op), 'dd MMM yyyy')}</p>
+                )}
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  title="In behandeling"
+                  onClick={() => {
+                    const table = isCalculator ? 'dakkapel_calculator_aanvragen' : 'dakkapel_configuraties';
+                    updateStatus(table, selectedItem.id, 'in_behandeling');
+                    setIsDetailOpen(false);
+                  }}
+                >
+                  <Clock className="h-4 w-4 mr-1" /> In behandeling
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  title="Offerte verzonden"
+                  onClick={() => {
+                    const table = isCalculator ? 'dakkapel_calculator_aanvragen' : 'dakkapel_configuraties';
+                    updateStatus(table, selectedItem.id, 'offerte_verzonden');
+                    setIsDetailOpen(false);
+                  }}
+                >
+                  <Mail className="h-4 w-4 mr-1" /> Offerte verzonden
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  title="Afgehandeld"
+                  onClick={() => {
+                    const table = isCalculator ? 'dakkapel_calculator_aanvragen' : 'dakkapel_configuraties';
+                    updateStatus(table, selectedItem.id, 'afgehandeld');
+                    setIsDetailOpen(false);
+                  }}
+                >
+                  <CheckCircle className="h-4 w-4 mr-1" /> Afgehandeld
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
   };
 
   if (loading) {
@@ -202,7 +432,8 @@ const AdminDashboardPage = () => {
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
         </div>
-        <Button onClick={loadData} variant="outline">
+        <Button onClick={loadData} variant="outline" className="flex items-center gap-2">
+          <RefreshCw className="h-4 w-4" />
           Vernieuwen
         </Button>
       </header>
@@ -265,6 +496,14 @@ const AdminDashboardPage = () => {
                                 <TableCell>{getStatusBadge(aanvraag.status)}</TableCell>
                                 <TableCell>
                                   <div className="flex space-x-2">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={() => openDetails(aanvraag)}
+                                      title="Details bekijken"
+                                    >
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
                                     <Button 
                                       size="sm" 
                                       variant="outline"
@@ -345,6 +584,14 @@ const AdminDashboardPage = () => {
                                     <Button 
                                       size="sm" 
                                       variant="outline"
+                                      onClick={() => openDetails(config)}
+                                      title="Details bekijken"
+                                    >
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
                                       onClick={() => updateStatus('dakkapel_configuraties', config.id, 'in_behandeling')}
                                       title="In behandeling"
                                     >
@@ -385,6 +632,24 @@ const AdminDashboardPage = () => {
           </Tabs>
         </div>
       </div>
+      
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Aanvraag Details</DialogTitle>
+            <DialogDescription>
+              Bekijk en bewerk de details van deze aanvraag
+            </DialogDescription>
+          </DialogHeader>
+          
+          {renderDetailContent()}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDetailOpen(false)}>Annuleren</Button>
+            <Button onClick={updateItemDetails}>Opslaan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
