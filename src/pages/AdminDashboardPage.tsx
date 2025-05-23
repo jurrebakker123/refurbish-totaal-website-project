@@ -1,14 +1,23 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Eye, Edit, Mail, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Eye, Edit, Mail, CheckCircle, Clock, AlertCircle, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
+import DakkapelPricesTable from '@/components/admin/DakkapelPricesTable';
 
 interface DakkapelConfiguratie {
   id: string;
@@ -78,6 +87,7 @@ const AdminDashboardPage = () => {
   const [calculatorAanvragen, setCalculatorAanvragen] = useState<DakkapelCalculatorAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState('aanvragen'); // New state for active tab
 
   useEffect(() => {
     checkAdminAccess();
@@ -196,164 +206,164 @@ const AdminDashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Admin Dashboard - Dakkapel Aanvragen</h1>
+        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
         
-        <Tabs defaultValue="calculator" className="space-y-6">
+        <Tabs defaultValue="aanvragen" className="space-y-6" onValueChange={setActiveTab}>
           <TabsList>
-            <TabsTrigger value="calculator">Calculator Aanvragen ({calculatorAanvragen.length})</TabsTrigger>
-            <TabsTrigger value="configurator">Configurator Aanvragen ({configuraties.length})</TabsTrigger>
+            <TabsTrigger value="aanvragen">Dakkapel Aanvragen ({calculatorAanvragen.length + configuraties.length})</TabsTrigger>
+            <TabsTrigger value="prijzen">Prijsbeheer</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="calculator" className="space-y-4">
-            <div className="grid gap-4">
-              {calculatorAanvragen.map((aanvraag) => (
-                <Card key={aanvraag.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">
-                          {aanvraag.voornaam} {aanvraag.achternaam}
-                        </CardTitle>
-                        <p className="text-sm text-gray-600">
-                          {format(new Date(aanvraag.created_at), 'dd MMMM yyyy HH:mm', { locale: nl })}
-                        </p>
-                      </div>
-                      {getStatusBadge(aanvraag.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <div>
-                        <h4 className="font-semibold mb-2">Contact</h4>
-                        <p className="text-sm">{aanvraag.emailadres}</p>
-                        <p className="text-sm">{aanvraag.telefoon}</p>
-                        <p className="text-sm">{aanvraag.straatnaam} {aanvraag.huisnummer}</p>
-                        <p className="text-sm">{aanvraag.postcode} {aanvraag.plaats}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2">Configuratie</h4>
-                        <p className="text-sm">Type: {aanvraag.type}</p>
-                        <p className="text-sm">Afmetingen: {aanvraag.breedte}x{aanvraag.hoogte} cm</p>
-                        <p className="text-sm">Materiaal: {aanvraag.materiaal}</p>
-                        <p className="text-sm">Aantal ramen: {aanvraag.aantalramen}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2">Prijs & Status</h4>
-                        {aanvraag.totaal_prijs && (
-                          <p className="text-lg font-bold text-brand-darkGreen">
-                            €{aanvraag.totaal_prijs.toLocaleString('nl-NL')}
-                          </p>
-                        )}
-                        <div className="flex gap-2 mt-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'in_behandeling')}
-                          >
-                            In behandeling
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'offerte_verzonden')}
-                          >
-                            Offerte verzonden
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'afgehandeld')}
-                          >
-                            Afgehandeld
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    {aanvraag.bericht && (
-                      <div className="mt-4 p-3 bg-gray-50 rounded">
-                        <h4 className="font-semibold mb-1">Bericht van klant:</h4>
-                        <p className="text-sm">{aanvraag.bericht}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          
+          <TabsContent value="aanvragen" className="space-y-6">
+            <h2 className="text-2xl font-bold">Calculator Aanvragen</h2>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Calculator Aanvragen ({calculatorAanvragen.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Naam</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Telefoon</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Acties</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {calculatorAanvragen.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-4">
+                            Geen calculator aanvragen gevonden
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        calculatorAanvragen.map((aanvraag) => (
+                          <TableRow key={aanvraag.id}>
+                            <TableCell>
+                              {format(new Date(aanvraag.created_at), 'dd MMM yyyy', { locale: nl })}
+                            </TableCell>
+                            <TableCell>
+                              {aanvraag.voornaam} {aanvraag.achternaam}
+                            </TableCell>
+                            <TableCell>{aanvraag.emailadres}</TableCell>
+                            <TableCell>{aanvraag.telefoon}</TableCell>
+                            <TableCell>{aanvraag.type}</TableCell>
+                            <TableCell>{getStatusBadge(aanvraag.status)}</TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'in_behandeling')}
+                                >
+                                  <Clock className="h-4 w-4 mr-1" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'offerte_verzonden')}
+                                >
+                                  <Mail className="h-4 w-4 mr-1" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'afgehandeld')}
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <h2 className="text-2xl font-bold mt-8">Configurator Aanvragen</h2>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurator Aanvragen ({configuraties.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Datum</TableHead>
+                        <TableHead>Naam</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Telefoon</TableHead>
+                        <TableHead>Model</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Acties</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {configuraties.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-4">
+                            Geen configurator aanvragen gevonden
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        configuraties.map((config) => (
+                          <TableRow key={config.id}>
+                            <TableCell>
+                              {format(new Date(config.created_at), 'dd MMM yyyy', { locale: nl })}
+                            </TableCell>
+                            <TableCell>{config.naam}</TableCell>
+                            <TableCell>{config.email}</TableCell>
+                            <TableCell>{config.telefoon}</TableCell>
+                            <TableCell>{config.model}</TableCell>
+                            <TableCell>{getStatusBadge(config.status)}</TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => updateStatus('dakkapel_configuraties', config.id, 'in_behandeling')}
+                                >
+                                  <Clock className="h-4 w-4 mr-1" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => updateStatus('dakkapel_configuraties', config.id, 'offerte_verzonden')}
+                                >
+                                  <Mail className="h-4 w-4 mr-1" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => updateStatus('dakkapel_configuraties', config.id, 'afgehandeld')}
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
-
-          <TabsContent value="configurator" className="space-y-4">
-            <div className="grid gap-4">
-              {configuraties.map((config) => (
-                <Card key={config.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{config.naam}</CardTitle>
-                        <p className="text-sm text-gray-600">
-                          {format(new Date(config.created_at), 'dd MMMM yyyy HH:mm', { locale: nl })}
-                        </p>
-                      </div>
-                      {getStatusBadge(config.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <div>
-                        <h4 className="font-semibold mb-2">Contact</h4>
-                        <p className="text-sm">{config.email}</p>
-                        <p className="text-sm">{config.telefoon}</p>
-                        <p className="text-sm">{config.adres}</p>
-                        <p className="text-sm">{config.postcode} {config.plaats}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2">Configuratie</h4>
-                        <p className="text-sm">Model: {config.model}</p>
-                        <p className="text-sm">Breedte: {config.breedte} cm</p>
-                        <p className="text-sm">Materiaal: {config.materiaal}</p>
-                        <p className="text-sm">Kozijn: {config.kleur_kozijn}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2">Prijs & Status</h4>
-                        {config.totaal_prijs && (
-                          <p className="text-lg font-bold text-brand-darkGreen">
-                            €{config.totaal_prijs.toLocaleString('nl-NL')}
-                          </p>
-                        )}
-                        <div className="flex gap-2 mt-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => updateStatus('dakkapel_configuraties', config.id, 'in_behandeling')}
-                          >
-                            In behandeling
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => updateStatus('dakkapel_configuraties', config.id, 'offerte_verzonden')}
-                          >
-                            Offerte verzonden
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => updateStatus('dakkapel_configuraties', config.id, 'afgehandeld')}
-                          >
-                            Afgehandeld
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    {config.opmerkingen && (
-                      <div className="mt-4 p-3 bg-gray-50 rounded">
-                        <h4 className="font-semibold mb-1">Opmerkingen:</h4>
-                        <p className="text-sm">{config.opmerkingen}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          
+          <TabsContent value="prijzen">
+            <DakkapelPricesTable />
           </TabsContent>
         </Tabs>
       </div>
