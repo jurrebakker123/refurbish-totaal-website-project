@@ -63,11 +63,17 @@ export const ContactFormStep: React.FC<StepProps> = ({
     });
     
     try {
+      console.log('Submitting dakkapel configuration to database:', {
+        contactInfo: data,
+        configDetails: configuration,
+        price: currentPrice
+      });
+      
       // Save to Supabase database - use correct column names that exist in the schema
-      const { error } = await supabase
+      const { error, data: insertedData } = await supabase
         .from('dakkapel_configuraties')
         .insert({
-          naam: data.name,  // Adding the required 'naam' field
+          naam: data.name,
           email: data.email,
           telefoon: data.phone,
           adres: data.address,
@@ -75,12 +81,12 @@ export const ContactFormStep: React.FC<StepProps> = ({
           plaats: data.city,
           opmerkingen: data.comments,
           model: configuration.model,
-          breedte: parseInt(configuration.width.split('-')[0]) || 240,
+          breedte: parseInt(configuration.width?.split('-')[0]) || 240,
           materiaal: configuration.material,
           kleur_kozijn: configuration.colors?.frames || 'wit',
           kleur_zijkanten: configuration.colors?.sides || 'wit',
           kleur_draaikiepramen: configuration.colors?.movingParts || 'wit',
-          dakhelling: parseInt(configuration.roofAngle.split('-')[0]) || 45,
+          dakhelling: parseInt(configuration.roofAngle?.split('-')[0]) || 45,
           dakhelling_type: `${configuration.roofAngle}°`,
           levertijd: configuration.deliveryTime,
           ventilationgrids: configuration.extras?.ventilationGrids || false,
@@ -89,12 +95,15 @@ export const ContactFormStep: React.FC<StepProps> = ({
           airconditioning: configuration.extras?.airConditioning || false,
           totaal_prijs: currentPrice,
           status: 'nieuw'
-        });
+        })
+        .select();
 
       if (error) {
         console.error('Supabase error:', error);
         throw error;
       }
+      
+      console.log('Successfully saved to database:', insertedData);
 
       // Submit the entire configuration if the function exists (for email)
       if (submitConfigurator) {
