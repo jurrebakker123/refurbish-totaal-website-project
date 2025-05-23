@@ -4,6 +4,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
+// Meer uitgebreide logging
+console.log("Starting send-quote function with RESEND_API_KEY:", resendApiKey ? "Present (not showing for security)" : "Missing");
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const corsHeaders = {
@@ -14,7 +17,7 @@ const corsHeaders = {
 
 interface SendQuoteRequest {
   requestId: string;
-  type: 'calculator' | 'configurator';
+  type: 'configurator';
   customMessage?: string;
 }
 
@@ -26,11 +29,31 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY is not configured in Supabase secrets");
+      console.error("RESEND_API_KEY is not configured in Supabase secrets");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "RESEND_API_KEY is not configured in Supabase secrets" 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     if (!resend) {
-      throw new Error("Failed to initialize Resend client");
+      console.error("Failed to initialize Resend client");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Failed to initialize Resend client" 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     const { requestId, type, customMessage }: SendQuoteRequest = await req.json();
@@ -38,100 +61,62 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Quote request received:", { requestId, type, messageLength: customMessage?.length || 0 });
     
     // Initialize Supabase client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    );
-
-    // Get the request data based on type
-    let requestData;
-    let tableName;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
     
-    if (type === 'calculator') {
-      tableName = 'dakkapel_calculator_aanvragen';
-      const { data, error } = await supabaseClient
-        .from('dakkapel_calculator_aanvragen')
-        .select('*')
-        .eq('id', requestId)
-        .single();
-      
-      if (error) {
-        console.error("Error fetching calculator data:", error);
-        throw error;
-      }
-      requestData = data;
-      console.log("Calculator data fetched:", requestData ? "success" : "null");
-    } else {
-      tableName = 'dakkapel_configuraties';
-      const { data, error } = await supabaseClient
-        .from('dakkapel_configuraties')
-        .select('*')
-        .eq('id', requestId)
-        .single();
-      
-      if (error) {
-        console.error("Error fetching configurator data:", error);
-        throw error;
-      }
-      requestData = data;
-      console.log("Configurator data fetched:", requestData ? "success" : "null");
+    console.log("Supabase URL and Key:", supabaseUrl ? "URL present" : "URL missing", supabaseKey ? "Key present" : "Key missing");
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Missing Supabase credentials");
     }
+    
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    // We gebruiken alleen 'configurator' type
+    const tableName = 'dakkapel_configuraties';
+    const { data, error } = await supabaseClient
+      .from(tableName)
+      .select('*')
+      .eq('id', requestId)
+      .single();
+    
+    if (error) {
+      console.error("Error fetching configurator data:", error);
+      throw error;
+    }
+    requestData = data;
+    console.log("Configurator data fetched:", requestData ? "success" : "null");
 
     if (!requestData) {
       throw new Error('Aanvraag niet gevonden');
     }
 
-    // Prepare email content based on type
-    const isCalculator = type === 'calculator';
-    const customerName = isCalculator ? 
-      `${requestData.voornaam} ${requestData.achternaam}` : 
-      requestData.naam;
-    const customerEmail = isCalculator ? requestData.emailadres : requestData.email;
-    const customerAddress = isCalculator ? 
-      `${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}` :
-      `${requestData.adres}, ${requestData.postcode} ${requestData.plaats}`;
+    // Prepare email content
+    const customerName = requestData.naam;
+    const customerEmail = requestData.email;
+    const customerAddress = `${requestData.adres}, ${requestData.postcode} ${requestData.plaats}`;
 
     // Create detailed product information
-    let productDetails = '';
-    if (isCalculator) {
-      productDetails = `
-        <h3>Uw Dakkapel Specificaties:</h3>
-        <ul>
-          <li><strong>Type:</strong> ${requestData.type}</li>
-          <li><strong>Afmetingen:</strong> ${requestData.breedte}cm x ${requestData.hoogte}cm</li>
-          <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
-          <li><strong>Aantal ramen:</strong> ${requestData.aantalramen}</li>
-          <li><strong>Kozijnhoogte:</strong> ${requestData.kozijnhoogte}</li>
-          <li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhellingtype})</li>
-          <li><strong>Kleur kozijnen:</strong> ${requestData.kleurkozijnen}</li>
-          <li><strong>Kleur zijkanten:</strong> ${requestData.kleurzijkanten}</li>
-          <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleurdraaikiepramen}</li>
-          <li><strong>RC-waarde:</strong> ${requestData.rcwaarde}</li>
-          <li><strong>Woningzijde:</strong> ${requestData.woningzijde}</li>
-        </ul>
-      `;
-    } else {
-      productDetails = `
-        <h3>Uw Dakkapel Configuratie:</h3>
-        <ul>
-          <li><strong>Model:</strong> ${requestData.model}</li>
-          <li><strong>Breedte:</strong> ${requestData.breedte}cm</li>
-          <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
-          <li><strong>Kleur kozijn:</strong> ${requestData.kleur_kozijn}</li>
-          <li><strong>Kleur zijkanten:</strong> ${requestData.kleur_zijkanten}</li>
-          <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleur_draaikiepramen}</li>
-          ${requestData.dakhelling ? `<li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhelling_type})</li>` : ''}
-          ${requestData.levertijd ? `<li><strong>Levertijd:</strong> ${requestData.levertijd}</li>` : ''}
-        </ul>
-        <h3>Extra Opties:</h3>
-        <ul>
-          <li>Ventilatierooster: ${requestData.ventilationgrids ? 'Ja' : 'Nee'}</li>
-          <li>Zonwering: ${requestData.sunshade ? 'Ja' : 'Nee'}</li>
-          <li>Insectenhorren: ${requestData.insectscreens ? 'Ja' : 'Nee'}</li>
-          <li>Airconditioning: ${requestData.airconditioning ? 'Ja' : 'Nee'}</li>
-        </ul>
-      `;
-    }
+    const productDetails = `
+      <h3>Uw Dakkapel Configuratie:</h3>
+      <ul>
+        <li><strong>Model:</strong> ${requestData.model}</li>
+        <li><strong>Breedte:</strong> ${requestData.breedte}cm</li>
+        <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
+        <li><strong>Kleur kozijn:</strong> ${requestData.kleur_kozijn}</li>
+        <li><strong>Kleur zijkanten:</strong> ${requestData.kleur_zijkanten}</li>
+        <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleur_draaikiepramen}</li>
+        ${requestData.dakhelling ? `<li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhelling_type})</li>` : ''}
+        ${requestData.levertijd ? `<li><strong>Levertijd:</strong> ${requestData.levertijd}</li>` : ''}
+      </ul>
+      <h3>Extra Opties:</h3>
+      <ul>
+        <li>Ventilatierooster: ${requestData.ventilationgrids ? 'Ja' : 'Nee'}</li>
+        <li>Zonwering: ${requestData.sunshade ? 'Ja' : 'Nee'}</li>
+        <li>Insectenhorren: ${requestData.insectscreens ? 'Ja' : 'Nee'}</li>
+        <li>Airconditioning: ${requestData.airconditioning ? 'Ja' : 'Nee'}</li>
+      </ul>
+    `;
 
     const priceInfo = requestData.totaal_prijs ? 
       `<p style="font-size: 18px; font-weight: bold; color: #2563eb;">Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
@@ -177,44 +162,63 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     console.log("Preparing to send email to:", customerEmail);
+    console.log("Email From: Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>");
 
-    // Send email
-    const emailResponse = await resend.emails.send({
-      from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
-      to: [customerEmail],
-      subject: `Offerte Dakkapel - Refurbish Totaal Nederland`,
-      html: emailHtml,
-      reply_to: "info@refurbishtotaalnederland.nl",
-    });
+    // Test met extra logging
+    try {
+      // Send email
+      const emailResponse = await resend.emails.send({
+        from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
+        to: [customerEmail],
+        subject: `Offerte Dakkapel - Refurbish Totaal Nederland`,
+        html: emailHtml,
+        reply_to: "info@refurbishtotaalnederland.nl",
+      });
 
-    console.log("Quote email sent successfully:", emailResponse);
+      console.log("Email response from Resend:", emailResponse);
 
-    // Update the status in the database
-    const { error: updateError } = await supabaseClient
-      .from(tableName)
-      .update({
-        status: 'offerte_verzonden',
-        offerte_verzonden_op: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', requestId);
+      // Update the status in the database
+      const { error: updateError } = await supabaseClient
+        .from(tableName)
+        .update({
+          status: 'offerte_verzonden',
+          offerte_verzonden_op: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
 
-    if (updateError) {
-      console.error('Error updating status:', updateError);
-      throw updateError;
+      if (updateError) {
+        console.error('Error updating status:', updateError);
+        throw updateError;
+      }
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Offerte succesvol verzonden',
+        emailResponse 
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
+    } catch (emailError: any) {
+      console.error("Specific error with email sending:", emailError);
+      console.error("Email error details:", emailError.message, emailError.name);
+      
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: `Email verzending mislukt: ${emailError.message}`,
+        details: emailError
+      }), {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
     }
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Offerte succesvol verzonden',
-      emailResponse 
-    }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
   } catch (error: any) {
     console.error("Error in send-quote function:", error);
     return new Response(

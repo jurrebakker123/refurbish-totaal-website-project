@@ -1,17 +1,15 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { DakkapelConfiguratie, DakkapelCalculatorAanvraag, QuoteItem } from '@/types/admin';
+import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
 
 export const loadAdminData = async (): Promise<{ 
   configuraties: DakkapelConfiguratie[],
-  calculatorAanvragen: DakkapelCalculatorAanvraag[],
   success: boolean 
 }> => {
   console.log('Starting to load admin dashboard data...');
   const result = {
     configuraties: [] as DakkapelConfiguratie[],
-    calculatorAanvragen: [] as DakkapelCalculatorAanvraag[],
     success: false
   };
   
@@ -32,24 +30,8 @@ export const loadAdminData = async (): Promise<{
       console.log(`Loaded ${configData?.length || 0} configurations`);
     }
 
-    // Load calculator data
-    console.log('Loading calculator data...');
-    const { data: calcData, error: calcError } = await supabase
-      .from('dakkapel_calculator_aanvragen')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    console.log('Calculator data:', calcData, 'Error:', calcError);
-    if (calcError) {
-      console.error('Calculator error:', calcError);
-      toast.error("Fout bij laden calculator aanvragen: " + calcError.message);
-    } else {
-      result.calculatorAanvragen = calcData || [];
-      console.log(`Loaded ${calcData?.length || 0} calculator requests`);
-    }
-
     result.success = true;
-    toast.success(`Dashboard geladen! ${(configData?.length || 0) + (calcData?.length || 0)} aanvragen gevonden`);
+    toast.success(`Dashboard geladen! ${configData?.length || 0} aanvragen gevonden`);
   } catch (error) {
     console.error('Error loading data:', error);
     toast.error("Onverwachte fout bij het laden van gegevens");
@@ -59,11 +41,10 @@ export const loadAdminData = async (): Promise<{
 };
 
 export const updateRequestStatus = async (
-  table: 'dakkapel_configuraties' | 'dakkapel_calculator_aanvragen', 
   id: string, 
   status: string
 ): Promise<boolean> => {
-  console.log(`Updating status for ${table} ${id} to ${status}`);
+  console.log(`Updating status for dakkapel_configuraties ${id} to ${status}`);
   
   const updateData: any = { 
     status,
@@ -78,7 +59,7 @@ export const updateRequestStatus = async (
   }
 
   const { error } = await supabase
-    .from(table)
+    .from('dakkapel_configuraties')
     .update(updateData)
     .eq('id', id);
 
@@ -93,13 +74,10 @@ export const updateRequestStatus = async (
 };
 
 export const updateRequestDetails = async (
-  item: DakkapelConfiguratie | DakkapelCalculatorAanvraag,
+  item: DakkapelConfiguratie,
   notes: string,
   price: string
 ): Promise<boolean> => {
-  const isCalculator = 'emailadres' in item;
-  const table = isCalculator ? 'dakkapel_calculator_aanvragen' : 'dakkapel_configuraties';
-  
   const updateData: any = {};
   
   if (notes.trim()) {
@@ -118,7 +96,7 @@ export const updateRequestDetails = async (
   }
   
   const { error } = await supabase
-    .from(table)
+    .from('dakkapel_configuraties')
     .update(updateData)
     .eq('id', item.id);
   
@@ -134,7 +112,6 @@ export const updateRequestDetails = async (
 
 export const sendQuoteEmail = async (
   item: QuoteItem, 
-  isCalculator: boolean, 
   customMessage?: string
 ): Promise<boolean> => {
   try {
@@ -143,7 +120,7 @@ export const sendQuoteEmail = async (
     const { data, error } = await supabase.functions.invoke('send-quote', {
       body: {
         requestId: item.id,
-        type: isCalculator ? 'calculator' : 'configurator',
+        type: 'configurator',
         customMessage: customMessage
       }
     });

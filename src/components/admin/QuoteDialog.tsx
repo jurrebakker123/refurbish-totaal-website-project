@@ -60,7 +60,6 @@ info@refurbishtotaalnederland.nl`;
     
     const success = await sendQuoteEmail(
       selectedItem, 
-      selectedItem.isCalculator, 
       messageToSend
     );
     
@@ -79,18 +78,12 @@ info@refurbishtotaalnederland.nl`;
 
   const getCustomerName = () => {
     if (!selectedItem) return '';
-    
-    return selectedItem.isCalculator ? 
-      `${selectedItem.voornaam} ${selectedItem.achternaam}` : 
-      selectedItem.naam;
+    return selectedItem.naam;
   };
 
   const getCustomerEmail = () => {
     if (!selectedItem) return '';
-    
-    return selectedItem.isCalculator ? 
-      selectedItem.emailadres : 
-      selectedItem.email;
+    return selectedItem.email;
   };
 
   if (!selectedItem) return null;

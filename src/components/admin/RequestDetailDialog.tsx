@@ -14,13 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AnyRequestItem } from '@/types/admin';
+import { DakkapelConfiguratie } from '@/types/admin';
 import { updateRequestDetails, updateRequestStatus } from '@/utils/adminUtils';
 
 interface RequestDetailDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  item: AnyRequestItem | null;
+  item: DakkapelConfiguratie | null;
   onDataChange: () => void;
 }
 
@@ -42,8 +42,6 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
 
   if (!item) return null;
   
-  const isCalculator = 'emailadres' in item;
-  
   const handleUpdateDetails = async () => {
     const success = await updateRequestDetails(item, notes, price);
     if (success) {
@@ -53,22 +51,14 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
   };
 
   const handleStatusChange = async (status: string) => {
-    const table = isCalculator ? 'dakkapel_calculator_aanvragen' : 'dakkapel_configuraties';
-    const success = await updateRequestStatus(table, item.id, status);
+    const success = await updateRequestStatus(item.id, status);
     if (success) {
       onDataChange();
       onClose();
     }
   };
 
-  const contactInfo = isCalculator ? (
-    <div>
-      <p><strong>Naam:</strong> {item.voornaam} {item.achternaam}</p>
-      <p><strong>Email:</strong> {item.emailadres}</p>
-      <p><strong>Telefoon:</strong> {item.telefoon}</p>
-      <p><strong>Adres:</strong> {item.straatnaam} {item.huisnummer}, {item.postcode} {item.plaats}</p>
-    </div>
-  ) : (
+  const contactInfo = (
     <div>
       <p><strong>Naam:</strong> {item.naam}</p>
       <p><strong>Email:</strong> {item.email}</p>
@@ -77,19 +67,7 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
     </div>
   );
   
-  const productInfo = isCalculator ? (
-    <div>
-      <p><strong>Type:</strong> {item.type}</p>
-      <p><strong>Afmetingen:</strong> {item.breedte}cm x {item.hoogte}cm</p>
-      <p><strong>Materiaal:</strong> {item.materiaal}</p>
-      <p><strong>Dakhelling:</strong> {item.dakhelling}° ({item.dakhellingtype})</p>
-      <p><strong>Aantal ramen:</strong> {item.aantalramen}</p>
-      <p><strong>Kozijnhoogte:</strong> {item.kozijnhoogte}</p>
-      <p><strong>Kleuren:</strong> Kozijnen: {item.kleurkozijnen}, Zijkanten: {item.kleurzijkanten}, Draaikiepramen: {item.kleurdraaikiepramen}</p>
-      <p><strong>RC-waarde:</strong> {item.rcwaarde}</p>
-      <p><strong>Woningzijde:</strong> {item.woningzijde}</p>
-    </div>
-  ) : (
+  const productInfo = (
     <div>
       <p><strong>Model:</strong> {item.model}</p>
       <p><strong>Breedte:</strong> {item.breedte}cm</p>
@@ -138,10 +116,10 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
         
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Bericht/Opmerkingen</CardTitle>
+            <CardTitle>Opmerkingen</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{isCalculator ? item.bericht : item.opmerkingen || 'Geen opmerkingen'}</p>
+            <p>{item.opmerkingen || 'Geen opmerkingen'}</p>
           </CardContent>
         </Card>
         

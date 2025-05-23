@@ -6,16 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
 import { useNavigate } from 'react-router-dom';
-import { DakkapelConfiguratie, DakkapelCalculatorAanvraag, QuoteItem } from '@/types/admin';
+import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
 import { loadAdminData } from '@/utils/adminUtils';
-import CalculatorRequestsTable from '@/components/admin/CalculatorRequestsTable';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
 
 const AdminDashboardPage = () => {
   const [configuraties, setConfiguraties] = useState<DakkapelConfiguratie[]>([]);
-  const [calculatorAanvragen, setCalculatorAanvragen] = useState<DakkapelCalculatorAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('aanvragen');
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -31,11 +29,10 @@ const AdminDashboardPage = () => {
 
   const loadDashboardData = async () => {
     setLoading(true);
-    const { configuraties: configData, calculatorAanvragen: calcData, success } = await loadAdminData();
+    const { configuraties: configData, success } = await loadAdminData();
     
     if (success) {
       setConfiguraties(configData);
-      setCalculatorAanvragen(calcData);
     }
     
     setLoading(false);
@@ -46,8 +43,8 @@ const AdminDashboardPage = () => {
     setIsDetailOpen(true);
   };
 
-  const openQuoteDialog = (item: any, isCalculator: boolean) => {
-    setSelectedQuoteItem({ ...item, isCalculator });
+  const openQuoteDialog = (item: any) => {
+    setSelectedQuoteItem({ ...item, isCalculator: false });
     setIsQuoteDialogOpen(true);
   };
 
@@ -81,28 +78,13 @@ const AdminDashboardPage = () => {
           <Tabs defaultValue="aanvragen" className="space-y-6" onValueChange={setActiveTab}>
             <TabsList>
               <TabsTrigger value="aanvragen">
-                Dakkapel Aanvragen ({calculatorAanvragen.length + configuraties.length})
+                Dakkapel Aanvragen ({configuraties.length})
               </TabsTrigger>
               <TabsTrigger value="prijzen">Prijsbeheer</TabsTrigger>
             </TabsList>
             
             <TabsContent value="aanvragen" className="space-y-6">
               <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Calculator Aanvragen ({calculatorAanvragen.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CalculatorRequestsTable 
-                      calculatorAanvragen={calculatorAanvragen}
-                      onViewDetails={openDetails}
-                      onOpenQuoteDialog={openQuoteDialog}
-                      onDataChange={loadDashboardData}
-                      sendingQuote={sendingQuote}
-                    />
-                  </CardContent>
-                </Card>
-                
                 <Card>
                   <CardHeader>
                     <CardTitle>Configurator Aanvragen ({configuraties.length})</CardTitle>

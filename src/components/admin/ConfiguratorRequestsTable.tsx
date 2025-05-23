@@ -19,7 +19,7 @@ import { updateRequestStatus } from '@/utils/adminUtils';
 interface ConfiguratorRequestsTableProps {
   configuraties: DakkapelConfiguratie[];
   onViewDetails: (item: DakkapelConfiguratie) => void;
-  onOpenQuoteDialog: (item: DakkapelConfiguratie, isCalculator: boolean) => void;
+  onOpenQuoteDialog: (item: DakkapelConfiguratie) => void;
   onDataChange: () => void;
   sendingQuote: string | null;
 }
@@ -32,7 +32,7 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
   sendingQuote
 }) => {
   const handleStatusChange = async (id: string, status: string) => {
-    const success = await updateRequestStatus('dakkapel_configuraties', id, status);
+    const success = await updateRequestStatus(id, status);
     if (success) {
       onDataChange();
     }
@@ -96,7 +96,7 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
                       size="sm" 
                       variant="outline"
                       className="bg-blue-50 hover:bg-blue-100"
-                      onClick={() => onOpenQuoteDialog(config, false)}
+                      onClick={() => onOpenQuoteDialog(config)}
                       title="Offerte verzenden"
                       disabled={sendingQuote === config.id}
                     >
