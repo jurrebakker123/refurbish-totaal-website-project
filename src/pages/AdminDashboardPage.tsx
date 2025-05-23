@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -111,6 +110,10 @@ const AdminDashboardPage = () => {
   const [notes, setNotes] = useState('');
   const [price, setPrice] = useState('');
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [sendingQuote, setSendingQuote] = useState<string | null>(null);
+  const [quoteMessage, setQuoteMessage] = useState('');
+  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
+  const [selectedQuoteItem, setSelectedQuoteItem] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -415,6 +418,46 @@ const AdminDashboardPage = () => {
     );
   };
 
+  const sendQuoteEmail = async (item: any, isCalculator: boolean, customMessage?: string) => {
+    const itemId = item.id;
+    setSendingQuote(itemId);
+    
+    try {
+      console.log('Sending quote email for:', itemId);
+      
+      const { data, error } = await supabase.functions.invoke('send-quote', {
+        body: {
+          requestId: itemId,
+          type: isCalculator ? 'calculator' : 'configurator',
+          customMessage: customMessage
+        }
+      });
+
+      if (error) {
+        console.error('Error sending quote:', error);
+        throw error;
+      }
+
+      console.log('Quote sent successfully:', data);
+      toast.success("Offerte succesvol verzonden naar de klant!");
+      loadData(); // Reload data to update status
+    } catch (error: any) {
+      console.error('Error sending quote:', error);
+      toast.error("Fout bij het verzenden van offerte: " + (error.message || 'Onbekende fout'));
+    } finally {
+      setSendingQuote(null);
+      setIsQuoteDialogOpen(false);
+      setQuoteMessage('');
+      setSelectedQuoteItem(null);
+    }
+  };
+
+  const openQuoteDialog = (item: any, isCalculator: boolean) => {
+    setSelectedQuoteItem({ ...item, isCalculator });
+    setQuoteMessage('');
+    setIsQuoteDialogOpen(true);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -515,10 +558,16 @@ const AdminDashboardPage = () => {
                                     <Button 
                                       size="sm" 
                                       variant="outline"
-                                      onClick={() => updateStatus('dakkapel_calculator_aanvragen', aanvraag.id, 'offerte_verzonden')}
-                                      title="Offerte verzonden"
+                                      className="bg-blue-50 hover:bg-blue-100"
+                                      onClick={() => openQuoteDialog(aanvraag, true)}
+                                      title="Offerte verzenden"
+                                      disabled={sendingQuote === aanvraag.id}
                                     >
-                                      <Mail className="h-4 w-4" />
+                                      {sendingQuote === aanvraag.id ? (
+                                        <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                      ) : (
+                                        <Mail className="h-4 w-4" />
+                                      )}
                                     </Button>
                                     <Button 
                                       size="sm" 
@@ -600,10 +649,16 @@ const AdminDashboardPage = () => {
                                     <Button 
                                       size="sm" 
                                       variant="outline"
-                                      onClick={() => updateStatus('dakkapel_configuraties', config.id, 'offerte_verzonden')}
-                                      title="Offerte verzonden"
+                                      className="bg-blue-50 hover:bg-blue-100"
+                                      onClick={() => openQuoteDialog(config, false)}
+                                      title="Offerte verzenden"
+                                      disabled={sendingQuote === config.id}
                                     >
-                                      <Mail className="h-4 w-4" />
+                                      {sendingQuote === config.id ? (
+                                        <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                      ) : (
+                                        <Mail className="h-4 w-4" />
+                                      )}
                                     </Button>
                                     <Button 
                                       size="sm" 
@@ -647,6 +702,75 @@ const AdminDashboardPage = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDetailOpen(false)}>Annuleren</Button>
             <Button onClick={updateItemDetails}>Opslaan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Quote Dialog */}
+      <Dialog open={isQuoteDialogOpen} onOpenChange={setIsQuoteDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Offerte Verzenden</DialogTitle>
+            <DialogDescription>
+              Verstuur een automatische offerte naar {selectedQuoteItem ? (
+                selectedQuoteItem.isCalculator ? 
+                `${selectedQuoteItem.voornaam} ${selectedQuoteItem.achternaam}` : 
+                selectedQuoteItem.naam
+              ) : ''}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedQuoteItem && (
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Klantgegevens:</h4>
+                <p><strong>Naam:</strong> {selectedQuoteItem.isCalculator ? 
+                  `${selectedQuoteItem.voornaam} ${selectedQuoteItem.achternaam}` : 
+                  selectedQuoteItem.naam}</p>
+                <p><strong>Email:</strong> {selectedQuoteItem.isCalculator ? 
+                  selectedQuoteItem.emailadres : 
+                  selectedQuoteItem.email}</p>
+                <p><strong>Prijs:</strong> {selectedQuoteItem.totaal_prijs ? 
+                  `€${selectedQuoteItem.totaal_prijs}` : 
+                  'Nog niet ingesteld'}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Persoonlijk bericht (optioneel)
+                </label>
+                <Textarea
+                  value={quoteMessage}
+                  onChange={(e) => setQuoteMessage(e.target.value)}
+                  placeholder="Voeg een persoonlijk bericht toe aan de offerte..."
+                  rows={4}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsQuoteDialogOpen(false)}>
+              Annuleren
+            </Button>
+            <Button 
+              onClick={() => selectedQuoteItem && sendQuoteEmail(selectedQuoteItem, selectedQuoteItem.isCalculator, quoteMessage)}
+              disabled={!selectedQuoteItem || sendingQuote === selectedQuoteItem?.id}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {sendingQuote === selectedQuoteItem?.id ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Verzenden...
+                </>
+              ) : (
+                <>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Offerte Verzenden
+                </>
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
