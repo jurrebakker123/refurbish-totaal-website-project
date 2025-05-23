@@ -19,7 +19,6 @@ import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import DakkapelPricesTable from '@/components/admin/DakkapelPricesTable';
 import { useNavigate } from 'react-router-dom';
-import AdminHeader from '@/components/admin/AdminHeader';
 
 interface DakkapelConfiguratie {
   id: string;
@@ -88,111 +87,12 @@ const AdminDashboardPage = () => {
   const [configuraties, setConfiguraties] = useState<DakkapelConfiguratie[]>([]);
   const [calculatorAanvragen, setCalculatorAanvragen] = useState<DakkapelCalculatorAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState('aanvragen');
   const navigate = useNavigate();
 
-  // Verbeterde auto-login functie
-  const ensureAdminAccess = async () => {
-    try {
-      console.log('Starting admin access check...');
-      
-      // Forceer uitloggen en schoon op
-      await supabase.auth.signOut({ scope: 'global' });
-      
-      // Wacht even
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Test credentials
-      const testEmail = 'admin@refurbishtotaal.nl';
-      const testPassword = 'AdminRefurbish2024!';
-      
-      console.log('Attempting to sign up admin user...');
-      
-      // Probeer eerst te registreren
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: testEmail,
-        password: testPassword,
-      });
-      
-      if (signUpError && !signUpError.message.includes('already registered')) {
-        console.error('Sign up error:', signUpError);
-        throw signUpError;
-      }
-      
-      console.log('Sign up completed, now signing in...');
-      
-      // Probeer in te loggen
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: testEmail,
-        password: testPassword,
-      });
-      
-      if (signInError) {
-        console.error('Sign in error:', signInError);
-        throw signInError;
-      }
-      
-      console.log('Sign in successful:', signInData);
-      
-      if (signInData.user) {
-        // Voeg gebruiker toe aan admin_users tabel als deze nog niet bestaat
-        console.log('Adding user to admin_users table...');
-        
-        const { data: adminExists, error: adminCheckError } = await supabase
-          .from('admin_users')
-          .select('*')
-          .eq('id', signInData.user.id)
-          .single();
-          
-        if (adminCheckError && adminCheckError.code !== 'PGRST116') {
-          console.error('Error checking admin user:', adminCheckError);
-        }
-        
-        if (!adminExists) {
-          const { error: insertError } = await supabase
-            .from('admin_users')
-            .insert({
-              id: signInData.user.id,
-              created_at: new Date().toISOString()
-            });
-            
-          if (insertError) {
-            console.error('Error inserting admin user:', insertError);
-          } else {
-            console.log('Admin user created successfully');
-          }
-        }
-        
-        toast.success('Automatisch ingelogd als admin!');
-        setIsAdmin(true);
-        return true;
-      }
-    } catch (error: any) {
-      console.error('Auto login error:', error);
-      toast.error('Automatisch inloggen mislukt: ' + error.message);
-      return false;
-    }
-  };
-
   useEffect(() => {
-    const initAdmin = async () => {
-      const success = await ensureAdminAccess();
-      if (success) {
-        await loadData();
-      } else {
-        navigate('/admin-login');
-      }
-    };
-    
-    initAdmin();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/admin-login');
-    toast.success("U bent uitgelogd");
-  };
+    loadData();
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -257,12 +157,12 @@ const AdminDashboardPage = () => {
     }
   };
 
-  if (!isAdmin || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Admin toegang wordt ingesteld...</p>
+          <p>Gegevens worden geladen...</p>
         </div>
       </div>
     );
@@ -270,7 +170,11 @@ const AdminDashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <AdminHeader onLogout={handleLogout} />
+      <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
+        </div>
+      </header>
 
       <div className="flex-1 p-6">
         <div className="max-w-7xl mx-auto">
