@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Check, X } from 'lucide-react';
+import { Mail, Check, X, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 import { QuoteItem } from '@/types/admin';
 import { sendQuoteEmail } from '@/utils/adminUtils';
 
@@ -30,6 +31,7 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({
   const [quoteMessage, setQuoteMessage] = useState('');
   const [sendingQuote, setSendingQuote] = useState(false);
   const [useDefaultTemplate, setUseDefaultTemplate] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const defaultTemplate = `Beste klant,
 
@@ -55,24 +57,34 @@ info@refurbishtotaalnederland.nl`;
   const handleSendQuote = async () => {
     if (!selectedItem) return;
     
+    setErrorMessage(null);
     setSendingQuote(true);
     const messageToSend = useDefaultTemplate ? quoteMessage || defaultTemplate : quoteMessage;
     
-    const success = await sendQuoteEmail(
-      selectedItem, 
-      messageToSend
-    );
-    
-    if (success) {
-      onDataChange();
-      onClose();
+    try {
+      const success = await sendQuoteEmail(
+        selectedItem, 
+        messageToSend
+      );
+      
+      if (success) {
+        onDataChange();
+        onClose();
+      } else {
+        setErrorMessage("Er is een fout opgetreden bij het verzenden van de offerte. Controleer de Supabase edge function logs voor meer details.");
+      }
+    } catch (error) {
+      console.error("Error in handleSendQuote:", error);
+      setErrorMessage("Er is een onverwachte fout opgetreden. Controleer de console voor meer informatie.");
+    } finally {
+      setSendingQuote(false);
     }
-    setSendingQuote(false);
   };
 
   React.useEffect(() => {
     if (isOpen) {
       setQuoteMessage(useDefaultTemplate ? defaultTemplate : '');
+      setErrorMessage(null);
     }
   }, [isOpen, useDefaultTemplate]);
 
@@ -107,6 +119,17 @@ info@refurbishtotaalnederland.nl`;
               `€${selectedItem.totaal_prijs}` : 
               'Nog niet ingesteld'}</p>
           </div>
+          
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">Fout bij verzenden</p>
+                <p className="text-sm">{errorMessage}</p>
+                <p className="text-xs mt-1 text-red-600">Tip: Controleer of de RESEND_API_KEY is geconfigureerd in Supabase.</p>
+              </div>
+            </div>
+          )}
           
           <div className="flex items-center space-x-2">
             <Button 

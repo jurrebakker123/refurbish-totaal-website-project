@@ -117,12 +117,22 @@ export const sendQuoteEmail = async (
   try {
     console.log('Sending quote email for:', item.id);
     
+    // Check if item exists
+    if (!item || !item.id) {
+      toast.error("Kan offerte niet verzenden: ongeldige gegevens");
+      return false;
+    }
+    
+    const body = {
+      requestId: item.id,
+      type: 'configurator',
+      customMessage: customMessage
+    };
+    
+    console.log("Sending request with body:", body);
+    
     const { data, error } = await supabase.functions.invoke('send-quote', {
-      body: {
-        requestId: item.id,
-        type: 'configurator',
-        customMessage: customMessage
-      }
+      body: body
     });
 
     console.log('Quote function response:', data, 'Error:', error);
@@ -135,7 +145,15 @@ export const sendQuoteEmail = async (
 
     if (!data || !data.success) {
       console.error('Function returned error:', data);
-      toast.error(`Fout bij het verzenden van offerte: ${data?.error || 'Onbekende fout'}`);
+      
+      let errorMessage = 'Onbekende fout';
+      if (data?.error === "Email service not configured. Please add the RESEND_API_KEY in Supabase secrets.") {
+        errorMessage = "De RESEND_API_KEY is niet geconfigureerd in Supabase";
+      } else if (data?.error) {
+        errorMessage = data.error;
+      }
+      
+      toast.error(`Fout bij het verzenden van offerte: ${errorMessage}`);
       return false;
     }
     

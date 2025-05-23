@@ -32,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: "Email service not configured" 
+          error: "Email service not configured. Please add the RESEND_API_KEY in Supabase secrets." 
         }),
         {
           status: 500,
@@ -42,7 +42,24 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const resend = new Resend(resendApiKey);
-    const { requestId, type, customMessage }: SendQuoteRequest = await req.json();
+    const requestBody = await req.json();
+    console.log("Request body:", requestBody);
+    
+    const { requestId, type, customMessage }: SendQuoteRequest = requestBody;
+    
+    if (!requestId) {
+      console.error("Missing requestId in request");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Missing requestId in request" 
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
     
     console.log("Quote request received:", { requestId, type });
     
@@ -51,6 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
     
     if (!supabaseUrl || !supabaseKey) {
+      console.error("Missing Supabase credentials");
       throw new Error("Missing Supabase credentials");
     }
     
@@ -70,6 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (!requestData) {
+      console.error("Request data not found for ID:", requestId);
       throw new Error('Aanvraag niet gevonden');
     }
 
