@@ -8,6 +8,7 @@ import { DakkapelConfiguration } from './DakkapelCalculator';
 import { toast } from 'sonner';
 import { sendEmail } from '@/config/email';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ContactFormSelectorProps {
   configuration: DakkapelConfiguration;
@@ -53,6 +54,42 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
       // Calculate total price
       const totalPrice = calculateTotalPrice(configuration);
       
+      // Save to Supabase database first
+      const { error: dbError } = await supabase
+        .from('dakkapel_calculator_aanvragen')
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          telefoon: formData.telefoon,
+          emailadres: formData.emailadres,
+          bericht: formData.bericht,
+          type: configuration.type,
+          breedte: configuration.breedte,
+          hoogte: configuration.hoogte,
+          materiaal: configuration.materiaal,
+          aantalRamen: configuration.aantalRamen,
+          kozijnHoogte: configuration.kozijnHoogte,
+          dakHelling: configuration.dakHelling,
+          dakHellingType: configuration.dakHellingType,
+          kleurKozijnen: configuration.kleurKozijnen,
+          kleurZijkanten: configuration.kleurZijkanten,
+          kleurDraaikiepramen: configuration.kleurDraaikiepramen,
+          rcWaarde: configuration.rcWaarde,
+          woningZijde: configuration.woningZijde,
+          opties: configuration.opties,
+          totaal_prijs: totalPrice,
+          status: 'nieuw'
+        });
+
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
+      }
+
       // Format configuration details for email
       const configDetails = `
         Type: ${configuration.type}
@@ -97,6 +134,7 @@ BERICHT VAN KLANT:
 ${formData.bericht || 'Geen aanvullend bericht'}
       `;
       
+      // Send email
       const result = await sendEmail({
         from_name: `${formData.voornaam} ${formData.achternaam}`,
         from_email: formData.emailadres,
@@ -107,18 +145,18 @@ ${formData.bericht || 'Geen aanvullend bericht'}
         phone: formData.telefoon,
         location: `${formData.plaats}`,
         service: "Dakkapel",
-        templateId: "template_ezfzaao" // Use the offerte template
+        templateId: "template_ezfzaao"
       });
 
       if (result.success) {
-        toast.success("Uw aanvraag is succesvol verzonden! We nemen zo spoedig mogelijk contact met u op.");
+        toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op.");
         onNext();
       } else {
-        throw new Error("Er ging iets mis bij het verzenden");
+        throw new Error("Er ging iets mis bij het verzenden van de email");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Er is een probleem opgetreden bij het verzenden. Probeer het later opnieuw.");
+      toast.error("Er is een probleem opgetreden bij het verzenden. De gegevens zijn wel opgeslagen. Probeer het later opnieuw of neem direct contact op.");
     } finally {
       setIsSubmitting(false);
     }

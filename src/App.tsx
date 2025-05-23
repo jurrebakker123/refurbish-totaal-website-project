@@ -1,92 +1,85 @@
 
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { CartProvider } from "@/context/CartContext";
+import CursorEffects from "@/components/CursorEffects";
+import GoogleTagManager from "@/components/GoogleTagManager";
+import CookieConsent from "@/components/CookieConsent";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import LeaveSiteNotification from "@/components/LeaveSiteNotification";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
 import DienstDetailPage from "./pages/DienstDetailPage";
-import OverOnsPage from "./pages/OverOnsPage";
-import ContactPage from "./pages/ContactPage";
 import OffertePage from "./pages/OffertePage";
-import PrivacyPage from "./pages/PrivacyPage";
-import VoorwaardenPage from "./pages/VoorwaardenPage";
+import ContactPage from "./pages/ContactPage";
+import OverOnsPage from "./pages/OverOnsPage";
 import ProjectenPage from "./pages/ProjectenPage";
+import VoorwaardenPage from "./pages/VoorwaardenPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
-import CertificaatPage from "./pages/CertificaatPage";
-import ChatBot from "./components/ChatBot";
-import { CursorEffects } from "./components/CursorEffects";
-import CookieConsent from "./components/CookieConsent";
-import LeaveSiteNotification from "./components/LeaveSiteNotification";
-import SEOStructuredData from "./components/SEOStructuredData";
-import TuinhuizenPage from "./pages/TuinhuizenPage";
-import TuinhuizenModelPage from "./pages/TuinhuizenModelPage";
-import ZonnepanelenPage from "./pages/ZonnepanelenPage";
 import DakkapelLandingPage from "./pages/DakkapelLandingPage";
+import DakkapelCalculatorPage from "./pages/DakkapelCalculatorPage";
 import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage";
 import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
-import WhatsAppButton from "./components/WhatsAppButton";
+import IsolatietechniekPage from "./pages/IsolatietechniekPage";
+import KozijntechniekPage from "./pages/KozijntechniekPage";
+import ZonnepanelenPage from "./pages/ZonnepanelenPage";
+import TuinhuizenPage from "./pages/TuinhuizenPage";
+import TuinhuizenModelPage from "./pages/TuinhuizenModelPage";
+import BouwhulpPage from "./pages/BouwhulpPage";
+import SolarProductDetailPage from "./pages/SolarProductDetailPage";
+import CertificaatPage from "./pages/CertificaatPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLogin from "./components/admin/AdminLogin";
-import KozijntechniekPage from "./pages/KozijntechniekPage";
-import IsolatietechniekPage from "./pages/IsolatietechniekPage";
-import BouwhulpPage from "./pages/BouwhulpPage";
-
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  
-  return null;
-};
+import "./App.css";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <ScrollToTop />
-        <SEOStructuredData />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/tuinhuisbouwer" element={<TuinhuizenPage />} />
-          <Route path="/tuinhuizen-model" element={<TuinhuizenModelPage />} />
-          <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
-          <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
-          <Route path="/refurbishbouwhulp" element={<BouwhulpPage />} />
-          <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-          <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorConceptPage />} />
-          <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
-          <Route path="/diensten" element={<DienstenPage />} />
-          <Route path="/diensten/kozijntechniek" element={<KozijntechniekPage />} />
-          <Route path="/diensten/isolatietechniek" element={<IsolatietechniekPage />} />
-          <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
-          <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
-          <Route path="/over-ons" element={<OverOnsPage />} />
-          <Route path="/projecten" element={<ProjectenPage />} />
-          <Route path="/projecten/:projectId" element={<Index />} />
-          <Route path="/offerte" element={<OffertePage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/voorwaarden" element={<VoorwaardenPage />} />
-          <Route path="/certificaat" element={<CertificaatPage />} />
-          <Route path="/login" element={<AdminLogin onLogin={() => window.location.href = '/admin'} />} />
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <WhatsAppButton />
-        <LeaveSiteNotification />
-        <ChatBot />
-        <CursorEffects />
-        <CookieConsent />
-        <Toaster position="top-center" richColors closeButton />
-      </TooltipProvider>
+      <CartProvider>
+        <TooltipProvider>
+          <Toaster />
+          <BrowserRouter>
+            <CursorEffects />
+            <GoogleTagManager />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/diensten" element={<DienstenPage />} />
+              <Route path="/diensten/:slug" element={<DienstDetailPage />} />
+              <Route path="/offerte" element={<OffertePage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/over-ons" element={<OverOnsPage />} />
+              <Route path="/projecten" element={<ProjectenPage />} />
+              <Route path="/voorwaarden" element={<VoorwaardenPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/dakkapel" element={<DakkapelLandingPage />} />
+              <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
+              <Route path="/dakkapel-configurator" element={<DakkapelCalculatorConceptPage />} />
+              <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
+              <Route path="/isolatietechniek" element={<IsolatietechniekPage />} />
+              <Route path="/kozijntechniek" element={<KozijntechniekPage />} />
+              <Route path="/zonnepanelen" element={<ZonnepanelenPage />} />
+              <Route path="/tuinhuizen" element={<TuinhuizenPage />} />
+              <Route path="/tuinhuizen/model/:id" element={<TuinhuizenModelPage />} />
+              <Route path="/bouwhulp" element={<BouwhulpPage />} />
+              <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
+              <Route path="/certificaat" element={<CertificaatPage />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <CookieConsent />
+            <WhatsAppButton />
+            <LeaveSiteNotification />
+          </BrowserRouter>
+        </TooltipProvider>
+      </CartProvider>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;

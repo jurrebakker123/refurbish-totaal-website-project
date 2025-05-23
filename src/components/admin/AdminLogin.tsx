@@ -1,141 +1,92 @@
 
-import { useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
-// This is just for demo purposes - in a real app, this should be handled securely on a backend
-const DEMO_CREDENTIALS = {
-  username: 'refurbishadmin',
-  password: 'R3furbi$h2025'
-};
-
-const loginFormSchema = z.object({
-  username: z.string().min(1, 'Gebruikersnaam is verplicht'),
-  password: z.string().min(1, 'Wachtwoord is verplicht'),
-});
-
-type LoginFormValues = z.infer<typeof loginFormSchema>;
-
-interface AdminLoginProps {
-  onLogin: (success: boolean) => void;
-}
-
-const AdminLogin = ({ onLogin }: AdminLoginProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+const AdminLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginFormSchema),
-    defaultValues: {
-      username: '',
-      password: '',
-    },
-  });
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const onSubmit = (data: LoginFormValues) => {
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      if (data.username === DEMO_CREDENTIALS.username && 
-          data.password === DEMO_CREDENTIALS.password) {
-        // Store auth token
-        localStorage.setItem('adminToken', Date.now().toString());
-        
-        // Call the onLogin callback
-        onLogin(true);
-        
-        // Show success message
-        toast.success('Succesvol ingelogd');
-        
-        // Redirect to admin dashboard
-        navigate('/admin');
-      } else {
-        toast.error('Ongeldige gebruikersnaam of wachtwoord');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Check if user is admin
+      const { data: adminUser, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      if (adminError || !adminUser) {
+        await supabase.auth.signOut();
+        toast.error("U heeft geen admin toegang");
+        return;
       }
-      setIsLoading(false);
-    }, 1000);
+
+      toast.success("Succesvol ingelogd als admin");
+      navigate('/admin-dashboard');
+    } catch (error: any) {
+      toast.error("Fout bij inloggen: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-brand-darkGreen">
-            Refurbish Admin Dashboard
-          </CardTitle>
-          <CardDescription className="text-center">
-            Log in om het admin dashboard te gebruiken
-          </CardDescription>
+        <CardHeader>
+          <CardTitle className="text-center">Admin Login</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gebruikersnaam</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Voer uw gebruikersnaam in"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Wachtwoord</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Voer uw wachtwoord in"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium mb-1">
+                Wachtwoord
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? "Bezig met inloggen..." : "Inloggen"}
-              </Button>
-            </form>
-          </Form>
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? 'Inloggen...' : 'Inloggen'}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

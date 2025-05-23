@@ -9,7 +9,222 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      admin_users: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_super_admin: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          is_super_admin?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_super_admin?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      dakkapel_calculator_aanvragen: {
+        Row: {
+          aantalramen: number
+          achternaam: string
+          afgehandeld_op: string | null
+          bericht: string | null
+          breedte: number
+          created_at: string | null
+          dakhelling: number
+          dakhellingtype: string
+          emailadres: string
+          hoogte: number
+          huisnummer: string
+          id: string
+          kleurdraaikiepramen: string
+          kleurkozijnen: string
+          kleurzijkanten: string
+          kozijnhoogte: string
+          materiaal: string
+          notities: string | null
+          offerte_verzonden_op: string | null
+          opties: Json | null
+          plaats: string
+          postcode: string
+          rcwaarde: string
+          status: string | null
+          straatnaam: string
+          telefoon: string
+          totaal_prijs: number | null
+          type: string
+          updated_at: string | null
+          voornaam: string
+          woningzijde: string
+        }
+        Insert: {
+          aantalramen: number
+          achternaam: string
+          afgehandeld_op?: string | null
+          bericht?: string | null
+          breedte: number
+          created_at?: string | null
+          dakhelling: number
+          dakhellingtype: string
+          emailadres: string
+          hoogte: number
+          huisnummer: string
+          id?: string
+          kleurdraaikiepramen: string
+          kleurkozijnen: string
+          kleurzijkanten: string
+          kozijnhoogte: string
+          materiaal: string
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          opties?: Json | null
+          plaats: string
+          postcode: string
+          rcwaarde: string
+          status?: string | null
+          straatnaam: string
+          telefoon: string
+          totaal_prijs?: number | null
+          type: string
+          updated_at?: string | null
+          voornaam: string
+          woningzijde: string
+        }
+        Update: {
+          aantalramen?: number
+          achternaam?: string
+          afgehandeld_op?: string | null
+          bericht?: string | null
+          breedte?: number
+          created_at?: string | null
+          dakhelling?: number
+          dakhellingtype?: string
+          emailadres?: string
+          hoogte?: number
+          huisnummer?: string
+          id?: string
+          kleurdraaikiepramen?: string
+          kleurkozijnen?: string
+          kleurzijkanten?: string
+          kozijnhoogte?: string
+          materiaal?: string
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          opties?: Json | null
+          plaats?: string
+          postcode?: string
+          rcwaarde?: string
+          status?: string | null
+          straatnaam?: string
+          telefoon?: string
+          totaal_prijs?: number | null
+          type?: string
+          updated_at?: string | null
+          voornaam?: string
+          woningzijde?: string
+        }
+        Relationships: []
+      }
+      dakkapel_configuraties: {
+        Row: {
+          adres: string
+          afgehandeld_op: string | null
+          airconditioning: boolean | null
+          breedte: number
+          created_at: string | null
+          dakhelling: number | null
+          dakhelling_type: string | null
+          email: string
+          id: string
+          insectscreens: boolean | null
+          kleur_draaikiepramen: string
+          kleur_kozijn: string
+          kleur_zijkanten: string
+          levertijd: string | null
+          materiaal: string
+          model: string
+          naam: string
+          notities: string | null
+          offerte_verzonden_op: string | null
+          opmerkingen: string | null
+          plaats: string
+          postcode: string
+          status: string | null
+          sunshade: boolean | null
+          telefoon: string
+          totaal_prijs: number | null
+          updated_at: string | null
+          ventilationgrids: boolean | null
+        }
+        Insert: {
+          adres: string
+          afgehandeld_op?: string | null
+          airconditioning?: boolean | null
+          breedte: number
+          created_at?: string | null
+          dakhelling?: number | null
+          dakhelling_type?: string | null
+          email: string
+          id?: string
+          insectscreens?: boolean | null
+          kleur_draaikiepramen: string
+          kleur_kozijn: string
+          kleur_zijkanten: string
+          levertijd?: string | null
+          materiaal: string
+          model: string
+          naam: string
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          opmerkingen?: string | null
+          plaats: string
+          postcode: string
+          status?: string | null
+          sunshade?: boolean | null
+          telefoon: string
+          totaal_prijs?: number | null
+          updated_at?: string | null
+          ventilationgrids?: boolean | null
+        }
+        Update: {
+          adres?: string
+          afgehandeld_op?: string | null
+          airconditioning?: boolean | null
+          breedte?: number
+          created_at?: string | null
+          dakhelling?: number | null
+          dakhelling_type?: string | null
+          email?: string
+          id?: string
+          insectscreens?: boolean | null
+          kleur_draaikiepramen?: string
+          kleur_kozijn?: string
+          kleur_zijkanten?: string
+          levertijd?: string | null
+          materiaal?: string
+          model?: string
+          naam?: string
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          opmerkingen?: string | null
+          plaats?: string
+          postcode?: string
+          status?: string | null
+          sunshade?: boolean | null
+          telefoon?: string
+          totaal_prijs?: number | null
+          updated_at?: string | null
+          ventilationgrids?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

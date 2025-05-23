@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { StepProps } from '../DakkapelConfigurator';
 import { z } from 'zod';
@@ -5,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Naam is verplicht"),
@@ -61,15 +63,46 @@ export const ContactFormStep: React.FC<StepProps> = ({
     });
     
     try {
-      // Submit the entire configuration if the function exists
+      // Save to Supabase database
+      const { error } = await supabase
+        .from('dakkapel_configuraties')
+        .insert({
+          naam: data.name,
+          email: data.email,
+          telefoon: data.phone,
+          adres: data.address,
+          postcode: data.postalCode,
+          plaats: data.city,
+          opmerkingen: data.comments,
+          model: configuration.model,
+          breedte: configuration.width,
+          materiaal: configuration.material,
+          kleur_kozijn: configuration.frameColor,
+          kleur_zijkanten: configuration.sideColor,
+          kleur_draaikiepramen: configuration.windowColor,
+          dakhelling: configuration.roofAngle,
+          dakhelling_type: configuration.roofAngleType,
+          levertijd: configuration.deliveryTime,
+          ventilationgrids: configuration.extras?.ventilationGrids || false,
+          sunshade: configuration.extras?.sunShade || false,
+          insectscreens: configuration.extras?.insectScreens || false,
+          airconditioning: configuration.extras?.airConditioning || false,
+          totaal_prijs: currentPrice,
+          status: 'nieuw'
+        });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      // Submit the entire configuration if the function exists (for email)
       if (submitConfigurator) {
         await submitConfigurator();
-        setSubmitSuccess(true);
-        toast.success("Offerte aanvraag succesvol verzonden!");
-      } else {
-        console.error("submitConfigurator function is not provided");
-        toast.error("Er is een probleem met het verzenden van uw aanvraag. Probeer het later nog eens.");
       }
+      
+      setSubmitSuccess(true);
+      toast.success("Offerte aanvraag succesvol verzonden en opgeslagen!");
     } catch (error) {
       console.error("Failed to submit configurator:", error);
       toast.error("Er is een fout opgetreden bij het verzenden van uw aanvraag. Probeer het later nog eens.");
