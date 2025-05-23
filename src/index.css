@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -74,10 +75,17 @@
     @apply border-border;
   }
   
-  body {
+  html, body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
-    @apply pt-20 md:pt-0;
+    width: 100%;
+    overflow-x: auto;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    @apply pt-0;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -103,7 +111,7 @@
 
 @layer components {
   .container {
-    @apply px-3 md:px-6 max-w-7xl mx-auto;
+    @apply px-3 md:px-6 max-w-7xl mx-auto w-full;
   }
   
   .btn-primary {
