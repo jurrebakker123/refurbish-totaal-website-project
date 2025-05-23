@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Check, X, AlertTriangle } from 'lucide-react';
+import { Mail, Check, X, AlertTriangle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { QuoteItem } from '@/types/admin';
 import { sendQuoteEmail } from '@/utils/adminUtils';
@@ -68,10 +68,11 @@ info@refurbishtotaalnederland.nl`;
       );
       
       if (success) {
+        toast.success("Offerte succesvol verzonden!");
         onDataChange();
         onClose();
       } else {
-        setErrorMessage("Er is een fout opgetreden bij het verzenden van de offerte. Controleer de Supabase edge function logs voor meer details.");
+        setErrorMessage("Er is een fout opgetreden bij het verzenden van de offerte. Controleer of de RESEND_API_KEY correct is ingesteld in de Supabase edge function secrets.");
       }
     } catch (error) {
       console.error("Error in handleSendQuote:", error);
@@ -126,7 +127,25 @@ info@refurbishtotaalnederland.nl`;
               <div>
                 <p className="font-medium">Fout bij verzenden</p>
                 <p className="text-sm">{errorMessage}</p>
-                <p className="text-xs mt-1 text-red-600">Tip: Controleer of de RESEND_API_KEY is geconfigureerd in Supabase.</p>
+                <div className="flex items-center gap-1 mt-2">
+                  <Button 
+                    variant="link" 
+                    className="h-auto p-0 text-xs text-red-600" 
+                    onClick={() => window.open("https://supabase.com/dashboard/project/pluhasunoaevfrdugkzg/settings/functions", "_blank")}
+                  >
+                    Controleer Supabase secrets
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </Button>
+                  <span className="text-xs text-red-600 mx-1">|</span>
+                  <Button 
+                    variant="link" 
+                    className="h-auto p-0 text-xs text-red-600" 
+                    onClick={() => window.open("https://supabase.com/dashboard/project/pluhasunoaevfrdugkzg/functions/send-quote/logs", "_blank")}
+                  >
+                    Bekijk functie logs
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </Button>
+                </div>
               </div>
             </div>
           )}
