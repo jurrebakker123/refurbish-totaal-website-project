@@ -63,11 +63,11 @@ export const ContactFormStep: React.FC<StepProps> = ({
     });
     
     try {
-      // Save to Supabase database - fix column names and property names
+      // Save to Supabase database - use correct column names
       const { error } = await supabase
         .from('dakkapel_configuraties')
         .insert({
-          naam: data.name, // Fixed: use correct column name
+          naam: data.name,
           email: data.email,
           telefoon: data.phone,
           adres: data.address,
@@ -77,11 +77,11 @@ export const ContactFormStep: React.FC<StepProps> = ({
           model: configuration.model,
           breedte: configuration.width,
           materiaal: configuration.material,
-          kleur_kozijn: configuration.frameColor || configuration.kleur_kozijn || '', // Handle missing property
-          kleur_zijkanten: configuration.sideColor || configuration.kleur_zijkanten || '', // Handle missing property
-          kleur_draaikiepramen: configuration.windowColor || configuration.kleur_draaikiepramen || '', // Handle missing property
+          kleur_kozijn: configuration.frameColor || '',
+          kleur_zijkanten: configuration.sideColor || '',
+          kleur_draaikiepramen: configuration.windowColor || '',
           dakhelling: configuration.roofAngle,
-          dakhelling_type: configuration.roofAngleType || configuration.dakhelling_type || '', // Handle missing property
+          dakhelling_type: configuration.roofAngleType || '',
           levertijd: configuration.deliveryTime,
           ventilationgrids: configuration.extras?.ventilationGrids || false,
           sunshade: configuration.extras?.sunShade || false,
