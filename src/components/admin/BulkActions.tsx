@@ -24,8 +24,15 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   configurations
 }) => {
   const [bulkAction, setBulkAction] = React.useState('');
+  const checkboxRef = React.useRef<HTMLButtonElement>(null);
   const isAllSelected = selectedIds.length === allIds.length && allIds.length > 0;
   const isPartialSelected = selectedIds.length > 0 && selectedIds.length < allIds.length;
+
+  React.useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = isPartialSelected;
+    }
+  }, [isPartialSelected]);
 
   const handleBulkAction = () => {
     if (bulkAction && selectedIds.length > 0) {
@@ -42,10 +49,8 @@ const BulkActions: React.FC<BulkActionsProps> = ({
     return (
       <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg mb-4">
         <Checkbox
+          ref={checkboxRef}
           checked={isAllSelected}
-          ref={(el) => {
-            if (el) el.indeterminate = isPartialSelected;
-          }}
           onCheckedChange={onSelectAll}
         />
         <span className="text-sm text-gray-600">Selecteer items voor bulk acties</span>
@@ -56,10 +61,8 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   return (
     <div className="flex items-center gap-4 p-3 bg-blue-50 rounded-lg mb-4">
       <Checkbox
+        ref={checkboxRef}
         checked={isAllSelected}
-        ref={(el) => {
-          if (el) el.indeterminate = isPartialSelected;
-        }}
         onCheckedChange={onSelectAll}
       />
       
