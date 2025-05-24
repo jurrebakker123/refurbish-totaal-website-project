@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { Clock, Mail, CheckCircle, ThumbsUp } from 'lucide-react';
+import { Clock, Mail, CheckCircle, ThumbsUp, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -183,6 +183,16 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
                   className="bg-green-50 hover:bg-green-100"
                 >
                   <ThumbsUp className="h-4 w-4 mr-1" /> Akkoord
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  title="Niet Akkoord"
+                  onClick={() => handleStatusChange('niet_akkoord')}
+                  className="bg-red-50 hover:bg-red-100"
+                >
+                  <X className="h-4 w-4 mr-1" /> Niet Akkoord
                 </Button>
                 
                 <Button 

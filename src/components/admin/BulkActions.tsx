@@ -97,6 +97,12 @@ const BulkActions: React.FC<BulkActionsProps> = ({
                 Akkoord
               </div>
             </SelectItem>
+            <SelectItem value="niet_akkoord">
+              <div className="flex items-center gap-2">
+                <X className="h-4 w-4" />
+                Niet Akkoord
+              </div>
+            </SelectItem>
             <SelectItem value="afgehandeld">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />

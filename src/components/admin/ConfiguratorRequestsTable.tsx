@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { Eye, Clock, Mail, CheckCircle, ThumbsUp } from 'lucide-react';
+import { Eye, Clock, Mail, CheckCircle, ThumbsUp, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -130,6 +130,15 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
                       className="bg-green-50 hover:bg-green-100"
                     >
                       <ThumbsUp className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleStatusChange(config.id, 'niet_akkoord')}
+                      title="Niet Akkoord"
+                      className="bg-red-50 hover:bg-red-100"
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
                     <Button 
                       size="sm" 

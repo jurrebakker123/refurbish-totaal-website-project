@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -142,6 +141,10 @@ const AdminDashboardPage = () => {
     config.status === 'akkoord'
   );
   
+  const nietAkkoord = filteredData.filter(config => 
+    config.status === 'niet_akkoord'
+  );
+  
   const afgerond = filteredData.filter(config => 
     config.status === 'afgehandeld'
   );
@@ -154,6 +157,8 @@ const AdminDashboardPage = () => {
         return wachtOpReactie;
       case 'akkoord':
         return akkoord;
+      case 'niet-akkoord':
+        return nietAkkoord;
       case 'afgerond':
         return afgerond;
       default:
@@ -247,6 +252,9 @@ const AdminDashboardPage = () => {
               <TabsTrigger value="akkoord">
                 Akkoord/Opvolgen ({akkoord.length})
               </TabsTrigger>
+              <TabsTrigger value="niet-akkoord">
+                Niet Akkoord ({nietAkkoord.length})
+              </TabsTrigger>
               <TabsTrigger value="afgerond">
                 Afgerond ({afgerond.length})
               </TabsTrigger>
@@ -330,6 +338,42 @@ const AdminDashboardPage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Akkoord/Opvolgen ({akkoord.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <AdminFilters 
+                      filters={filters} 
+                      onFiltersChange={setFilters}
+                      showStatusFilter={false}
+                    />
+                    
+                    <BulkActions
+                      selectedIds={selectedIds}
+                      onSelectAll={handleSelectAll}
+                      onSelectItem={handleSelectItem}
+                      onBulkAction={handleBulkAction}
+                      allIds={currentTabData.map(item => item.id)}
+                      configurations={currentTabData}
+                    />
+                    
+                    <ConfiguratorRequestsTable 
+                      configuraties={currentTabData}
+                      onViewDetails={openDetails}
+                      onOpenQuoteDialog={openQuoteDialog}
+                      onDataChange={loadDashboardData}
+                      sendingQuote={sendingQuote}
+                      selectedIds={selectedIds}
+                      onSelectItem={handleSelectItem}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="niet-akkoord" className="space-y-6">
+              <div className="grid gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Niet Akkoord ({nietAkkoord.length})</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <AdminFilters 
