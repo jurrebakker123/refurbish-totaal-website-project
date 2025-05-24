@@ -223,9 +223,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Attempting to send email to:", customerEmail);
 
-    // Send email using Resend - following the exact pattern from the example
+    // Send email using verified domain
     const emailResponse = await resend.emails.send({
-      from: 'Refurbish Totaal Nederland <onboarding@resend.dev>',
+      from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [customerEmail],
       subject: `Offerte Dakkapel - ${requestData.model}`,
       html: emailHtml,
@@ -271,7 +271,7 @@ const handler = async (req: Request): Promise<Response> => {
       message: 'Offerte succesvol verzonden',
       emailId: emailResponse.data?.id,
       sentTo: customerEmail,
-      note: 'Email verzonden via onboarding@resend.dev (geverifieerd domein)'
+      note: 'Email verzonden vanaf info@refurbishtotaalnederland.nl'
     }), {
       status: 200,
       headers: {
