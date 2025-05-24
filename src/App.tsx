@@ -45,7 +45,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/diensten" element={<DienstenPage />} />
-            <Route path="/diensten/:slug" element={<DienstDetailPage />} />
+            <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
+            <Route path="/diensten/:serviceId/:cityName" element={<DienstDetailPage />} />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/over-ons" element={<OverOnsPage />} />
