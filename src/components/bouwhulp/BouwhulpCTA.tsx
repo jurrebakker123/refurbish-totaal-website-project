@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Phone, Mail, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -44,12 +43,12 @@ export function BouwhulpCTA() {
             </Link>
           </div>
           
-          <Link
-            to="/offerte"
+          <a
+            href="mailto:info@refurbishtotaalnederland.nl"
             className="btn-primary bg-white text-brand-darkGreen hover:bg-gray-100 inline-flex items-center justify-center"
           >
             Personeel Aanvragen
-          </Link>
+          </a>
         </div>
       </div>
     </section>
