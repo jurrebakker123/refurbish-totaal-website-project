@@ -15,6 +15,7 @@ import DashboardStats from '@/components/admin/DashboardStats';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import { toast } from 'sonner';
+import { supabase } from '@/utils/supabase';
 
 const AdminDashboardPage = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
@@ -212,6 +213,11 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin-login');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -229,10 +235,15 @@ const AdminDashboardPage = () => {
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
         </div>
-        <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
-          <RefreshCw className="h-4 w-4" />
-          Vernieuwen
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Vernieuwen
+          </Button>
+          <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2">
+            Uitloggen
+          </Button>
+        </div>
       </header>
 
       <div className="flex-1 p-6">

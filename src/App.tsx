@@ -8,6 +8,7 @@ import GoogleTagManager from "@/components/GoogleTagManager";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LeaveSiteNotification from "@/components/LeaveSiteNotification";
+import ProtectedAdminRoute from "@/components/admin/ProtectedAdminRoute";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
 import DienstDetailPage from "./pages/DienstDetailPage";
@@ -66,7 +67,16 @@ function App() {
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
             <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin-dashboard" element={
+              <ProtectedAdminRoute>
+                <AdminDashboardPage />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedAdminRoute>
+                <AdminDashboardPage />
+              </ProtectedAdminRoute>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
