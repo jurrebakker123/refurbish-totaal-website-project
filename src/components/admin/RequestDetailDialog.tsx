@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { Clock, Mail, CheckCircle } from 'lucide-react';
+import { Clock, Mail, CheckCircle, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -156,7 +156,7 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
                 )}
               </div>
               
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 <Button 
                   size="sm" 
                   variant="outline"
@@ -173,6 +173,16 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
                   onClick={() => handleStatusChange('offerte_verzonden')}
                 >
                   <Mail className="h-4 w-4 mr-1" /> Offerte verzonden
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  title="Akkoord"
+                  onClick={() => handleStatusChange('akkoord')}
+                  className="bg-green-50 hover:bg-green-100"
+                >
+                  <ThumbsUp className="h-4 w-4 mr-1" /> Akkoord
                 </Button>
                 
                 <Button 

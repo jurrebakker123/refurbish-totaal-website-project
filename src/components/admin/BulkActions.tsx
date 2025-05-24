@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock, Mail, CheckCircle, X } from 'lucide-react';
+import { Clock, Mail, CheckCircle, X, ThumbsUp } from 'lucide-react';
 import { DakkapelConfiguratie } from '@/types/admin';
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
@@ -89,6 +89,12 @@ const BulkActions: React.FC<BulkActionsProps> = ({
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
                 Offerte verzonden
+              </div>
+            </SelectItem>
+            <SelectItem value="akkoord">
+              <div className="flex items-center gap-2">
+                <ThumbsUp className="h-4 w-4" />
+                Akkoord
               </div>
             </SelectItem>
             <SelectItem value="afgehandeld">

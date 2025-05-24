@@ -138,6 +138,10 @@ const AdminDashboardPage = () => {
     config.status === 'offerte_verzonden'
   );
   
+  const akkoord = filteredData.filter(config => 
+    config.status === 'akkoord'
+  );
+  
   const afgerond = filteredData.filter(config => 
     config.status === 'afgehandeld'
   );
@@ -148,6 +152,8 @@ const AdminDashboardPage = () => {
         return teVerwerken;
       case 'wacht-op-reactie':
         return wachtOpReactie;
+      case 'akkoord':
+        return akkoord;
       case 'afgerond':
         return afgerond;
       default:
@@ -238,6 +244,9 @@ const AdminDashboardPage = () => {
               <TabsTrigger value="wacht-op-reactie">
                 Wacht op Reactie ({wachtOpReactie.length})
               </TabsTrigger>
+              <TabsTrigger value="akkoord">
+                Akkoord/Opvolgen ({akkoord.length})
+              </TabsTrigger>
               <TabsTrigger value="afgerond">
                 Afgerond ({afgerond.length})
               </TabsTrigger>
@@ -285,6 +294,42 @@ const AdminDashboardPage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Wacht op Reactie ({wachtOpReactie.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <AdminFilters 
+                      filters={filters} 
+                      onFiltersChange={setFilters}
+                      showStatusFilter={false}
+                    />
+                    
+                    <BulkActions
+                      selectedIds={selectedIds}
+                      onSelectAll={handleSelectAll}
+                      onSelectItem={handleSelectItem}
+                      onBulkAction={handleBulkAction}
+                      allIds={currentTabData.map(item => item.id)}
+                      configurations={currentTabData}
+                    />
+                    
+                    <ConfiguratorRequestsTable 
+                      configuraties={currentTabData}
+                      onViewDetails={openDetails}
+                      onOpenQuoteDialog={openQuoteDialog}
+                      onDataChange={loadDashboardData}
+                      sendingQuote={sendingQuote}
+                      selectedIds={selectedIds}
+                      onSelectItem={handleSelectItem}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="akkoord" className="space-y-6">
+              <div className="grid gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Akkoord/Opvolgen ({akkoord.length})</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <AdminFilters 

@@ -63,6 +63,7 @@ const AdminFilters: React.FC<AdminFiltersProps> = ({
               <SelectItem value="nieuw">Nieuw</SelectItem>
               <SelectItem value="in_behandeling">In behandeling</SelectItem>
               <SelectItem value="offerte_verzonden">Offerte verzonden</SelectItem>
+              <SelectItem value="akkoord">Akkoord</SelectItem>
               <SelectItem value="afgehandeld">Afgehandeld</SelectItem>
             </SelectContent>
           </Select>
