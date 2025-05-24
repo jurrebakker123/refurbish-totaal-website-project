@@ -9,8 +9,8 @@ export function BouwhulpHero() {
     <section className="relative min-h-[90vh] flex items-center">
       <div className="absolute inset-0">
         <OptimizedImage
-          src="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
-          alt="Bouwvakkers aan het werk"
+          src="/lovable-uploads/e5c87c28-be1f-4ff1-809e-61c3d9fc3b9c.png"
+          alt="Bouwvakker aan het werk met gereedschap"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-brand-darkGreen/85"></div>
