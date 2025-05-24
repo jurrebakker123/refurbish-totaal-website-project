@@ -6,7 +6,7 @@ import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function BouwhulpHero() {
   return (
-    <section className="relative min-h-[70vh] flex items-center">
+    <section className="relative min-h-[50vh] flex items-center">
       <div className="absolute inset-0">
         <OptimizedImage 
           src="/lovable-uploads/e5c87c28-be1f-4ff1-809e-61c3d9fc3b9c.png" 
