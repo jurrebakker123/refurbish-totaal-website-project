@@ -1,33 +1,23 @@
 
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
-import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function BouwhulpServices() {
   const services = [
     {
       title: "Hulpkrachten",
-      description: "Ongeschoolde en geschoolde hulpkrachten voor alle voorkomende werkzaamheden op de bouwplaats.",
-      image: "/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png",
-      link: "/diensten/hulpkrachten"
+      description: "Ongeschoolde en geschoolde hulpkrachten voor alle voorkomende werkzaamheden op de bouwplaats. Van grondwerk tot transport van materialen, onze flexibele medewerkers zorgen dat uw project vlot verloopt.",
     },
     {
       title: "Metselaars",
-      description: "Ervaren metselaars voor nieuwbouw, renovatie en restauratieprojecten.",
-      image: "/lovable-uploads/33476cb2-cc9e-44d6-8401-288c1a3cf6e6.png",
-      link: "/diensten/metselaars"
+      description: "Ervaren metselaars voor nieuwbouw, renovatie en restauratieprojecten. Vakbekwame specialisten die precies weten hoe metselwerk uitgevoerd moet worden volgens de nieuwste normen.",
     },
     {
       title: "Timmerlieden",
-      description: "Vakbekwame timmerlieden voor ruwbouw, afbouw en maatwerk projecten.",
-      image: "/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png",
-      link: "/diensten/timmerlieden"
+      description: "Vakbekwame timmerlieden voor ruwbouw, afbouw en maatwerk projecten. Van dakconstructies tot kozijnen, onze timmerlieden leveren kwaliteitswerk op elke bouwplaats.",
     },
     {
       title: "Projectbegeleiding",
-      description: "Ervaren voormannen en uitvoerders voor de begeleiding van uw bouwprojecten.",
-      image: "/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
-      link: "/diensten/projectbegeleiding"
+      description: "Ervaren voormannen en uitvoerders voor de begeleiding van uw bouwprojecten. Professionals die overzicht houden, kwaliteit bewaken en ervoor zorgen dat deadlines gehaald worden.",
     }
   ];
 
@@ -47,26 +37,10 @@ export function BouwhulpServices() {
           {services.map((service, index) => (
             <div 
               key={index}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow group"
+              className="bg-white rounded-lg p-8 shadow-md hover:shadow-lg transition-shadow"
             >
-              <div className="h-48 overflow-hidden">
-                <OptimizedImage
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-3 text-brand-darkGreen">{service.title}</h3>
-                <p className="text-gray-600 mb-4">{service.description}</p>
-                <a 
-                  href={service.link}
-                  className="inline-flex items-center text-brand-darkGreen font-medium hover:text-brand-lightGreen transition-colors group"
-                >
-                  Meer informatie
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
+              <h3 className="text-xl font-semibold mb-4 text-brand-darkGreen">{service.title}</h3>
+              <p className="text-gray-600 leading-relaxed">{service.description}</p>
             </div>
           ))}
         </div>
