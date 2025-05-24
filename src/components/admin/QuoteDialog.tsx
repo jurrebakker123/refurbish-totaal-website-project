@@ -33,6 +33,7 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({
   const [quoteMessage, setQuoteMessage] = useState('');
   const [useDefaultTemplate, setUseDefaultTemplate] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   
   const defaultTemplate = `Beste klant,
 
@@ -59,6 +60,7 @@ info@refurbishtotaalnederland.nl`;
     if (!selectedItem) return;
     
     setErrorMessage(null);
+    setIsLoading(true);
     setSendingQuote(selectedItem.id);
     const messageToSend = useDefaultTemplate ? quoteMessage || defaultTemplate : quoteMessage;
     
@@ -82,6 +84,7 @@ info@refurbishtotaalnederland.nl`;
       console.error("Error in handleSendQuote:", error);
       setErrorMessage("Er is een onverwachte fout opgetreden. Controleer de console voor meer informatie.");
     } finally {
+      setIsLoading(false);
       setSendingQuote(null);
     }
   };
@@ -90,6 +93,7 @@ info@refurbishtotaalnederland.nl`;
     if (isOpen) {
       setQuoteMessage(useDefaultTemplate ? defaultTemplate : '');
       setErrorMessage(null);
+      setIsLoading(false);
     }
   }, [isOpen, useDefaultTemplate]);
 
@@ -195,10 +199,10 @@ info@refurbishtotaalnederland.nl`;
           </Button>
           <Button 
             onClick={handleSendQuote}
-            disabled={setSendingQuote !== null}
+            disabled={isLoading}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            {setSendingQuote === selectedItem?.id ? (
+            {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Verzenden...
