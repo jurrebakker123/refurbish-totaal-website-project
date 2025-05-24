@@ -11,9 +11,11 @@ import { loadAdminData } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
+import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 
 const AdminDashboardPage = () => {
   const [configuraties, setConfiguraties] = useState<DakkapelConfiguratie[]>([]);
+  const [verwerkteAanvragen, setVerwerkteAanvragen] = useState<DakkapelConfiguratie[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('aanvragen');
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -32,7 +34,18 @@ const AdminDashboardPage = () => {
     const { configuraties: configData, success } = await loadAdminData();
     
     if (success) {
-      setConfiguraties(configData);
+      // Filter nieuwe en in behandeling aanvragen
+      const nieuwEnInBehandeling = configData.filter(config => 
+        config.status === 'nieuw' || config.status === 'in_behandeling' || config.status === 'offerte_verzonden'
+      );
+      
+      // Filter verwerkte aanvragen (afgehandeld)
+      const verwerkt = configData.filter(config => 
+        config.status === 'afgehandeld'
+      );
+      
+      setConfiguraties(nieuwEnInBehandeling);
+      setVerwerkteAanvragen(verwerkt);
     }
     
     setLoading(false);
@@ -78,7 +91,10 @@ const AdminDashboardPage = () => {
           <Tabs defaultValue="aanvragen" className="space-y-6" onValueChange={setActiveTab}>
             <TabsList>
               <TabsTrigger value="aanvragen">
-                Dakkapel Aanvragen ({configuraties.length})
+                Nieuwe Aanvragen ({configuraties.length})
+              </TabsTrigger>
+              <TabsTrigger value="verwerkt">
+                Verwerkte Aanvragen ({verwerkteAanvragen.length})
               </TabsTrigger>
               <TabsTrigger value="prijzen">Prijsbeheer</TabsTrigger>
             </TabsList>
@@ -87,7 +103,7 @@ const AdminDashboardPage = () => {
               <div className="grid gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Configurator Aanvragen ({configuraties.length})</CardTitle>
+                    <CardTitle>Nieuwe Dakkapel Aanvragen ({configuraties.length})</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ConfiguratorRequestsTable 
@@ -96,6 +112,23 @@ const AdminDashboardPage = () => {
                       onOpenQuoteDialog={openQuoteDialog}
                       onDataChange={loadDashboardData}
                       sendingQuote={sendingQuote}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="verwerkt" className="space-y-6">
+              <div className="grid gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Verwerkte Dakkapel Aanvragen ({verwerkteAanvragen.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ProcessedRequestsTable 
+                      configuraties={verwerkteAanvragen}
+                      onViewDetails={openDetails}
+                      onDataChange={loadDashboardData}
                     />
                   </CardContent>
                 </Card>
@@ -121,6 +154,7 @@ const AdminDashboardPage = () => {
         onClose={() => setIsQuoteDialogOpen(false)}
         selectedItem={selectedQuoteItem}
         onDataChange={loadDashboardData}
+        setSendingQuote={setSendingQuote}
       />
     </div>
   );

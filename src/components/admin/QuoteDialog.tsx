@@ -20,16 +20,17 @@ interface QuoteDialogProps {
   onClose: () => void;
   selectedItem: QuoteItem | null;
   onDataChange: () => void;
+  setSendingQuote: (id: string | null) => void;
 }
 
 const QuoteDialog: React.FC<QuoteDialogProps> = ({
   isOpen,
   onClose,
   selectedItem,
-  onDataChange
+  onDataChange,
+  setSendingQuote
 }) => {
   const [quoteMessage, setQuoteMessage] = useState('');
-  const [sendingQuote, setSendingQuote] = useState(false);
   const [useDefaultTemplate, setUseDefaultTemplate] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
@@ -58,17 +59,20 @@ info@refurbishtotaalnederland.nl`;
     if (!selectedItem) return;
     
     setErrorMessage(null);
-    setSendingQuote(true);
+    setSendingQuote(selectedItem.id);
     const messageToSend = useDefaultTemplate ? quoteMessage || defaultTemplate : quoteMessage;
     
     try {
+      console.log('Verzenden offerte naar:', selectedItem.email);
+      console.log('Met bericht:', messageToSend.substring(0, 100) + '...');
+      
       const success = await sendQuoteEmail(
         selectedItem, 
         messageToSend
       );
       
       if (success) {
-        toast.success("Offerte succesvol verzonden!");
+        toast.success("Offerte succesvol verzonden naar " + selectedItem.email + "!");
         onDataChange();
         onClose();
       } else {
@@ -78,7 +82,7 @@ info@refurbishtotaalnederland.nl`;
       console.error("Error in handleSendQuote:", error);
       setErrorMessage("Er is een onverwachte fout opgetreden. Controleer de console voor meer informatie.");
     } finally {
-      setSendingQuote(false);
+      setSendingQuote(null);
     }
   };
 
@@ -107,7 +111,7 @@ info@refurbishtotaalnederland.nl`;
         <DialogHeader>
           <DialogTitle>Offerte Verzenden</DialogTitle>
           <DialogDescription>
-            Verstuur een automatische offerte naar {getCustomerName()}
+            Verstuur een automatische offerte naar {getCustomerName()} ({getCustomerEmail()})
           </DialogDescription>
         </DialogHeader>
         
@@ -191,10 +195,10 @@ info@refurbishtotaalnederland.nl`;
           </Button>
           <Button 
             onClick={handleSendQuote}
-            disabled={sendingQuote}
+            disabled={setSendingQuote !== null}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            {sendingQuote ? (
+            {setSendingQuote === selectedItem?.id ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Verzenden...
@@ -202,7 +206,7 @@ info@refurbishtotaalnederland.nl`;
             ) : (
               <>
                 <Mail className="h-4 w-4 mr-2" />
-                Offerte Verzenden
+                Offerte Verzenden naar {getCustomerEmail()}
               </>
             )}
           </Button>
