@@ -210,7 +210,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p>
               <strong>Refurbish Totaal Nederland</strong><br>
               E-mail: info@refurbishtotaalnederland.nl<br>
-              Telefoon: 085-1301578
+              Telefoon: +31 85 4444 255
             </p>
           </div>
         </div>
