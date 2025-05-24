@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@refurbishtotaalnederland.nl');
+  const [password, setPassword] = useState('RefurbishAdmin2024!');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,6 +22,8 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
+      console.log('Attempting login with:', { email, password: '***' });
+      
       // Check if credentials match the fixed admin credentials
       if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
         toast.error("Ongeldige admin credentials");
@@ -29,67 +31,101 @@ const AdminLogin = () => {
         return;
       }
 
-      // Try to sign in with Supabase (this will create the user if it doesn't exist)
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Try to sign in with Supabase
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: ADMIN_EMAIL,
         password: ADMIN_PASSWORD,
       });
 
-      if (error) {
+      console.log('Sign in attempt result:', { data: signInData, error: signInError });
+
+      if (signInError) {
+        console.log('Sign in failed, attempting to create admin account...');
+        
         // If user doesn't exist, create it
-        if (error.message.includes('Invalid login credentials')) {
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: ADMIN_EMAIL,
-            password: ADMIN_PASSWORD,
-          });
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: ADMIN_EMAIL,
+          password: ADMIN_PASSWORD,
+          options: {
+            emailRedirectTo: undefined // Disable email confirmation
+          }
+        });
 
-          if (signUpError) {
-            toast.error("Fout bij aanmaken admin: " + signUpError.message);
+        console.log('Sign up attempt result:', { data: signUpData, error: signUpError });
+
+        if (signUpError) {
+          toast.error("Fout bij aanmaken admin account: " + signUpError.message);
+          setLoading(false);
+          return;
+        }
+
+        if (signUpData.user) {
+          // Add to admin_users table
+          const { error: adminError } = await supabase
+            .from('admin_users')
+            .insert({
+              id: signUpData.user.id,
+              email: signUpData.user.email,
+              created_at: new Date().toISOString()
+            });
+
+          console.log('Admin user creation result:', { error: adminError });
+
+          if (adminError) {
+            console.error('Error adding to admin_users:', adminError);
+          }
+
+          // If email confirmation is required, show message
+          if (!signUpData.session) {
+            toast.error("Email bevestiging vereist. Controleer je email of schakel email verificatie uit in Supabase.");
             setLoading(false);
             return;
           }
 
-          if (signUpData.user) {
-            // Add to admin_users table
-            const { error: adminError } = await supabase
-              .from('admin_users')
-              .insert({
-                id: signUpData.user.id,
-                email: signUpData.user.email,
-                created_at: new Date().toISOString()
-              });
-
-            if (adminError) {
-              console.error('Error adding to admin_users:', adminError);
-            }
-
-            toast.success("Admin account aangemaakt en ingelogd");
-            navigate('/admin-dashboard');
-            setLoading(false);
-            return;
-          }
-        } else {
-          throw error;
+          toast.success("Admin account aangemaakt en ingelogd");
+          navigate('/admin-dashboard');
+          setLoading(false);
+          return;
         }
       }
 
-      // Check if user is admin
-      const { data: adminUser, error: adminError } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
+      // Successfully signed in
+      if (signInData.user) {
+        console.log('Successfully signed in, checking admin status...');
+        
+        // Check if user is admin
+        const { data: adminUser, error: adminError } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('id', signInData.user.id)
+          .single();
 
-      if (adminError || !adminUser) {
-        await supabase.auth.signOut();
-        toast.error("U heeft geen admin toegang");
-        setLoading(false);
-        return;
+        console.log('Admin check result:', { adminUser, error: adminError });
+
+        if (adminError || !adminUser) {
+          // Add user to admin_users if not already there
+          const { error: insertError } = await supabase
+            .from('admin_users')
+            .insert({
+              id: signInData.user.id,
+              email: signInData.user.email,
+              created_at: new Date().toISOString()
+            });
+
+          if (insertError && !insertError.message.includes('duplicate')) {
+            console.error('Error adding to admin_users:', insertError);
+            await supabase.auth.signOut();
+            toast.error("Fout bij admin toegang");
+            setLoading(false);
+            return;
+          }
+        }
+
+        toast.success("Succesvol ingelogd als admin");
+        navigate('/admin-dashboard');
       }
-
-      toast.success("Succesvol ingelogd als admin");
-      navigate('/admin-dashboard');
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error("Fout bij inloggen: " + error.message);
     } finally {
       setLoading(false);
@@ -102,7 +138,7 @@ const AdminLogin = () => {
         <CardHeader>
           <CardTitle className="text-center">Admin Login</CardTitle>
           <p className="text-sm text-gray-600 text-center">
-            Alleen voor geautoriseerde beheerders
+            Gebruik de vaste admin credentials
           </p>
         </CardHeader>
         <CardContent>
@@ -118,6 +154,8 @@ const AdminLogin = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@refurbishtotaalnederland.nl"
                 required
+                readOnly
+                className="bg-gray-100"
               />
             </div>
             <div>
@@ -143,7 +181,8 @@ const AdminLogin = () => {
           
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500">
-              Geen toegang? Neem contact op met de systeembeheerder.
+              Email: admin@refurbishtotaalnederland.nl<br/>
+              Wachtwoord: RefurbishAdmin2024!
             </p>
           </div>
         </CardContent>
