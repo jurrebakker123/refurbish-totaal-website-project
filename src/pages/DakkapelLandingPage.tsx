@@ -6,7 +6,6 @@ import { DakkapelHero } from '@/components/dakkapel/DakkapelHero';
 import { DakkapelVoordelen } from '@/components/dakkapel/DakkapelVoordelen';
 import { DakkapelProcess } from '@/components/dakkapel/DakkapelProcess';
 import { DakkapelTypes } from '@/components/dakkapel/DakkapelTypes';
-import { DakkapelGallery } from '@/components/dakkapel/DakkapelGallery';
 import { DakkapelFAQ } from '@/components/dakkapel/DakkapelFAQ';
 import { DakkapelCTA } from '@/components/dakkapel/DakkapelCTA';
 import { DakkapelCalculatorPreview } from '@/components/dakkapel/DakkapelCalculatorPreview';
@@ -61,7 +60,6 @@ const DakkapelLandingPage = () => {
           <DakkapelTypes />
           <DakkapelProcess />
           <DakkapelCalculatorPreview />
-          <DakkapelGallery />
           <DakkapelTestimonials />
           <DakkapelFAQ />
           <DakkapelCTA />
