@@ -2,13 +2,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Phone, Mail, Wrench } from 'lucide-react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function BouwhulpHero() {
   return (
     <section className="relative min-h-[90vh] flex items-center">
-      <div className="absolute inset-0 bg-cover bg-center" style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`
-      }}>
+      <div className="absolute inset-0">
+        <OptimizedImage
+          src="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+          alt="Bouwvakkers aan het werk"
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-brand-darkGreen/85"></div>
       </div>
       <div className="container relative z-10 py-16 md:py-24">

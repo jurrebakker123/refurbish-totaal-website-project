@@ -1,31 +1,32 @@
 
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 export function BouwhulpServices() {
   const services = [
     {
       title: "Hulpkrachten",
       description: "Ongeschoolde en geschoolde hulpkrachten voor alle voorkomende werkzaamheden op de bouwplaats.",
-      image: "https://images.unsplash.com/photo-1621905251189-08b45249ff78?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      image: "/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png",
       link: "/diensten/hulpkrachten"
     },
     {
       title: "Metselaars",
       description: "Ervaren metselaars voor nieuwbouw, renovatie en restauratieprojecten.",
-      image: "https://images.unsplash.com/photo-1505798577917-a65157d3320a?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      image: "/lovable-uploads/33476cb2-cc9e-44d6-8401-288c1a3cf6e6.png",
       link: "/diensten/metselaars"
     },
     {
       title: "Timmerlieden",
       description: "Vakbekwame timmerlieden voor ruwbouw, afbouw en maatwerk projecten.",
-      image: "https://images.unsplash.com/photo-1590086782957-93c06f21b117?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      image: "/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png",
       link: "/diensten/timmerlieden"
     },
     {
       title: "Projectbegeleiding",
       description: "Ervaren voormannen en uitvoerders voor de begeleiding van uw bouwprojecten.",
-      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      image: "/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png",
       link: "/diensten/projectbegeleiding"
     }
   ];
@@ -49,8 +50,8 @@ export function BouwhulpServices() {
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow group"
             >
               <div className="h-48 overflow-hidden">
-                <img 
-                  src={service.image} 
+                <OptimizedImage
+                  src={service.image}
                   alt={service.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
