@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import { useNavigate } from 'react-router-dom';
 import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
 import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
@@ -15,7 +14,6 @@ import DashboardStats from '@/components/admin/DashboardStats';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboardPage = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
@@ -35,8 +33,6 @@ const AdminDashboardPage = () => {
     sortBy: 'created_at',
     sortOrder: 'desc'
   });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardData();
@@ -213,11 +209,6 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/admin-login');
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -239,9 +230,6 @@ const AdminDashboardPage = () => {
           <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Vernieuwen
-          </Button>
-          <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2">
-            Uitloggen
           </Button>
         </div>
       </header>

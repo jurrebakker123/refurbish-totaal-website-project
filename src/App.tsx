@@ -8,7 +8,6 @@ import GoogleTagManager from "@/components/GoogleTagManager";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import LeaveSiteNotification from "@/components/LeaveSiteNotification";
-import ProtectedAdminRoute from "@/components/admin/ProtectedAdminRoute";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
 import DienstDetailPage from "./pages/DienstDetailPage";
@@ -32,7 +31,6 @@ import BouwhulpPage from "./pages/BouwhulpPage";
 import SolarProductDetailPage from "./pages/SolarProductDetailPage";
 import CertificaatPage from "./pages/CertificaatPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
-import AdminLogin from "./components/admin/AdminLogin";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -66,17 +64,8 @@ function App() {
             <Route path="/bouwhulp" element={<BouwhulpPage />} />
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin-dashboard" element={
-              <ProtectedAdminRoute>
-                <AdminDashboardPage />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <AdminDashboardPage />
-              </ProtectedAdminRoute>
-            } />
+            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
