@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Phone, Mail, Wrench } from 'lucide-react';
@@ -8,7 +9,7 @@ export function BouwhulpHero() {
     <section className="relative min-h-[70vh] flex items-center">
       <div className="absolute inset-0">
         <OptimizedImage 
-          src="/lovable-uploads/9a9831b6-29f7-4cc0-a864-c3e578c56ab4.png" 
+          src="/lovable-uploads/e5c87c28-be1f-4ff1-809e-61c3d9fc3b9c.png" 
           alt="Bouwvakker aan het werk met gereedschap" 
           className="w-full h-full object-cover" 
         />
