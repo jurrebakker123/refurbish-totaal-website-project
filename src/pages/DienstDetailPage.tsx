@@ -16,6 +16,9 @@ import diensten from '@/data/diensten';
 const DienstDetailPage: React.FC = () => {
   const { serviceId, cityName } = useParams<{ serviceId: string; cityName?: string }>();
   
+  console.log('DienstDetailPage - serviceId:', serviceId);
+  console.log('DienstDetailPage - available services:', Object.keys(diensten));
+  
   const dienst = serviceId ? diensten[serviceId] : undefined;
   
   useEffect(() => {
@@ -29,6 +32,7 @@ const DienstDetailPage: React.FC = () => {
   
   // If service not found, render the not found component
   if (!dienst && serviceId) {
+    console.log('Service not found for serviceId:', serviceId);
     return <DienstNotFound />;
   }
   

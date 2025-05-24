@@ -10,24 +10,24 @@ const projects = [
     title: 'Volledige woningrenovatie',
     location: 'Amsterdam',
     category: 'Renovatie',
-    imageUrl: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png',
+    beforeImageUrl: '/lovable-uploads/86f735a8-487e-43c0-9703-193520a0aec0.png',
   },
   {
     id: 2,
     title: 'Buitenschilderwerk villa',
     location: 'Utrecht',
     category: 'Schilderwerk',
-    imageUrl: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png',
+    beforeImageUrl: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png',
   },
   {
     id: 3,
     title: 'Dakrenovatie jaren \'30 woning',
     location: 'Rotterdam',
     category: 'Dakrenovatie',
-    imageUrl: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1625602812206-5ec545ca1231?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    imageUrl: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png',
+    beforeImageUrl: '/lovable-uploads/80306d05-7941-4133-8d63-76968fad7e37.png',
   },
 ];
 
@@ -160,7 +160,7 @@ const ProjectsPreview = () => {
               </Link>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

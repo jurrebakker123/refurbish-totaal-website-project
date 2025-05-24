@@ -11,7 +11,7 @@ const services = [
     title: 'Kozijntechniek',
     description: 'Levering en plaatsing van hoogwaardige kozijnen in hout, kunststof of aluminium voor een betere uitstraling en isolatie.',
     link: '/diensten/kozijntechniek',
-    image: 'https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
+    image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
   },
   {
     id: 'isolatietechniek',
@@ -19,7 +19,7 @@ const services = [
     title: 'Isolatietechniek',
     description: 'Effectieve isolatieoplossingen die uw woning comfortabeler maken en energiekosten verlagen.',
     link: '/diensten/isolatietechniek',
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png'
   },
   {
     id: 'dakkapel',
@@ -27,7 +27,7 @@ const services = [
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
-    image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
   },
   {
     id: 'schilderwerk',
@@ -43,7 +43,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: 'https://images.unsplash.com/photo-1632759145351-1d170f2a2d24?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
   },
   {
     id: 'stukadoren',
@@ -51,7 +51,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: 'https://images.unsplash.com/photo-1604857864317-2344f52026ce?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png'
   },
   {
     id: 'installatietechniek',
