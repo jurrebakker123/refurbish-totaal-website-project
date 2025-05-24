@@ -2,10 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Phone, Mail, Wrench } from 'lucide-react';
 import { OptimizedImage } from '@/components/ui/optimized-image';
+
 export function BouwhulpHero() {
-  return <section className="relative min-h-[90vh] flex items-center">
+  return (
+    <section className="relative min-h-[70vh] flex items-center">
       <div className="absolute inset-0">
-        <OptimizedImage src="/lovable-uploads/e5c87c28-be1f-4ff1-809e-61c3d9fc3b9c.png" alt="Bouwvakker aan het werk met gereedschap" className="w-full h-full object-cover" />
+        <OptimizedImage 
+          src="/lovable-uploads/9a9831b6-29f7-4cc0-a864-c3e578c56ab4.png" 
+          alt="Bouwvakker aan het werk met gereedschap" 
+          className="w-full h-full object-cover" 
+        />
         <div className="absolute inset-0 bg-brand-darkGreen/85"></div>
       </div>
       <div className="container relative z-10 md:py-24 py-[110px]">
@@ -45,5 +51,6 @@ export function BouwhulpHero() {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 }
