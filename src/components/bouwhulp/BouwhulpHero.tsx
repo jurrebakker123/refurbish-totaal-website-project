@@ -6,13 +6,13 @@ import { OptimizedImage } from '@/components/ui/optimized-image';
 export function BouwhulpHero() {
   return (
     <section className="relative min-h-[40vh] flex items-center">
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <OptimizedImage 
           src="/lovable-uploads/e5c87c28-be1f-4ff1-809e-61c3d9fc3b9c.png" 
           alt="Bouwvakker aan het werk met gereedschap" 
-          className="w-full h-full object-cover" 
+          className="w-full h-full object-cover min-h-[40vh]" 
         />
-        <div className="absolute inset-0 bg-brand-darkGreen/85"></div>
+        <div className="absolute inset-0 bg-brand-darkGreen/85 w-full h-full"></div>
       </div>
       <div className="container relative z-10 md:py-24 py-[110px]">
         <div className="max-w-4xl mx-auto text-center">
