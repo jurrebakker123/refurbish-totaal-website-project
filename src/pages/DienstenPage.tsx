@@ -16,14 +16,14 @@ const diensten = [{
   title: 'Kozijntechniek',
   description: 'Bij Refurbish Totaal Nederland verzorgen wij het vervangen, herstellen en plaatsen van kozijnen met vakmanschap en oog voor detail. Of het nu gaat om hout, kunststof of aluminium kozijnen, wij leveren maatwerkoplossingen die passen bij de stijl van uw woning en bijdragen aan energiezuinigheid en comfort.',
   features: ['Vakkundige demontage en plaatsing van kozijnen', 'Inmeten en leveren van maatwerk kozijnen (nieuwbouw of renovatie)', 'Toepassing van hoogwaardige isolatieglas-systemen (HR++, triple)', 'Herstel van houtrot of het moderniseren van bestaande kozijnen', 'Integratie van ventilatieroosters en zonwering indien gewenst', 'Perfecte afwerking, zowel binnen als buiten'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
 }, {
   id: 'isolatietechniek',
   icon: <Thermometer size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Isolatietechniek',
   description: 'Energie besparen begint bij goede isolatie. Refurbish Totaal Nederland biedt doeltreffende isolatieoplossingen voor woningen en bedrijfspanden die comfort verhogen en energiekosten verlagen. Onze aanpak is technisch onderbouwd, duurzaam en afgestemd op uw situatie.',
   features: ['Spouwmuurisolatie met hoogwaardige inblaas- of schuimisolatie', 'Vloerisolatie met drukvaste isolatieplaten of gespoten schuim', 'Dak- en zolderisolatie (aan de binnen- of buitenzijde)', 'Isolatie van dakkapellen, uitbouwen en houten vloeren', 'Thermografische inspecties en advies op maat', 'Erkende producten en systemen zoals het ATI Pro Isolatie Systeem'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'dakkapel',
   icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
@@ -37,7 +37,7 @@ const diensten = [{
   title: 'Schilderwerk',
   description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
   features: ['Buitenschilderwerk voor gevels, kozijnen en deuren', 'Binnenschilderwerk voor wanden, plafonds en trappen', 'Kleuradvies en verfkeuze op maat', 'Houtrotherstel en reparaties', 'Graffiti verwijdering', 'Behang- en spuitwerk'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'dakrenovatie',
   icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
@@ -58,28 +58,28 @@ const diensten = [{
   title: 'Installatietechniek',
   description: 'Complete elektra- en loodgieterswerkzaamheden voor nieuwbouw en renovatieprojecten.',
   features: ['Elektra aanleggen of vernieuwen', 'Groepenkast vervangen of uitbreiden', 'Water- en gasleidingen aanleggen of vervangen', 'Badkamer en toilet installaties', 'Vloerverwarming aanleggen', 'Domotica en slimme huisinstallaties'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80'
 }, {
   id: 'aan-en-verbouw',
   icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Aan- en verbouw',
   description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
   features: ['Uitbouwen en aanbouwen realiseren', 'Dakkapellen en dakopbouwen', 'Muren doorbreken en dragende constructies', 'Garage ombouwen tot woonruimte', 'Indeling van woning wijzigen', 'Funderingsherstel'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
 }, {
   id: 'behangen',
   icon: <Wallpaper size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Behangen',
   description: 'Professioneel behangwerk met oog voor detail en een perfect eindresultaat.',
   features: ['Behang verwijderen en ondergrond voorbereiden', 'Aanbrengen van luxe behang en wandbekleding', 'Fotobehang op maat', 'Vliesbehang en traditioneel behang', 'Textiel- en vinylbehang', 'Reparatie van bestaand behangwerk'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'pvc-vloeren',
   icon: <SquareGanttChart size={48} className="text-brand-lightGreen mb-6" />,
   title: 'PVC Vloeren',
   description: 'Levering en installatie van duurzame, onderhoudsvriendelijke PVC vloeren.',
   features: ['PVC vloeren in diverse dessins en kwaliteiten', 'Egaliseren van ondervloeren', 'Vloerverwarming geschikte PVC vloeren', 'Click PVC en vaste PVC vloeren', 'Onderhoud en reparatie van PVC vloeren', 'Verwijderen van oude vloerbedekking'],
-  image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }];
 
 const DienstenPage = () => {
@@ -88,7 +88,7 @@ const DienstenPage = () => {
       <main className="flex-grow pt-32">
         <section className="relative text-white py-16">
           <div className="absolute inset-0 bg-cover bg-center" style={{
-          backgroundImage: `url('/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png')`
+          backgroundImage: `url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2069&q=80')`
         }}>
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
@@ -115,7 +115,7 @@ const DienstenPage = () => {
                         src={dienst.image} 
                         alt={dienst.title} 
                         className="w-full h-96 object-cover transition-transform hover:scale-105 duration-300" 
-                        fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                        fallbackSrc="/placeholder.svg"
                       />
                     </div>
                   </div>

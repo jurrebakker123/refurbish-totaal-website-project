@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { OptimizedImage } from './ui/optimized-image';
 
 const projects = [
   {
@@ -11,24 +10,24 @@ const projects = [
     title: 'Volledige woningrenovatie',
     location: 'Amsterdam',
     category: 'Renovatie',
-    imageUrl: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png',
-    beforeImageUrl: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png',
+    imageUrl: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    beforeImageUrl: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
     id: 2,
     title: 'Buitenschilderwerk villa',
     location: 'Utrecht',
     category: 'Schilderwerk',
-    imageUrl: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png',
-    beforeImageUrl: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png',
+    imageUrl: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    beforeImageUrl: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
     id: 3,
     title: 'Dakrenovatie jaren \'30 woning',
     location: 'Rotterdam',
     category: 'Dakrenovatie',
-    imageUrl: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png',
-    beforeImageUrl: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png',
+    imageUrl: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    beforeImageUrl: 'https://images.unsplash.com/photo-1625602812206-5ec545ca1231?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
 ];
 
@@ -121,11 +120,12 @@ const ProjectsPreview = () => {
                     }}
                     className="absolute inset-0"
                   >
-                    <OptimizedImage
+                    <img 
                       src={project.imageUrl} 
                       alt={project.title} 
                       className="w-full h-full object-cover"
-                      fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-brand-darkGreen text-xs font-bold px-2 py-1 rounded">
                       Na
@@ -138,11 +138,12 @@ const ProjectsPreview = () => {
                     }}
                     className="absolute inset-0"
                   >
-                    <OptimizedImage
+                    <img 
                       src={project.beforeImageUrl} 
                       alt={`Voor - ${project.title}`} 
                       className="w-full h-full object-cover"
-                      fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm text-brand-darkGreen text-xs font-bold px-2 py-1 rounded">
                       Voor
