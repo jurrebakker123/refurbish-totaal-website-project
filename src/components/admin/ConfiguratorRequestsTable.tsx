@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { Eye, Clock, Mail, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -22,6 +23,8 @@ interface ConfiguratorRequestsTableProps {
   onOpenQuoteDialog: (item: DakkapelConfiguratie) => void;
   onDataChange: () => void;
   sendingQuote: string | null;
+  selectedIds?: string[];
+  onSelectItem?: (id: string, checked: boolean) => void;
 }
 
 const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({ 
@@ -29,7 +32,9 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
   onViewDetails,
   onOpenQuoteDialog,
   onDataChange,
-  sendingQuote
+  sendingQuote,
+  selectedIds = [],
+  onSelectItem
 }) => {
   const handleStatusChange = async (id: string, status: string) => {
     const success = await updateRequestStatus(id, status);
@@ -38,11 +43,14 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
     }
   };
 
+  const showCheckboxes = Boolean(onSelectItem);
+
   return (
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
+            {showCheckboxes && <TableHead className="w-12"></TableHead>}
             <TableHead>Datum</TableHead>
             <TableHead>Naam</TableHead>
             <TableHead>Email</TableHead>
@@ -56,13 +64,21 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
         <TableBody>
           {configuraties.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-4">
-                Geen configurator aanvragen gevonden
+              <TableCell colSpan={showCheckboxes ? 9 : 8} className="text-center py-4">
+                Geen aanvragen gevonden
               </TableCell>
             </TableRow>
           ) : (
             configuraties.map((config) => (
               <TableRow key={config.id}>
+                {showCheckboxes && (
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(config.id)}
+                      onCheckedChange={(checked) => onSelectItem!(config.id, checked as boolean)}
+                    />
+                  </TableCell>
+                )}
                 <TableCell>
                   {format(new Date(config.created_at), 'dd MMM yyyy HH:mm', { locale: nl })}
                 </TableCell>
