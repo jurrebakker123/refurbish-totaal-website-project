@@ -223,20 +223,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Attempting to send email to:", customerEmail);
 
-    // Use onboarding@resend.dev for testing purposes since the custom domain is not verified
-    // This is a verified sending domain that works out of the box with Resend
-    const fromEmail = "onboarding@resend.dev";
-    const replyToEmail = "info@refurbishtotaalnederland.nl";
-
-    console.log("Using verified sender email for testing:", fromEmail);
-
-    // Send email using Resend
+    // Send email using Resend - following the exact pattern from the example
     const emailResponse = await resend.emails.send({
-      from: `Refurbish Totaal Nederland <${fromEmail}>`,
+      from: 'Refurbish Totaal Nederland <onboarding@resend.dev>',
       to: [customerEmail],
       subject: `Offerte Dakkapel - ${requestData.model}`,
       html: emailHtml,
-      reply_to: replyToEmail,
     });
 
     console.log("Resend API response:", emailResponse);
@@ -279,7 +271,7 @@ const handler = async (req: Request): Promise<Response> => {
       message: 'Offerte succesvol verzonden',
       emailId: emailResponse.data?.id,
       sentTo: customerEmail,
-      note: 'Email verzonden via onboarding@resend.dev (voor testing). Voor productie moet het domein geverifieerd worden.'
+      note: 'Email verzonden via onboarding@resend.dev (geverifieerd domein)'
     }), {
       status: 200,
       headers: {
