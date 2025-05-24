@@ -15,7 +15,7 @@ import DashboardStats from '@/components/admin/DashboardStats';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import { toast } from 'sonner';
-import { supabase } from '@/utils/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboardPage = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
