@@ -16,6 +16,30 @@ export function BouwhulpServices() {
       description: "Vakbekwame timmerlieden voor ruwbouw, afbouw en maatwerk projecten. Van dakconstructies tot kozijnen, onze timmerlieden leveren kwaliteitswerk op elke bouwplaats.",
     },
     {
+      title: "Stukadoren",
+      description: "Professionele stukadoren voor glad pleisterwerk, sierpleister en cementgebonden afwerkingen. Ervaren vakmensen die zorgen voor strakke wanden en plafonds.",
+    },
+    {
+      title: "Kozijnzetters",
+      description: "Gespecialiseerde kozijnzetters voor het plaatsen van houten, kunststof en aluminium kozijnen. Vakkundige montage met oog voor detail en perfecte afwerking.",
+    },
+    {
+      title: "Dakkapel Plaatsers",
+      description: "Ervaren specialisten voor het plaatsen van dakkapellen. Van voorbereiding tot volledige afwerking, onze vakmensen realiseren meer ruimte en licht in uw woning.",
+    },
+    {
+      title: "Schilders",
+      description: "Professionele schilders voor binnen- en buitenschilderwerk. Vakkundige voorbereiding en afwerking met hoogwaardige verfproducten voor een duurzaam resultaat.",
+    },
+    {
+      title: "Behangers",
+      description: "Ervaren behangers voor alle soorten behang en wandbekleding. Van klassiek papierbehang tot moderne vliesbehangen, altijd een strak en professioneel eindresultaat.",
+    },
+    {
+      title: "PVC Vloer Leggers",
+      description: "Gespecialiseerde vloerleggers voor PVC vloeren in alle uitvoeringen. Van egalisatie tot afwerking, wij zorgen voor een perfect vlakke en duurzame vloer.",
+    },
+    {
       title: "Projectbegeleiding",
       description: "Ervaren voormannen en uitvoerders voor de begeleiding van uw bouwprojecten. Professionals die overzicht houden, kwaliteit bewaken en ervoor zorgen dat deadlines gehaald worden.",
     }
@@ -33,7 +57,7 @@ export function BouwhulpServices() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <div 
               key={index}
