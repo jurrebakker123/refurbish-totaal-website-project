@@ -5,28 +5,28 @@ import { ArrowRight } from 'lucide-react';
 export function BouwhulpServices() {
   const services = [
     {
-      title: "Klusdiensten",
-      description: "Kleine klussen in en om het huis, van het ophangen van lampen tot het monteren van meubels.",
+      title: "Hulpkrachten",
+      description: "Ongeschoolde en geschoolde hulpkrachten voor alle voorkomende werkzaamheden op de bouwplaats.",
       image: "https://images.unsplash.com/photo-1621905251189-08b45249ff78?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
-      link: "/diensten/klusdiensten"
+      link: "/diensten/hulpkrachten"
     },
     {
-      title: "Renovatie",
-      description: "Complete renovatie van kamers, badkamers, keukens of uw hele woning.",
+      title: "Metselaars",
+      description: "Ervaren metselaars voor nieuwbouw, renovatie en restauratieprojecten.",
       image: "https://images.unsplash.com/photo-1505798577917-a65157d3320a?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
-      link: "/diensten/renovatie"
+      link: "/diensten/metselaars"
     },
     {
-      title: "Onderhoud",
-      description: "Regulier onderhoud aan uw woning, van schilderwerk tot dakreparaties.",
+      title: "Timmerlieden",
+      description: "Vakbekwame timmerlieden voor ruwbouw, afbouw en maatwerk projecten.",
       image: "https://images.unsplash.com/photo-1590086782957-93c06f21b117?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
-      link: "/diensten/onderhoud"
+      link: "/diensten/timmerlieden"
     },
     {
-      title: "Bouwbegeleiding",
-      description: "Professionele begeleiding bij uw bouwproject, van planning tot oplevering.",
+      title: "Projectbegeleiding",
+      description: "Ervaren voormannen en uitvoerders voor de begeleiding van uw bouwprojecten.",
       image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
-      link: "/diensten/bouwbegeleiding"
+      link: "/diensten/projectbegeleiding"
     }
   ];
 
@@ -35,10 +35,10 @@ export function BouwhulpServices() {
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-brand-darkGreen">
-            Onze Diensten
+            Ons Personeel Aanbod
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Wij bieden een breed scala aan bouwdiensten voor particulieren en bedrijven.
+            Wij leveren geschikt bouwpersoneel voor alle disciplines binnen uw aannemingsbedrijf.
           </p>
         </div>
 

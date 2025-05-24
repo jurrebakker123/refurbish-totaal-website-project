@@ -9,10 +9,10 @@ export function BouwhulpCTA() {
       <div className="container">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Klaar voor uw volgende bouwproject?
+            Personeel tekort op uw project?
           </h2>
           <p className="text-xl mb-10 text-gray-100 max-w-2xl mx-auto">
-            Neem vandaag nog contact met ons op voor een vrijblijvende offerte of adviesgesprek. Wij staan klaar om u te helpen!
+            Neem vandaag nog contact met ons op voor beschikbaar bouwpersoneel. Wij helpen u snel en efficiënt!
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -39,8 +39,8 @@ export function BouwhulpCTA() {
               className="flex flex-col items-center p-6 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
             >
               <Calendar className="h-10 w-10 mb-3" />
-              <h3 className="text-xl font-semibold mb-2">Plan Afspraak</h3>
-              <p>Vrijblijvend adviesgesprek</p>
+              <h3 className="text-xl font-semibold mb-2">Plan Gesprek</h3>
+              <p>Persoonlijk adviesgesprek</p>
             </Link>
           </div>
           
@@ -48,7 +48,7 @@ export function BouwhulpCTA() {
             to="/offerte"
             className="btn-primary bg-white text-brand-darkGreen hover:bg-gray-100 inline-flex items-center justify-center"
           >
-            Offerte Aanvragen
+            Personeel Aanvragen
           </Link>
         </div>
       </div>

@@ -6,23 +6,23 @@ export function BouwhulpFeatures() {
   const features = [
     {
       icon: <Clock className="h-10 w-10 text-brand-darkGreen" />,
-      title: "Snel & Betrouwbaar",
-      description: "Binnen 24 uur reactie op uw aanvraag. Stipte planning en oplevering van elk project."
+      title: "Snelle Inzet",
+      description: "Binnen 24 uur kunnen wij geschikt personeel leveren voor uw project. Flexibele planning en directe beschikbaarheid."
     },
     {
       icon: <Shield className="h-10 w-10 text-brand-darkGreen" />,
-      title: "Kwaliteitsgarantie",
-      description: "Voor al onze werkzaamheden geldt een uitgebreide garantie. Wij staan achter ons werk."
+      title: "Betrouwbaar Personeel",
+      description: "Al onze medewerkers zijn gescreend en hebben ervaring in de bouw. Volledig verzekerd en VCA gecertificeerd."
     },
     {
       icon: <Star className="h-10 w-10 text-brand-darkGreen" />,
-      title: "Ervaren Vakmensen",
-      description: "Ons team bestaat uit gekwalificeerde professionals met jarenlange praktijkervaring."
+      title: "Ervaren Vakmannen",
+      description: "Ons team bestaat uit gekwalificeerde bouwvakkers met jarenlange praktijkervaring in verschillende disciplines."
     },
     {
       icon: <Users className="h-10 w-10 text-brand-darkGreen" />,
-      title: "Persoonlijke Aanpak",
-      description: "Wij luisteren naar uw wensen en bieden oplossingen die bij uw situatie passen."
+      title: "Flexibele Capaciteit",
+      description: "Van enkele dagen tot langdurige projecten. Wij schalen mee met uw personeel behoefte."
     }
   ];
 
@@ -31,10 +31,10 @@ export function BouwhulpFeatures() {
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-brand-darkGreen">
-            Waarom kiezen voor Refurbishbouwhulp?
+            Waarom kiezen aannemers voor ons?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Wij onderscheiden ons door kwaliteit, betrouwbaarheid en transparantie in al onze diensten.
+            Wij leveren kwaliteitspersoneel dat direct inzetbaar is op uw bouwprojecten.
           </p>
         </div>
 
