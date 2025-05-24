@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Clock, Mail, CheckCircle, X } from 'lucide-react';
 import { DakkapelConfiguratie } from '@/types/admin';
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
 interface BulkActionsProps {
   selectedIds: string[];
@@ -24,7 +25,7 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   configurations
 }) => {
   const [bulkAction, setBulkAction] = React.useState('');
-  const checkboxRef = React.useRef<HTMLButtonElement>(null);
+  const checkboxRef = React.useRef<React.ElementRef<typeof CheckboxPrimitive.Root>>(null);
   const isAllSelected = selectedIds.length === allIds.length && allIds.length > 0;
   const isPartialSelected = selectedIds.length > 0 && selectedIds.length < allIds.length;
 
