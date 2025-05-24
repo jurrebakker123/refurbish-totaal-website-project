@@ -31,7 +31,9 @@ const BulkActions: React.FC<BulkActionsProps> = ({
 
   React.useEffect(() => {
     if (checkboxRef.current) {
-      checkboxRef.current.indeterminate = isPartialSelected;
+      // Cast to HTMLInputElement to access the indeterminate property
+      const checkboxElement = checkboxRef.current as HTMLInputElement;
+      checkboxElement.indeterminate = isPartialSelected;
     }
   }, [isPartialSelected]);
 
