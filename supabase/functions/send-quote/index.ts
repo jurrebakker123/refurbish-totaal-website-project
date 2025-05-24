@@ -42,8 +42,24 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const resend = new Resend(resendApiKey);
-    const requestBody = await req.json();
-    console.log("Request body:", requestBody);
+    let requestBody;
+    
+    try {
+      requestBody = await req.json();
+      console.log("Request body received:", requestBody);
+    } catch (parseError) {
+      console.error("Failed to parse request body:", parseError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Invalid JSON in request body" 
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
     
     const { requestId, type, customMessage }: SendQuoteRequest = requestBody;
     
@@ -61,7 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
     
-    console.log("Quote request received:", { requestId, type });
+    console.log("Quote request details:", { requestId, type, customMessageLength: customMessage?.length || 0 });
     
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -69,7 +85,16 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (!supabaseUrl || !supabaseKey) {
       console.error("Missing Supabase credentials");
-      throw new Error("Missing Supabase credentials");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Missing Supabase configuration" 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
     
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
@@ -84,15 +109,47 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (error) {
       console.error("Error fetching configurator data:", error);
-      throw new Error(`Database error: ${error.message}`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: `Database error: ${error.message}` 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     if (!requestData) {
       console.error("Request data not found for ID:", requestId);
-      throw new Error('Aanvraag niet gevonden');
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Aanvraag niet gevonden in database' 
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
-    console.log("Request data found:", requestData.naam, requestData.email);
+    console.log("Request data found:", { naam: requestData.naam, email: requestData.email });
+
+    if (!requestData.email) {
+      console.error("No email address found in request data");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Geen email adres gevonden voor deze aanvraag' 
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
     // Prepare email content
     const customerName = requestData.naam;
@@ -164,9 +221,9 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    console.log("Sending email to:", customerEmail);
+    console.log("Attempting to send email to:", customerEmail);
 
-    // Send email
+    // Send email using Resend
     const emailResponse = await resend.emails.send({
       from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
       to: [customerEmail],
@@ -175,15 +232,24 @@ const handler = async (req: Request): Promise<Response> => {
       reply_to: "info@refurbishtotaalnederland.nl",
     });
 
-    console.log("Email response:", emailResponse);
+    console.log("Resend API response:", emailResponse);
 
     if (emailResponse.error) {
       console.error("Resend error:", emailResponse.error);
-      throw new Error(`Email sending failed: ${emailResponse.error.message}`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: `Email sending failed: ${emailResponse.error.message}` 
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     // Update the status in the database
-    console.log("Updating request status...");
+    console.log("Updating request status to 'offerte_verzonden'...");
     const { error: updateError } = await supabaseClient
       .from('dakkapel_configuraties')
       .update({
@@ -195,15 +261,17 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (updateError) {
       console.error('Error updating status:', updateError);
-      throw updateError;
+      // Don't fail the whole operation, email was sent successfully
+      console.log('Email was sent successfully despite database update error');
     }
 
-    console.log("Quote sent successfully!");
+    console.log("Quote sent successfully! Email ID:", emailResponse.data?.id);
 
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Offerte succesvol verzonden',
-      emailId: emailResponse.data?.id
+      emailId: emailResponse.data?.id,
+      sentTo: customerEmail
     }), {
       status: 200,
       headers: {
@@ -213,11 +281,11 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
   } catch (error: any) {
-    console.error("Error in send-quote function:", error);
+    console.error("Unexpected error in send-quote function:", error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || 'Onbekende fout'
+        error: `Onverwachte fout: ${error.message || 'Onbekende fout'}` 
       }),
       {
         status: 500,

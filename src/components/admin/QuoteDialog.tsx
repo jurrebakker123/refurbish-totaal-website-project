@@ -57,32 +57,47 @@ Het team van Refurbish Totaal Nederland
 info@refurbishtotaalnederland.nl`;
 
   const handleSendQuote = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      toast.error("Geen item geselecteerd");
+      return;
+    }
+    
+    if (!selectedItem.email) {
+      toast.error("Geen email adres gevonden voor deze klant");
+      return;
+    }
+    
+    console.log('Starten met verzenden offerte naar:', selectedItem.email);
+    console.log('Voor aanvraag:', selectedItem.id);
     
     setErrorMessage(null);
     setIsLoading(true);
     setSendingQuote(selectedItem.id);
+    
     const messageToSend = useDefaultTemplate ? quoteMessage || defaultTemplate : quoteMessage;
     
+    if (!messageToSend.trim()) {
+      setErrorMessage("Voeg eerst een bericht toe voordat u de offerte verstuurt.");
+      setIsLoading(false);
+      setSendingQuote(null);
+      return;
+    }
+    
     try {
-      console.log('Verzenden offerte naar:', selectedItem.email);
-      console.log('Met bericht:', messageToSend.substring(0, 100) + '...');
+      console.log('Verzenden offerte met bericht lengte:', messageToSend.length);
       
-      const success = await sendQuoteEmail(
-        selectedItem, 
-        messageToSend
-      );
+      const success = await sendQuoteEmail(selectedItem, messageToSend);
       
       if (success) {
-        toast.success("Offerte succesvol verzonden naar " + selectedItem.email + "!");
+        toast.success(`Offerte succesvol verzonden naar ${selectedItem.email}!`);
         onDataChange();
         onClose();
       } else {
-        setErrorMessage("Er is een fout opgetreden bij het verzenden van de offerte. Controleer of de RESEND_API_KEY correct is ingesteld in de Supabase edge function secrets.");
+        setErrorMessage("Er is een fout opgetreden bij het verzenden van de offerte. Controleer de edge function logs voor meer details.");
       }
     } catch (error) {
       console.error("Error in handleSendQuote:", error);
-      setErrorMessage("Er is een onverwachte fout opgetreden. Controleer de console voor meer informatie.");
+      setErrorMessage(`Er is een onverwachte fout opgetreden: ${error instanceof Error ? error.message : 'Onbekende fout'}`);
     } finally {
       setIsLoading(false);
       setSendingQuote(null);
