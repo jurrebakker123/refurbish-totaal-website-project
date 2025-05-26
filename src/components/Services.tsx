@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper, Shield, Thermometer } from 'lucide-react';
 import React from 'react';
@@ -10,7 +11,7 @@ const services = [
     title: 'Kozijntechniek',
     description: 'Levering en plaatsing van hoogwaardige kozijnen in hout, kunststof of aluminium voor een betere uitstraling en isolatie.',
     link: '/diensten/kozijntechniek',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
+    image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'isolatietechniek',

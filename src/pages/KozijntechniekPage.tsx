@@ -61,7 +61,7 @@ const KozijntechniekPage = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
             }}
           >
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
@@ -97,10 +97,10 @@ const KozijntechniekPage = () => {
               <div className="lg:col-span-5">
                 <div className="rounded-lg overflow-hidden shadow-lg">
                   <OptimizedImage
-                    src="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                    src="https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                     alt="Kozijntechniek"
                     className="w-full h-auto"
-                    fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                    fallbackSrc="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   />
                 </div>
               </div>
@@ -138,10 +138,10 @@ const KozijntechniekPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                  src="https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   alt="Kunststof kozijnen"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                  fallbackSrc="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Kunststof kozijnen</h3>
@@ -149,10 +149,10 @@ const KozijntechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="/lovable-uploads/5da5d680-5b13-440b-9aae-20e52a50a501.png"
+                  src="https://images.unsplash.com/photo-1460574283810-2aab119d8511?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   alt="Houten kozijnen"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                  fallbackSrc="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Houten kozijnen</h3>
@@ -160,10 +160,10 @@ const KozijntechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
+                  src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   alt="Aluminium kozijnen"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png"
+                  fallbackSrc="https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Aluminium kozijnen</h3>
