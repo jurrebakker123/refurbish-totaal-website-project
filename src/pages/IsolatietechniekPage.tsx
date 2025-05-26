@@ -61,7 +61,7 @@ const IsolatietechniekPage = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center" 
             style={{ 
-              backgroundImage: `url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80')`,
             }}
           >
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
@@ -97,10 +97,10 @@ const IsolatietechniekPage = () => {
               <div className="lg:col-span-5">
                 <div className="rounded-lg overflow-hidden shadow-lg">
                   <OptimizedImage
-                    src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                    src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                     alt="Isolatietechniek werkzaamheden"
                     className="w-full h-auto"
-                    fallbackSrc="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                    fallbackSrc="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   />
                 </div>
               </div>
@@ -182,10 +182,10 @@ const IsolatietechniekPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   alt="Spouwmuurisolatie"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  fallbackSrc="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Spouwmuurisolatie</h3>
@@ -193,10 +193,10 @@ const IsolatietechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  src="https://images.unsplash.com/photo-1607400201515-c2c41c07d307?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   alt="Vloerisolatie"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  fallbackSrc="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Vloerisolatie</h3>
@@ -204,10 +204,10 @@ const IsolatietechniekPage = () => {
               </div>
               <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1607400201515-c2c41c07d307?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  src="https://images.unsplash.com/photo-1460472178825-e5240623afd5?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                   alt="Dakisolatie"
                   className="w-full h-64 object-cover"
-                  fallbackSrc="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
+                  fallbackSrc="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-brand-darkGreen">Dakisolatie</h3>
