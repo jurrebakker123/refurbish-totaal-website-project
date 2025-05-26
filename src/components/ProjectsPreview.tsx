@@ -18,16 +18,16 @@ const projects = [
     title: 'Buitenschilderwerk villa',
     location: 'Utrecht',
     category: 'Schilderwerk',
-    imageUrl: '/lovable-uploads/f267d8c4-13cc-4af9-9a44-ff406caa4b4c.png',
-    beforeImageUrl: '/lovable-uploads/b5d41da0-30bd-4787-a952-fdab69d3ac1a.png',
+    imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    beforeImageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
     id: 3,
     title: 'Dakrenovatie jaren \'30 woning',
     location: 'Rotterdam',
     category: 'Dakrenovatie',
-    imageUrl: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png',
-    beforeImageUrl: '/lovable-uploads/80306d05-7941-4133-8d63-76968fad7e37.png',
+    imageUrl: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    beforeImageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
 ];
 
