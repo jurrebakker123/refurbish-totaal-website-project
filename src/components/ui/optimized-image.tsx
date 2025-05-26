@@ -1,6 +1,4 @@
-
 import React, { useState, useEffect } from 'react';
-
 interface OptimizedImageProps {
   src: string;
   alt: string;
@@ -11,7 +9,6 @@ interface OptimizedImageProps {
   width?: number;
   height?: number;
 }
-
 export function OptimizedImage({
   src,
   alt,
@@ -61,36 +58,17 @@ export function OptimizedImage({
     setHasError(true);
     setIsLoading(false);
   };
-
   const handleLoad = () => {
     setIsLoading(false);
   };
-
-  return (
-    <div className="relative" style={{
-      minHeight: '50px',
-      ...style
-    }}>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+  return <div className="relative" style={{
+    minHeight: '50px',
+    ...style
+  }}>
+      {isLoading && <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
-      )}
+        </div>}
       
-      <img
-        src={imgSrc}
-        alt={alt}
-        className={className}
-        style={{
-          objectFit,
-          width: width ? `${width}px` : '100%',
-          height: height ? `${height}px` : '100%',
-          display: isLoading ? 'none' : 'block',
-          ...style
-        }}
-        onLoad={handleLoad}
-        onError={handleError}
-      />
-    </div>
-  );
+      
+    </div>;
 }
