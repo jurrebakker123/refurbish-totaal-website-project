@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -16,7 +15,7 @@ const diensten = [{
   title: 'Kozijntechniek',
   description: 'Bij Refurbish Totaal Nederland verzorgen wij het vervangen, herstellen en plaatsen van kozijnen met vakmanschap en oog voor detail. Of het nu gaat om hout, kunststof of aluminium kozijnen, wij leveren maatwerkoplossingen die passen bij de stijl van uw woning en bijdragen aan energiezuinigheid en comfort.',
   features: ['Vakkundige demontage en plaatsing van kozijnen', 'Inmeten en leveren van maatwerk kozijnen (nieuwbouw of renovatie)', 'Toepassing van hoogwaardige isolatieglas-systemen (HR++, triple)', 'Herstel van houtrot of het moderniseren van bestaande kozijnen', 'Integratie van ventilatieroosters en zonwering indien gewenst', 'Perfecte afwerking, zowel binnen als buiten'],
-  image: 'https://images.unsplash.com/photo-1627726472208-03d136044eb6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
+  image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2080&q=80'
 }, {
   id: 'isolatietechniek',
   icon: <Thermometer size={48} className="text-brand-lightGreen mb-6" />,
@@ -30,7 +29,7 @@ const diensten = [{
   title: 'Dakkapel',
   description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
   features: ['Ontwerp en plaatsing van nieuwe dakkapellen', 'Renovatie en isolatie van bestaande dakkapellen', 'Diverse stijlen en afwerkingsmogelijkheden', 'Compleet met dakbedekking en zinkwerk', 'Snelle en efficiënte plaatsing', 'Garantie op materialen en werkzaamheden'],
-  image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
+  image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'schilderwerk',
   icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
@@ -44,14 +43,14 @@ const diensten = [{
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
   features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
-  image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
+  image: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'stukadoren',
   icon: <Construction size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Stukadoren',
   description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
   features: ['Gladpleisterwerk voor wanden en plafonds', 'Renovatiestucwerk bij scheuren en beschadigingen', 'Sierlijsten en ornamenten aanbrengen', 'Spachtelputz en structuurwerk', 'Venetiaans stucwerk en tadelakt', 'Betonlook wanden en vloeren'],
-  image: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png'
+  image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
 }, {
   id: 'installatietechniek',
   icon: <Wrench size={48} className="text-brand-lightGreen mb-6" />,
