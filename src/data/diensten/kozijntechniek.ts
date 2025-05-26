@@ -38,7 +38,7 @@ const kozijntechniek: DienstData = {
       answer: 'In sommige gevallen kunt u subsidie krijgen, vooral als de nieuwe kozijnen bijdragen aan energiebesparing. De ISDE-subsidie kan bijvoorbeeld van toepassing zijn bij toepassing van hoogwaardige isolatieglas. Wij kunnen u tijdens het adviesgesprek informeren over actuele subsidiemogelijkheden.' 
     }
   ],
-  image: '/lovable-uploads/359969df-bf08-4e53-9b33-a326a2443066.png'
+  image: '/lovable-uploads/ffcaeb1c-5ade-421e-8b85-2b761608810e.png'
 };
 
 export default kozijntechniek;
