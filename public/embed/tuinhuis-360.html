@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Tuinhuis Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #f9fafb, #ffffff);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #065f46;
+            margin-bottom: 16px;
+        }
+        
+        .subtitle {
+            font-size: 1.125rem;
+            color: #374151;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+        
+        @media (min-width: 1024px) {
+            .gallery-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .viewer-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .aspect-ratio {
+            position: relative;
+            width: 100%;
+            padding-bottom: 62.5%; /* 16:10 aspect ratio */
+            background: #f0f9ff;
+        }
+        
+        .viewer-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .viewer-content:active {
+            cursor: grabbing;
+        }
+        
+        .angle-indicator {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(243, 244, 246, 0.8);
+        }
+        
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 2px solid #065f46;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .viewer-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .controls {
+            padding: 24px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .slider-icon {
+            width: 20px;
+            height: 20px;
+            color: #6b7280;
+        }
+        
+        .slider-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .angle-display {
+            margin-left: auto;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #065f46;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #065f46;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .footer-controls {
+            padding: 16px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .auto-rotate-btn {
+            font-size: 0.875rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #e5e7eb;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .auto-rotate-btn:hover {
+            background: #d1d5db;
+        }
+        
+        .tip {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+        
+        .specs-container {
+            space-y: 24px;
+        }
+        
+        .specs-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #065f46;
+            margin-bottom: 12px;
+        }
+        
+        .specs-list {
+            list-style: none;
+            space-y: 12px;
+        }
+        
+        .specs-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            color: #22c55e;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 32px;
+            border-radius: 6px;
+            background: #065f46;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            margin-top: 16px;
+        }
+        
+        .cta-button:hover {
+            background: #047857;
+        }
+        
+        .cta-icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2 class="title">Plano Tuinhuis – 500 cm breed</h2>
+            <p class="subtitle">
+                Een stijlvolle combinatie van berging en overkapping met zwart/douglas hout.
+                Bekijk het tuinhuis vanuit alle hoeken.
+            </p>
+        </div>
+
+        <div class="gallery-container">
+            <div class="viewer-container">
+                <div class="aspect-ratio">
+                    <div class="viewer-content" id="viewer">
+                        <div class="angle-indicator">
+                            <svg class="slider-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            360°
+                        </div>
+                        
+                        <div class="loading-overlay" id="loading">
+                            <div class="spinner"></div>
+                        </div>
+                        
+                        <img id="currentImage" class="viewer-image" style="display: none;" />
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="slider-container">
+                        <svg class="slider-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        </svg>
+                        <span class="slider-label">Draai het tuinhuis</span>
+                        <span class="angle-display" id="angleDisplay">0°</span>
+                    </div>
+                    
+                    <input type="range" class="slider" id="angleSlider" min="0" max="359" value="0" step="1">
+                </div>
+                
+                <div class="footer-controls">
+                    <button class="auto-rotate-btn" id="autoRotateBtn">
+                        <svg class="slider-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Automatisch roteren
+                    </button>
+                    
+                    <div style="font-size: 0.875rem; color: #6b7280;" id="currentAngle">0°</div>
+                </div>
+                
+                <p class="tip">
+                    Tip: Klik en sleep om het tuinhuis te draaien
+                </p>
+            </div>
+            
+            <div class="specs-container">
+                <div>
+                    <h3 class="specs-title">Specificaties</h3>
+                    <ul class="specs-list">
+                        <li class="specs-item">
+                            <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Afmetingen: 500 x 350 cm (breedte x diepte)</span>
+                        </li>
+                        <li class="specs-item">
+                            <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Wandhoogte: 230 cm, nokhoogte: 260 cm</span>
+                        </li>
+                        <li class="specs-item">
+                            <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Zwarte wanden met douglas accenten</span>
+                        </li>
+                        <li class="specs-item">
+                            <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Geïntegreerde overkapping van 200 cm diep</span>
+                        </li>
+                        <li class="specs-item">
+                            <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Onbehandeld geschaafd douglashout</span>
+                        </li>
+                        <li class="specs-item">
+                            <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>EPDM dakbedekking met aluminium randafwerking</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div style="padding-top: 16px;">
+                    <a href="https://www.refurbishtotaalnederland.nl/tuinhuizen" class="cta-button">
+                        <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Offerte aanvragen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define the angles for our 360-degree view
+        const ANGLES = [
+            { degree: 0, src: '/lovable-uploads/a6112a45-bfd2-4d20-b496-8dc7a87d8142.png' },
+            { degree: 45, src: '/lovable-uploads/d67ca9bb-8389-42de-a068-52cf63d8b04a.png' },
+            { degree: 90, src: '/lovable-uploads/2436d289-2c67-4857-89ad-61736ba3dc09.png' },
+            { degree: 135, src: '/lovable-uploads/f73444a4-98da-45bd-b6aa-7cd2faa43809.png' },
+            { degree: 180, src: '/lovable-uploads/1d399cd4-9b33-4b0d-8c07-f6314f8b5a6a.png' },
+            { degree: 225, src: '/lovable-uploads/3fb04066-dfc7-400c-9fda-28e2a97979a4.png' },
+            { degree: 270, src: '/lovable-uploads/0e7822c5-5fb3-4431-868f-04b3c7ca0be1.png' },
+            { degree: 315, src: '/lovable-uploads/0271be36-660a-4b52-bf9a-b9d16efce0c5.png' }
+        ];
+
+        class TuinhuisViewer {
+            constructor() {
+                this.currentAngleIndex = 0;
+                this.sliderValue = 0;
+                this.isDragging = false;
+                this.autoRotate = true;
+                this.autoRotateInterval = null;
+                this.startX = 0;
+                this.imageLoaded = false;
+
+                this.initElements();
+                this.bindEvents();
+                this.loadImage();
+                this.startAutoRotation();
+            }
+
+            initElements() {
+                this.viewer = document.getElementById('viewer');
+                this.currentImage = document.getElementById('currentImage');
+                this.loading = document.getElementById('loading');
+                this.angleSlider = document.getElementById('angleSlider');
+                this.angleDisplay = document.getElementById('angleDisplay');
+                this.currentAngle = document.getElementById('currentAngle');
+                this.autoRotateBtn = document.getElementById('autoRotateBtn');
+            }
+
+            bindEvents() {
+                // Slider events
+                this.angleSlider.addEventListener('input', (e) => this.handleSliderChange(e));
+                
+                // Mouse events
+                this.viewer.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.viewer.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.viewer.addEventListener('mouseup', () => this.handleMouseUp());
+                this.viewer.addEventListener('mouseleave', () => this.handleMouseUp());
+                
+                // Touch events
+                this.viewer.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+                this.viewer.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+                this.viewer.addEventListener('touchend', () => this.handleTouchEnd());
+                
+                // Auto rotate button
+                this.autoRotateBtn.addEventListener('click', () => this.toggleAutoRotate());
+                
+                // Image load event
+                this.currentImage.addEventListener('load', () => this.handleImageLoad());
+            }
+
+            loadImage() {
+                const currentImageData = ANGLES[this.currentAngleIndex];
+                this.currentImage.src = currentImageData.src;
+                this.currentImage.alt = `Tuinhuis vanuit ${currentImageData.degree}°`;
+            }
+
+            handleImageLoad() {
+                this.imageLoaded = true;
+                this.loading.style.display = 'none';
+                this.currentImage.style.display = 'block';
+            }
+
+            handleSliderChange(e) {
+                const newValue = parseInt(e.target.value);
+                this.sliderValue = newValue;
+                this.updateAngleFromSlider(newValue);
+                this.stopAutoRotation();
+            }
+
+            updateAngleFromSlider(value) {
+                let closestIndex = 0;
+                let closestDiff = Math.abs(ANGLES[0].degree - value);
+                
+                ANGLES.forEach((angle, index) => {
+                    const diff = Math.abs(angle.degree - value);
+                    if (diff < closestDiff) {
+                        closestDiff = diff;
+                        closestIndex = index;
+                    }
+                });
+                
+                if (closestIndex !== this.currentAngleIndex) {
+                    this.currentAngleIndex = closestIndex;
+                    this.loadImage();
+                }
+                
+                this.updateDisplays();
+            }
+
+            handleMouseDown(e) {
+                this.isDragging = true;
+                this.startX = e.clientX;
+                this.stopAutoRotation();
+            }
+
+            handleMouseMove(e) {
+                if (!this.isDragging) return;
+                this.updateAngleFromDrag(e.clientX);
+            }
+
+            handleMouseUp() {
+                this.isDragging = false;
+            }
+
+            handleTouchStart(e) {
+                this.isDragging = true;
+                this.startX = e.touches[0].clientX;
+                this.stopAutoRotation();
+            }
+
+            handleTouchMove(e) {
+                if (!this.isDragging) return;
+                e.preventDefault();
+                this.updateAngleFromDrag(e.touches[0].clientX);
+            }
+
+            handleTouchEnd() {
+                this.isDragging = false;
+            }
+
+            updateAngleFromDrag(clientX) {
+                const deltaX = clientX - this.startX;
+                if (Math.abs(deltaX) > 20) {
+                    const direction = deltaX > 0 ? -1 : 1;
+                    this.currentAngleIndex = (this.currentAngleIndex + direction + ANGLES.length) % ANGLES.length;
+                    this.sliderValue = ANGLES[this.currentAngleIndex].degree;
+                    this.angleSlider.value = this.sliderValue;
+                    this.loadImage();
+                    this.updateDisplays();
+                    this.startX = clientX;
+                }
+            }
+
+            updateDisplays() {
+                const currentDegree = ANGLES[this.currentAngleIndex].degree;
+                this.angleDisplay.textContent = `${currentDegree}°`;
+                this.currentAngle.textContent = `${currentDegree}°`;
+            }
+
+            toggleAutoRotate() {
+                if (this.autoRotate) {
+                    this.stopAutoRotation();
+                } else {
+                    this.startAutoRotation();
+                }
+            }
+
+            startAutoRotation() {
+                this.autoRotate = true;
+                this.autoRotateBtn.innerHTML = `
+                    <svg class="slider-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Rotatie stoppen
+                `;
+                
+                this.autoRotateInterval = setInterval(() => {
+                    this.currentAngleIndex = (this.currentAngleIndex + 1) % ANGLES.length;
+                    this.sliderValue = ANGLES[this.currentAngleIndex].degree;
+                    this.angleSlider.value = this.sliderValue;
+                    this.loadImage();
+                    this.updateDisplays();
+                }, 1000);
+            }
+
+            stopAutoRotation() {
+                this.autoRotate = false;
+                this.autoRotateBtn.innerHTML = `
+                    <svg class="slider-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Automatisch roteren
+                `;
+                
+                if (this.autoRotateInterval) {
+                    clearInterval(this.autoRotateInterval);
+                    this.autoRotateInterval = null;
+                }
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new TuinhuisViewer();
+        });
+    </script>
+</body>
+</html>
