@@ -38,7 +38,7 @@ const isolatietechniek: DienstData = {
       answer: 'Ja, er zijn verschillende subsidieregelingen beschikbaar voor woningisolatie, zoals de ISDE-subsidie voor eigenaar-bewoners. Deze kunnen oplopen tot 30% van de investeringskosten. Ook zijn er vaak lokale subsidies vanuit uw gemeente. We informeren u graag over de actuele mogelijkheden tijdens het adviesgesprek.' 
     }
   ],
-  image: '/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png'
+  image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 };
 
 export default isolatietechniek;
