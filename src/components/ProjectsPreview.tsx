@@ -160,7 +160,7 @@ const ProjectsPreview = () => {
               </Link>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
