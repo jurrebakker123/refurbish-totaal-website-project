@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpaper, Shield, Thermometer } from 'lucide-react';
 import React from 'react';
@@ -11,7 +10,7 @@ const services = [
     title: 'Kozijntechniek',
     description: 'Levering en plaatsing van hoogwaardige kozijnen in hout, kunststof of aluminium voor een betere uitstraling en isolatie.',
     link: '/diensten/kozijntechniek',
-    image: '/lovable-uploads/5f8f6883-901d-4157-ab41-1b023e186ede.png'
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'isolatietechniek',
@@ -19,7 +18,7 @@ const services = [
     title: 'Isolatietechniek',
     description: 'Effectieve isolatieoplossingen die uw woning comfortabeler maken en energiekosten verlagen.',
     link: '/diensten/isolatietechniek',
-    image: '/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png'
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'dakkapel',
@@ -27,7 +26,7 @@ const services = [
     title: 'Dakkapel',
     description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
     link: '/diensten/dakkapel',
-    image: '/lovable-uploads/65649027-1dd5-42b4-9622-1a7bc475e30d.png'
+    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'schilderwerk',
@@ -43,7 +42,7 @@ const services = [
     title: 'Dakrenovatie',
     description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
     link: '/diensten/dakrenovatie',
-    image: '/lovable-uploads/1f7274d9-4949-4025-91b8-2a7ac6c7f3e7.png'
+    image: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'stukadoren',
@@ -51,7 +50,7 @@ const services = [
     title: 'Stukadoren',
     description: 'Vakkundig stucwerk voor wanden en plafonds, zowel traditioneel als decoratief.',
     link: '/diensten/stukadoren',
-    image: '/lovable-uploads/541390cc-5853-4cca-be10-6ac89b366249.png'
+    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
   },
   {
     id: 'installatietechniek',
@@ -67,7 +66,7 @@ const services = [
     title: 'Aan- en verbouw',
     description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
     link: '/diensten/aan-en-verbouw',
-    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
+    image: 'https://images.unsplash.com/photo-1504615755583-2916b52192a3?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
     id: 'behangen',
