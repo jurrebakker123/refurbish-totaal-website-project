@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -82,7 +81,6 @@ const renderBasedOnDomain = () => {
           <Routes>
             <Route path="/" element={<ZonnepanelenPage />} />
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
                 <AdminZonnepanelenPage />
