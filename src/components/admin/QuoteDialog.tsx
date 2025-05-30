@@ -41,13 +41,6 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({
 
 Hartelijk dank voor uw interesse in onze refurbished zonnepanelen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van zonnepanelen volgens uw specificaties.
 
-Voordat wij verder gaan met het uitwerken van uw offerte, willen wij graag weten of u daadwerkelijk interesse heeft om door te gaan met dit project. Wij hechten veel waarde aan een efficiënte samenwerking en besteden graag onze tijd aan serieuze aanvragen.
-
-**Heeft u daadwerkelijk interesse om door te gaan?**
-
-[JA, IK HEB INTERESSE] - Klik hier als u wilt doorgaan met de offerte
-[NEE, GEEN INTERESSE] - Klik hier als u geen interesse meer heeft
-
 De prijs is inclusief:
 - Transport naar locatie  
 - Montage van de zonnepanelen
@@ -66,13 +59,6 @@ Het team van Refurbish Totaal Nederland
 info@refurbishtotaalnederland.nl` : `Beste klant,
 
 Hartelijk dank voor uw interesse in onze dakkapellen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van een dakkapel volgens uw specificaties.
-
-Voordat wij verder gaan met het uitwerken van uw offerte, willen wij graag weten of u daadwerkelijk interesse heeft om door te gaan met dit project. Wij hechten veel waarde aan een efficiënte samenwerking en besteden graag onze tijd aan serieuze aanvragen.
-
-**Heeft u daadwerkelijk interesse om door te gaan?**
-
-[JA, IK HEB INTERESSE] - Klik hier als u wilt doorgaan met de offerte
-[NEE, GEEN INTERESSE] - Klik hier als u geen interesse meer heeft
 
 De prijs is inclusief:
 - Transport naar locatie
