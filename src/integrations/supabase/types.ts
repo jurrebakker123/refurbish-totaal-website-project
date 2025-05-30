@@ -145,6 +145,7 @@ export type Database = {
           id: string
           in_aanbouw_op: string | null
           insectscreens: boolean | null
+          interest_response_at: string | null
           kleur_draaikiepramen: string
           kleur_kozijn: string
           kleur_zijkanten: string
@@ -177,6 +178,7 @@ export type Database = {
           id?: string
           in_aanbouw_op?: string | null
           insectscreens?: boolean | null
+          interest_response_at?: string | null
           kleur_draaikiepramen: string
           kleur_kozijn: string
           kleur_zijkanten: string
@@ -209,6 +211,7 @@ export type Database = {
           id?: string
           in_aanbouw_op?: string | null
           insectscreens?: boolean | null
+          interest_response_at?: string | null
           kleur_draaikiepramen?: string
           kleur_kozijn?: string
           kleur_zijkanten?: string
@@ -243,6 +246,7 @@ export type Database = {
           email: string
           id: string
           in_aanbouw_op: string | null
+          interest_response_at: string | null
           jaar_fabricage: number | null
           merk: string
           naam: string
@@ -271,6 +275,7 @@ export type Database = {
           email: string
           id?: string
           in_aanbouw_op?: string | null
+          interest_response_at?: string | null
           jaar_fabricage?: number | null
           merk: string
           naam: string
@@ -299,6 +304,7 @@ export type Database = {
           email?: string
           id?: string
           in_aanbouw_op?: string | null
+          interest_response_at?: string | null
           jaar_fabricage?: number | null
           merk?: string
           naam?: string

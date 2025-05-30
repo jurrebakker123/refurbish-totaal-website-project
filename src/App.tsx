@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -41,7 +40,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <TooltipProvider>
-          <Toaster />
           <GoogleTagManager />
           <Routes>
             <Route path="/" element={<Index />} />
@@ -71,7 +69,6 @@ function App() {
           </Routes>
           <CookieConsent />
           <WhatsAppButton />
-          <LeaveSiteNotification />
         </TooltipProvider>
       </CartProvider>
     </QueryClientProvider>

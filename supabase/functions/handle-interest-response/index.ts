@@ -91,20 +91,61 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Status successfully updated to: ${newStatus} for request: ${requestId}`);
 
-    // Determine redirect URL based on type and response
-    let redirectUrl: string;
-    
-    if (type === 'zonnepaneel') {
-      redirectUrl = 'https://refurbishtotaalnederland.nl/zonnepanelen';
-    } else {
-      redirectUrl = 'https://refurbishtotaalnederland.nl/dakkapel';
-    }
+    // Create a success page HTML instead of redirect
+    const successHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Bedankt voor uw reactie</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            text-align: center; 
+            background-color: #f5f5f5;
+          }
+          .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          .success { color: #059669; font-size: 24px; margin-bottom: 20px; }
+          .error { color: #dc3545; font-size: 24px; margin-bottom: 20px; }
+          .btn { 
+            display: inline-block; 
+            background-color: #059669; 
+            color: white; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            margin-top: 20px;
+          }
+          .btn:hover { background-color: #047857; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          ${response === 'ja' ? 
+            `<div class="success">✓ Bedankt! Uw interesse is geregistreerd.</div>
+             <p>We nemen binnenkort contact met u op voor de vervolgstappen.</p>` :
+            `<div class="error">Bedankt voor uw reactie.</div>
+             <p>Mocht u nog vragen hebben, neem dan gerust contact met ons op.</p>`
+          }
+          <a href="https://refurbishtotaalnederland.nl" class="btn">Terug naar website</a>
+        </div>
+      </body>
+      </html>
+    `;
 
-    // Create redirect response
-    return new Response(null, {
-      status: 302,
+    return new Response(successHtml, {
+      status: 200,
       headers: {
-        "Location": redirectUrl,
+        "Content-Type": "text/html; charset=utf-8",
         ...corsHeaders,
       },
     });
