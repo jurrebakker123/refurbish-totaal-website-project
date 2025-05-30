@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -134,8 +135,16 @@ const AdminDashboardPage = () => {
     config.status === 'offerte_verzonden'
   );
   
+  const dakkapelInteresseBevestigd = filteredConfiguraties.filter(config => 
+    config.status === 'interesse_bevestigd'
+  );
+  
   const dakkapelAkkoord = filteredConfiguraties.filter(config => 
     config.status === 'akkoord'
+  );
+  
+  const dakkapelNietAkkoord = filteredConfiguraties.filter(config => 
+    config.status === 'niet_akkoord' || config.status === 'geen_interesse'
   );
   
   const dakkapelOpLocatie = filteredConfiguraties.filter(config => 
@@ -144,10 +153,6 @@ const AdminDashboardPage = () => {
   
   const dakkapelInAanbouw = filteredConfiguraties.filter(config => 
     config.status === 'in_aanbouw'
-  );
-  
-  const dakkapelNietAkkoord = filteredConfiguraties.filter(config => 
-    config.status === 'niet_akkoord'
   );
   
   const dakkapelAfgerond = filteredConfiguraties.filter(config => 
@@ -160,14 +165,16 @@ const AdminDashboardPage = () => {
         return dakkapelTeVerwerken;
       case 'wacht-op-reactie':
         return dakkapelWachtOpReactie;
+      case 'interesse-bevestigd':
+        return dakkapelInteresseBevestigd;
       case 'akkoord':
         return dakkapelAkkoord;
+      case 'niet-akkoord':
+        return dakkapelNietAkkoord;
       case 'op-locatie':
         return dakkapelOpLocatie;
       case 'in-aanbouw':
         return dakkapelInAanbouw;
-      case 'niet-akkoord':
-        return dakkapelNietAkkoord;
       case 'afgerond':
         return dakkapelAfgerond;
       default:
@@ -254,12 +261,15 @@ const AdminDashboardPage = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-9 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({dakkapelTeVerwerken.length})
                 </TabsTrigger>
                 <TabsTrigger value="wacht-op-reactie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Wacht op Reactie ({dakkapelWachtOpReactie.length})
+                </TabsTrigger>
+                <TabsTrigger value="interesse-bevestigd" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Interesse Bevestigd ({dakkapelInteresseBevestigd.length})
                 </TabsTrigger>
                 <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Akkoord ({dakkapelAkkoord.length})
@@ -334,6 +344,31 @@ const AdminDashboardPage = () => {
                   
                   <ConfiguratorRequestsTable 
                     configuraties={dakkapelWachtOpReactie}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Interesse Bevestigd Tab */}
+            <TabsContent value="interesse-bevestigd" className="space-y-6">
+              <Card>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Interesse Bevestigd ({dakkapelInteresseBevestigd.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelInteresseBevestigd}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}

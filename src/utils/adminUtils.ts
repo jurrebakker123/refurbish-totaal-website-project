@@ -82,6 +82,9 @@ export const updateRequestStatus = async (
   if (status === 'afgehandeld') {
     updateData.afgehandeld_op = new Date().toISOString();
   }
+  if (status === 'interesse_bevestigd') {
+    updateData.interest_response_at = new Date().toISOString();
+  }
 
   const { error } = await supabase
     .from(table)

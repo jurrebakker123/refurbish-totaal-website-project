@@ -14,7 +14,7 @@ const corsHeaders = {
 
 interface SendQuoteRequest {
   requestId: string;
-  type: 'configurator';
+  type: 'configurator' | 'zonnepaneel';
   customMessage?: string;
 }
 
@@ -99,16 +99,19 @@ const handler = async (req: Request): Promise<Response> => {
     
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch configurator data
-    console.log("Fetching configurator data for ID:", requestId);
+    // Determine table based on type
+    const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_configuraties';
+
+    // Fetch data
+    console.log("Fetching data for ID:", requestId, "from table:", table);
     const { data: requestData, error } = await supabaseClient
-      .from('dakkapel_configuraties')
+      .from(table)
       .select('*')
       .eq('id', requestId)
       .single();
     
     if (error) {
-      console.error("Error fetching configurator data:", error);
+      console.error("Error fetching data:", error);
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -156,27 +159,45 @@ const handler = async (req: Request): Promise<Response> => {
     const customerEmail = requestData.email;
     const customerAddress = `${requestData.adres}, ${requestData.postcode} ${requestData.plaats}`;
 
-    // Create detailed product information
-    const productDetails = `
-      <h3>Uw Dakkapel Configuratie:</h3>
-      <ul>
-        <li><strong>Model:</strong> ${requestData.model}</li>
-        <li><strong>Breedte:</strong> ${requestData.breedte}cm</li>
-        <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
-        <li><strong>Kleur kozijn:</strong> ${requestData.kleur_kozijn}</li>
-        <li><strong>Kleur zijkanten:</strong> ${requestData.kleur_zijkanten}</li>
-        <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleur_draaikiepramen}</li>
-        ${requestData.dakhelling ? `<li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhelling_type})</li>` : ''}
-        ${requestData.levertijd ? `<li><strong>Levertijd:</strong> ${requestData.levertijd}</li>` : ''}
-      </ul>
-      <h3>Extra Opties:</h3>
-      <ul>
-        <li>Ventilatierooster: ${requestData.ventilationgrids ? 'Ja' : 'Nee'}</li>
-        <li>Zonwering: ${requestData.sunshade ? 'Ja' : 'Nee'}</li>
-        <li>Insectenhorren: ${requestData.insectscreens ? 'Ja' : 'Nee'}</li>
-        <li>Airconditioning: ${requestData.airconditioning ? 'Ja' : 'Nee'}</li>
-      </ul>
-    `;
+    // Create product details based on type
+    let productDetails = '';
+    
+    if (type === 'zonnepaneel') {
+      productDetails = `
+        <h3>Uw Zonnepanelen Configuratie:</h3>
+        <ul>
+          <li><strong>Aantal panelen:</strong> ${requestData.aantal_panelen}</li>
+          <li><strong>Vermogen:</strong> ${requestData.vermogen}W</li>
+          <li><strong>Type paneel:</strong> ${requestData.type_paneel}</li>
+          <li><strong>Merk:</strong> ${requestData.merk}</li>
+          <li><strong>Conditie:</strong> ${requestData.conditie}</li>
+          <li><strong>Dak type:</strong> ${requestData.dak_type}</li>
+          ${requestData.dak_materiaal ? `<li><strong>Dak materiaal:</strong> ${requestData.dak_materiaal}</li>` : ''}
+          ${requestData.schaduw_situatie ? `<li><strong>Schaduw situatie:</strong> ${requestData.schaduw_situatie}</li>` : ''}
+        </ul>
+      `;
+    } else {
+      productDetails = `
+        <h3>Uw Dakkapel Configuratie:</h3>
+        <ul>
+          <li><strong>Model:</strong> ${requestData.model}</li>
+          <li><strong>Breedte:</strong> ${requestData.breedte}cm</li>
+          <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
+          <li><strong>Kleur kozijn:</strong> ${requestData.kleur_kozijn}</li>
+          <li><strong>Kleur zijkanten:</strong> ${requestData.kleur_zijkanten}</li>
+          <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleur_draaikiepramen}</li>
+          ${requestData.dakhelling ? `<li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhelling_type})</li>` : ''}
+          ${requestData.levertijd ? `<li><strong>Levertijd:</strong> ${requestData.levertijd}</li>` : ''}
+        </ul>
+        <h3>Extra Opties:</h3>
+        <ul>
+          <li>Ventilatierooster: ${requestData.ventilationgrids ? 'Ja' : 'Nee'}</li>
+          <li>Zonwering: ${requestData.sunshade ? 'Ja' : 'Nee'}</li>
+          <li>Insectenhorren: ${requestData.insectscreens ? 'Ja' : 'Nee'}</li>
+          <li>Airconditioning: ${requestData.airconditioning ? 'Ja' : 'Nee'}</li>
+        </ul>
+      `;
+    }
 
     const priceInfo = requestData.totaal_prijs ? 
       `<p style="font-size: 18px; font-weight: bold; color: #2563eb;">Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
@@ -185,14 +206,28 @@ const handler = async (req: Request): Promise<Response> => {
     const customMessageHtml = customMessage ? 
       `<div style="margin: 20px 0; white-space: pre-line;">${customMessage.replace(/\n/g, '<br/>')}</div>` : '';
 
+    // Create the interest response buttons
+    const baseUrl = supabaseUrl.replace('/rest/v1', '');
+    const yesUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestId}&response=ja&type=${type}`;
+    const noUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestId}&response=nee&type=${type}`;
+
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background-color: #059669; color: white; padding: 20px; text-align: center;">
-          <h1>Offerte Dakkapel - Refurbish Totaal Nederland</h1>
+          <h1>Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - Refurbish Totaal Nederland</h1>
         </div>
         
         <div style="padding: 20px; background-color: #f9f9f9;">
           ${customMessageHtml}
+          
+          <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+            <h3 style="color: #856404; margin-top: 0;">Heeft u daadwerkelijk interesse om door te gaan?</h3>
+            <div style="margin: 20px 0;">
+              <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 10px; font-weight: bold;">JA, IK HEB INTERESSE</a>
+              <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 10px; font-weight: bold;">NEE, GEEN INTERESSE</a>
+            </div>
+            <p style="font-size: 14px; color: #856404; margin-bottom: 0;">Klik op één van de knoppen om uw interesse te bevestigen.</p>
+          </div>
           
           ${productDetails}
           
@@ -216,7 +251,7 @@ const handler = async (req: Request): Promise<Response> => {
         </div>
         
         <div style="background-color: #059669; color: white; padding: 10px; text-align: center; font-size: 12px;">
-          <p>© 2024 Refurbish Totaal Nederland - Specialist in dakkapellen</p>
+          <p>© 2024 Refurbish Totaal Nederland - Specialist in ${type === 'zonnepaneel' ? 'zonnepanelen' : 'dakkapellen'}</p>
         </div>
       </div>
     `;
@@ -227,7 +262,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [customerEmail],
-      subject: `Offerte Dakkapel - ${requestData.model}`,
+      subject: `Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - ${type === 'zonnepaneel' ? requestData.merk : requestData.model}`,
       html: emailHtml,
     });
 
@@ -250,7 +285,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Update the status in the database
     console.log("Updating request status to 'offerte_verzonden'...");
     const { error: updateError } = await supabaseClient
-      .from('dakkapel_configuraties')
+      .from(table)
       .update({
         status: 'offerte_verzonden',
         offerte_verzonden_op: new Date().toISOString(),
