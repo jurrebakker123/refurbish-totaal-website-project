@@ -773,7 +773,7 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ProcessedRequestsTable 
-                    configuraties={zonnepanelenAfgerond}
+                    zonnepanelen={zonnepanelenAfgerond}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
                   />
