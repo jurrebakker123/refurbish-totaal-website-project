@@ -91,52 +91,200 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Status successfully updated to: ${newStatus} for request: ${requestId}`);
 
-    // Create a success page HTML instead of redirect
+    // Create a beautiful success page HTML
     const successHtml = `
       <!DOCTYPE html>
-      <html>
+      <html lang="nl">
       <head>
-        <title>Bedankt voor uw reactie</title>
+        <title>Bedankt voor uw reactie - Refurbish Totaal Nederland</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
           body { 
-            font-family: Arial, sans-serif; 
-            max-width: 600px; 
-            margin: 50px auto; 
-            padding: 20px; 
-            text-align: center; 
-            background-color: #f5f5f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
           }
+          
           .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            text-align: center;
           }
-          .success { color: #059669; font-size: 24px; margin-bottom: 20px; }
-          .error { color: #dc3545; font-size: 24px; margin-bottom: 20px; }
-          .btn { 
-            display: inline-block; 
-            background-color: #059669; 
-            color: white; 
-            padding: 12px 24px; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            margin-top: 20px;
+          
+          .header {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            padding: 40px 30px;
+            color: white;
           }
-          .btn:hover { background-color: #047857; }
+          
+          .logo {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+          }
+          
+          .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 400;
+          }
+          
+          .content {
+            padding: 50px 30px;
+          }
+          
+          .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: ${response === 'ja' ? '#059669' : '#6b7280'};
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+          }
+          
+          .title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+            line-height: 1.2;
+          }
+          
+          .message {
+            font-size: 18px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+          }
+          
+          .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+          }
+          
+          .contact-info {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+          }
+          
+          .contact-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+          }
+          
+          .contact-details {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+          }
+          
+          .contact-item {
+            margin-bottom: 4px;
+          }
+          
+          @media (max-width: 640px) {
+            .container {
+              margin: 10px;
+              border-radius: 16px;
+            }
+            
+            .header {
+              padding: 30px 20px;
+            }
+            
+            .content {
+              padding: 40px 20px;
+            }
+            
+            .title {
+              font-size: 28px;
+            }
+            
+            .message {
+              font-size: 16px;
+            }
+          }
         </style>
       </head>
       <body>
         <div class="container">
-          ${response === 'ja' ? 
-            `<div class="success">✓ Bedankt! Uw interesse is geregistreerd.</div>
-             <p>We nemen binnenkort contact met u op voor de vervolgstappen.</p>` :
-            `<div class="error">Bedankt voor uw reactie.</div>
-             <p>Mocht u nog vragen hebben, neem dan gerust contact met ons op.</p>`
-          }
-          <a href="https://refurbishtotaalnederland.nl" class="btn">Terug naar website</a>
+          <div class="header">
+            <div class="logo">Refurbish Totaal Nederland</div>
+            <div class="subtitle">Uw partner in duurzame renovatie</div>
+          </div>
+          
+          <div class="content">
+            <div class="icon">
+              ${response === 'ja' ? '✓' : '👋'}
+            </div>
+            
+            <h1 class="title">
+              ${response === 'ja' ? 'Bedankt voor uw interesse!' : 'Bedankt voor uw reactie!'}
+            </h1>
+            
+            <p class="message">
+              ${response === 'ja' ? 
+                'Geweldig! Uw interesse is bij ons geregistreerd. Een van onze specialisten neemt binnen 24 uur contact met u op om de mogelijkheden te bespreken en een afspraak in te plannen.' :
+                'Bedankt dat u de tijd heeft genomen om te reageren. Mocht u in de toekomst alsnog interesse hebben of vragen, dan staan wij altijd voor u klaar.'
+              }
+            </p>
+            
+            <a href="https://refurbishtotaalnederland.nl" class="btn">
+              <span>→</span>
+              Terug naar website
+            </a>
+            
+            <div class="contact-info">
+              <div class="contact-title">Contact</div>
+              <div class="contact-details">
+                <div class="contact-item">📞 085-1301578</div>
+                <div class="contact-item">✉️ info@refurbishtotaalnederland.nl</div>
+                <div class="contact-item">🌐 www.refurbishtotaalnederland.nl</div>
+              </div>
+            </div>
+          </div>
         </div>
       </body>
       </html>
