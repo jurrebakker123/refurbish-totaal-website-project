@@ -93,7 +93,7 @@ const InterestConfirmationPage = () => {
               <div className="grid md:grid-cols-3 gap-4 text-center">
                 <div className="flex items-center justify-center gap-2 text-gray-600">
                   <Phone className="w-5 h-5 text-green-600" />
-                  <span>085-1301578</span>
+                  <span>085 4444 255</span>
                 </div>
                 
                 <div className="flex items-center justify-center gap-2 text-gray-600">
