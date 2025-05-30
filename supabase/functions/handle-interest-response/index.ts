@@ -84,101 +84,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Status successfully updated to: ${newStatus} for request: ${requestId}`);
 
-    // Return a user-friendly HTML page that auto-redirects
-    const responseMessage = response === 'ja' 
-      ? 'Bedankt voor uw bevestiging! We nemen zo spoedig mogelijk contact met u op voor de vervolgstappen.'
-      : 'Bedankt voor uw reactie. We hebben uw melding ontvangen.';
+    // Determine redirect URL based on type and response
+    let redirectUrl: string;
+    
+    if (type === 'zonnepaneel') {
+      redirectUrl = 'https://refurbishtotaalnederland.nl/zonnepanelen';
+    } else {
+      redirectUrl = 'https://refurbishtotaalnederland.nl/dakkapel';
+    }
 
-    const htmlResponse = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Reactie ontvangen</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-            body { 
-              font-family: Arial, sans-serif; 
-              max-width: 600px; 
-              margin: 50px auto; 
-              padding: 20px; 
-              text-align: center;
-              background-color: #f9f9f9;
-            }
-            .container {
-              background: white;
-              padding: 40px;
-              border-radius: 8px;
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }
-            .success { color: #059669; }
-            .logo { 
-              color: #059669; 
-              font-size: 24px; 
-              font-weight: bold; 
-              margin-bottom: 20px;
-            }
-            .countdown {
-              color: #666;
-              font-size: 14px;
-              margin-top: 20px;
-            }
-          </style>
-          <script>
-            // Auto-redirect after 3 seconds
-            let countdown = 3;
-            function updateCountdown() {
-              const countdownEl = document.getElementById('countdown');
-              if (countdownEl) {
-                countdownEl.textContent = countdown;
-              }
-              countdown--;
-              if (countdown < 0) {
-                // Try to close the window/tab, fallback to going back
-                try {
-                  window.close();
-                  // If window.close() doesn't work, try going back
-                  setTimeout(() => {
-                    if (window.history.length > 1) {
-                      window.history.back();
-                    } else {
-                      // Last resort: redirect to a generic page
-                      window.location.href = 'about:blank';
-                    }
-                  }, 500);
-                } catch (e) {
-                  // Fallback if all else fails
-                  if (window.history.length > 1) {
-                    window.history.back();
-                  }
-                }
-              } else {
-                setTimeout(updateCountdown, 1000);
-              }
-            }
-            window.onload = function() {
-              updateCountdown();
-            };
-          </script>
-        </head>
-        <body>
-          <div class="container">
-            <div class="logo">Refurbish Totaal Nederland</div>
-            <h2 class="success">✓ Reactie ontvangen!</h2>
-            <p>${responseMessage}</p>
-            <div class="countdown">
-              Dit venster sluit automatisch over <span id="countdown">3</span> seconden...
-            </div>
-            <p><small>U kunt dit venster ook handmatig sluiten.</small></p>
-          </div>
-        </body>
-      </html>
-    `;
-
-    return new Response(htmlResponse, {
-      status: 200,
+    // Create redirect response
+    return new Response(null, {
+      status: 302,
       headers: {
-        "Content-Type": "text/html; charset=utf-8",
+        "Location": redirectUrl,
         ...corsHeaders,
       },
     });
