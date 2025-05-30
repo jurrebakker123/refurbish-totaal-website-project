@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -6,7 +7,6 @@ import { CartProvider } from "@/context/CartContext";
 import GoogleTagManager from "@/components/GoogleTagManager";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import LeaveSiteNotification from "@/components/LeaveSiteNotification";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
 import DienstDetailPage from "./pages/DienstDetailPage";
@@ -31,6 +31,7 @@ import SolarProductDetailPage from "./pages/SolarProductDetailPage";
 import CertificaatPage from "./pages/CertificaatPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
+import InterestConfirmationPage from "./pages/InterestConfirmationPage";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -65,6 +66,7 @@ function App() {
             <Route path="/certificaat" element={<CertificaatPage />} />
             <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
