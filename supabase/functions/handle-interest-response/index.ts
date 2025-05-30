@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (response === 'ja') {
-      newStatus = 'akkoord';
+      newStatus = 'interesse_bevestigd';
     } else if (response === 'nee') {
       newStatus = 'niet_akkoord';
     } else {
@@ -66,12 +66,19 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Updating ${table} with ID ${requestId} to status: ${newStatus}`);
 
     // Update the request status
+    const updateData: any = {
+      status: newStatus,
+      updated_at: new Date().toISOString()
+    };
+
+    // Add timestamp for interest confirmation
+    if (newStatus === 'interesse_bevestigd') {
+      updateData.interest_response_at = new Date().toISOString();
+    }
+
     const { error: updateError } = await supabaseClient
       .from(table)
-      .update({
-        status: newStatus,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', requestId);
 
     if (updateError) {

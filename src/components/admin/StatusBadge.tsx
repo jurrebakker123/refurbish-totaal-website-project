@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Clock, Mail, CheckCircle, ThumbsUp, X, MapPin, Wrench } from 'lucide-react';
+import { AlertCircle, Clock, Mail, CheckCircle, ThumbsUp, X, MapPin, Wrench, Heart } from 'lucide-react';
 
 interface StatusBadgeProps {
   status: string;
@@ -15,6 +15,8 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
       return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />In behandeling</Badge>;
     case 'offerte_verzonden':
       return <Badge variant="default"><Mail className="w-3 h-3 mr-1" />Offerte verzonden</Badge>;
+    case 'interesse_bevestigd':
+      return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200"><Heart className="w-3 h-3 mr-1" />Interesse bevestigd</Badge>;
     case 'akkoord':
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-200"><ThumbsUp className="w-3 h-3 mr-1" />Akkoord</Badge>;
     case 'niet_akkoord':
