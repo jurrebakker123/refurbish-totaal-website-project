@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -265,14 +264,14 @@ const AdminDashboardPage = () => {
                 <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Akkoord ({dakkapelAkkoord.length})
                 </TabsTrigger>
+                <TabsTrigger value="niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Niet Akkoord ({dakkapelNietAkkoord.length})
+                </TabsTrigger>
                 <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Op Locatie ({dakkapelOpLocatie.length})
                 </TabsTrigger>
                 <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   In Aanbouw ({dakkapelInAanbouw.length})
-                </TabsTrigger>
-                <TabsTrigger value="niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Niet Akkoord ({dakkapelNietAkkoord.length})
                 </TabsTrigger>
                 <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Afgerond ({dakkapelAfgerond.length})
@@ -283,6 +282,7 @@ const AdminDashboardPage = () => {
               </TabsList>
             </div>
             
+            {/* Te Verwerken Tab */}
             <TabsContent value="te-verwerken" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -319,6 +319,7 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
 
+            {/* Wacht op Reactie Tab */}
             <TabsContent value="wacht-op-reactie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -343,6 +344,7 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
 
+            {/* Akkoord Tab */}
             <TabsContent value="akkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -367,54 +369,7 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="op-locatie" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie ({dakkapelOpLocatie.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={dakkapelOpLocatie}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="dakkapel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="in-aanbouw" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={dakkapelInAanbouw}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="dakkapel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
+            {/* Niet Akkoord Tab */}
             <TabsContent value="niet-akkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -439,6 +394,57 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
 
+            {/* Op Locatie Tab */}
+            <TabsContent value="op-locatie" className="space-y-6">
+              <Card>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Op Locatie ({dakkapelOpLocatie.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelOpLocatie}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* In Aanbouw Tab */}
+            <TabsContent value="in-aanbouw" className="space-y-6">
+              <Card>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelInAanbouw}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Afgerond Tab */}
             <TabsContent value="afgerond" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -461,6 +467,7 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
             
+            {/* Prijsbeheer Tab */}
             <TabsContent value="prijzen">
               <AdminPriceEditor />
             </TabsContent>
