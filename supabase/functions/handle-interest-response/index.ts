@@ -17,7 +17,7 @@ const handler = async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
     const requestId = url.searchParams.get('id');
     const response = url.searchParams.get('response');
-    const type = url.searchParams.get('type') || 'dakkapel';
+    const type = url.searchParams.get('type') || 'configurator';
 
     console.log('Interest response received:', { requestId, response, type });
 
@@ -81,7 +81,9 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Return a user-friendly HTML page
+    console.log(`Status successfully updated to: ${newStatus} for request: ${requestId}`);
+
+    // Return a user-friendly HTML page that auto-redirects
     const responseMessage = response === 'ja' 
       ? 'Bedankt voor uw bevestiging! We nemen zo spoedig mogelijk contact met u op voor de vervolgstappen.'
       : 'Bedankt voor uw reactie. We hebben uw melding ontvangen.';
@@ -115,14 +117,43 @@ const handler = async (req: Request): Promise<Response> => {
               font-weight: bold; 
               margin-bottom: 20px;
             }
+            .countdown {
+              color: #666;
+              font-size: 14px;
+              margin-top: 20px;
+            }
           </style>
+          <script>
+            // Auto-redirect after 3 seconds
+            let countdown = 3;
+            function updateCountdown() {
+              document.getElementById('countdown').textContent = countdown;
+              countdown--;
+              if (countdown < 0) {
+                // Try to close the window/tab, fallback to going back
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  window.close();
+                }
+              } else {
+                setTimeout(updateCountdown, 1000);
+              }
+            }
+            window.onload = function() {
+              updateCountdown();
+            };
+          </script>
         </head>
         <body>
           <div class="container">
             <div class="logo">Refurbish Totaal Nederland</div>
-            <h2 class="success">Reactie ontvangen!</h2>
+            <h2 class="success">✓ Reactie ontvangen!</h2>
             <p>${responseMessage}</p>
-            <p><small>U kunt dit venster nu sluiten.</small></p>
+            <div class="countdown">
+              Dit venster sluit automatisch over <span id="countdown">3</span> seconden...
+            </div>
+            <p><small>U kunt dit venster ook handmatig sluiten.</small></p>
           </div>
         </body>
       </html>

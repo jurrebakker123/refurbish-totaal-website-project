@@ -206,10 +206,12 @@ const handler = async (req: Request): Promise<Response> => {
     const customMessageHtml = customMessage ? 
       `<div style="margin: 20px 0; white-space: pre-line;">${customMessage.replace(/\n/g, '<br/>')}</div>` : '';
 
-    // Create the interest response buttons
+    // Create the interest response buttons with correct URLs
     const baseUrl = supabaseUrl.replace('/rest/v1', '');
     const yesUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestId}&response=ja&type=${type}`;
     const noUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestId}&response=nee&type=${type}`;
+
+    console.log("Generated interest URLs:", { yesUrl, noUrl });
 
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -220,13 +222,15 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="padding: 20px; background-color: #f9f9f9;">
           ${customMessageHtml}
           
-          <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-            <h3 style="color: #856404; margin-top: 0;">Heeft u daadwerkelijk interesse om door te gaan?</h3>
-            <div style="margin: 20px 0;">
-              <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 10px; font-weight: bold;">JA, IK HEB INTERESSE</a>
-              <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 10px; font-weight: bold;">NEE, GEEN INTERESSE</a>
+          <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 25px 0; text-align: center;">
+            <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u daadwerkelijk interesse om door te gaan?</h3>
+            <p style="color: #856404; margin: 15px 0;">Klik op één van de onderstaande knoppen om uw interesse te bevestigen:</p>
+            <div style="margin: 25px 0;">
+              <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px; border: none; cursor: pointer;">✓ JA, IK HEB INTERESSE</a>
+              <br><br>
+              <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px; border: none; cursor: pointer;">✗ NEE, GEEN INTERESSE</a>
             </div>
-            <p style="font-size: 14px; color: #856404; margin-bottom: 0;">Klik op één van de knoppen om uw interesse te bevestigen.</p>
+            <p style="font-size: 14px; color: #856404; margin-bottom: 0;">Deze knoppen werken direct vanuit uw email.</p>
           </div>
           
           ${productDetails}
