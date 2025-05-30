@@ -53,9 +53,9 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (response === 'ja') {
-      newStatus = 'interesse_bevestigd';
+      newStatus = 'akkoord';
     } else if (response === 'nee') {
-      newStatus = 'geen_interesse';
+      newStatus = 'niet_akkoord';
     } else {
       return new Response('Invalid response', { 
         status: 400, 
@@ -63,12 +63,13 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    console.log(`Updating ${table} with ID ${requestId} to status: ${newStatus}`);
+
     // Update the request status
     const { error: updateError } = await supabaseClient
       .from(table)
       .update({
         status: newStatus,
-        interest_response_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .eq('id', requestId);
@@ -127,14 +128,29 @@ const handler = async (req: Request): Promise<Response> => {
             // Auto-redirect after 3 seconds
             let countdown = 3;
             function updateCountdown() {
-              document.getElementById('countdown').textContent = countdown;
+              const countdownEl = document.getElementById('countdown');
+              if (countdownEl) {
+                countdownEl.textContent = countdown;
+              }
               countdown--;
               if (countdown < 0) {
                 // Try to close the window/tab, fallback to going back
-                if (window.history.length > 1) {
-                  window.history.back();
-                } else {
+                try {
                   window.close();
+                  // If window.close() doesn't work, try going back
+                  setTimeout(() => {
+                    if (window.history.length > 1) {
+                      window.history.back();
+                    } else {
+                      // Last resort: redirect to a generic page
+                      window.location.href = 'about:blank';
+                    }
+                  }, 500);
+                } catch (e) {
+                  // Fallback if all else fails
+                  if (window.history.length > 1) {
+                    window.history.back();
+                  }
                 }
               } else {
                 setTimeout(updateCountdown, 1000);
