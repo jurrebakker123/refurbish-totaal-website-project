@@ -12,13 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Check, X, AlertTriangle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { QuoteItem } from '@/types/admin';
+import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
 import { sendQuoteEmail } from '@/utils/adminUtils';
 
 interface QuoteDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedItem: QuoteItem | null;
+  selectedItem: QuoteItem | ZonnepaneelQuoteItem | null;
   onDataChange: () => void;
   setSendingQuote: (id: string | null) => void;
 }
@@ -35,9 +35,44 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
-  const defaultTemplate = `Beste klant,
+  const isZonnepaneel = selectedItem && 'isZonnepaneel' in selectedItem;
+  
+  const defaultTemplate = isZonnepaneel ? `Beste klant,
+
+Hartelijk dank voor uw interesse in onze refurbished zonnepanelen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van zonnepanelen volgens uw specificaties.
+
+Voordat wij verder gaan met het uitwerken van uw offerte, willen wij graag weten of u daadwerkelijk interesse heeft om door te gaan met dit project. Wij hechten veel waarde aan een efficiënte samenwerking en besteden graag onze tijd aan serieuze aanvragen.
+
+**Heeft u daadwerkelijk interesse om door te gaan?**
+
+[JA, IK HEB INTERESSE] - Klik hier als u wilt doorgaan met de offerte
+[NEE, GEEN INTERESSE] - Klik hier als u geen interesse meer heeft
+
+De prijs is inclusief:
+- Transport naar locatie  
+- Montage van de zonnepanelen
+- Bekabeling en aansluiting
+- Garantie van 5 jaar op de refurbished panelen
+- 2 jaar garantie op de montage
+
+Wij hanteren een levertijd van 4-6 weken na definitieve opdracht.
+
+Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
+
+Met vriendelijke groet,
+
+Het team van Refurbish Totaal Nederland
+085-1301578
+info@refurbishtotaalnederland.nl` : `Beste klant,
 
 Hartelijk dank voor uw interesse in onze dakkapellen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van een dakkapel volgens uw specificaties.
+
+Voordat wij verder gaan met het uitwerken van uw offerte, willen wij graag weten of u daadwerkelijk interesse heeft om door te gaan met dit project. Wij hechten veel waarde aan een efficiënte samenwerking en besteden graag onze tijd aan serieuze aanvragen.
+
+**Heeft u daadwerkelijk interesse om door te gaan?**
+
+[JA, IK HEB INTERESSE] - Klik hier als u wilt doorgaan met de offerte
+[NEE, GEEN INTERESSE] - Klik hier als u geen interesse meer heeft
 
 De prijs is inclusief:
 - Transport naar locatie
@@ -110,7 +145,7 @@ info@refurbishtotaalnederland.nl`;
       setErrorMessage(null);
       setIsLoading(false);
     }
-  }, [isOpen, useDefaultTemplate]);
+  }, [isOpen, useDefaultTemplate, defaultTemplate]);
 
   const getCustomerName = () => {
     if (!selectedItem) return '';
@@ -128,7 +163,7 @@ info@refurbishtotaalnederland.nl`;
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Offerte Verzenden</DialogTitle>
+          <DialogTitle>Offerte Verzenden - {isZonnepaneel ? 'Zonnepanelen' : 'Dakkapel'}</DialogTitle>
           <DialogDescription>
             Verstuur een automatische offerte naar {getCustomerName()} ({getCustomerEmail()})
           </DialogDescription>
@@ -142,6 +177,9 @@ info@refurbishtotaalnederland.nl`;
             <p><strong>Prijs:</strong> {selectedItem.totaal_prijs ? 
               `€${selectedItem.totaal_prijs}` : 
               'Nog niet ingesteld'}</p>
+            {isZonnepaneel && 'aantal_panelen' in selectedItem && (
+              <p><strong>Aantal panelen:</strong> {selectedItem.aantal_panelen}</p>
+            )}
           </div>
           
           {errorMessage && (
@@ -202,7 +240,7 @@ info@refurbishtotaalnederland.nl`;
               value={quoteMessage}
               onChange={(e) => setQuoteMessage(e.target.value)}
               placeholder="Voeg een persoonlijk bericht toe aan de offerte..."
-              rows={10}
+              rows={12}
               className="w-full"
             />
           </div>

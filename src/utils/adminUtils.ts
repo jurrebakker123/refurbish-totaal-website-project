@@ -1,15 +1,17 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
+import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
 
 export const loadAdminData = async (): Promise<{ 
   configuraties: DakkapelConfiguratie[],
+  zonnepanelen: RefurbishedZonnepaneel[],
   success: boolean 
 }> => {
   console.log('Starting to load admin dashboard data...');
   const result = {
     configuraties: [] as DakkapelConfiguratie[],
+    zonnepanelen: [] as RefurbishedZonnepaneel[],
     success: false
   };
   
@@ -30,8 +32,24 @@ export const loadAdminData = async (): Promise<{
       console.log(`Loaded ${configData?.length || 0} configurations`);
     }
 
+    // Load solar panel data
+    console.log('Loading solar panel data...');
+    const { data: solarData, error: solarError } = await supabase
+      .from('refurbished_zonnepanelen')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    console.log('Solar data:', solarData, 'Error:', solarError);
+    if (solarError) {
+      console.error('Solar error:', solarError);
+      toast.error("Fout bij laden zonnepanelen: " + solarError.message);
+    } else {
+      result.zonnepanelen = solarData || [];
+      console.log(`Loaded ${solarData?.length || 0} solar panels`);
+    }
+
     result.success = true;
-    toast.success(`Dashboard geladen! ${configData?.length || 0} aanvragen gevonden`);
+    toast.success(`Dashboard geladen! ${configData?.length || 0} dakkapel aanvragen en ${solarData?.length || 0} zonnepaneel aanvragen gevonden`);
   } catch (error) {
     console.error('Error loading data:', error);
     toast.error("Onverwachte fout bij het laden van gegevens");
@@ -42,9 +60,10 @@ export const loadAdminData = async (): Promise<{
 
 export const updateRequestStatus = async (
   id: string, 
-  status: string
+  status: string,
+  table: 'dakkapel_configuraties' | 'refurbished_zonnepanelen' = 'dakkapel_configuraties'
 ): Promise<boolean> => {
-  console.log(`Updating status for dakkapel_configuraties ${id} to ${status}`);
+  console.log(`Updating status for ${table} ${id} to ${status}`);
   
   const updateData: any = { 
     status,
@@ -54,12 +73,18 @@ export const updateRequestStatus = async (
   if (status === 'offerte_verzonden') {
     updateData.offerte_verzonden_op = new Date().toISOString();
   }
+  if (status === 'op_locatie') {
+    updateData.op_locatie_op = new Date().toISOString();
+  }
+  if (status === 'in_aanbouw') {
+    updateData.in_aanbouw_op = new Date().toISOString();
+  }
   if (status === 'afgehandeld') {
     updateData.afgehandeld_op = new Date().toISOString();
   }
 
   const { error } = await supabase
-    .from('dakkapel_configuraties')
+    .from(table)
     .update(updateData)
     .eq('id', id);
 
@@ -74,9 +99,10 @@ export const updateRequestStatus = async (
 };
 
 export const updateRequestDetails = async (
-  item: DakkapelConfiguratie,
+  item: DakkapelConfiguratie | RefurbishedZonnepaneel,
   notes: string,
-  price: string
+  price: string,
+  table: 'dakkapel_configuraties' | 'refurbished_zonnepanelen' = 'dakkapel_configuraties'
 ): Promise<boolean> => {
   const updateData: any = {};
   
@@ -96,7 +122,7 @@ export const updateRequestDetails = async (
   }
   
   const { error } = await supabase
-    .from('dakkapel_configuraties')
+    .from(table)
     .update(updateData)
     .eq('id', item.id);
   
@@ -111,7 +137,7 @@ export const updateRequestDetails = async (
 };
 
 export const sendQuoteEmail = async (
-  item: QuoteItem, 
+  item: QuoteItem | ZonnepaneelQuoteItem, 
   customMessage?: string
 ): Promise<boolean> => {
   try {
@@ -123,9 +149,11 @@ export const sendQuoteEmail = async (
       return false;
     }
     
+    const isZonnepaneel = 'isZonnepaneel' in item;
+    
     const body = {
       requestId: item.id,
-      type: 'configurator',
+      type: isZonnepaneel ? 'zonnepaneel' : 'configurator',
       customMessage: customMessage
     };
     

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
+import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
 import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
@@ -17,13 +17,14 @@ import { toast } from 'sonner';
 
 const AdminDashboardPage = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
+  const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('te-verwerken');
+  const [activeTab, setActiveTab] = useState('dakkapel-te-verwerken');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState<string | null>(null);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
-  const [selectedQuoteItem, setSelectedQuoteItem] = useState<QuoteItem | null>(null);
+  const [selectedQuoteItem, setSelectedQuoteItem] = useState<QuoteItem | ZonnepaneelQuoteItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
   const [filters, setFilters] = useState<FilterState>({
@@ -40,17 +41,18 @@ const AdminDashboardPage = () => {
 
   const loadDashboardData = async () => {
     setLoading(true);
-    const { configuraties: configData, success } = await loadAdminData();
+    const { configuraties: configData, zonnepanelen: solarData, success } = await loadAdminData();
     
     if (success) {
       setAllConfiguraties(configData);
+      setAllZonnepanelen(solarData);
     }
     
     setLoading(false);
   };
 
   // Filter and sort data based on current filters
-  const filteredData = useMemo(() => {
+  const filteredConfiguraties = useMemo(() => {
     let filtered = [...allConfiguraties];
 
     // Search filter
@@ -125,45 +127,176 @@ const AdminDashboardPage = () => {
     return filtered;
   }, [allConfiguraties, filters]);
 
-  // Split data by categories for tabs
-  const teVerwerken = filteredData.filter(config => 
+  // Filter and sort zonnepanelen data
+  const filteredZonnepanelen = useMemo(() => {
+    let filtered = [...allZonnepanelen];
+
+    // Search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(item => 
+        item.naam.toLowerCase().includes(searchLower) ||
+        item.email.toLowerCase().includes(searchLower) ||
+        item.plaats.toLowerCase().includes(searchLower) ||
+        item.telefoon.includes(filters.search)
+      );
+    }
+
+    // Status filter
+    if (filters.status !== 'all') {
+      filtered = filtered.filter(item => item.status === filters.status);
+    }
+
+    // Date filter logic (same as above)
+    if (filters.dateFilter !== 'all') {
+      const now = new Date();
+      const filterDate = new Date();
+      
+      switch (filters.dateFilter) {
+        case 'today':
+          filterDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          filterDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          filterDate.setMonth(now.getMonth() - 1);
+          break;
+      }
+      
+      if (filters.dateFilter !== 'all') {
+        filtered = filtered.filter(item => 
+          new Date(item.created_at) >= filterDate
+        );
+      }
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (filters.sortBy) {
+        case 'naam':
+          aValue = a.naam.toLowerCase();
+          bValue = b.naam.toLowerCase();
+          break;
+        case 'totaal_prijs':
+          aValue = a.totaal_prijs || 0;
+          bValue = b.totaal_prijs || 0;
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        default:
+          aValue = new Date(a.created_at).getTime();
+          bValue = new Date(b.created_at).getTime();
+      }
+      
+      if (filters.sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return filtered;
+  }, [allZonnepanelen, filters]);
+
+  // Split dakkapel data by categories for tabs
+  const dakkapelTeVerwerken = filteredConfiguraties.filter(config => 
     config.status === 'nieuw' || config.status === 'in_behandeling'
   );
   
-  const wachtOpReactie = filteredData.filter(config => 
+  const dakkapelWachtOpReactie = filteredConfiguraties.filter(config => 
     config.status === 'offerte_verzonden'
   );
   
-  const akkoord = filteredData.filter(config => 
+  const dakkapelAkkoord = filteredConfiguraties.filter(config => 
     config.status === 'akkoord'
   );
   
-  const nietAkkoord = filteredData.filter(config => 
+  const dakkapelOpLocatie = filteredConfiguraties.filter(config => 
+    config.status === 'op_locatie'
+  );
+  
+  const dakkapelInAanbouw = filteredConfiguraties.filter(config => 
+    config.status === 'in_aanbouw'
+  );
+  
+  const dakkapelNietAkkoord = filteredConfiguraties.filter(config => 
     config.status === 'niet_akkoord'
   );
   
-  const afgerond = filteredData.filter(config => 
+  const dakkapelAfgerond = filteredConfiguraties.filter(config => 
     config.status === 'afgehandeld'
+  );
+
+  // Split zonnepanelen data by categories for tabs
+  const zonnepanelenTeVerwerken = filteredZonnepanelen.filter(item => 
+    item.status === 'nieuw' || item.status === 'in_behandeling'
+  );
+  
+  const zonnepanelenWachtOpReactie = filteredZonnepanelen.filter(item => 
+    item.status === 'offerte_verzonden'
+  );
+  
+  const zonnepanelenAkkoord = filteredZonnepanelen.filter(item => 
+    item.status === 'akkoord'
+  );
+  
+  const zonnepanelenOpLocatie = filteredZonnepanelen.filter(item => 
+    item.status === 'op_locatie'
+  );
+  
+  const zonnepanelenInAanbouw = filteredZonnepanelen.filter(item => 
+    item.status === 'in_aanbouw'
+  );
+  
+  const zonnepanelenNietAkkoord = filteredZonnepanelen.filter(item => 
+    item.status === 'niet_akkoord'
+  );
+  
+  const zonnepanelenAfgerond = filteredZonnepanelen.filter(item => 
+    item.status === 'afgehandeld'
   );
 
   const getCurrentTabData = () => {
     switch (activeTab) {
-      case 'te-verwerken':
-        return teVerwerken;
-      case 'wacht-op-reactie':
-        return wachtOpReactie;
-      case 'akkoord':
-        return akkoord;
-      case 'niet-akkoord':
-        return nietAkkoord;
-      case 'afgerond':
-        return afgerond;
+      case 'dakkapel-te-verwerken':
+        return { data: dakkapelTeVerwerken, type: 'dakkapel' as const };
+      case 'dakkapel-wacht-op-reactie':
+        return { data: dakkapelWachtOpReactie, type: 'dakkapel' as const };
+      case 'dakkapel-akkoord':
+        return { data: dakkapelAkkoord, type: 'dakkapel' as const };
+      case 'dakkapel-op-locatie':
+        return { data: dakkapelOpLocatie, type: 'dakkapel' as const };
+      case 'dakkapel-in-aanbouw':
+        return { data: dakkapelInAanbouw, type: 'dakkapel' as const };
+      case 'dakkapel-niet-akkoord':
+        return { data: dakkapelNietAkkoord, type: 'dakkapel' as const };
+      case 'dakkapel-afgerond':
+        return { data: dakkapelAfgerond, type: 'dakkapel' as const };
+      case 'zonnepanelen-te-verwerken':
+        return { data: zonnepanelenTeVerwerken, type: 'zonnepaneel' as const };
+      case 'zonnepanelen-wacht-op-reactie':
+        return { data: zonnepanelenWachtOpReactie, type: 'zonnepaneel' as const };
+      case 'zonnepanelen-akkoord':
+        return { data: zonnepanelenAkkoord, type: 'zonnepaneel' as const };
+      case 'zonnepanelen-op-locatie':
+        return { data: zonnepanelenOpLocatie, type: 'zonnepaneel' as const };
+      case 'zonnepanelen-in-aanbouw':
+        return { data: zonnepanelenInAanbouw, type: 'zonnepaneel' as const };
+      case 'zonnepanelen-niet-akkoord':
+        return { data: zonnepanelenNietAkkoord, type: 'zonnepaneel' as const };
+      case 'zonnepanelen-afgerond':
+        return { data: zonnepanelenAfgerond, type: 'zonnepaneel' as const };
       default:
-        return [];
+        return { data: [], type: 'dakkapel' as const };
     }
   };
 
-  const currentTabData = getCurrentTabData();
+  const { data: currentTabData, type: currentTabType } = getCurrentTabData();
 
   const openDetails = (item: any) => {
     setSelectedItem(item);
@@ -171,16 +304,21 @@ const AdminDashboardPage = () => {
   };
 
   const openQuoteDialog = (item: any) => {
-    setSelectedQuoteItem({ ...item, isCalculator: false });
+    if (currentTabType === 'zonnepaneel') {
+      setSelectedQuoteItem({ ...item, isZonnepaneel: true });
+    } else {
+      setSelectedQuoteItem({ ...item, isCalculator: false });
+    }
     setIsQuoteDialogOpen(true);
   };
 
   const handleBulkAction = async (action: string, ids: string[]) => {
     setLoading(true);
     let successCount = 0;
+    const tableName = currentTabType === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_configuraties';
     
     for (const id of ids) {
-      const success = await updateRequestStatus(id, action);
+      const success = await updateRequestStatus(id, action, tableName);
       if (success) successCount++;
     }
     
@@ -240,191 +378,407 @@ const AdminDashboardPage = () => {
           
           <DashboardStats configuraties={allConfiguraties} />
           
-          <Tabs defaultValue="te-verwerken" className="space-y-6" onValueChange={setActiveTab}>
-            <TabsList>
-              <TabsTrigger value="te-verwerken">
-                Te Verwerken ({teVerwerken.length})
+          <Tabs defaultValue="dakkapel-te-verwerken" className="space-y-6" onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-8 lg:grid-cols-16 w-full">
+              <TabsTrigger value="dakkapel-te-verwerken" className="text-xs">
+                Dakkapel Te Verwerken ({dakkapelTeVerwerken.length})
               </TabsTrigger>
-              <TabsTrigger value="wacht-op-reactie">
-                Wacht op Reactie ({wachtOpReactie.length})
+              <TabsTrigger value="dakkapel-wacht-op-reactie" className="text-xs">
+                Dakkapel Wacht ({dakkapelWachtOpReactie.length})
               </TabsTrigger>
-              <TabsTrigger value="akkoord">
-                Akkoord/Opvolgen ({akkoord.length})
+              <TabsTrigger value="dakkapel-akkoord" className="text-xs">
+                Dakkapel Akkoord ({dakkapelAkkoord.length})
               </TabsTrigger>
-              <TabsTrigger value="niet-akkoord">
-                Niet Akkoord ({nietAkkoord.length})
+              <TabsTrigger value="dakkapel-op-locatie" className="text-xs">
+                Dakkapel Op Locatie ({dakkapelOpLocatie.length})
               </TabsTrigger>
-              <TabsTrigger value="afgerond">
-                Afgerond ({afgerond.length})
+              <TabsTrigger value="dakkapel-in-aanbouw" className="text-xs">
+                Dakkapel In Aanbouw ({dakkapelInAanbouw.length})
               </TabsTrigger>
-              <TabsTrigger value="prijzen">Prijsbeheer</TabsTrigger>
+              <TabsTrigger value="dakkapel-niet-akkoord" className="text-xs">
+                Dakkapel Niet Akkoord ({dakkapelNietAkkoord.length})
+              </TabsTrigger>
+              <TabsTrigger value="dakkapel-afgerond" className="text-xs">
+                Dakkapel Afgerond ({dakkapelAfgerond.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-te-verwerken" className="text-xs">
+                Zonnepanelen Te Verwerken ({zonnepanelenTeVerwerken.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-wacht-op-reactie" className="text-xs">
+                Zonnepanelen Wacht ({zonnepanelenWachtOpReactie.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-akkoord" className="text-xs">
+                Zonnepanelen Akkoord ({zonnepanelenAkkoord.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-op-locatie" className="text-xs">
+                Zonnepanelen Op Locatie ({zonnepanelenOpLocatie.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-in-aanbouw" className="text-xs">
+                Zonnepanelen In Aanbouw ({zonnepanelenInAanbouw.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-niet-akkoord" className="text-xs">
+                Zonnepanelen Niet Akkoord ({zonnepanelenNietAkkoord.length})
+              </TabsTrigger>
+              <TabsTrigger value="zonnepanelen-afgerond" className="text-xs">
+                Zonnepanelen Afgerond ({zonnepanelenAfgerond.length})
+              </TabsTrigger>
+              <TabsTrigger value="prijzen" className="text-xs">Prijsbeheer</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="te-verwerken" className="space-y-6">
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Te Verwerken Aanvragen ({teVerwerken.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <AdminFilters 
-                      filters={filters} 
-                      onFiltersChange={setFilters}
-                      showStatusFilter={false}
-                    />
-                    
-                    <BulkActions
-                      selectedIds={selectedIds}
-                      onSelectAll={handleSelectAll}
-                      onSelectItem={handleSelectItem}
-                      onBulkAction={handleBulkAction}
-                      allIds={currentTabData.map(item => item.id)}
-                      configurations={currentTabData}
-                    />
-                    
-                    <ConfiguratorRequestsTable 
-                      configuraties={currentTabData}
-                      onViewDetails={openDetails}
-                      onOpenQuoteDialog={openQuoteDialog}
-                      onDataChange={loadDashboardData}
-                      sendingQuote={sendingQuote}
-                      selectedIds={selectedIds}
-                      onSelectItem={handleSelectItem}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+            {/* Dakkapel Tabs */}
+            <TabsContent value="dakkapel-te-verwerken" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel Te Verwerken Aanvragen ({dakkapelTeVerwerken.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <BulkActions
+                    selectedIds={selectedIds}
+                    onSelectAll={handleSelectAll}
+                    onSelectItem={handleSelectItem}
+                    onBulkAction={handleBulkAction}
+                    allIds={currentTabData.map(item => item.id)}
+                    configurations={currentTabData}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelTeVerwerken}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    selectedIds={selectedIds}
+                    onSelectItem={handleSelectItem}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
-            
-            <TabsContent value="wacht-op-reactie" className="space-y-6">
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Wacht op Reactie ({wachtOpReactie.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <AdminFilters 
-                      filters={filters} 
-                      onFiltersChange={setFilters}
-                      showStatusFilter={false}
-                    />
-                    
-                    <BulkActions
-                      selectedIds={selectedIds}
-                      onSelectAll={handleSelectAll}
-                      onSelectItem={handleSelectItem}
-                      onBulkAction={handleBulkAction}
-                      allIds={currentTabData.map(item => item.id)}
-                      configurations={currentTabData}
-                    />
-                    
-                    <ConfiguratorRequestsTable 
-                      configuraties={currentTabData}
-                      onViewDetails={openDetails}
-                      onOpenQuoteDialog={openQuoteDialog}
-                      onDataChange={loadDashboardData}
-                      sendingQuote={sendingQuote}
-                      selectedIds={selectedIds}
-                      onSelectItem={handleSelectItem}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+
+            {/* Other Dakkapel tabs follow the same pattern */}
+            <TabsContent value="dakkapel-wacht-op-reactie" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel Wacht op Reactie ({dakkapelWachtOpReactie.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelWachtOpReactie}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
-            
-            <TabsContent value="akkoord" className="space-y-6">
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Akkoord/Opvolgen ({akkoord.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <AdminFilters 
-                      filters={filters} 
-                      onFiltersChange={setFilters}
-                      showStatusFilter={false}
-                    />
-                    
-                    <BulkActions
-                      selectedIds={selectedIds}
-                      onSelectAll={handleSelectAll}
-                      onSelectItem={handleSelectItem}
-                      onBulkAction={handleBulkAction}
-                      allIds={currentTabData.map(item => item.id)}
-                      configurations={currentTabData}
-                    />
-                    
-                    <ConfiguratorRequestsTable 
-                      configuraties={currentTabData}
-                      onViewDetails={openDetails}
-                      onOpenQuoteDialog={openQuoteDialog}
-                      onDataChange={loadDashboardData}
-                      sendingQuote={sendingQuote}
-                      selectedIds={selectedIds}
-                      onSelectItem={handleSelectItem}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+
+            <TabsContent value="dakkapel-akkoord" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel Akkoord ({dakkapelAkkoord.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelAkkoord}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
-            
-            <TabsContent value="niet-akkoord" className="space-y-6">
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Niet Akkoord ({nietAkkoord.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <AdminFilters 
-                      filters={filters} 
-                      onFiltersChange={setFilters}
-                      showStatusFilter={false}
-                    />
-                    
-                    <BulkActions
-                      selectedIds={selectedIds}
-                      onSelectAll={handleSelectAll}
-                      onSelectItem={handleSelectItem}
-                      onBulkAction={handleBulkAction}
-                      allIds={currentTabData.map(item => item.id)}
-                      configurations={currentTabData}
-                    />
-                    
-                    <ConfiguratorRequestsTable 
-                      configuraties={currentTabData}
-                      onViewDetails={openDetails}
-                      onOpenQuoteDialog={openQuoteDialog}
-                      onDataChange={loadDashboardData}
-                      sendingQuote={sendingQuote}
-                      selectedIds={selectedIds}
-                      onSelectItem={handleSelectItem}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+
+            <TabsContent value="dakkapel-op-locatie" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel Op Locatie ({dakkapelOpLocatie.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelOpLocatie}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
-            
-            <TabsContent value="afgerond" className="space-y-6">
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Afgeronde Aanvragen ({afgerond.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <AdminFilters 
-                      filters={filters} 
-                      onFiltersChange={setFilters}
-                      showStatusFilter={false}
-                    />
-                    
-                    <ProcessedRequestsTable 
-                      configuraties={currentTabData}
-                      onViewDetails={openDetails}
-                      onDataChange={loadDashboardData}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+
+            <TabsContent value="dakkapel-in-aanbouw" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelInAanbouw}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="dakkapel-niet-akkoord" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel Niet Akkoord ({dakkapelNietAkkoord.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    configuraties={dakkapelNietAkkoord}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="dakkapel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="dakkapel-afgerond" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dakkapel Afgeronde Aanvragen ({dakkapelAfgerond.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ProcessedRequestsTable 
+                    configuraties={dakkapelAfgerond}
+                    onViewDetails={openDetails}
+                    onDataChange={loadDashboardData}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Zonnepanelen Tabs */}
+            <TabsContent value="zonnepanelen-te-verwerken" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen Te Verwerken Aanvragen ({zonnepanelenTeVerwerken.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <BulkActions
+                    selectedIds={selectedIds}
+                    onSelectAll={handleSelectAll}
+                    onSelectItem={handleSelectItem}
+                    onBulkAction={handleBulkAction}
+                    allIds={currentTabData.map(item => item.id)}
+                    configurations={currentTabData}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    zonnepanelen={zonnepanelenTeVerwerken}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    selectedIds={selectedIds}
+                    onSelectItem={handleSelectItem}
+                    type="zonnepaneel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Other Zonnepanelen tabs follow similar pattern */}
+            <TabsContent value="zonnepanelen-wacht-op-reactie" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen Wacht op Reactie ({zonnepanelenWachtOpReactie.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    zonnepanelen={zonnepanelenWachtOpReactie}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="zonnepaneel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="zonnepanelen-akkoord" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen Akkoord ({zonnepanelenAkkoord.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    zonnepanelen={zonnepanelenAkkoord}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="zonnepaneel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="zonnepanelen-op-locatie" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen Op Locatie ({zonnepanelenOpLocatie.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    zonnepanelen={zonnepanelenOpLocatie}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="zonnepaneel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="zonnepanelen-in-aanbouw" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen In Aanbouw ({zonnepanelenInAanbouw.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    zonnepanelen={zonnepanelenInAanbouw}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="zonnepaneel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="zonnepanelen-niet-akkoord" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen Niet Akkoord ({zonnepanelenNietAkkoord.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ConfiguratorRequestsTable 
+                    zonnepanelen={zonnepanelenNietAkkoord}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type="zonnepaneel"
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="zonnepanelen-afgerond" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zonnepanelen Afgeronde Aanvragen ({zonnepanelenAfgerond.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AdminFilters 
+                    filters={filters} 
+                    onFiltersChange={setFilters}
+                    showStatusFilter={false}
+                  />
+                  
+                  <ProcessedRequestsTable 
+                    configuraties={zonnepanelenAfgerond}
+                    onViewDetails={openDetails}
+                    onDataChange={loadDashboardData}
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
             
             <TabsContent value="prijzen">

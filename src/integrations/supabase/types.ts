@@ -143,6 +143,7 @@ export type Database = {
           dakhelling_type: string | null
           email: string
           id: string
+          in_aanbouw_op: string | null
           insectscreens: boolean | null
           kleur_draaikiepramen: string
           kleur_kozijn: string
@@ -153,6 +154,7 @@ export type Database = {
           naam: string
           notities: string | null
           offerte_verzonden_op: string | null
+          op_locatie_op: string | null
           opmerkingen: string | null
           plaats: string
           postcode: string
@@ -173,6 +175,7 @@ export type Database = {
           dakhelling_type?: string | null
           email: string
           id?: string
+          in_aanbouw_op?: string | null
           insectscreens?: boolean | null
           kleur_draaikiepramen: string
           kleur_kozijn: string
@@ -183,6 +186,7 @@ export type Database = {
           naam: string
           notities?: string | null
           offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
           opmerkingen?: string | null
           plaats: string
           postcode: string
@@ -203,6 +207,7 @@ export type Database = {
           dakhelling_type?: string | null
           email?: string
           id?: string
+          in_aanbouw_op?: string | null
           insectscreens?: boolean | null
           kleur_draaikiepramen?: string
           kleur_kozijn?: string
@@ -213,6 +218,7 @@ export type Database = {
           naam?: string
           notities?: string | null
           offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
           opmerkingen?: string | null
           plaats?: string
           postcode?: string
@@ -222,6 +228,93 @@ export type Database = {
           totaal_prijs?: number | null
           updated_at?: string | null
           ventilationgrids?: boolean | null
+        }
+        Relationships: []
+      }
+      refurbished_zonnepanelen: {
+        Row: {
+          aantal_panelen: number
+          adres: string
+          afgehandeld_op: string | null
+          conditie: string
+          created_at: string
+          dak_materiaal: string | null
+          dak_type: string
+          email: string
+          id: string
+          in_aanbouw_op: string | null
+          jaar_fabricage: number | null
+          merk: string
+          naam: string
+          notities: string | null
+          offerte_verzonden_op: string | null
+          op_locatie_op: string | null
+          opmerkingen: string | null
+          plaats: string
+          postcode: string
+          schaduw_situatie: string | null
+          status: string | null
+          telefoon: string
+          totaal_prijs: number | null
+          type_paneel: string
+          updated_at: string
+          vermogen: number
+        }
+        Insert: {
+          aantal_panelen: number
+          adres: string
+          afgehandeld_op?: string | null
+          conditie: string
+          created_at?: string
+          dak_materiaal?: string | null
+          dak_type: string
+          email: string
+          id?: string
+          in_aanbouw_op?: string | null
+          jaar_fabricage?: number | null
+          merk: string
+          naam: string
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
+          opmerkingen?: string | null
+          plaats: string
+          postcode: string
+          schaduw_situatie?: string | null
+          status?: string | null
+          telefoon: string
+          totaal_prijs?: number | null
+          type_paneel: string
+          updated_at?: string
+          vermogen: number
+        }
+        Update: {
+          aantal_panelen?: number
+          adres?: string
+          afgehandeld_op?: string | null
+          conditie?: string
+          created_at?: string
+          dak_materiaal?: string | null
+          dak_type?: string
+          email?: string
+          id?: string
+          in_aanbouw_op?: string | null
+          jaar_fabricage?: number | null
+          merk?: string
+          naam?: string
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
+          opmerkingen?: string | null
+          plaats?: string
+          postcode?: string
+          schaduw_situatie?: string | null
+          status?: string | null
+          telefoon?: string
+          totaal_prijs?: number | null
+          type_paneel?: string
+          updated_at?: string
+          vermogen?: number
         }
         Relationships: []
       }
