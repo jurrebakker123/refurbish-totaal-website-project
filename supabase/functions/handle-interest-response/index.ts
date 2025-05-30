@@ -28,7 +28,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Initialize Supabase client
+    // Initialize Supabase client with service role key for database updates
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
