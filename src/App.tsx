@@ -31,6 +31,7 @@ import BouwhulpPage from "./pages/BouwhulpPage";
 import SolarProductDetailPage from "./pages/SolarProductDetailPage";
 import CertificaatPage from "./pages/CertificaatPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import "./App.css";
 
 const queryClient = new QueryClient();

@@ -4,27 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
-import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
+import { RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
 import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
 import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
-import DashboardStats from '@/components/admin/DashboardStats';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import { toast } from 'sonner';
 
-const AdminDashboardPage = () => {
-  const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
+const AdminZonnepanelenPage = () => {
+  const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('te-verwerken');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState<string | null>(null);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
-  const [selectedQuoteItem, setSelectedQuoteItem] = useState<QuoteItem | null>(null);
+  const [selectedQuoteItem, setSelectedQuoteItem] = useState<ZonnepaneelQuoteItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
   const [filters, setFilters] = useState<FilterState>({
@@ -41,18 +39,18 @@ const AdminDashboardPage = () => {
 
   const loadDashboardData = async () => {
     setLoading(true);
-    const { configuraties: configData, success } = await loadAdminData();
+    const { zonnepanelen: solarData, success } = await loadAdminData();
     
     if (success) {
-      setAllConfiguraties(configData);
+      setAllZonnepanelen(solarData);
     }
     
     setLoading(false);
   };
 
-  // Filter and sort data based on current filters
-  const filteredConfiguraties = useMemo(() => {
-    let filtered = [...allConfiguraties];
+  // Filter and sort zonnepanelen data
+  const filteredZonnepanelen = useMemo(() => {
+    let filtered = [...allZonnepanelen];
 
     // Search filter
     if (filters.search) {
@@ -124,53 +122,53 @@ const AdminDashboardPage = () => {
     });
 
     return filtered;
-  }, [allConfiguraties, filters]);
+  }, [allZonnepanelen, filters]);
 
-  // Split dakkapel data by categories for tabs
-  const dakkapelTeVerwerken = filteredConfiguraties.filter(config => 
-    config.status === 'nieuw' || config.status === 'in_behandeling'
+  // Split zonnepanelen data by categories for tabs
+  const zonnepanelenTeVerwerken = filteredZonnepanelen.filter(item => 
+    item.status === 'nieuw' || item.status === 'in_behandeling'
   );
   
-  const dakkapelWachtOpReactie = filteredConfiguraties.filter(config => 
-    config.status === 'offerte_verzonden'
+  const zonnepanelenWachtOpReactie = filteredZonnepanelen.filter(item => 
+    item.status === 'offerte_verzonden'
   );
   
-  const dakkapelAkkoord = filteredConfiguraties.filter(config => 
-    config.status === 'akkoord'
+  const zonnepanelenAkkoord = filteredZonnepanelen.filter(item => 
+    item.status === 'akkoord'
   );
   
-  const dakkapelOpLocatie = filteredConfiguraties.filter(config => 
-    config.status === 'op_locatie'
+  const zonnepanelenOpLocatie = filteredZonnepanelen.filter(item => 
+    item.status === 'op_locatie'
   );
   
-  const dakkapelInAanbouw = filteredConfiguraties.filter(config => 
-    config.status === 'in_aanbouw'
+  const zonnepanelenInAanbouw = filteredZonnepanelen.filter(item => 
+    item.status === 'in_aanbouw'
   );
   
-  const dakkapelNietAkkoord = filteredConfiguraties.filter(config => 
-    config.status === 'niet_akkoord'
+  const zonnepanelenNietAkkoord = filteredZonnepanelen.filter(item => 
+    item.status === 'niet_akkoord'
   );
   
-  const dakkapelAfgerond = filteredConfiguraties.filter(config => 
-    config.status === 'afgehandeld'
+  const zonnepanelenAfgerond = filteredZonnepanelen.filter(item => 
+    item.status === 'afgehandeld'
   );
 
   const getCurrentTabData = () => {
     switch (activeTab) {
       case 'te-verwerken':
-        return dakkapelTeVerwerken;
+        return zonnepanelenTeVerwerken;
       case 'wacht-op-reactie':
-        return dakkapelWachtOpReactie;
+        return zonnepanelenWachtOpReactie;
       case 'akkoord':
-        return dakkapelAkkoord;
+        return zonnepanelenAkkoord;
       case 'op-locatie':
-        return dakkapelOpLocatie;
+        return zonnepanelenOpLocatie;
       case 'in-aanbouw':
-        return dakkapelInAanbouw;
+        return zonnepanelenInAanbouw;
       case 'niet-akkoord':
-        return dakkapelNietAkkoord;
+        return zonnepanelenNietAkkoord;
       case 'afgerond':
-        return dakkapelAfgerond;
+        return zonnepanelenAfgerond;
       default:
         return [];
     }
@@ -184,7 +182,7 @@ const AdminDashboardPage = () => {
   };
 
   const openQuoteDialog = (item: any) => {
-    setSelectedQuoteItem({ ...item, isCalculator: false });
+    setSelectedQuoteItem({ ...item, isZonnepaneel: true });
     setIsQuoteDialogOpen(true);
   };
 
@@ -193,7 +191,7 @@ const AdminDashboardPage = () => {
     let successCount = 0;
     
     for (const id of ids) {
-      const success = await updateRequestStatus(id, action, 'dakkapel_configuraties');
+      const success = await updateRequestStatus(id, action, 'refurbished_zonnepanelen');
       if (success) successCount++;
     }
     
@@ -237,7 +235,7 @@ const AdminDashboardPage = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
+          <h1 className="text-xl font-semibold text-brand-darkGreen">Zonnepanelen Admin</h1>
         </div>
         <div className="flex items-center gap-4">
           <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
@@ -249,36 +247,31 @@ const AdminDashboardPage = () => {
 
       <div className="flex-1 p-8">
         <div className="max-w-7xl mx-auto space-y-8">
-          <h1 className="text-3xl font-bold mb-6">Dakkapel Admin Dashboard</h1>
-          
-          <DashboardStats configuraties={allConfiguraties} />
+          <h1 className="text-3xl font-bold mb-6">Zonnepanelen Dashboard</h1>
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Te Verwerken ({dakkapelTeVerwerken.length})
+                  Te Verwerken ({zonnepanelenTeVerwerken.length})
                 </TabsTrigger>
                 <TabsTrigger value="wacht-op-reactie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Wacht op Reactie ({dakkapelWachtOpReactie.length})
+                  Wacht op Reactie ({zonnepanelenWachtOpReactie.length})
                 </TabsTrigger>
                 <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Akkoord ({dakkapelAkkoord.length})
+                  Akkoord ({zonnepanelenAkkoord.length})
                 </TabsTrigger>
                 <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie ({dakkapelOpLocatie.length})
+                  Op Locatie ({zonnepanelenOpLocatie.length})
                 </TabsTrigger>
                 <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  In Aanbouw ({dakkapelInAanbouw.length})
+                  In Aanbouw ({zonnepanelenInAanbouw.length})
                 </TabsTrigger>
                 <TabsTrigger value="niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Niet Akkoord ({dakkapelNietAkkoord.length})
+                  Niet Akkoord ({zonnepanelenNietAkkoord.length})
                 </TabsTrigger>
                 <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Afgerond ({dakkapelAfgerond.length})
-                </TabsTrigger>
-                <TabsTrigger value="prijzen" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Prijsbeheer
+                  Afgerond ({zonnepanelenAfgerond.length})
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -286,7 +279,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="te-verwerken" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Te Verwerken Aanvragen ({dakkapelTeVerwerken.length})</CardTitle>
+                  <CardTitle className="text-xl">Te Verwerken Aanvragen ({zonnepanelenTeVerwerken.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -302,18 +295,18 @@ const AdminDashboardPage = () => {
                     onBulkAction={handleBulkAction}
                     allIds={currentTabData.map(item => item.id)}
                     configurations={currentTabData}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={dakkapelTeVerwerken}
+                    zonnepanelen={zonnepanelenTeVerwerken}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
                     selectedIds={selectedIds}
                     onSelectItem={handleSelectItem}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
@@ -322,7 +315,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="wacht-op-reactie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Wacht op Reactie ({dakkapelWachtOpReactie.length})</CardTitle>
+                  <CardTitle className="text-xl">Wacht op Reactie ({zonnepanelenWachtOpReactie.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -332,12 +325,12 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={dakkapelWachtOpReactie}
+                    zonnepanelen={zonnepanelenWachtOpReactie}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
@@ -346,7 +339,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="akkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Akkoord ({dakkapelAkkoord.length})</CardTitle>
+                  <CardTitle className="text-xl">Akkoord ({zonnepanelenAkkoord.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -356,12 +349,12 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={dakkapelAkkoord}
+                    zonnepanelen={zonnepanelenAkkoord}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
@@ -370,7 +363,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="op-locatie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie ({dakkapelOpLocatie.length})</CardTitle>
+                  <CardTitle className="text-xl">Op Locatie ({zonnepanelenOpLocatie.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -380,12 +373,12 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={dakkapelOpLocatie}
+                    zonnepanelen={zonnepanelenOpLocatie}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
@@ -394,7 +387,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="in-aanbouw" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
+                  <CardTitle className="text-xl">In Aanbouw ({zonnepanelenInAanbouw.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -404,12 +397,12 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={dakkapelInAanbouw}
+                    zonnepanelen={zonnepanelenInAanbouw}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
@@ -418,7 +411,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="niet-akkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Niet Akkoord ({dakkapelNietAkkoord.length})</CardTitle>
+                  <CardTitle className="text-xl">Niet Akkoord ({zonnepanelenNietAkkoord.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -428,12 +421,12 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={dakkapelNietAkkoord}
+                    zonnepanelen={zonnepanelenNietAkkoord}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
@@ -442,7 +435,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="afgerond" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Afgeronde Aanvragen ({dakkapelAfgerond.length})</CardTitle>
+                  <CardTitle className="text-xl">Afgeronde Aanvragen ({zonnepanelenAfgerond.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -452,17 +445,13 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ProcessedRequestsTable 
-                    configuraties={dakkapelAfgerond}
+                    configuraties={zonnepanelenAfgerond}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
-                    type="dakkapel"
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
-            </TabsContent>
-            
-            <TabsContent value="prijzen">
-              <AdminPriceEditor />
             </TabsContent>
           </Tabs>
         </div>
@@ -486,4 +475,4 @@ const AdminDashboardPage = () => {
   );
 };
 
-export default AdminDashboardPage;
+export default AdminZonnepanelenPage;

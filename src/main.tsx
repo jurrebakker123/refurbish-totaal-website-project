@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -15,6 +14,7 @@ import { SidebarProvider } from './components/ui/sidebar';
 import DakkapelCalculatorConceptPage from './pages/DakkapelCalculatorConceptPage.tsx';
 import DakkapelCalculatorPage from './pages/DakkapelCalculatorPage.tsx';
 import BouwhulpPage from './pages/BouwhulpPage.tsx';
+import AdminZonnepanelenPage from './pages/AdminZonnepanelenPage.tsx';
 
 // TypeScript interface for window
 declare global {
@@ -55,6 +55,11 @@ const renderBasedOnDomain = () => {
                 <AdminDashboardPage />
               </ProtectedAdminRoute>
             } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
+              </ProtectedAdminRoute>
+            } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
             <Route path="/offerte" element={<OffertePage />} />
@@ -76,7 +81,12 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
-                <AdminDashboardPage />
+                <AdminZonnepanelenPage />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
               </ProtectedAdminRoute>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
@@ -102,6 +112,11 @@ const renderBasedOnDomain = () => {
                 <AdminDashboardPage />
               </ProtectedAdminRoute>
             } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
+              </ProtectedAdminRoute>
+            } />
             <Route path="/offerte" element={<OffertePage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
@@ -122,6 +137,11 @@ const renderBasedOnDomain = () => {
             <Route path="/admin" element={
               <ProtectedAdminRoute>
                 <AdminDashboardPage />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
               </ProtectedAdminRoute>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
@@ -153,6 +173,11 @@ const renderBasedOnDomain = () => {
                 <AdminDashboardPage />
               </ProtectedAdminRoute>
             } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
+              </ProtectedAdminRoute>
+            } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
           </Routes>
@@ -166,6 +191,7 @@ const renderBasedOnDomain = () => {
 import ContactPage from './pages/ContactPage.tsx';
 import OffertePage from './pages/OffertePage.tsx';
 import DienstDetailPage from './pages/DienstDetailPage.tsx';
+import AdminZonnepanelenPage from './pages/AdminZonnepanelenPage.tsx';
 
 // Render the appropriate component
 const rootElement = document.getElementById("root");
