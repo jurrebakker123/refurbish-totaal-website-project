@@ -443,8 +443,8 @@ const AdminDashboardPage = () => {
                     onSelectAll={handleSelectAll}
                     onSelectItem={handleSelectItem}
                     onBulkAction={handleBulkAction}
-                    allIds={dakkapelTeVerwerken.map(item => item.id)}
-                    configurations={dakkapelTeVerwerken}
+                    allIds={currentTabData.map(item => item.id)}
+                    configurations={currentTabData}
                   />
                   
                   <ConfiguratorRequestsTable 
@@ -598,7 +598,6 @@ const AdminDashboardPage = () => {
                     configuraties={dakkapelAfgerond}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
-                    type="dakkapel"
                   />
                 </CardContent>
               </Card>
@@ -622,8 +621,8 @@ const AdminDashboardPage = () => {
                     onSelectAll={handleSelectAll}
                     onSelectItem={handleSelectItem}
                     onBulkAction={handleBulkAction}
-                    allIds={zonnepanelenTeVerwerken.map(item => item.id)}
-                    configurations={zonnepanelenTeVerwerken}
+                    allIds={currentTabData.map(item => item.id)}
+                    configurations={currentTabData}
                   />
                   
                   <ConfiguratorRequestsTable 
@@ -774,10 +773,9 @@ const AdminDashboardPage = () => {
                   />
                   
                   <ProcessedRequestsTable 
-                    zonnepanelen={zonnepanelenAfgerond}
+                    configuraties={zonnepanelenAfgerond}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
-                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>

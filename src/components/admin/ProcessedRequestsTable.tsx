@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { Eye } from 'lucide-react';
+import { Eye, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -12,25 +12,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DakkapelConfiguratie, RefurbishedZonnepaneel } from '@/types/admin';
+import { DakkapelConfiguratie } from '@/types/admin';
 import StatusBadge from './StatusBadge';
+import { updateRequestStatus } from '@/utils/adminUtils';
 
 interface ProcessedRequestsTableProps {
-  configuraties?: DakkapelConfiguratie[];
-  zonnepanelen?: RefurbishedZonnepaneel[];
-  onViewDetails: (item: DakkapelConfiguratie | RefurbishedZonnepaneel) => void;
+  configuraties: DakkapelConfiguratie[];
+  onViewDetails: (item: DakkapelConfiguratie) => void;
   onDataChange: () => void;
-  type?: 'dakkapel' | 'zonnepaneel';
 }
 
 const ProcessedRequestsTable: React.FC<ProcessedRequestsTableProps> = ({ 
-  configuraties = [],
-  zonnepanelen = [],
+  configuraties,
   onViewDetails,
-  onDataChange,
-  type = 'dakkapel'
+  onDataChange
 }) => {
-  const data = type === 'zonnepaneel' ? zonnepanelen : configuraties;
+  const handleMoveBackToActive = async (id: string) => {
+    const success = await updateRequestStatus(id, 'in_behandeling');
+    if (success) {
+      onDataChange();
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -41,64 +43,58 @@ const ProcessedRequestsTable: React.FC<ProcessedRequestsTableProps> = ({
             <TableHead>Naam</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Telefoon</TableHead>
-            <TableHead>{type === 'zonnepaneel' ? 'Type Paneel' : 'Model'}</TableHead>
-            {type === 'zonnepaneel' && <TableHead>Aantal</TableHead>}
-            {type === 'zonnepaneel' && <TableHead>Vermogen</TableHead>}
+            <TableHead>Model</TableHead>
             <TableHead>Prijs</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Afgehandeld</TableHead>
+            <TableHead>Afgehandeld op</TableHead>
             <TableHead>Acties</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.length === 0 ? (
+          {configuraties.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={type === 'zonnepaneel' ? 11 : 9} className="text-center py-4">
-                Geen afgehandelde aanvragen gevonden
+              <TableCell colSpan={8} className="text-center py-4">
+                Geen verwerkte aanvragen gevonden
               </TableCell>
             </TableRow>
           ) : (
-            data.map((item) => (
-              <TableRow key={item.id}>
+            configuraties.map((config) => (
+              <TableRow key={config.id}>
                 <TableCell>
-                  {format(new Date(item.created_at), 'dd MMM yyyy HH:mm', { locale: nl })}
+                  {format(new Date(config.created_at), 'dd MMM yyyy HH:mm', { locale: nl })}
                 </TableCell>
-                <TableCell>{item.naam}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell>{item.telefoon}</TableCell>
+                <TableCell>{config.naam}</TableCell>
+                <TableCell>{config.email}</TableCell>
+                <TableCell>{config.telefoon}</TableCell>
+                <TableCell>{config.model}</TableCell>
                 <TableCell>
-                  {type === 'zonnepaneel' && 'type_paneel' in item ? item.type_paneel : 
-                   type === 'dakkapel' && 'model' in item ? item.model : '-'}
+                  {config.totaal_prijs ? `€${config.totaal_prijs}` : '-'}
                 </TableCell>
-                {type === 'zonnepaneel' && (
-                  <TableCell>
-                    {'aantal_panelen' in item ? item.aantal_panelen : '-'}
-                  </TableCell>
-                )}
-                {type === 'zonnepaneel' && (
-                  <TableCell>
-                    {'vermogen' in item ? `${item.vermogen}W` : '-'}
-                  </TableCell>
-                )}
                 <TableCell>
-                  {item.totaal_prijs ? `€${item.totaal_prijs}` : '-'}
-                </TableCell>
-                <TableCell><StatusBadge status={item.status} /></TableCell>
-                <TableCell>
-                  {item.afgehandeld_op ? 
-                    format(new Date(item.afgehandeld_op), 'dd MMM yyyy', { locale: nl }) : 
+                  {config.afgehandeld_op ? 
+                    format(new Date(config.afgehandeld_op), 'dd MMM yyyy HH:mm', { locale: nl }) : 
                     '-'
                   }
                 </TableCell>
                 <TableCell>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => onViewDetails(item)}
-                    title="Details bekijken"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => onViewDetails(config)}
+                      title="Details bekijken"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleMoveBackToActive(config.id)}
+                      title="Terug naar actieve aanvragen"
+                      className="bg-yellow-50 hover:bg-yellow-100"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))

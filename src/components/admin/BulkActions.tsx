@@ -1,9 +1,11 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DakkapelConfiguratie, RefurbishedZonnepaneel } from '@/types/admin';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Clock, Mail, CheckCircle, X, ThumbsUp } from 'lucide-react';
+import { DakkapelConfiguratie } from '@/types/admin';
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
 interface BulkActionsProps {
   selectedIds: string[];
@@ -11,7 +13,7 @@ interface BulkActionsProps {
   onSelectItem: (id: string, checked: boolean) => void;
   onBulkAction: (action: string, ids: string[]) => void;
   allIds: string[];
-  configurations: DakkapelConfiguratie[] | RefurbishedZonnepaneel[];
+  configurations: DakkapelConfiguratie[];
 }
 
 const BulkActions: React.FC<BulkActionsProps> = ({
@@ -22,7 +24,18 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   allIds,
   configurations
 }) => {
-  const [bulkAction, setBulkAction] = React.useState<string>('');
+  const [bulkAction, setBulkAction] = React.useState('');
+  const checkboxRef = React.useRef<React.ElementRef<typeof CheckboxPrimitive.Root>>(null);
+  const isAllSelected = selectedIds.length === allIds.length && allIds.length > 0;
+  const isPartialSelected = selectedIds.length > 0 && selectedIds.length < allIds.length;
+
+  React.useEffect(() => {
+    if (checkboxRef.current) {
+      // Cast to HTMLInputElement to access the indeterminate property
+      const checkboxElement = checkboxRef.current as HTMLInputElement;
+      checkboxElement.indeterminate = isPartialSelected;
+    }
+  }, [isPartialSelected]);
 
   const handleBulkAction = () => {
     if (bulkAction && selectedIds.length > 0) {
@@ -31,54 +44,90 @@ const BulkActions: React.FC<BulkActionsProps> = ({
     }
   };
 
-  const isAllSelected = selectedIds.length === allIds.length && allIds.length > 0;
-  const isIndeterminate = selectedIds.length > 0 && selectedIds.length < allIds.length;
+  const clearSelection = () => {
+    selectedIds.forEach(id => onSelectItem(id, false));
+  };
 
-  return (
-    <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg mb-4">
-      <div className="flex items-center gap-2">
+  if (selectedIds.length === 0) {
+    return (
+      <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg mb-4">
         <Checkbox
+          ref={checkboxRef}
           checked={isAllSelected}
           onCheckedChange={onSelectAll}
-          ref={(el) => {
-            if (el) {
-              el.indeterminate = isIndeterminate;
-            }
-          }}
         />
-        <span className="text-sm">
-          {selectedIds.length > 0 
-            ? `${selectedIds.length} geselecteerd` 
-            : 'Selecteer alle'
-          }
-        </span>
+        <span className="text-sm text-gray-600">Selecteer items voor bulk acties</span>
       </div>
+    );
+  }
 
-      {selectedIds.length > 0 && (
-        <div className="flex items-center gap-2">
-          <Select value={bulkAction} onValueChange={setBulkAction}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Kies actie..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="in_behandeling">In Behandeling</SelectItem>
-              <SelectItem value="offerte_verzonden">Offerte Verzonden</SelectItem>
-              <SelectItem value="akkoord">Akkoord</SelectItem>
-              <SelectItem value="niet_akkoord">Niet Akkoord</SelectItem>
-              <SelectItem value="op_locatie">Op Locatie</SelectItem>
-              <SelectItem value="in_aanbouw">In Aanbouw</SelectItem>
-              <SelectItem value="afgehandeld">Afgehandeld</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button 
-            onClick={handleBulkAction} 
-            disabled={!bulkAction}
-            variant="default"
-          >
-            Toepassen
-          </Button>
-        </div>
-      )}
+  return (
+    <div className="flex items-center gap-4 p-3 bg-blue-50 rounded-lg mb-4">
+      <Checkbox
+        ref={checkboxRef}
+        checked={isAllSelected}
+        onCheckedChange={onSelectAll}
+      />
+      
+      <span className="text-sm font-medium text-blue-900">
+        {selectedIds.length} item{selectedIds.length > 1 ? 's' : ''} geselecteerd
+      </span>
+
+      <div className="flex items-center gap-2 ml-auto">
+        <Select value={bulkAction} onValueChange={setBulkAction}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Kies actie..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="in_behandeling">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                In behandeling
+              </div>
+            </SelectItem>
+            <SelectItem value="offerte_verzonden">
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Offerte verzonden
+              </div>
+            </SelectItem>
+            <SelectItem value="akkoord">
+              <div className="flex items-center gap-2">
+                <ThumbsUp className="h-4 w-4" />
+                Akkoord
+              </div>
+            </SelectItem>
+            <SelectItem value="niet_akkoord">
+              <div className="flex items-center gap-2">
+                <X className="h-4 w-4" />
+                Niet Akkoord
+              </div>
+            </SelectItem>
+            <SelectItem value="afgehandeld">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Afgehandeld
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Button 
+          onClick={handleBulkAction}
+          disabled={!bulkAction}
+          size="sm"
+        >
+          Toepassen
+        </Button>
+
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={clearSelection}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };
