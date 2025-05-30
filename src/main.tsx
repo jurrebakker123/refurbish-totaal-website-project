@@ -1,3 +1,4 @@
+
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -15,6 +16,9 @@ import DakkapelCalculatorConceptPage from './pages/DakkapelCalculatorConceptPage
 import DakkapelCalculatorPage from './pages/DakkapelCalculatorPage.tsx';
 import BouwhulpPage from './pages/BouwhulpPage.tsx';
 import AdminZonnepanelenPage from './pages/AdminZonnepanelenPage.tsx';
+import ContactPage from './pages/ContactPage.tsx';
+import OffertePage from './pages/OffertePage.tsx';
+import DienstDetailPage from './pages/DienstDetailPage.tsx';
 
 // TypeScript interface for window
 declare global {
@@ -186,12 +190,6 @@ const renderBasedOnDomain = () => {
     );
   }
 };
-
-// Import contact and offerte pages to use in route configuration
-import ContactPage from './pages/ContactPage.tsx';
-import OffertePage from './pages/OffertePage.tsx';
-import DienstDetailPage from './pages/DienstDetailPage.tsx';
-import AdminZonnepanelenPage from './pages/AdminZonnepanelenPage.tsx';
 
 // Render the appropriate component
 const rootElement = document.getElementById("root");
