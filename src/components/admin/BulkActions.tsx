@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Clock, Mail, CheckCircle, X, ThumbsUp } from 'lucide-react';
-import { DakkapelConfiguratie } from '@/types/admin';
+import { DakkapelConfiguratie, RefurbishedZonnepaneel } from '@/types/admin';
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
 interface BulkActionsProps {
@@ -13,7 +13,8 @@ interface BulkActionsProps {
   onSelectItem: (id: string, checked: boolean) => void;
   onBulkAction: (action: string, ids: string[]) => void;
   allIds: string[];
-  configurations: DakkapelConfiguratie[];
+  configurations: (DakkapelConfiguratie | RefurbishedZonnepaneel)[];
+  type?: 'dakkapel' | 'zonnepaneel';
 }
 
 const BulkActions: React.FC<BulkActionsProps> = ({
@@ -22,7 +23,8 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   onSelectItem,
   onBulkAction,
   allIds,
-  configurations
+  configurations,
+  type = 'dakkapel'
 }) => {
   const [bulkAction, setBulkAction] = React.useState('');
   const checkboxRef = React.useRef<React.ElementRef<typeof CheckboxPrimitive.Root>>(null);
@@ -31,9 +33,11 @@ const BulkActions: React.FC<BulkActionsProps> = ({
 
   React.useEffect(() => {
     if (checkboxRef.current) {
-      // Cast to HTMLInputElement to access the indeterminate property
-      const checkboxElement = checkboxRef.current as HTMLInputElement;
-      checkboxElement.indeterminate = isPartialSelected;
+      // Cast to the proper element type that has indeterminate property
+      const checkboxElement = checkboxRef.current.querySelector('input') as HTMLInputElement;
+      if (checkboxElement) {
+        checkboxElement.indeterminate = isPartialSelected;
+      }
     }
   }, [isPartialSelected]);
 
@@ -50,7 +54,7 @@ const BulkActions: React.FC<BulkActionsProps> = ({
 
   if (selectedIds.length === 0) {
     return (
-      <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg mb-4">
+      <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
         <Checkbox
           ref={checkboxRef}
           checked={isAllSelected}
@@ -62,7 +66,7 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-4 p-3 bg-blue-50 rounded-lg mb-4">
+    <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
       <Checkbox
         ref={checkboxRef}
         checked={isAllSelected}
@@ -73,9 +77,9 @@ const BulkActions: React.FC<BulkActionsProps> = ({
         {selectedIds.length} item{selectedIds.length > 1 ? 's' : ''} geselecteerd
       </span>
 
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-3 ml-auto">
         <Select value={bulkAction} onValueChange={setBulkAction}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Kies actie..." />
           </SelectTrigger>
           <SelectContent>
@@ -116,6 +120,7 @@ const BulkActions: React.FC<BulkActionsProps> = ({
           onClick={handleBulkAction}
           disabled={!bulkAction}
           size="sm"
+          className="px-4"
         >
           Toepassen
         </Button>
@@ -124,6 +129,7 @@ const BulkActions: React.FC<BulkActionsProps> = ({
           variant="outline" 
           size="sm"
           onClick={clearSelection}
+          className="px-3"
         >
           <X className="h-4 w-4" />
         </Button>

@@ -12,95 +12,119 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DakkapelConfiguratie } from '@/types/admin';
+import { DakkapelConfiguratie, RefurbishedZonnepaneel } from '@/types/admin';
 import StatusBadge from './StatusBadge';
 import { updateRequestStatus } from '@/utils/adminUtils';
 
 interface ProcessedRequestsTableProps {
-  configuraties: DakkapelConfiguratie[];
-  onViewDetails: (item: DakkapelConfiguratie) => void;
+  configuraties: (DakkapelConfiguratie | RefurbishedZonnepaneel)[];
+  onViewDetails: (item: DakkapelConfiguratie | RefurbishedZonnepaneel) => void;
   onDataChange: () => void;
+  type?: 'dakkapel' | 'zonnepaneel';
 }
 
 const ProcessedRequestsTable: React.FC<ProcessedRequestsTableProps> = ({ 
   configuraties,
   onViewDetails,
-  onDataChange
+  onDataChange,
+  type = 'dakkapel'
 }) => {
+  const tableName = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_configuraties';
+  
   const handleMoveBackToActive = async (id: string) => {
-    const success = await updateRequestStatus(id, 'in_behandeling');
+    const success = await updateRequestStatus(id, 'in_behandeling', tableName);
     if (success) {
       onDataChange();
     }
   };
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Datum</TableHead>
-            <TableHead>Naam</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Telefoon</TableHead>
-            <TableHead>Model</TableHead>
-            <TableHead>Prijs</TableHead>
-            <TableHead>Afgehandeld op</TableHead>
-            <TableHead>Acties</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {configuraties.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center py-4">
-                Geen verwerkte aanvragen gevonden
-              </TableCell>
+    <div className="rounded-lg border border-gray-200 overflow-hidden">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead className="py-4 font-semibold">Datum</TableHead>
+              <TableHead className="py-4 font-semibold">Naam</TableHead>
+              <TableHead className="py-4 font-semibold">Email</TableHead>
+              <TableHead className="py-4 font-semibold">Telefoon</TableHead>
+              <TableHead className="py-4 font-semibold">{type === 'zonnepaneel' ? 'Type Paneel' : 'Model'}</TableHead>
+              {type === 'zonnepaneel' && <TableHead className="py-4 font-semibold">Aantal</TableHead>}
+              {type === 'zonnepaneel' && <TableHead className="py-4 font-semibold">Vermogen</TableHead>}
+              <TableHead className="py-4 font-semibold">Prijs</TableHead>
+              <TableHead className="py-4 font-semibold">Afgehandeld op</TableHead>
+              <TableHead className="py-4 font-semibold">Acties</TableHead>
             </TableRow>
-          ) : (
-            configuraties.map((config) => (
-              <TableRow key={config.id}>
-                <TableCell>
-                  {format(new Date(config.created_at), 'dd MMM yyyy HH:mm', { locale: nl })}
-                </TableCell>
-                <TableCell>{config.naam}</TableCell>
-                <TableCell>{config.email}</TableCell>
-                <TableCell>{config.telefoon}</TableCell>
-                <TableCell>{config.model}</TableCell>
-                <TableCell>
-                  {config.totaal_prijs ? `€${config.totaal_prijs}` : '-'}
-                </TableCell>
-                <TableCell>
-                  {config.afgehandeld_op ? 
-                    format(new Date(config.afgehandeld_op), 'dd MMM yyyy HH:mm', { locale: nl }) : 
-                    '-'
-                  }
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => onViewDetails(config)}
-                      title="Details bekijken"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => handleMoveBackToActive(config.id)}
-                      title="Terug naar actieve aanvragen"
-                      className="bg-yellow-50 hover:bg-yellow-100"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                    </Button>
-                  </div>
+          </TableHeader>
+          <TableBody>
+            {configuraties.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={type === 'zonnepaneel' ? 10 : 8} className="text-center py-8 text-gray-500">
+                  Geen verwerkte aanvragen gevonden
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              configuraties.map((config) => (
+                <TableRow key={config.id} className="hover:bg-gray-50">
+                  <TableCell className="py-4">
+                    {format(new Date(config.created_at), 'dd MMM yyyy HH:mm', { locale: nl })}
+                  </TableCell>
+                  <TableCell className="py-4 font-medium">{config.naam}</TableCell>
+                  <TableCell className="py-4">{config.email}</TableCell>
+                  <TableCell className="py-4">{config.telefoon}</TableCell>
+                  <TableCell className="py-4">
+                    {type === 'zonnepaneel' && 'type_paneel' in config ? config.type_paneel : 
+                     type === 'dakkapel' && 'model' in config ? config.model : '-'}
+                  </TableCell>
+                  {type === 'zonnepaneel' && (
+                    <TableCell className="py-4">
+                      {'aantal_panelen' in config ? config.aantal_panelen : '-'}
+                    </TableCell>
+                  )}
+                  {type === 'zonnepaneel' && (
+                    <TableCell className="py-4">
+                      {'vermogen' in config ? `${config.vermogen}W` : '-'}
+                    </TableCell>
+                  )}
+                  <TableCell className="py-4 font-medium">
+                    {config.totaal_prijs ? `€${config.totaal_prijs}` : '-'}
+                  </TableCell>
+                  <TableCell className="py-4">
+                    {config.afgehandeld_op ? 
+                      format(new Date(config.afgehandeld_op), 'dd MMM yyyy HH:mm', { locale: nl }) : 
+                      '-'
+                    }
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div className="flex space-x-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => onViewDetails(config)}
+                        title="Details bekijken"
+                        className="h-8 px-3"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Details
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleMoveBackToActive(config.id)}
+                        title="Terug naar actieve aanvragen"
+                        className="bg-yellow-50 hover:bg-yellow-100 h-8 px-3"
+                      >
+                        <RotateCcw className="h-4 w-4 mr-1" />
+                        Heractiveren
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

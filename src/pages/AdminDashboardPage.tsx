@@ -372,66 +372,74 @@ const AdminDashboardPage = () => {
         </div>
       </header>
 
-      <div className="flex-1 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="flex-1 p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
           <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
           
           <DashboardStats configuraties={allConfiguraties} />
           
-          <Tabs defaultValue="dakkapel-te-verwerken" className="space-y-6" onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-8 lg:grid-cols-16 w-full">
-              <TabsTrigger value="dakkapel-te-verwerken" className="text-xs">
-                Dakkapel Te Verwerken ({dakkapelTeVerwerken.length})
-              </TabsTrigger>
-              <TabsTrigger value="dakkapel-wacht-op-reactie" className="text-xs">
-                Dakkapel Wacht ({dakkapelWachtOpReactie.length})
-              </TabsTrigger>
-              <TabsTrigger value="dakkapel-akkoord" className="text-xs">
-                Dakkapel Akkoord ({dakkapelAkkoord.length})
-              </TabsTrigger>
-              <TabsTrigger value="dakkapel-op-locatie" className="text-xs">
-                Dakkapel Op Locatie ({dakkapelOpLocatie.length})
-              </TabsTrigger>
-              <TabsTrigger value="dakkapel-in-aanbouw" className="text-xs">
-                Dakkapel In Aanbouw ({dakkapelInAanbouw.length})
-              </TabsTrigger>
-              <TabsTrigger value="dakkapel-niet-akkoord" className="text-xs">
-                Dakkapel Niet Akkoord ({dakkapelNietAkkoord.length})
-              </TabsTrigger>
-              <TabsTrigger value="dakkapel-afgerond" className="text-xs">
-                Dakkapel Afgerond ({dakkapelAfgerond.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-te-verwerken" className="text-xs">
-                Zonnepanelen Te Verwerken ({zonnepanelenTeVerwerken.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-wacht-op-reactie" className="text-xs">
-                Zonnepanelen Wacht ({zonnepanelenWachtOpReactie.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-akkoord" className="text-xs">
-                Zonnepanelen Akkoord ({zonnepanelenAkkoord.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-op-locatie" className="text-xs">
-                Zonnepanelen Op Locatie ({zonnepanelenOpLocatie.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-in-aanbouw" className="text-xs">
-                Zonnepanelen In Aanbouw ({zonnepanelenInAanbouw.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-niet-akkoord" className="text-xs">
-                Zonnepanelen Niet Akkoord ({zonnepanelenNietAkkoord.length})
-              </TabsTrigger>
-              <TabsTrigger value="zonnepanelen-afgerond" className="text-xs">
-                Zonnepanelen Afgerond ({zonnepanelenAfgerond.length})
-              </TabsTrigger>
-              <TabsTrigger value="prijzen" className="text-xs">Prijsbeheer</TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="dakkapel-te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
+            <div className="border-b border-gray-200 pb-4">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 w-full gap-2 h-auto p-2 bg-gray-100">
+                <TabsTrigger value="dakkapel-te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel Te Verwerken ({dakkapelTeVerwerken.length})
+                </TabsTrigger>
+                <TabsTrigger value="dakkapel-wacht-op-reactie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel Wacht ({dakkapelWachtOpReactie.length})
+                </TabsTrigger>
+                <TabsTrigger value="dakkapel-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel Akkoord ({dakkapelAkkoord.length})
+                </TabsTrigger>
+                <TabsTrigger value="dakkapel-op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel Op Locatie ({dakkapelOpLocatie.length})
+                </TabsTrigger>
+                <TabsTrigger value="dakkapel-in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel In Aanbouw ({dakkapelInAanbouw.length})
+                </TabsTrigger>
+                <TabsTrigger value="dakkapel-niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel Niet Akkoord ({dakkapelNietAkkoord.length})
+                </TabsTrigger>
+                <TabsTrigger value="dakkapel-afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Dakkapel Afgerond ({dakkapelAfgerond.length})
+                </TabsTrigger>
+                <TabsTrigger value="prijzen" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Prijsbeheer
+                </TabsTrigger>
+              </TabsList>
+              
+              {/* Second row for Zonnepanelen tabs */}
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 w-full gap-2 h-auto p-2 bg-gray-100 mt-2">
+                <TabsTrigger value="zonnepanelen-te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen Te Verwerken ({zonnepanelenTeVerwerken.length})
+                </TabsTrigger>
+                <TabsTrigger value="zonnepanelen-wacht-op-reactie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen Wacht ({zonnepanelenWachtOpReactie.length})
+                </TabsTrigger>
+                <TabsTrigger value="zonnepanelen-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen Akkoord ({zonnepanelenAkkoord.length})
+                </TabsTrigger>
+                <TabsTrigger value="zonnepanelen-op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen Op Locatie ({zonnepanelenOpLocatie.length})
+                </TabsTrigger>
+                <TabsTrigger value="zonnepanelen-in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen In Aanbouw ({zonnepanelenInAanbouw.length})
+                </TabsTrigger>
+                <TabsTrigger value="zonnepanelen-niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen Niet Akkoord ({zonnepanelenNietAkkoord.length})
+                </TabsTrigger>
+                <TabsTrigger value="zonnepanelen-afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Zonnepanelen Afgerond ({zonnepanelenAfgerond.length})
+                </TabsTrigger>
+              </TabsList>
+            </div>
             
             {/* Dakkapel Tabs */}
             <TabsContent value="dakkapel-te-verwerken" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel Te Verwerken Aanvragen ({dakkapelTeVerwerken.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel Te Verwerken Aanvragen ({dakkapelTeVerwerken.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -445,6 +453,7 @@ const AdminDashboardPage = () => {
                     onBulkAction={handleBulkAction}
                     allIds={currentTabData.map(item => item.id)}
                     configurations={currentTabData}
+                    type={currentTabType}
                   />
                   
                   <ConfiguratorRequestsTable 
@@ -461,13 +470,13 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
 
-            {/* Other Dakkapel tabs follow the same pattern */}
+            {/* Other Dakkapel tabs follow the same pattern with improved spacing */}
             <TabsContent value="dakkapel-wacht-op-reactie" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel Wacht op Reactie ({dakkapelWachtOpReactie.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel Wacht op Reactie ({dakkapelWachtOpReactie.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -488,10 +497,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="dakkapel-akkoord" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel Akkoord ({dakkapelAkkoord.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel Akkoord ({dakkapelAkkoord.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -512,10 +521,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="dakkapel-op-locatie" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel Op Locatie ({dakkapelOpLocatie.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel Op Locatie ({dakkapelOpLocatie.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -536,10 +545,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="dakkapel-in-aanbouw" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -560,10 +569,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="dakkapel-niet-akkoord" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel Niet Akkoord ({dakkapelNietAkkoord.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel Niet Akkoord ({dakkapelNietAkkoord.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -584,10 +593,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="dakkapel-afgerond" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Dakkapel Afgeronde Aanvragen ({dakkapelAfgerond.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Dakkapel Afgeronde Aanvragen ({dakkapelAfgerond.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -598,6 +607,7 @@ const AdminDashboardPage = () => {
                     configuraties={dakkapelAfgerond}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
+                    type="dakkapel"
                   />
                 </CardContent>
               </Card>
@@ -606,10 +616,10 @@ const AdminDashboardPage = () => {
             {/* Zonnepanelen Tabs */}
             <TabsContent value="zonnepanelen-te-verwerken" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen Te Verwerken Aanvragen ({zonnepanelenTeVerwerken.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen Te Verwerken Aanvragen ({zonnepanelenTeVerwerken.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -623,6 +633,7 @@ const AdminDashboardPage = () => {
                     onBulkAction={handleBulkAction}
                     allIds={currentTabData.map(item => item.id)}
                     configurations={currentTabData}
+                    type={currentTabType}
                   />
                   
                   <ConfiguratorRequestsTable 
@@ -639,13 +650,13 @@ const AdminDashboardPage = () => {
               </Card>
             </TabsContent>
 
-            {/* Other Zonnepanelen tabs follow similar pattern */}
+            {/* Other Zonnepanelen tabs follow similar pattern with improved spacing */}
             <TabsContent value="zonnepanelen-wacht-op-reactie" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen Wacht op Reactie ({zonnepanelenWachtOpReactie.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen Wacht op Reactie ({zonnepanelenWachtOpReactie.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -666,10 +677,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="zonnepanelen-akkoord" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen Akkoord ({zonnepanelenAkkoord.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen Akkoord ({zonnepanelenAkkoord.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -690,10 +701,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="zonnepanelen-op-locatie" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen Op Locatie ({zonnepanelenOpLocatie.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen Op Locatie ({zonnepanelenOpLocatie.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -714,10 +725,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="zonnepanelen-in-aanbouw" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen In Aanbouw ({zonnepanelenInAanbouw.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen In Aanbouw ({zonnepanelenInAanbouw.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -738,10 +749,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="zonnepanelen-niet-akkoord" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen Niet Akkoord ({zonnepanelenNietAkkoord.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen Niet Akkoord ({zonnepanelenNietAkkoord.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -762,10 +773,10 @@ const AdminDashboardPage = () => {
 
             <TabsContent value="zonnepanelen-afgerond" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Zonnepanelen Afgeronde Aanvragen ({zonnepanelenAfgerond.length})</CardTitle>
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-xl">Zonnepanelen Afgeronde Aanvragen ({zonnepanelenAfgerond.length})</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -776,6 +787,7 @@ const AdminDashboardPage = () => {
                     configuraties={zonnepanelenAfgerond}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
+                    type="zonnepaneel"
                   />
                 </CardContent>
               </Card>
