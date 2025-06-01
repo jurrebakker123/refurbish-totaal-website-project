@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -205,7 +206,7 @@ const AdminDashboardPage = () => {
     }
     
     if (successCount > 0) {
-      toast.success(`${successCount} item(s) bijgewerkt naar "${action}"`);
+      toast.success(`${successCount} dakkapel project(s) bijgewerkt naar "${action}"`);
       loadDashboardData();
       setSelectedIds([]);
     }
@@ -234,7 +235,7 @@ const AdminDashboardPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Gegevens worden geladen...</p>
+          <p>Dakkapel gegevens worden geladen...</p>
         </div>
       </div>
     );
@@ -298,7 +299,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="te-verwerken" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Te Verwerken Aanvragen ({dakkapelTeVerwerken.length})</CardTitle>
+                  <CardTitle className="text-xl">Te Verwerken Dakkapel Aanvragen ({dakkapelTeVerwerken.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -335,7 +336,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="wacht-op-reactie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Wacht op Reactie ({dakkapelWachtOpReactie.length})</CardTitle>
+                  <CardTitle className="text-xl">Wacht op Reactie Dakkapel ({dakkapelWachtOpReactie.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -360,7 +361,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="interesse-bevestigd" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Interesse Bevestigd ({dakkapelInteresseBevestigd.length})</CardTitle>
+                  <CardTitle className="text-xl">Interesse Bevestigd Dakkapel ({dakkapelInteresseBevestigd.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -385,7 +386,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="akkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Akkoord ({dakkapelAkkoord.length})</CardTitle>
+                  <CardTitle className="text-xl">Akkoord Dakkapel ({dakkapelAkkoord.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -410,7 +411,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="niet-akkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Niet Akkoord ({dakkapelNietAkkoord.length})</CardTitle>
+                  <CardTitle className="text-xl">Niet Akkoord Dakkapel ({dakkapelNietAkkoord.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -435,7 +436,8 @@ const AdminDashboardPage = () => {
             <TabsContent value="op-locatie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie/Factureren ({dakkapelOpLocatie.length})</CardTitle>
+                  <CardTitle className="text-xl">Op Locatie/Factureren Dakkapel ({dakkapelOpLocatie.length})</CardTitle>
+                  <p className="text-sm text-gray-600">Projecten die klaar zijn voor locatiebezoek en facturering</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -446,15 +448,20 @@ const AdminDashboardPage = () => {
                   
                   <div className="space-y-4">
                     {dakkapelOpLocatie.map((item) => (
-                      <Card key={item.id} className="p-4">
+                      <Card key={item.id} className="p-4 bg-blue-50 border-blue-200">
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h3 className="font-semibold text-lg">{item.naam}</h3>
                             <p className="text-gray-600">{item.email} • {item.telefoon}</p>
                             <p className="text-gray-600">{item.adres}, {item.postcode} {item.plaats}</p>
                             <p className="text-sm text-gray-500 mt-1">
-                              Model: {item.model} • Prijs: €{item.totaal_prijs}
+                              <strong>Dakkapel Model:</strong> {item.model} • <strong>Prijs:</strong> €{item.totaal_prijs}
                             </p>
+                            {item.materiaal && (
+                              <p className="text-sm text-gray-500">
+                                <strong>Materiaal:</strong> {item.materiaal}
+                              </p>
+                            )}
                           </div>
                           <div className="flex flex-col gap-2">
                             <Button 
@@ -476,7 +483,7 @@ const AdminDashboardPage = () => {
                     
                     {dakkapelOpLocatie.length === 0 && (
                       <div className="text-center py-8 text-gray-500">
-                        Geen projecten op locatie gevonden
+                        Geen dakkapel projecten op locatie gevonden
                       </div>
                     )}
                   </div>
@@ -488,7 +495,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="in-aanbouw" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">In Aanbouw ({dakkapelInAanbouw.length})</CardTitle>
+                  <CardTitle className="text-xl">In Aanbouw Dakkapel ({dakkapelInAanbouw.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -513,7 +520,7 @@ const AdminDashboardPage = () => {
             <TabsContent value="afgerond" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Afgeronde Aanvragen ({dakkapelAfgerond.length})</CardTitle>
+                  <CardTitle className="text-xl">Afgeronde Dakkapel Aanvragen ({dakkapelAfgerond.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
