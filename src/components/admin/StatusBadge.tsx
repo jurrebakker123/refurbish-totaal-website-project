@@ -22,7 +22,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     case 'niet_akkoord':
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-200"><X className="w-3 h-3 mr-1" />Niet Akkoord</Badge>;
     case 'op_locatie':
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200"><MapPin className="w-3 h-3 mr-1" />Op Locatie</Badge>;
+      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200"><MapPin className="w-3 h-3 mr-1" />Op Locatie/Factureren</Badge>;
     case 'in_aanbouw':
       return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200"><Wrench className="w-3 h-3 mr-1" />In Aanbouw</Badge>;
     case 'afgehandeld':

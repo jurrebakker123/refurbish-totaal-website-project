@@ -12,6 +12,7 @@ import QuoteDialog from '@/components/admin/QuoteDialog';
 import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
+import InvoiceActions from '@/components/admin/InvoiceActions';
 import { toast } from 'sonner';
 
 const AdminZonnepanelenPage = () => {
@@ -262,7 +263,7 @@ const AdminZonnepanelenPage = () => {
                   Akkoord ({zonnepanelenAkkoord.length})
                 </TabsTrigger>
                 <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie ({zonnepanelenOpLocatie.length})
+                  Op Locatie/Factureren ({zonnepanelenOpLocatie.length})
                 </TabsTrigger>
                 <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   In Aanbouw ({zonnepanelenInAanbouw.length})
@@ -363,7 +364,7 @@ const AdminZonnepanelenPage = () => {
             <TabsContent value="op-locatie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie ({zonnepanelenOpLocatie.length})</CardTitle>
+                  <CardTitle className="text-xl">Op Locatie/Factureren ({zonnepanelenOpLocatie.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -372,14 +373,42 @@ const AdminZonnepanelenPage = () => {
                     showStatusFilter={false}
                   />
                   
-                  <ConfiguratorRequestsTable 
-                    zonnepanelen={zonnepanelenOpLocatie}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="zonnepaneel"
-                  />
+                  <div className="space-y-4">
+                    {zonnepanelenOpLocatie.map((item) => (
+                      <Card key={item.id} className="p-4">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="font-semibold text-lg">{item.naam}</h3>
+                            <p className="text-gray-600">{item.email} • {item.telefoon}</p>
+                            <p className="text-gray-600">{item.adres}, {item.postcode} {item.plaats}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {item.aantal_panelen}x {item.type_paneel} ({item.vermogen}W) • Prijs: €{item.totaal_prijs}
+                            </p>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => openDetails(item)}
+                              className="text-xs"
+                            >
+                              Details
+                            </Button>
+                            <InvoiceActions 
+                              item={item} 
+                              onInvoiceSent={loadDashboardData}
+                            />
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                    
+                    {zonnepanelenOpLocatie.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        Geen projecten op locatie gevonden
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
