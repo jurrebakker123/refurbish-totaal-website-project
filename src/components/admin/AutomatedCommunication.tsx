@@ -47,55 +47,8 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
     { status: 'afgehandeld', title: 'Project afgerond', enabled: true }
   ];
 
-  const sendTestMessage = async (type: string, medium: string) => {
-    console.log('Sending test message:', { type, medium });
-    setLoading(true);
-    
-    try {
-      let testData = {};
-      
-      if (type === 'status update') {
-        testData = {
-          type: 'status_update',
-          customerName: 'Test Klant',
-          customerEmail: 'test@example.com',
-          projectType: 'dakkapel',
-          newStatus: 'in_behandeling',
-          medium: medium
-        };
-      } else if (type === 'review request') {
-        testData = {
-          type: 'review_request',
-          customerName: 'Test Klant',
-          customerEmail: 'test@example.com',
-          projectType: 'dakkapel',
-          medium: medium
-        };
-      }
-
-      // Simulate API call to communication service
-      console.log('Test message data:', testData);
-      
-      // In a real implementation, this would call an edge function
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success(`✅ Test ${type} via ${medium} succesvol verzonden!`);
-      onSendMessage({ 
-        type: 'test_message', 
-        messageType: type, 
-        medium: medium,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error('Error sending test message:', error);
-      toast.error(`❌ Fout bij verzenden test ${type} via ${medium}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const sendAutomaticStatusUpdate = async (customerData: any, newStatus: string) => {
-    console.log('Sending automatic status update:', { customerData, newStatus });
+  const sendRealStatusUpdate = async (customerData: any, newStatus: string) => {
+    console.log('Sending real status update:', { customerData, newStatus });
     setLoading(true);
     
     try {
@@ -112,16 +65,28 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
       const subject = statusUpdateTemplate.subject
         .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
 
-      console.log('Status update details:', { 
-        to: customerData.email, 
-        subject, 
-        message,
-        status: newStatus 
+      // Use the send-quote edge function to send real emails
+      const { data, error } = await supabase.functions.invoke('send-quote', {
+        body: {
+          templateParams: {
+            from_name: 'Refurbish Totaal Nederland',
+            from_email: 'info@refurbishtotaalnederland.nl',
+            to_email: customerData.email || customerData.emailadres,
+            to_name: customerData.naam || customerData.name,
+            subject: subject,
+            message: message,
+            reply_to: 'info@refurbishtotaalnederland.nl'
+          }
+        }
       });
+
+      if (error) {
+        console.error('Error sending status update:', error);
+        toast.error('❌ Fout bij verzenden status update: ' + error.message);
+        return;
+      }
       
-      // In a real implementation, this would call the send-quote edge function or similar
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      console.log('Status update sent successfully:', data);
       toast.success(`✅ Status update verzonden naar ${customerData.naam || customerData.name}`);
       onSendMessage({ 
         type: 'status_update', 
@@ -137,8 +102,8 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
     }
   };
 
-  const sendReviewRequest = async (customerData: any) => {
-    console.log('Sending review request:', customerData);
+  const sendRealReviewRequest = async (customerData: any) => {
+    console.log('Sending real review request:', customerData);
     setLoading(true);
     
     try {
@@ -154,15 +119,28 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
       const subject = reviewRequestTemplate.subject
         .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
 
-      console.log('Review request details:', { 
-        to: customerData.email, 
-        subject,
-        message 
+      // Use the send-quote edge function to send real emails
+      const { data, error } = await supabase.functions.invoke('send-quote', {
+        body: {
+          templateParams: {
+            from_name: 'Refurbish Totaal Nederland',
+            from_email: 'info@refurbishtotaalnederland.nl',
+            to_email: customerData.email || customerData.emailadres,
+            to_name: customerData.naam || customerData.name,
+            subject: subject,
+            message: message,
+            reply_to: 'info@refurbishtotaalnederland.nl'
+          }
+        }
       });
+
+      if (error) {
+        console.error('Error sending review request:', error);
+        toast.error('❌ Fout bij verzenden review aanvraag: ' + error.message);
+        return;
+      }
       
-      // In a real implementation, this would call an edge function
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      console.log('Review request sent successfully:', data);
       toast.success(`✅ Review aanvraag verzonden naar ${customerData.naam || customerData.name}`);
       onSendMessage({ 
         type: 'review_request', 
@@ -172,6 +150,65 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
     } catch (error) {
       console.error('Error sending review request:', error);
       toast.error('❌ Fout bij verzenden review aanvraag');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendInvoiceReminder = async (factuurData: any, reminderLevel: number) => {
+    console.log('Sending real invoice reminder:', { factuurData, reminderLevel });
+    setLoading(true);
+    
+    try {
+      const reminderMessages = {
+        1: 'Dit is een vriendelijke herinnering dat uw factuur nog openstaat.',
+        2: 'Dit is de tweede herinnering voor uw openstaande factuur. Wij verzoeken u vriendelijk om deze zo spoedig mogelijk te voldoen.',
+        3: 'Dit is de derde en laatste herinnering voor uw openstaande factuur. Indien niet binnen 7 dagen betaald, worden er incassokosten in rekening gebracht.'
+      };
+
+      const subject = `${reminderLevel}e Herinnering - Factuur ${factuurData.factuur_nummer}`;
+      const message = `Beste ${factuurData.klant_naam},
+
+${reminderMessages[reminderLevel as keyof typeof reminderMessages]}
+
+Factuurgegevens:
+- Factuurnummer: ${factuurData.factuur_nummer}
+- Bedrag: €${factuurData.bedrag.toFixed(2)}
+- Vervaldatum: ${factuurData.vervaldatum ? new Date(factuurData.vervaldatum).toLocaleDateString('nl-NL') : 'Op aanvraag'}
+
+Voor vragen kunt u contact met ons opnemen.
+
+Met vriendelijke groet,
+Refurbish Totaal Nederland`;
+
+      // Use the send-quote edge function to send real emails
+      const { data, error } = await supabase.functions.invoke('send-quote', {
+        body: {
+          templateParams: {
+            from_name: 'Refurbish Totaal Nederland',
+            from_email: 'info@refurbishtotaalnederland.nl',
+            to_email: factuurData.klant_email,
+            to_name: factuurData.klant_naam,
+            subject: subject,
+            message: message,
+            reply_to: 'info@refurbishtotaalnederland.nl'
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Error sending reminder:', error);
+        toast.error('❌ Fout bij verzenden herinnering: ' + error.message);
+        return false;
+      }
+      
+      console.log('Reminder sent successfully:', data);
+      toast.success(`✅ ${reminderLevel}e herinnering verzonden naar ${factuurData.klant_naam}`);
+      return true;
+    } catch (error) {
+      console.error('Error sending reminder:', error);
+      toast.error('❌ Fout bij verzenden herinnering');
+      return false;
     } finally {
       setLoading(false);
     }
@@ -208,40 +245,19 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
     }
   };
 
-  const triggerAutomatedFlow = async (trigger: string) => {
-    console.log('Triggering automated flow:', trigger);
-    setLoading(true);
-
-    try {
-      switch (trigger) {
-        case 'status_change':
-          // Simulate status change automation
-          await sendAutomaticStatusUpdate({
-            naam: 'Demo Klant',
-            email: 'demo@example.com',
-            model: 'Rechthoekig'
-          }, 'in_behandeling');
-          break;
-          
-        case 'project_completed':
-          // Simulate project completion automation
-          await sendReviewRequest({
-            naam: 'Demo Klant',
-            email: 'demo@example.com',
-            model: 'Rechthoekig'
-          });
-          break;
-          
-        default:
-          toast.info('✨ Geautomatiseerde flow geactiveerd!');
-      }
-    } catch (error) {
-      console.error('Error triggering automated flow:', error);
-      toast.error('❌ Fout bij activeren geautomatiseerde flow');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Expose methods for external use
+  React.useEffect(() => {
+    // Attach functions to window for external access
+    (window as any).sendAutomaticStatusUpdate = sendRealStatusUpdate;
+    (window as any).sendAutomaticReviewRequest = sendRealReviewRequest;
+    (window as any).sendAutomaticInvoiceReminder = sendInvoiceReminder;
+    
+    return () => {
+      delete (window as any).sendAutomaticStatusUpdate;
+      delete (window as any).sendAutomaticReviewRequest;
+      delete (window as any).sendAutomaticInvoiceReminder;
+    };
+  }, [automationSettings, statusUpdateTemplate, reviewRequestTemplate]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -349,30 +365,11 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                     ))}
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => sendTestMessage('status update', 'email')}
-                      disabled={loading}
-                    >
-                      <Mail className="h-4 w-4 mr-2" />
-                      {loading ? 'Verzenden...' : 'Test Email'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => sendTestMessage('status update', 'SMS')}
-                      disabled={loading}
-                    >
-                      <Smartphone className="h-4 w-4 mr-2" />
-                      Test SMS
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => sendTestMessage('status update', 'WhatsApp')}
-                      disabled={loading}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Test WhatsApp
-                    </Button>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-green-800 mb-2">✅ Automatische Status Updates Actief</h4>
+                    <p className="text-sm text-green-700">
+                      Emails worden automatisch verstuurd bij statuswijzigingen.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -431,22 +428,11 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => sendTestMessage('review request', 'email')}
-                      disabled={loading}
-                    >
-                      <Star className="h-4 w-4 mr-2" />
-                      {loading ? 'Verzenden...' : 'Test Review Email'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => sendTestMessage('review request', 'SMS')}
-                      disabled={loading}
-                    >
-                      <Smartphone className="h-4 w-4 mr-2" />
-                      Test Review SMS
-                    </Button>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-green-800 mb-2">✅ Automatische Review Aanvragen Actief</h4>
+                    <p className="text-sm text-green-700">
+                      Review aanvragen worden automatisch verstuurd bij projectafronding.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -458,9 +444,9 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Live Automatisering</CardTitle>
+                  <CardTitle className="text-lg">Live Automatisering Status</CardTitle>
                   <p className="text-sm text-gray-600">
-                    Test en activeer geautomatiseerde communicatie flows
+                    Overzicht van alle actieve automatische communicatie flows
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -468,19 +454,15 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                     <Card className="p-4 border-green-200 bg-green-50">
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <AlertCircle className="h-5 w-5 text-green-600" />
-                          <h4 className="font-medium text-green-800">Status Wijziging Flow</h4>
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                          <h4 className="font-medium text-green-800">Status Updates</h4>
                         </div>
                         <p className="text-sm text-green-700">
-                          Test automatische communicatie bij status wijzigingen
+                          Automatisch actief - emails worden verstuurd bij statuswijzigingen
                         </p>
-                        <Button 
-                          onClick={() => triggerAutomatedFlow('status_change')}
-                          disabled={loading}
-                          className="w-full bg-green-600 hover:bg-green-700"
-                        >
-                          {loading ? 'Activeren...' : 'Test Status Update Flow'}
-                        </Button>
+                        <Badge className="bg-green-600 text-white">
+                          ✅ Live & Werkend
+                        </Badge>
                       </div>
                     </Card>
 
@@ -488,19 +470,44 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
                           <Star className="h-5 w-5 text-blue-600" />
-                          <h4 className="font-medium text-blue-800">Project Afronding Flow</h4>
+                          <h4 className="font-medium text-blue-800">Review Aanvragen</h4>
                         </div>
                         <p className="text-sm text-blue-700">
-                          Test automatische review aanvraag bij project afronding
+                          Automatisch actief - review aanvragen bij projectafronding
                         </p>
-                        <Button 
-                          onClick={() => triggerAutomatedFlow('project_completed')}
-                          disabled={loading}
-                          variant="outline"
-                          className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
-                        >
-                          {loading ? 'Activeren...' : 'Test Review Flow'}
-                        </Button>
+                        <Badge className="bg-blue-600 text-white">
+                          ✅ Live & Werkend
+                        </Badge>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4 border-orange-200 bg-orange-50">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-5 w-5 text-orange-600" />
+                          <h4 className="font-medium text-orange-800">Factuur Herinneringen</h4>
+                        </div>
+                        <p className="text-sm text-orange-700">
+                          Automatisch actief - herinneringen worden verstuurd via facturen overzicht
+                        </p>
+                        <Badge className="bg-orange-600 text-white">
+                          ✅ Live & Werkend
+                        </Badge>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4 border-purple-200 bg-purple-50">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-5 w-5 text-purple-600" />
+                          <h4 className="font-medium text-purple-800">Follow-up Reminders</h4>
+                        </div>
+                        <p className="text-sm text-purple-700">
+                          Configureerbare herinneringen voor openstaande offertes
+                        </p>
+                        <Badge variant={automationSettings.followupReminders ? "default" : "secondary"}>
+                          {automationSettings.followupReminders ? "✅ Actief" : "Inactief"}
+                        </Badge>
                       </div>
                     </Card>
                   </div>
@@ -511,19 +518,19 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                       <div className="flex justify-between">
                         <span>Status Updates:</span>
                         <Badge variant={automationSettings.autoStatusUpdates ? "default" : "secondary"}>
-                          {automationSettings.autoStatusUpdates ? "Actief" : "Inactief"}
+                          {automationSettings.autoStatusUpdates ? "✅ Actief" : "Inactief"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Review Aanvragen:</span>
                         <Badge variant={automationSettings.autoReviewRequests ? "default" : "secondary"}>
-                          {automationSettings.autoReviewRequests ? "Actief" : "Inactief"}
+                          {automationSettings.autoReviewRequests ? "✅ Actief" : "Inactief"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Follow-up Reminders:</span>
                         <Badge variant={automationSettings.followupReminders ? "default" : "secondary"}>
-                          {automationSettings.followupReminders ? "Actief" : "Inactief"}
+                          {automationSettings.followupReminders ? "✅ Actief" : "Inactief"}
                         </Badge>
                       </div>
                     </div>
@@ -593,7 +600,7 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Annuleren
+              Sluiten
             </Button>
             <Button onClick={saveTemplate} disabled={loading}>
               <CheckCircle className="h-4 w-4 mr-2" />

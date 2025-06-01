@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -110,26 +109,109 @@ const InvoiceOverview = () => {
 
   const markAsPaid = async (id: string) => {
     console.log('Marking invoice as paid:', id);
-    await updateInvoiceStatus(id, 'betaald');
+    const success = await updateInvoiceStatus(id, 'betaald');
+    if (success) {
+      toast.success('✅ Factuur gemarkeerd als betaald');
+    }
   };
 
   const sendReminder = async (id: string, reminderLevel: number) => {
     console.log('Sending reminder:', { id, reminderLevel });
-    const statusMap = {
-      1: 'herinnering_1',
-      2: 'herinnering_2',
-      3: 'herinnering_3'
-    };
+    setProcessingAction(id);
     
-    const newStatus = statusMap[reminderLevel as keyof typeof statusMap];
-    if (newStatus) {
-      await updateInvoiceStatus(id, newStatus);
+    try {
+      // First get the invoice data
+      const { data: factuur, error: fetchError } = await supabase
+        .from('facturen')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (fetchError || !factuur) {
+        console.error('Error fetching invoice:', fetchError);
+        toast.error('Fout bij ophalen factuurgegevens');
+        return;
+      }
+
+      // Send the reminder email using the send-quote function
+      const reminderMessages = {
+        1: 'Dit is een vriendelijke herinnering dat uw factuur nog openstaat.',
+        2: 'Dit is de tweede herinnering voor uw openstaande factuur. Wij verzoeken u vriendelijk om deze zo spoedig mogelijk te voldoen.',
+        3: 'Dit is de derde en laatste herinnering voor uw openstaande factuur. Indien niet binnen 7 dagen betaald, worden er incassokosten in rekening gebracht.'
+      };
+
+      const subject = `${reminderLevel}e Herinnering - Factuur ${factuur.factuur_nummer}`;
+      const message = `Beste ${factuur.klant_naam},
+
+${reminderMessages[reminderLevel as keyof typeof reminderMessages]}
+
+Factuurgegevens:
+- Factuurnummer: ${factuur.factuur_nummer}
+- Bedrag: €${factuur.bedrag.toFixed(2)}
+- Vervaldatum: ${factuur.vervaldatum ? new Date(factuur.vervaldatum).toLocaleDateString('nl-NL') : 'Op aanvraag'}
+
+Voor vragen kunt u contact met ons opnemen.
+
+Met vriendelijke groet,
+Refurbish Totaal Nederland`;
+
+      console.log('Sending reminder email with data:', {
+        to: factuur.klant_email,
+        subject,
+        reminderLevel
+      });
+
+      // Send the email using the send-quote edge function
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-quote', {
+        body: {
+          templateParams: {
+            from_name: 'Refurbish Totaal Nederland',
+            from_email: 'info@refurbishtotaalnederland.nl',
+            to_email: factuur.klant_email,
+            to_name: factuur.klant_naam,
+            subject: subject,
+            message: message,
+            reply_to: 'info@refurbishtotaalnederland.nl'
+          }
+        }
+      });
+
+      if (emailError) {
+        console.error('Error sending reminder email:', emailError);
+        toast.error('❌ Fout bij verzenden herinnering: ' + emailError.message);
+        return;
+      }
+
+      console.log('Reminder email sent successfully:', emailData);
+
+      // Update the invoice status
+      const statusMap = {
+        1: 'herinnering_1',
+        2: 'herinnering_2',
+        3: 'herinnering_3'
+      };
+      
+      const newStatus = statusMap[reminderLevel as keyof typeof statusMap];
+      if (newStatus) {
+        const success = await updateInvoiceStatus(id, newStatus);
+        if (success) {
+          toast.success(`✅ ${reminderLevel}e herinnering succesvol verzonden naar ${factuur.klant_naam}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error in sendReminder:', error);
+      toast.error('❌ Onverwachte fout bij verzenden herinnering');
+    } finally {
+      setProcessingAction(null);
     }
   };
 
   const markAsOverdue = async (id: string) => {
     console.log('Marking invoice as overdue:', id);
-    await updateInvoiceStatus(id, 'te_laat');
+    const success = await updateInvoiceStatus(id, 'te_laat');
+    if (success) {
+      toast.success('✅ Factuur gemarkeerd als te laat');
+    }
   };
 
   const getStatusBadge = (status: string) => {
