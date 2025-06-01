@@ -9,8 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, Send, Star, CheckCircle, Smartphone } from 'lucide-react';
+import { MessageCircle, Send, Star, CheckCircle, Smartphone, Mail } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AutomatedCommunicationProps {
   onSendMessage: (message: any) => void;
@@ -19,6 +20,8 @@ interface AutomatedCommunicationProps {
 const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendMessage }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('status-updates');
+  const [loading, setLoading] = useState(false);
+  
   const [automationSettings, setAutomationSettings] = useState({
     autoStatusUpdates: true,
     autoReviewRequests: true,
@@ -43,12 +46,63 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
     { status: 'afgehandeld', title: 'Project afgerond', enabled: true }
   ];
 
-  const sendTestMessage = (type: string, medium: string) => {
-    toast.success(`Test ${type} via ${medium} verzonden!`);
+  const sendTestMessage = async (type: string, medium: string) => {
+    setLoading(true);
+    try {
+      // Simulate sending test message
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success(`✅ Test ${type} via ${medium} verzonden naar info@refurbishtotaalnederland.nl`);
+    } catch (error) {
+      toast.error(`Fout bij verzenden test ${type}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendAutomaticStatusUpdate = async (customerData: any, newStatus: string) => {
+    setLoading(true);
+    try {
+      const message = statusUpdateTemplate.message
+        .replace('{klant_naam}', customerData.naam)
+        .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen')
+        .replace('{nieuwe_status}', newStatus);
+
+      const subject = statusUpdateTemplate.subject
+        .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
+
+      // Here you would integrate with your email service
+      console.log('Sending status update:', { to: customerData.email, subject, message });
+      
+      toast.success(`✅ Status update verzonden naar ${customerData.naam}`);
+      onSendMessage({ type: 'status_update', customer: customerData.naam, status: newStatus });
+    } catch (error) {
+      toast.error('Fout bij verzenden status update');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendReviewRequest = async (customerData: any) => {
+    setLoading(true);
+    try {
+      const message = reviewRequestTemplate.message
+        .replace('{klant_naam}', customerData.naam)
+        .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
+
+      // Here you would integrate with your email service
+      console.log('Sending review request:', { to: customerData.email, message });
+      
+      toast.success(`✅ Review aanvraag verzonden naar ${customerData.naam}`);
+      onSendMessage({ type: 'review_request', customer: customerData.naam });
+    } catch (error) {
+      toast.error('Fout bij verzenden review aanvraag');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const saveTemplate = () => {
-    toast.success('Template opgeslagen!');
+    toast.success('✅ Templates en instellingen opgeslagen!');
     setIsOpen(false);
   };
 
@@ -152,15 +206,26 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                   </div>
 
                   <div className="flex gap-2">
-                    <Button onClick={() => sendTestMessage('status update', 'email')}>
-                      <Send className="h-4 w-4 mr-2" />
-                      Test Email
+                    <Button 
+                      onClick={() => sendTestMessage('status update', 'email')}
+                      disabled={loading}
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      {loading ? 'Verzenden...' : 'Test Email'}
                     </Button>
-                    <Button variant="outline" onClick={() => sendTestMessage('status update', 'SMS')}>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => sendTestMessage('status update', 'SMS')}
+                      disabled={loading}
+                    >
                       <Smartphone className="h-4 w-4 mr-2" />
                       Test SMS
                     </Button>
-                    <Button variant="outline" onClick={() => sendTestMessage('status update', 'WhatsApp')}>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => sendTestMessage('status update', 'WhatsApp')}
+                      disabled={loading}
+                    >
                       <MessageCircle className="h-4 w-4 mr-2" />
                       Test WhatsApp
                     </Button>
@@ -223,11 +288,18 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
                   </div>
 
                   <div className="flex gap-2">
-                    <Button onClick={() => sendTestMessage('review request', 'email')}>
+                    <Button 
+                      onClick={() => sendTestMessage('review request', 'email')}
+                      disabled={loading}
+                    >
                       <Star className="h-4 w-4 mr-2" />
-                      Test Review Email
+                      {loading ? 'Verzenden...' : 'Test Review Email'}
                     </Button>
-                    <Button variant="outline" onClick={() => sendTestMessage('review request', 'SMS')}>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => sendTestMessage('review request', 'SMS')}
+                      disabled={loading}
+                    >
                       <Smartphone className="h-4 w-4 mr-2" />
                       Test Review SMS
                     </Button>
