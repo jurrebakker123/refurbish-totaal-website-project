@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +14,7 @@ import DashboardStats from '@/components/admin/DashboardStats';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
+import InvoiceOverview from '@/components/admin/InvoiceOverview';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
@@ -264,7 +264,7 @@ const AdminDashboardPage = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-9 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-10 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({dakkapelTeVerwerken.length})
                 </TabsTrigger>
@@ -288,6 +288,9 @@ const AdminDashboardPage = () => {
                 </TabsTrigger>
                 <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Afgerond ({dakkapelAfgerond.length})
+                </TabsTrigger>
+                <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  💰 Facturatie
                 </TabsTrigger>
                 <TabsTrigger value="prijzen" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Prijsbeheer
@@ -537,6 +540,11 @@ const AdminDashboardPage = () => {
                   />
                 </CardContent>
               </Card>
+            </TabsContent>
+            
+            {/* Facturatie Tab */}
+            <TabsContent value="facturatie" className="space-y-6">
+              <InvoiceOverview />
             </TabsContent>
             
             {/* Prijsbeheer Tab */}

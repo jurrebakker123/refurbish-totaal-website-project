@@ -234,6 +234,78 @@ export type Database = {
         }
         Relationships: []
       }
+      facturen: {
+        Row: {
+          bedrag: number
+          beschrijving: string
+          betaald_op: string | null
+          created_at: string
+          email_verzonden_op: string | null
+          factuur_nummer: string
+          factuurdatum: string
+          herinnering_1_verzonden_op: string | null
+          herinnering_2_verzonden_op: string | null
+          herinnering_3_verzonden_op: string | null
+          id: string
+          klant_adres: string
+          klant_email: string
+          klant_naam: string
+          notities: string | null
+          project_id: string
+          project_type: string
+          status: string
+          type: string
+          updated_at: string
+          vervaldatum: string | null
+        }
+        Insert: {
+          bedrag: number
+          beschrijving: string
+          betaald_op?: string | null
+          created_at?: string
+          email_verzonden_op?: string | null
+          factuur_nummer: string
+          factuurdatum?: string
+          herinnering_1_verzonden_op?: string | null
+          herinnering_2_verzonden_op?: string | null
+          herinnering_3_verzonden_op?: string | null
+          id?: string
+          klant_adres: string
+          klant_email: string
+          klant_naam: string
+          notities?: string | null
+          project_id: string
+          project_type: string
+          status?: string
+          type: string
+          updated_at?: string
+          vervaldatum?: string | null
+        }
+        Update: {
+          bedrag?: number
+          beschrijving?: string
+          betaald_op?: string | null
+          created_at?: string
+          email_verzonden_op?: string | null
+          factuur_nummer?: string
+          factuurdatum?: string
+          herinnering_1_verzonden_op?: string | null
+          herinnering_2_verzonden_op?: string | null
+          herinnering_3_verzonden_op?: string | null
+          id?: string
+          klant_adres?: string
+          klant_email?: string
+          klant_naam?: string
+          notities?: string | null
+          project_id?: string
+          project_type?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          vervaldatum?: string | null
+        }
+        Relationships: []
+      }
       refurbished_zonnepanelen: {
         Row: {
           aantal_panelen: number

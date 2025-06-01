@@ -21,7 +21,7 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
   
   const [customerInvoice, setCustomerInvoice] = useState({
     bedrag: item.totaal_prijs || '',
-    beschrijving: 'Dakkapel werkzaamheden uitgevoerd conform offerte',
+    beschrijving: item.model ? 'Dakkapel werkzaamheden uitgevoerd conform offerte' : 'Zonnepanelen werkzaamheden uitgevoerd conform offerte',
     vervaldatum: ''
   });
   
@@ -29,9 +29,14 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
     bedrijfsnaam: '',
     email: '',
     bedrag: '',
-    beschrijving: 'Vakspecialist werkzaamheden voor dakkapel project',
+    beschrijving: item.model ? 'Vakspecialist werkzaamheden voor dakkapel project' : 'Vakspecialist werkzaamheden voor zonnepanelen project',
     vervaldatum: ''
   });
+
+  // Determine project type based on item structure
+  const getProjectType = () => {
+    return item.model ? 'dakkapel' : 'zonnepaneel';
+  };
 
   const handleCustomerInvoice = async () => {
     if (!customerInvoice.bedrag || !customerInvoice.beschrijving) {
@@ -41,6 +46,7 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
 
     setLoading(true);
     try {
+      const projectType = getProjectType();
       const invoiceData = {
         customerName: item.naam,
         customerEmail: item.email,
@@ -48,14 +54,18 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
         description: customerInvoice.beschrijving,
         amount: parseFloat(customerInvoice.bedrag.toString().replace(',', '.')),
         dueDate: customerInvoice.vervaldatum,
-        projectDetails: item.model ? `Dakkapel Model: ${item.model}` : `${item.aantal_panelen}x ${item.type_paneel}`,
+        projectDetails: projectType === 'dakkapel' 
+          ? `Dakkapel Model: ${item.model}` 
+          : `${item.aantal_panelen}x ${item.type_paneel}`,
         type: 'customer'
       };
 
       const { data, error } = await supabase.functions.invoke('generate-invoice-pdf', {
         body: {
           invoiceData,
-          type: 'customer'
+          type: 'customer',
+          projectId: item.id,
+          projectType
         }
       });
 
@@ -69,7 +79,9 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
         setIsCustomerInvoiceOpen(false);
         setCustomerInvoice({
           bedrag: item.totaal_prijs || '',
-          beschrijving: 'Dakkapel werkzaamheden uitgevoerd conform offerte',
+          beschrijving: projectType === 'dakkapel' 
+            ? 'Dakkapel werkzaamheden uitgevoerd conform offerte'
+            : 'Zonnepanelen werkzaamheden uitgevoerd conform offerte',
           vervaldatum: ''
         });
         onInvoiceSent();
@@ -92,6 +104,7 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
 
     setLoading(true);
     try {
+      const projectType = getProjectType();
       const invoiceData = {
         customerName: specialistInvoice.bedrijfsnaam,
         customerEmail: specialistInvoice.email,
@@ -99,14 +112,18 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
         description: specialistInvoice.beschrijving,
         amount: parseFloat(specialistInvoice.bedrag.toString().replace(',', '.')),
         dueDate: specialistInvoice.vervaldatum,
-        projectDetails: `Dakkapel Project: ${item.naam} - ${item.adres}`,
+        projectDetails: projectType === 'dakkapel' 
+          ? `Dakkapel Project: ${item.naam} - ${item.adres}`
+          : `Zonnepanelen Project: ${item.naam} - ${item.adres}`,
         type: 'specialist'
       };
 
       const { data, error } = await supabase.functions.invoke('generate-invoice-pdf', {
         body: {
           invoiceData,
-          type: 'specialist'
+          type: 'specialist',
+          projectId: item.id,
+          projectType
         }
       });
 
@@ -122,7 +139,9 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
           bedrijfsnaam: '',
           email: '',
           bedrag: '',
-          beschrijving: 'Vakspecialist werkzaamheden voor dakkapel project',
+          beschrijving: projectType === 'dakkapel' 
+            ? 'Vakspecialist werkzaamheden voor dakkapel project'
+            : 'Vakspecialist werkzaamheden voor zonnepanelen project',
           vervaldatum: ''
         });
         onInvoiceSent();
@@ -136,6 +155,8 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
       setLoading(false);
     }
   };
+
+  const projectType = getProjectType();
 
   return (
     <div className="flex gap-2">
@@ -155,7 +176,7 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
             <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
               <p><strong>Klant:</strong> {item.naam}</p>
               <p><strong>Email:</strong> {item.email}</p>
-              <p><strong>Project:</strong> Dakkapel {item.model}</p>
+              <p><strong>Project:</strong> {projectType === 'dakkapel' ? `Dakkapel ${item.model}` : `${item.aantal_panelen}x ${item.type_paneel}`}</p>
             </div>
             
             <div>
@@ -218,9 +239,9 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
           </DialogHeader>
           <div className="space-y-4">
             <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-              <p><strong>Dakkapel Project:</strong> {item.naam}</p>
+              <p><strong>Project:</strong> {item.naam}</p>
               <p><strong>Locatie:</strong> {item.adres}</p>
-              <p><strong>Model:</strong> {item.model}</p>
+              <p><strong>Type:</strong> {projectType === 'dakkapel' ? `Dakkapel ${item.model}` : `${item.aantal_panelen}x ${item.type_paneel}`}</p>
             </div>
             
             <div>

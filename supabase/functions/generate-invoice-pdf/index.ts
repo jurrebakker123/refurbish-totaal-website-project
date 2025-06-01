@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from "npm:resend@2.0.0";
@@ -21,6 +20,8 @@ interface InvoiceData {
   companyName?: string;
   projectDetails?: string;
   type: 'customer' | 'specialist';
+  projectId: string;
+  projectType: 'dakkapel' | 'zonnepaneel';
 }
 
 const generateInvoiceHTML = (data: InvoiceData): string => {
@@ -200,7 +201,7 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { invoiceData, type } = await req.json();
+    const { invoiceData, type, projectId, projectType } = await req.json();
     
     console.log('Generating and sending PDF invoice for:', invoiceData);
 
@@ -212,12 +213,11 @@ const handler = async (req: Request): Promise<Response> => {
     const htmlContent = generateInvoiceHTML({
       ...invoiceData,
       invoiceNumber,
-      type
+      type,
+      projectId,
+      projectType
     });
 
-    // Convert HTML to PDF using a simple HTML to PDF conversion
-    // For now we'll send the HTML as attachment, but in production you'd use a proper PDF library
-    
     const emailSubject = type === 'specialist' 
       ? `Factuur ${invoiceNumber} - Vakspecialist werkzaamheden`
       : `Factuur ${invoiceNumber} - Refurbish Totaal Nederland`;
@@ -275,6 +275,28 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (emailResult.error) {
       throw new Error(`Email sending failed: ${emailResult.error.message}`);
+    }
+
+    // Save invoice to database
+    const { error: dbError } = await supabase
+      .from('facturen')
+      .insert({
+        factuur_nummer: invoiceNumber,
+        klant_naam: invoiceData.customerName,
+        klant_email: invoiceData.customerEmail,
+        klant_adres: invoiceData.customerAddress,
+        bedrag: invoiceData.amount,
+        beschrijving: invoiceData.description,
+        vervaldatum: invoiceData.dueDate || null,
+        status: 'verstuurd',
+        type: type,
+        project_id: projectId,
+        project_type: projectType,
+        email_verzonden_op: new Date().toISOString()
+      });
+
+    if (dbError) {
+      console.error('Database error saving invoice:', dbError);
     }
 
     console.log('Invoice email sent successfully:', emailResult.data);
