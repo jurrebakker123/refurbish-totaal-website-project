@@ -11,29 +11,10 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Euro, Mail, Calendar, CheckCircle, AlertTriangle, Clock } from 'lucide-react';
-import StatusBadge from './StatusBadge';
+import { Tables } from '@/integrations/supabase/types';
 
-interface Factuur {
-  id: string;
-  factuur_nummer: string;
-  klant_naam: string;
-  klant_email: string;
-  klant_adres: string;
-  bedrag: number;
-  beschrijving: string;
-  vervaldatum: string;
-  factuurdatum: string;
-  status: string;
-  type: 'customer' | 'specialist';
-  project_type: 'dakkapel' | 'zonnepaneel';
-  email_verzonden_op: string;
-  herinnering_1_verzonden_op?: string;
-  herinnering_2_verzonden_op?: string;
-  herinnering_3_verzonden_op?: string;
-  betaald_op?: string;
-  notities?: string;
-  created_at: string;
-}
+// Use the database type from Supabase
+type Factuur = Tables<'facturen'>;
 
 const InvoiceOverview = () => {
   const [facturen, setFacturen] = useState<Factuur[]>([]);
@@ -117,7 +98,7 @@ const InvoiceOverview = () => {
     }
   };
 
-  const isOverdue = (vervaldatum: string) => {
+  const isOverdue = (vervaldatum: string | null) => {
     if (!vervaldatum) return false;
     const today = new Date();
     const dueDate = new Date(vervaldatum);
@@ -234,7 +215,9 @@ const InvoiceOverview = () => {
                           Vervalt: {new Date(factuur.vervaldatum).toLocaleDateString('nl-NL')}
                         </span>
                       )}
-                      <span>Verstuurd: {new Date(factuur.email_verzonden_op).toLocaleDateString('nl-NL')}</span>
+                      {factuur.email_verzonden_op && (
+                        <span>Verstuurd: {new Date(factuur.email_verzonden_op).toLocaleDateString('nl-NL')}</span>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 ml-4">
