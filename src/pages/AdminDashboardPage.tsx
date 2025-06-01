@@ -245,7 +245,17 @@ const AdminDashboardPage = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
+          <h1 className="text-xl font-semibold text-brand-darkGreen">Dakkapel Admin</h1>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = '/zonnepanelen-admin'}
+              className="text-xs"
+            >
+              Zonnepanelen Admin
+            </Button>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <EmailMarketingDialog onCampaignSent={loadDashboardData} />
