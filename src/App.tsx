@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,6 +31,10 @@ import CertificaatPage from "./pages/CertificaatPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import InterestConfirmationPage from "./pages/InterestConfirmationPage";
+import AdminDakkapelPage from "./pages/AdminDakkapelPage";
+import AdminZonnepanelenDashboardPage from "./pages/AdminZonnepanelenDashboardPage";
+import AdminBouwhulpPage from "./pages/AdminBouwhulpPage";
+import AdminIsolatiePage from "./pages/AdminIsolatiePage";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -65,6 +68,10 @@ function App() {
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
             <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin-dakkapel" element={<AdminDakkapelPage />} />
+            <Route path="/admin-zonnepanelen-dashboard" element={<AdminZonnepanelenDashboardPage />} />
+            <Route path="/admin-bouwhulp" element={<AdminBouwhulpPage />} />
+            <Route path="/admin-isolatie" element={<AdminIsolatiePage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
             <Route path="*" element={<NotFound />} />
