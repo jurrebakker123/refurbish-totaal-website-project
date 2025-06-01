@@ -15,6 +15,9 @@ import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
 import InvoiceOverview from '@/components/admin/InvoiceOverview';
+import ConversieStats from '@/components/admin/ConversieStats';
+import NotificationCenter from '@/components/admin/NotificationCenter';
+import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
@@ -230,6 +233,10 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const handleSendMessage = (message: any) => {
+    toast.success('Bericht verzonden!');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -248,6 +255,8 @@ const AdminDashboardPage = () => {
           <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
         </div>
         <div className="flex items-center gap-4">
+          <NotificationCenter configuraties={allConfiguraties} />
+          <AutomatedCommunication onSendMessage={handleSendMessage} />
           <EmailMarketingDialog onCampaignSent={loadDashboardData} />
           <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
@@ -264,7 +273,7 @@ const AdminDashboardPage = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-10 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-11 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({dakkapelTeVerwerken.length})
                 </TabsTrigger>
@@ -288,6 +297,9 @@ const AdminDashboardPage = () => {
                 </TabsTrigger>
                 <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Afgerond ({dakkapelAfgerond.length})
+                </TabsTrigger>
+                <TabsTrigger value="conversie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  📊 Conversie Stats
                 </TabsTrigger>
                 <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   💰 Facturatie
@@ -540,6 +552,11 @@ const AdminDashboardPage = () => {
                   />
                 </CardContent>
               </Card>
+            </TabsContent>
+            
+            {/* Conversie Stats Tab */}
+            <TabsContent value="conversie" className="space-y-6">
+              <ConversieStats configuraties={allConfiguraties} type="dakkapel" />
             </TabsContent>
             
             {/* Facturatie Tab */}
