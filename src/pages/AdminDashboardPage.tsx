@@ -15,6 +15,7 @@ import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
 import { toast } from 'sonner';
+import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
 const AdminDashboardPage = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
@@ -246,6 +247,7 @@ const AdminDashboardPage = () => {
           <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Dakkapel Admin</h1>
         </div>
         <div className="flex items-center gap-4">
+          <EmailMarketingDialog onCampaignSent={loadDashboardData} />
           <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Vernieuwen

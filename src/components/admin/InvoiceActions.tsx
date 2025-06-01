@@ -2,13 +2,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Send, Plus } from 'lucide-react';
+import { FileText, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface InvoiceActionsProps {
   item: any;
@@ -37,18 +36,38 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
   const handleCustomerInvoice = async () => {
     setLoading(true);
     try {
-      // Hier zou de factuur logica komen - bijvoorbeeld via een edge function
-      console.log('Verstuur factuur naar klant:', {
-        klant: item.naam,
-        email: item.email,
-        ...customerInvoice
+      const invoiceData = {
+        customerName: item.naam,
+        customerEmail: item.email,
+        customerAddress: `${item.adres}, ${item.postcode} ${item.plaats}`,
+        description: customerInvoice.beschrijving || 'Werkzaamheden uitgevoerd',
+        amount: parseFloat(customerInvoice.bedrag.toString().replace(',', '.')),
+        dueDate: customerInvoice.vervaldatum,
+        projectDetails: item.model ? `Model: ${item.model}` : `${item.aantal_panelen}x ${item.type_paneel}`
+      };
+
+      const { data, error } = await supabase.functions.invoke('generate-invoice-pdf', {
+        body: {
+          invoiceData,
+          type: 'customer'
+        }
       });
-      
-      toast.success('Factuur succesvol verzonden naar klant!');
-      setIsCustomerInvoiceOpen(false);
-      onInvoiceSent();
+
+      if (error) {
+        toast.error('Fout bij genereren factuur: ' + error.message);
+        return;
+      }
+
+      if (data.success) {
+        toast.success('Factuur succesvol gegenereerd en verzonden naar klant!');
+        setIsCustomerInvoiceOpen(false);
+        onInvoiceSent();
+      } else {
+        toast.error('Fout bij genereren factuur: ' + data.error);
+      }
     } catch (error) {
-      toast.error('Fout bij versturen factuur');
+      console.error('Error generating customer invoice:', error);
+      toast.error('Onverwachte fout bij genereren factuur');
     } finally {
       setLoading(false);
     }
@@ -57,17 +76,38 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
   const handleSpecialistInvoice = async () => {
     setLoading(true);
     try {
-      // Hier zou de factuur logica komen - bijvoorbeeld via een edge function
-      console.log('Verstuur factuur naar specialist:', {
-        project: `${item.naam} - ${item.adres}`,
-        ...specialistInvoice
+      const invoiceData = {
+        customerName: specialistInvoice.bedrijfsnaam,
+        customerEmail: specialistInvoice.email,
+        customerAddress: 'Adres specialist',
+        description: specialistInvoice.beschrijving || 'Vakspecialist werkzaamheden',
+        amount: parseFloat(specialistInvoice.bedrag.toString().replace(',', '.')),
+        dueDate: specialistInvoice.vervaldatum,
+        projectDetails: `Project: ${item.naam} - ${item.adres}`
+      };
+
+      const { data, error } = await supabase.functions.invoke('generate-invoice-pdf', {
+        body: {
+          invoiceData,
+          type: 'specialist'
+        }
       });
-      
-      toast.success('Factuur succesvol verzonden naar vakspecialist!');
-      setIsSpecialistInvoiceOpen(false);
-      onInvoiceSent();
+
+      if (error) {
+        toast.error('Fout bij genereren factuur: ' + error.message);
+        return;
+      }
+
+      if (data.success) {
+        toast.success('Factuur succesvol gegenereerd en verzonden naar vakspecialist!');
+        setIsSpecialistInvoiceOpen(false);
+        onInvoiceSent();
+      } else {
+        toast.error('Fout bij genereren factuur: ' + data.error);
+      }
     } catch (error) {
-      toast.error('Fout bij versturen factuur');
+      console.error('Error generating specialist invoice:', error);
+      toast.error('Onverwachte fout bij genereren factuur');
     } finally {
       setLoading(false);
     }
@@ -126,7 +166,7 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
             </div>
             
             <Button onClick={handleCustomerInvoice} disabled={loading} className="w-full">
-              {loading ? 'Versturen...' : 'Verstuur Factuur'}
+              {loading ? 'Genereren...' : 'Genereer & Verstuur PDF Factuur'}
             </Button>
           </div>
         </DialogContent>
@@ -203,7 +243,7 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ item, onInvoiceSent }) 
             </div>
             
             <Button onClick={handleSpecialistInvoice} disabled={loading} className="w-full">
-              {loading ? 'Versturen...' : 'Verstuur Factuur'}
+              {loading ? 'Genereren...' : 'Genereer & Verstuur PDF Factuur'}
             </Button>
           </div>
         </DialogContent>
