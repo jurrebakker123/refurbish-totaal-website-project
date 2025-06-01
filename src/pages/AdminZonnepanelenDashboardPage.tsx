@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw } from 'lucide-react';
 import { RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
-import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
+import { loadAdminData } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
 import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
-import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
+import MobileAdminHeader from '@/components/admin/MobileAdminHeader';
 import { usePWA } from '@/hooks/usePWA';
-import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const AdminZonnepanelenDashboardPage = () => {
   const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
@@ -33,6 +31,7 @@ const AdminZonnepanelenDashboardPage = () => {
   });
 
   const { requestNotificationPermission } = usePWA();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     loadDashboardData();
@@ -73,35 +72,34 @@ const AdminZonnepanelenDashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-brand-darkGreen">Zonnepanelen Admin</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <EmailMarketingDialog onCampaignSent={loadDashboardData} />
-          <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Vernieuwen
-          </Button>
-        </div>
-      </header>
+      <MobileAdminHeader 
+        title="Zonnepanelen Admin"
+        onRefresh={loadDashboardData}
+        onDataChange={loadDashboardData}
+      />
 
-      <div className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <h1 className="text-3xl font-bold mb-6">Zonnepanelen Dashboard</h1>
+      <div className={`flex-1 ${isMobile ? 'p-4' : 'p-8'}`}>
+        <div className="max-w-7xl mx-auto space-y-6">
+          {!isMobile && <h1 className="text-3xl font-bold mb-6">Zonnepanelen Dashboard</h1>}
           
-          <Tabs defaultValue="overzicht" className="space-y-8">
-            <TabsList>
-              <TabsTrigger value="overzicht">Overzicht</TabsTrigger>
-              <TabsTrigger value="afgerond">Afgerond</TabsTrigger>
+          <Tabs defaultValue="overzicht" className="space-y-6">
+            <TabsList className={isMobile ? "grid w-full grid-cols-2" : ""}>
+              <TabsTrigger value="overzicht" className={isMobile ? "text-xs" : ""}>
+                {isMobile ? 'Overzicht' : 'Overzicht'}
+              </TabsTrigger>
+              <TabsTrigger value="afgerond" className={isMobile ? "text-xs" : ""}>
+                {isMobile ? 'Afgerond' : 'Afgerond'}
+              </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="overzicht" className="space-y-6">
+            <TabsContent value="overzicht" className="space-y-4">
               <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Zonnepanelen Aanvragen</CardTitle>
+                <CardHeader className={`${isMobile ? 'pb-4 px-4 pt-4' : 'pb-6'}`}>
+                  <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'}`}>
+                    Zonnepanelen Aanvragen
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className={`space-y-4 ${isMobile ? 'px-4 pb-4' : 'space-y-6'}`}>
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
@@ -120,12 +118,14 @@ const AdminZonnepanelenDashboardPage = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="afgerond" className="space-y-6">
+            <TabsContent value="afgerond" className="space-y-4">
               <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Afgeronde Zonnepanelen Aanvragen</CardTitle>
+                <CardHeader className={`${isMobile ? 'pb-4 px-4 pt-4' : 'pb-6'}`}>
+                  <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'}`}>
+                    Afgeronde Zonnepanelen Aanvragen
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className={`space-y-4 ${isMobile ? 'px-4 pb-4' : 'space-y-6'}`}>
                   <ProcessedRequestsTable 
                     configuraties={allZonnepanelen.filter(z => z.status === 'afgehandeld')}
                     onViewDetails={openDetails}
