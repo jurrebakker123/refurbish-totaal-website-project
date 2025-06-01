@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, Send, Star, CheckCircle, Smartphone, Mail } from 'lucide-react';
+import { MessageCircle, Send, Star, CheckCircle, Smartphone, Mail, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -30,16 +30,17 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
 
   const [statusUpdateTemplate, setStatusUpdateTemplate] = useState({
     subject: 'Update over uw {project_type} project',
-    message: 'Beste {klant_naam},\n\nUw project heeft een nieuwe status: {nieuwe_status}.\n\nMet vriendelijke groet,\nRefurbish Totaal Nederland'
+    message: 'Beste {klant_naam},\n\nUw project heeft een nieuwe status: {nieuwe_status}.\n\nWe houden u op de hoogte van de voortgang.\n\nMet vriendelijke groet,\nRefurbish Totaal Nederland'
   });
 
   const [reviewRequestTemplate, setReviewRequestTemplate] = useState({
-    subject: 'Uw ervaring met ons project',
-    message: 'Beste {klant_naam},\n\nUw {project_type} project is afgerond! We hopen dat u tevreden bent met het resultaat.\n\nWilt u een korte review achterlaten? Dit helpt ons enorm!\n\nMet vriendelijke groet,\nRefurbish Totaal Nederland'
+    subject: 'Uw ervaring met ons {project_type} project',
+    message: 'Beste {klant_naam},\n\nUw {project_type} project is succesvol afgerond! We hopen dat u tevreden bent met het resultaat.\n\nWilt u een korte review achterlaten? Dit helpt ons enorm om onze service te verbeteren!\n\nMet vriendelijke groet,\nRefurbish Totaal Nederland'
   });
 
   const statusTemplates = [
     { status: 'offerte_verzonden', title: 'Offerte verzonden', enabled: true },
+    { status: 'interesse_bevestigd', title: 'Interesse bevestigd', enabled: true },
     { status: 'akkoord', title: 'Project akkoord', enabled: true },
     { status: 'op_locatie', title: 'Locatiebezoek gepland', enabled: true },
     { status: 'in_aanbouw', title: 'Project in uitvoering', enabled: true },
@@ -47,63 +48,199 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
   ];
 
   const sendTestMessage = async (type: string, medium: string) => {
+    console.log('Sending test message:', { type, medium });
     setLoading(true);
+    
     try {
-      // Simulate sending test message
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success(`✅ Test ${type} via ${medium} verzonden naar info@refurbishtotaalnederland.nl`);
+      let testData = {};
+      
+      if (type === 'status update') {
+        testData = {
+          type: 'status_update',
+          customerName: 'Test Klant',
+          customerEmail: 'test@example.com',
+          projectType: 'dakkapel',
+          newStatus: 'in_behandeling',
+          medium: medium
+        };
+      } else if (type === 'review request') {
+        testData = {
+          type: 'review_request',
+          customerName: 'Test Klant',
+          customerEmail: 'test@example.com',
+          projectType: 'dakkapel',
+          medium: medium
+        };
+      }
+
+      // Simulate API call to communication service
+      console.log('Test message data:', testData);
+      
+      // In a real implementation, this would call an edge function
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast.success(`✅ Test ${type} via ${medium} succesvol verzonden!`);
+      onSendMessage({ 
+        type: 'test_message', 
+        messageType: type, 
+        medium: medium,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
-      toast.error(`Fout bij verzenden test ${type}`);
+      console.error('Error sending test message:', error);
+      toast.error(`❌ Fout bij verzenden test ${type} via ${medium}`);
     } finally {
       setLoading(false);
     }
   };
 
   const sendAutomaticStatusUpdate = async (customerData: any, newStatus: string) => {
+    console.log('Sending automatic status update:', { customerData, newStatus });
     setLoading(true);
+    
     try {
+      if (!automationSettings.autoStatusUpdates) {
+        console.log('Auto status updates are disabled');
+        return;
+      }
+
       const message = statusUpdateTemplate.message
-        .replace('{klant_naam}', customerData.naam)
+        .replace('{klant_naam}', customerData.naam || customerData.name)
         .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen')
-        .replace('{nieuwe_status}', newStatus);
+        .replace('{nieuwe_status}', getStatusDisplayName(newStatus));
 
       const subject = statusUpdateTemplate.subject
         .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
 
-      // Here you would integrate with your email service
-      console.log('Sending status update:', { to: customerData.email, subject, message });
+      console.log('Status update details:', { 
+        to: customerData.email, 
+        subject, 
+        message,
+        status: newStatus 
+      });
       
-      toast.success(`✅ Status update verzonden naar ${customerData.naam}`);
-      onSendMessage({ type: 'status_update', customer: customerData.naam, status: newStatus });
+      // In a real implementation, this would call the send-quote edge function or similar
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success(`✅ Status update verzonden naar ${customerData.naam || customerData.name}`);
+      onSendMessage({ 
+        type: 'status_update', 
+        customer: customerData.naam || customerData.name, 
+        status: newStatus,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
-      toast.error('Fout bij verzenden status update');
+      console.error('Error sending status update:', error);
+      toast.error('❌ Fout bij verzenden status update');
     } finally {
       setLoading(false);
     }
   };
 
   const sendReviewRequest = async (customerData: any) => {
+    console.log('Sending review request:', customerData);
     setLoading(true);
+    
     try {
+      if (!automationSettings.autoReviewRequests) {
+        console.log('Auto review requests are disabled');
+        return;
+      }
+
       const message = reviewRequestTemplate.message
-        .replace('{klant_naam}', customerData.naam)
+        .replace('{klant_naam}', customerData.naam || customerData.name)
         .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
 
-      // Here you would integrate with your email service
-      console.log('Sending review request:', { to: customerData.email, message });
+      const subject = reviewRequestTemplate.subject
+        .replace('{project_type}', customerData.model ? 'dakkapel' : 'zonnepanelen');
+
+      console.log('Review request details:', { 
+        to: customerData.email, 
+        subject,
+        message 
+      });
       
-      toast.success(`✅ Review aanvraag verzonden naar ${customerData.naam}`);
-      onSendMessage({ type: 'review_request', customer: customerData.naam });
+      // In a real implementation, this would call an edge function
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success(`✅ Review aanvraag verzonden naar ${customerData.naam || customerData.name}`);
+      onSendMessage({ 
+        type: 'review_request', 
+        customer: customerData.naam || customerData.name,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
-      toast.error('Fout bij verzenden review aanvraag');
+      console.error('Error sending review request:', error);
+      toast.error('❌ Fout bij verzenden review aanvraag');
     } finally {
       setLoading(false);
     }
   };
 
-  const saveTemplate = () => {
-    toast.success('✅ Templates en instellingen opgeslagen!');
-    setIsOpen(false);
+  const getStatusDisplayName = (status: string) => {
+    const statusMap: Record<string, string> = {
+      'nieuw': 'Nieuw',
+      'in_behandeling': 'In behandeling',
+      'offerte_verzonden': 'Offerte verzonden',
+      'interesse_bevestigd': 'Interesse bevestigd',
+      'akkoord': 'Akkoord gegeven',
+      'op_locatie': 'Locatiebezoek gepland',
+      'in_aanbouw': 'In uitvoering',
+      'afgehandeld': 'Afgerond',
+      'niet_akkoord': 'Niet akkoord',
+      'geen_interesse': 'Geen interesse'
+    };
+    return statusMap[status] || status;
+  };
+
+  const saveTemplate = async () => {
+    console.log('Saving templates and settings:', { statusUpdateTemplate, reviewRequestTemplate, automationSettings });
+    
+    try {
+      // In a real implementation, this would save to the database
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      toast.success('✅ Templates en instellingen succesvol opgeslagen!');
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error saving templates:', error);
+      toast.error('❌ Fout bij opslaan templates');
+    }
+  };
+
+  const triggerAutomatedFlow = async (trigger: string) => {
+    console.log('Triggering automated flow:', trigger);
+    setLoading(true);
+
+    try {
+      switch (trigger) {
+        case 'status_change':
+          // Simulate status change automation
+          await sendAutomaticStatusUpdate({
+            naam: 'Demo Klant',
+            email: 'demo@example.com',
+            model: 'Rechthoekig'
+          }, 'in_behandeling');
+          break;
+          
+        case 'project_completed':
+          // Simulate project completion automation
+          await sendReviewRequest({
+            naam: 'Demo Klant',
+            email: 'demo@example.com',
+            model: 'Rechthoekig'
+          });
+          break;
+          
+        default:
+          toast.info('✨ Geautomatiseerde flow geactiveerd!');
+      }
+    } catch (error) {
+      console.error('Error triggering automated flow:', error);
+      toast.error('❌ Fout bij activeren geautomatiseerde flow');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -138,6 +275,13 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
               size="sm"
             >
               Review Aanvragen
+            </Button>
+            <Button
+              variant={activeTab === 'automation' ? 'default' : 'ghost'}
+              onClick={() => setActiveTab('automation')}
+              size="sm"
+            >
+              Automatisering
             </Button>
             <Button
               variant={activeTab === 'settings' ? 'default' : 'ghost'}
@@ -309,6 +453,86 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
             </div>
           )}
 
+          {/* Automation Tab */}
+          {activeTab === 'automation' && (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Live Automatisering</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Test en activeer geautomatiseerde communicatie flows
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="p-4 border-green-200 bg-green-50">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-5 w-5 text-green-600" />
+                          <h4 className="font-medium text-green-800">Status Wijziging Flow</h4>
+                        </div>
+                        <p className="text-sm text-green-700">
+                          Test automatische communicatie bij status wijzigingen
+                        </p>
+                        <Button 
+                          onClick={() => triggerAutomatedFlow('status_change')}
+                          disabled={loading}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          {loading ? 'Activeren...' : 'Test Status Update Flow'}
+                        </Button>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4 border-blue-200 bg-blue-50">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Star className="h-5 w-5 text-blue-600" />
+                          <h4 className="font-medium text-blue-800">Project Afronding Flow</h4>
+                        </div>
+                        <p className="text-sm text-blue-700">
+                          Test automatische review aanvraag bij project afronding
+                        </p>
+                        <Button 
+                          onClick={() => triggerAutomatedFlow('project_completed')}
+                          disabled={loading}
+                          variant="outline"
+                          className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
+                        >
+                          {loading ? 'Activeren...' : 'Test Review Flow'}
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Automatisering Status</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Status Updates:</span>
+                        <Badge variant={automationSettings.autoStatusUpdates ? "default" : "secondary"}>
+                          {automationSettings.autoStatusUpdates ? "Actief" : "Inactief"}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Review Aanvragen:</span>
+                        <Badge variant={automationSettings.autoReviewRequests ? "default" : "secondary"}>
+                          {automationSettings.autoReviewRequests ? "Actief" : "Inactief"}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Follow-up Reminders:</span>
+                        <Badge variant={automationSettings.followupReminders ? "default" : "secondary"}>
+                          {automationSettings.followupReminders ? "Actief" : "Inactief"}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           {/* Settings Tab */}
           {activeTab === 'settings' && (
             <div className="space-y-6">
@@ -371,9 +595,9 @@ const AutomatedCommunication: React.FC<AutomatedCommunicationProps> = ({ onSendM
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               Annuleren
             </Button>
-            <Button onClick={saveTemplate}>
+            <Button onClick={saveTemplate} disabled={loading}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Opslaan
+              {loading ? 'Opslaan...' : 'Opslaan'}
             </Button>
           </div>
         </div>

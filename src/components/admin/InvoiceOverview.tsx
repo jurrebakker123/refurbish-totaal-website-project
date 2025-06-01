@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +23,7 @@ const InvoiceOverview = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [processingAction, setProcessingAction] = useState<string | null>(null);
 
   useEffect(() => {
     loadFacturen();
@@ -38,11 +38,13 @@ const InvoiceOverview = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
+        console.error('Error loading invoices:', error);
         toast.error('Fout bij laden facturen: ' + error.message);
         return;
       }
 
       setFacturen(data || []);
+      console.log('Loaded invoices:', data?.length || 0);
     } catch (error) {
       console.error('Error loading invoices:', error);
       toast.error('Onverwachte fout bij laden facturen');
@@ -51,13 +53,36 @@ const InvoiceOverview = () => {
     }
   };
 
-  const updateInvoiceStatus = async (id: string, newStatus: string, updateField?: string) => {
+  const updateInvoiceStatus = async (id: string, newStatus: string, additionalFields?: Record<string, any>) => {
+    console.log('Updating invoice status:', { id, newStatus, additionalFields });
+    setProcessingAction(id);
+    
     try {
-      const updateData: any = { status: newStatus };
+      const updateData: any = { 
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      };
       
-      if (updateField) {
-        updateData[updateField] = new Date().toISOString();
+      // Add timestamp fields based on status
+      if (newStatus === 'betaald') {
+        updateData.betaald_op = new Date().toISOString();
+      } else if (newStatus === 'herinnering_1') {
+        updateData.herinnering_1_verzonden_op = new Date().toISOString();
+      } else if (newStatus === 'herinnering_2') {
+        updateData.herinnering_2_verzonden_op = new Date().toISOString();
+      } else if (newStatus === 'herinnering_3') {
+        updateData.herinnering_3_verzonden_op = new Date().toISOString();
+      } else if (newStatus === 'te_laat') {
+        // Keep existing timestamps but mark as overdue
+        updateData.status = 'te_laat';
       }
+
+      // Add any additional fields
+      if (additionalFields) {
+        Object.assign(updateData, additionalFields);
+      }
+
+      console.log('Update data:', updateData);
 
       const { error } = await supabase
         .from('facturen')
@@ -65,16 +90,46 @@ const InvoiceOverview = () => {
         .eq('id', id);
 
       if (error) {
+        console.error('Update error:', error);
         toast.error('Fout bij bijwerken status: ' + error.message);
-        return;
+        return false;
       }
 
-      toast.success('Factuurstatus bijgewerkt');
-      loadFacturen();
+      console.log('Invoice status updated successfully');
+      toast.success('Factuurstatus succesvol bijgewerkt');
+      await loadFacturen();
+      return true;
     } catch (error) {
       console.error('Error updating invoice status:', error);
       toast.error('Onverwachte fout bij bijwerken status');
+      return false;
+    } finally {
+      setProcessingAction(null);
     }
+  };
+
+  const markAsPaid = async (id: string) => {
+    console.log('Marking invoice as paid:', id);
+    await updateInvoiceStatus(id, 'betaald');
+  };
+
+  const sendReminder = async (id: string, reminderLevel: number) => {
+    console.log('Sending reminder:', { id, reminderLevel });
+    const statusMap = {
+      1: 'herinnering_1',
+      2: 'herinnering_2',
+      3: 'herinnering_3'
+    };
+    
+    const newStatus = statusMap[reminderLevel as keyof typeof statusMap];
+    if (newStatus) {
+      await updateInvoiceStatus(id, newStatus);
+    }
+  };
+
+  const markAsOverdue = async (id: string) => {
+    console.log('Marking invoice as overdue:', id);
+    await updateInvoiceStatus(id, 'te_laat');
   };
 
   const getStatusBadge = (status: string) => {
@@ -103,6 +158,57 @@ const InvoiceOverview = () => {
     const today = new Date();
     const dueDate = new Date(vervaldatum);
     return dueDate < today;
+  };
+
+  const getAvailableActions = (factuur: Factuur) => {
+    const actions = [];
+    
+    if (factuur.status !== 'betaald') {
+      actions.push({
+        label: 'Markeer Betaald',
+        action: () => markAsPaid(factuur.id),
+        variant: 'default' as const,
+        className: 'bg-green-600 hover:bg-green-700 text-white'
+      });
+    }
+    
+    if (factuur.status === 'verstuurd' || factuur.status === 'openstaand') {
+      actions.push({
+        label: '1e Herinnering',
+        action: () => sendReminder(factuur.id, 1),
+        variant: 'outline' as const,
+        className: 'bg-orange-50 text-orange-700 border-orange-200'
+      });
+    }
+    
+    if (factuur.status === 'herinnering_1') {
+      actions.push({
+        label: '2e Herinnering',
+        action: () => sendReminder(factuur.id, 2),
+        variant: 'outline' as const,
+        className: 'bg-orange-100 text-orange-800 border-orange-300'
+      });
+    }
+    
+    if (factuur.status === 'herinnering_2') {
+      actions.push({
+        label: '3e Herinnering',
+        action: () => sendReminder(factuur.id, 3),
+        variant: 'outline' as const,
+        className: 'bg-red-50 text-red-700 border-red-200'
+      });
+    }
+    
+    if (factuur.status !== 'betaald' && factuur.status !== 'te_laat' && isOverdue(factuur.vervaldatum)) {
+      actions.push({
+        label: 'Markeer Te Laat',
+        action: () => markAsOverdue(factuur.id),
+        variant: 'outline' as const,
+        className: 'bg-red-100 text-red-800 border-red-300'
+      });
+    }
+    
+    return actions;
   };
 
   const filteredFacturen = facturen.filter(factuur => {
@@ -228,26 +334,18 @@ const InvoiceOverview = () => {
                     >
                       Details
                     </Button>
-                    {factuur.status === 'verstuurd' && (
+                    {getAvailableActions(factuur).map((actionItem, index) => (
                       <Button
+                        key={index}
                         size="sm"
-                        variant="outline"
-                        className="bg-green-50 text-green-700"
-                        onClick={() => updateInvoiceStatus(factuur.id, 'betaald', 'betaald_op')}
+                        variant={actionItem.variant}
+                        className={actionItem.className}
+                        onClick={actionItem.action}
+                        disabled={processingAction === factuur.id}
                       >
-                        Markeer Betaald
+                        {processingAction === factuur.id ? 'Bezig...' : actionItem.label}
                       </Button>
-                    )}
-                    {(factuur.status === 'verstuurd' || factuur.status === 'openstaand') && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-orange-50 text-orange-700"
-                        onClick={() => updateInvoiceStatus(factuur.id, 'herinnering_1', 'herinnering_1_verzonden_op')}
-                      >
-                        1e Herinnering
-                      </Button>
-                    )}
+                    ))}
                   </div>
                 </div>
               </Card>
@@ -317,20 +415,20 @@ const InvoiceOverview = () => {
               )}
 
               <div className="flex gap-2 pt-4">
-                <Button
-                  onClick={() => updateInvoiceStatus(selectedInvoice.id, 'betaald', 'betaald_op')}
-                  className="bg-green-600 hover:bg-green-700"
-                  disabled={selectedInvoice.status === 'betaald'}
-                >
-                  Markeer als Betaald
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => updateInvoiceStatus(selectedInvoice.id, 'herinnering_1', 'herinnering_1_verzonden_op')}
-                  disabled={selectedInvoice.status === 'betaald'}
-                >
-                  Stuur Herinnering
-                </Button>
+                {getAvailableActions(selectedInvoice).map((actionItem, index) => (
+                  <Button
+                    key={index}
+                    variant={actionItem.variant}
+                    className={actionItem.className}
+                    onClick={() => {
+                      actionItem.action();
+                      setIsDetailOpen(false);
+                    }}
+                    disabled={processingAction === selectedInvoice.id}
+                  >
+                    {processingAction === selectedInvoice.id ? 'Bezig...' : actionItem.label}
+                  </Button>
+                ))}
               </div>
             </div>
           )}
