@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +12,6 @@ import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
-import InvoiceOverview from '@/components/admin/InvoiceOverview';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
@@ -239,16 +237,6 @@ const AdminZonnepanelenPage = () => {
       <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-semibold text-brand-darkGreen">Zonnepanelen Admin</h1>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => window.location.href = '/admin-dashboard'}
-              className="text-xs"
-            >
-              Dakkapel Admin
-            </Button>
-          </div>
         </div>
         <div className="flex items-center gap-4">
           <EmailMarketingDialog onCampaignSent={loadDashboardData} />
@@ -265,7 +253,7 @@ const AdminZonnepanelenPage = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({zonnepanelenTeVerwerken.length})
                 </TabsTrigger>
@@ -286,9 +274,6 @@ const AdminZonnepanelenPage = () => {
                 </TabsTrigger>
                 <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Afgerond ({zonnepanelenAfgerond.length})
-                </TabsTrigger>
-                <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Facturatie
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -497,10 +482,6 @@ const AdminZonnepanelenPage = () => {
                   />
                 </CardContent>
               </Card>
-            </TabsContent>
-
-            <TabsContent value="facturatie" className="space-y-6">
-              <InvoiceOverview />
             </TabsContent>
           </Tabs>
         </div>
