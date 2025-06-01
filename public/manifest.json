@@ -1,0 +1,28 @@
+
+{
+  "name": "Refurbish Totaal Nederland Admin",
+  "short_name": "RTN Admin",
+  "description": "Admin dashboard voor Refurbish Totaal Nederland",
+  "start_url": "/admin-dashboard",
+  "display": "standalone",
+  "background_color": "#0B4619",
+  "theme_color": "#0B4619",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/43b44fd9-a2c6-4670-9ec2-b2dbe73b1a5f.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "scope": "/admin",
+  "prefer_related_applications": false
+}

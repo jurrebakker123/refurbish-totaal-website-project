@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +11,8 @@ import QuoteDialog from '@/components/admin/QuoteDialog';
 import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
+import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
+import { usePWA } from '@/hooks/usePWA';
 import { toast } from 'sonner';
 
 const AdminZonnepanelenDashboardPage = () => {
@@ -31,8 +32,11 @@ const AdminZonnepanelenDashboardPage = () => {
     sortOrder: 'desc'
   });
 
+  const { requestNotificationPermission } = usePWA();
+
   useEffect(() => {
     loadDashboardData();
+    requestNotificationPermission();
   }, []);
 
   const loadDashboardData = async () => {
@@ -149,6 +153,8 @@ const AdminZonnepanelenDashboardPage = () => {
         onDataChange={loadDashboardData}
         setSendingQuote={setSendingQuote}
       />
+      
+      <PWAInstallPrompt />
     </div>
   );
 };

@@ -20,6 +20,8 @@ import NotificationCenter from '@/components/admin/NotificationCenter';
 import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
+import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
+import { usePWA } from '@/hooks/usePWA';
 
 const AdminDashboardPage = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
@@ -40,8 +42,11 @@ const AdminDashboardPage = () => {
     sortOrder: 'desc'
   });
 
+  const { requestNotificationPermission } = usePWA();
+
   useEffect(() => {
     loadDashboardData();
+    requestNotificationPermission();
   }, []);
 
   const loadDashboardData = async () => {
@@ -586,6 +591,8 @@ const AdminDashboardPage = () => {
         onDataChange={loadDashboardData}
         setSendingQuote={setSendingQuote}
       />
+      
+      <PWAInstallPrompt />
     </div>
   );
 };
