@@ -15,6 +15,7 @@ interface EmailCampaign {
   content: string;
   recipientType: 'all' | 'dakkapel' | 'zonnepaneel' | 'custom';
   customEmails?: string[];
+  templateId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -30,7 +31,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { campaign, action } = await req.json();
     
-    console.log('Email marketing action:', action);
+    console.log('Email marketing action:', action, 'Template ID:', campaign.templateId);
 
     if (action === 'send_campaign') {
       let recipients: string[] = [];
@@ -72,7 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
         recipients = campaign.customEmails || [];
       }
 
-      console.log(`Sending campaign to ${recipients.length} recipients`);
+      console.log(`Sending campaign to ${recipients.length} recipients using template: ${campaign.templateId || 'custom'}`);
 
       // Send emails in batches to avoid rate limits
       const batchSize = 10;
@@ -83,24 +84,28 @@ const handler = async (req: Request): Promise<Response> => {
         const batch = recipients.slice(i, i + batchSize);
         
         try {
+          // Use the provided content directly (could be from template or custom)
+          const emailContent = campaign.content || `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">Refurbish Totaal Nederland</h2>
+              <p>Er is geen specifieke inhoud opgegeven voor deze e-mail.</p>
+              <hr style="margin: 20px 0;">
+              <p style="font-size: 12px; color: #666;">
+                Dit bericht is verzonden door Refurbish Totaal Nederland<br>
+                Telefoon: 085 4444 255 | Email: info@refurbishtotaalnederland.nl
+              </p>
+            </div>
+          `;
+
           await resend.emails.send({
             from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
             to: batch,
             subject: campaign.subject,
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #2563eb;">Refurbish Totaal Nederland</h2>
-                ${campaign.content}
-                <hr style="margin: 20px 0;">
-                <p style="font-size: 12px; color: #666;">
-                  Dit bericht is verzonden door Refurbish Totaal Nederland<br>
-                  Telefoon: 085 4444 255 | Email: info@refurbishtotaalnederland.nl
-                </p>
-              </div>
-            `,
+            html: emailContent,
           });
           
           successCount += batch.length;
+          console.log(`Successfully sent batch ${Math.floor(i/batchSize) + 1} to ${batch.length} recipients`);
         } catch (error) {
           console.error('Error sending batch:', error);
           errorCount += batch.length;
@@ -110,11 +115,15 @@ const handler = async (req: Request): Promise<Response> => {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
+      // Log campaign results
+      console.log(`Campaign completed: ${successCount} successful, ${errorCount} failed`);
+
       return new Response(JSON.stringify({ 
         success: true, 
         successCount,
         errorCount,
-        message: `Campagne verzonden naar ${successCount} ontvangers`
+        templateUsed: campaign.templateId || 'custom',
+        message: `Campagne "${campaign.subject}" verzonden naar ${successCount} ontvangers`
       }), {
         status: 200,
         headers: {
