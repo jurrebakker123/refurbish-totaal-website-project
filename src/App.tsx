@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import DakkapelCalculator from './components/dakkapel/calculator/DakkapelCalculator';
+import { DakkapelCalculator } from './components/dakkapel/calculator/DakkapelCalculator';
 import Home from './pages/Index';
 import Bouwhulp from './pages/BouwhulpPage';
 import Contact from './pages/ContactPage';
