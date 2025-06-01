@@ -71,34 +71,34 @@ const PWAInstallPrompt: React.FC = () => {
   }
 
   return (
-    <Card className={`fixed ${isMobile ? 'bottom-2 left-2 right-2' : 'bottom-4 right-4 w-80'} z-50 shadow-lg border-green-200 bg-green-50`}>
-      <CardHeader className="pb-3">
+    <Card className={`fixed ${isMobile ? 'bottom-2 left-2 right-2 mx-2' : 'bottom-4 right-4 w-80'} z-50 shadow-lg border-green-200 bg-green-50`}>
+      <CardHeader className={`${isMobile ? 'pb-2 px-3 pt-3' : 'pb-3'}`}>
         <div className="flex items-center justify-between">
-          <CardTitle className={`${isMobile ? 'text-xs' : 'text-sm'} flex items-center gap-2`}>
-            <Smartphone className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'}`} />
+          <CardTitle className={`${isMobile ? 'text-sm' : 'text-sm'} flex items-center gap-2`}>
+            <Smartphone className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'}`} />
             RTN Admin App
           </CardTitle>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={dismissPrompt}
-            className={`${isMobile ? 'h-5 w-5 p-0' : 'h-6 w-6 p-0'}`}
+            className={`${isMobile ? 'h-6 w-6 p-0' : 'h-6 w-6 p-0'}`}
           >
-            <X className={`${isMobile ? 'h-2 w-2' : 'h-3 w-3'}`} />
+            <X className={`${isMobile ? 'h-3 w-3' : 'h-3 w-3'}`} />
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className={`${isMobile ? 'px-3 pb-3' : 'pt-0'}`}>
         <p className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-600 mb-3`}>
           Installeer de RTN Admin app voor snelle toegang tot je dashboard
         </p>
         <Button 
           onClick={handleInstall}
           size="sm"
-          className="w-full bg-green-600 hover:bg-green-700"
+          className="w-full bg-green-600 hover:bg-green-700 text-white"
         >
           <Download className={`${isMobile ? 'h-3 w-3 mr-1' : 'h-3 w-3 mr-2'}`} />
-          <span className={isMobile ? 'text-xs' : ''}>Installeer App</span>
+          <span className={isMobile ? 'text-xs' : 'text-sm'}>Installeer App</span>
         </Button>
       </CardContent>
     </Card>

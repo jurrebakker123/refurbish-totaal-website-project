@@ -12,6 +12,8 @@ import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import MobileAdminHeader from '@/components/admin/MobileAdminHeader';
 import { usePWA } from '@/hooks/usePWA';
 import { useIsMobile } from '@/hooks/use-mobile';
+import MobileAdminFilters from '@/components/admin/MobileAdminFilters';
+import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
 
 const AdminZonnepanelenDashboardPage = () => {
   const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
@@ -78,35 +80,43 @@ const AdminZonnepanelenDashboardPage = () => {
         onDataChange={loadDashboardData}
       />
 
-      <div className={`flex-1 ${isMobile ? 'p-4' : 'p-8'}`}>
+      <div className={`flex-1 ${isMobile ? 'p-3' : 'p-8'}`}>
         <div className="max-w-7xl mx-auto space-y-6">
           {!isMobile && <h1 className="text-3xl font-bold mb-6">Zonnepanelen Dashboard</h1>}
           
           <Tabs defaultValue="overzicht" className="space-y-6">
             <TabsList className={isMobile ? "grid w-full grid-cols-2" : ""}>
               <TabsTrigger value="overzicht" className={isMobile ? "text-xs" : ""}>
-                {isMobile ? 'Overzicht' : 'Overzicht'}
+                Overzicht
               </TabsTrigger>
               <TabsTrigger value="afgerond" className={isMobile ? "text-xs" : ""}>
-                {isMobile ? 'Afgerond' : 'Afgerond'}
+                Afgerond
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="overzicht" className="space-y-4">
               <Card>
-                <CardHeader className={`${isMobile ? 'pb-4 px-4 pt-4' : 'pb-6'}`}>
-                  <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'}`}>
+                <CardHeader className={`${isMobile ? 'pb-3 px-3 pt-3' : 'pb-6'}`}>
+                  <CardTitle className={`${isMobile ? 'text-base' : 'text-xl'}`}>
                     Zonnepanelen Aanvragen
                   </CardTitle>
                 </CardHeader>
-                <CardContent className={`space-y-4 ${isMobile ? 'px-4 pb-4' : 'space-y-6'}`}>
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={true}
-                  />
+                <CardContent className={`${isMobile ? 'px-3 pb-3' : 'space-y-6'}`}>
+                  {isMobile ? (
+                    <MobileAdminFilters 
+                      filters={filters} 
+                      onFiltersChange={setFilters}
+                      showStatusFilter={true}
+                    />
+                  ) : (
+                    <AdminFilters 
+                      filters={filters} 
+                      onFiltersChange={setFilters}
+                      showStatusFilter={true}
+                    />
+                  )}
                   
-                  <ConfiguratorRequestsTable 
+                  <ResponsiveRequestTable 
                     zonnepanelen={allZonnepanelen}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -120,12 +130,12 @@ const AdminZonnepanelenDashboardPage = () => {
             
             <TabsContent value="afgerond" className="space-y-4">
               <Card>
-                <CardHeader className={`${isMobile ? 'pb-4 px-4 pt-4' : 'pb-6'}`}>
-                  <CardTitle className={`${isMobile ? 'text-lg' : 'text-xl'}`}>
+                <CardHeader className={`${isMobile ? 'pb-3 px-3 pt-3' : 'pb-6'}`}>
+                  <CardTitle className={`${isMobile ? 'text-base' : 'text-xl'}`}>
                     Afgeronde Zonnepanelen Aanvragen
                   </CardTitle>
                 </CardHeader>
-                <CardContent className={`space-y-4 ${isMobile ? 'px-4 pb-4' : 'space-y-6'}`}>
+                <CardContent className={`${isMobile ? 'px-3 pb-3' : 'space-y-6'}`}>
                   <ProcessedRequestsTable 
                     configuraties={allZonnepanelen.filter(z => z.status === 'afgehandeld')}
                     onViewDetails={openDetails}
