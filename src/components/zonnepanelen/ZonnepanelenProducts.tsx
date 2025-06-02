@@ -29,7 +29,7 @@ export function ZonnepanelenProducts() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {solarProducts.map(product => (
-            <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300 animate-fade-in relative overflow-hidden">
+            <Card key={product.id} className="h-full flex flex-col hover:shadow-xl transition-all duration-300 animate-fade-in relative overflow-hidden border-2 hover:border-brand-green/20">
               <CardHeader className="pb-4">
                 <div className="rounded-md overflow-hidden mb-4 flex justify-center h-48 bg-white p-2">
                   <OptimizedImage 
@@ -39,31 +39,37 @@ export function ZonnepanelenProducts() {
                     fallbackSrc="/placeholder.svg" 
                   />
                 </div>
-                <CardTitle className="text-lg font-bold text-brand-darkGreen">{product.title}</CardTitle>
+                <CardTitle className="text-xl font-bold text-brand-darkGreen">{product.title}</CardTitle>
               </CardHeader>
               <CardContent className="py-2 flex-grow">
-                <ul className="space-y-2 mb-4">
+                <ul className="space-y-3 mb-6">
                   {product.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <span className="text-brand-green mr-2 flex-shrink-0">✓</span>
-                      <span>{feature}</span>
+                      <span className="text-brand-green mr-3 flex-shrink-0 text-lg font-bold">✓</span>
+                      <span className="text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
                 
                 {product.yearlySavings && (
-                  <p className="text-sm text-brand-darkGreen font-medium mt-2 bg-brand-green/10 p-2 rounded">
-                    Jaarlijkse besparing: {product.yearlySavings} bij {product.kwhPrice}/kWh
-                  </p>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-green-800 font-semibold text-center">
+                      💰 Jaarlijkse besparing: {product.yearlySavings}
+                    </p>
+                    <p className="text-xs text-green-600 text-center mt-1">
+                      Bij {product.kwhPrice}/kWh
+                    </p>
+                  </div>
                 )}
               </CardContent>
-              <CardFooter className="flex flex-col items-start pt-2 w-full">
-                <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
+              <CardFooter className="flex flex-col items-center pt-4 bg-gray-50 border-t">
+                <p className="text-3xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
                 <Button 
                   onClick={() => openRequestForm(product)}
-                  className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-white font-medium"
+                  className="w-full bg-gradient-to-r from-brand-green to-green-600 hover:from-green-600 hover:to-brand-darkGreen transition-all duration-300 text-white font-bold py-3 px-6 text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
+                  size="lg"
                 >
-                  Gratis offerte aanvragen
+                  🔥 Gratis Offerte Aanvragen
                 </Button>
               </CardFooter>
             </Card>
@@ -73,11 +79,14 @@ export function ZonnepanelenProducts() {
 
       {/* Request Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-brand-darkGreen">
-              Offerte aanvragen - {selectedProduct?.title}
+            <DialogTitle className="text-2xl font-bold text-brand-darkGreen">
+              Gratis Offerte Aanvragen
             </DialogTitle>
+            <p className="text-gray-600 mt-2">
+              Vul uw gegevens in en ontvang binnen 24 uur een persoonlijke offerte
+            </p>
           </DialogHeader>
           
           {selectedProduct && (
@@ -95,7 +104,7 @@ export function ZonnepanelenProducts() {
   );
 }
 
-// Simple and clear form for solar panel requests
+// Verbeterd formulier voor zonnepanelen aanvragen
 function SimpleZonnepanelenForm({ product, onSuccess }: { product: any; onSuccess: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -104,7 +113,10 @@ function SimpleZonnepanelenForm({ product, onSuccess }: { product: any; onSucces
     e.preventDefault();
     
     if (!termsAccepted) {
-      toast.error("U dient akkoord te gaan met onze voorwaarden");
+      toast.error("U dient akkoord te gaan met onze voorwaarden", {
+        duration: 5000,
+        position: 'top-center',
+      });
       return;
     }
     
@@ -112,9 +124,9 @@ function SimpleZonnepanelenForm({ product, onSuccess }: { product: any; onSucces
     const form = e.currentTarget;
     const formData = new FormData(form);
     
-    // Prepare clean data for database
+    // Zorgvuldig voorbereiden van data voor database
     const requestData = {
-      // User information
+      // Klantgegevens
       naam: formData.get('naam') as string,
       email: formData.get('email') as string,
       telefoon: formData.get('telefoon') as string,
@@ -123,19 +135,19 @@ function SimpleZonnepanelenForm({ product, onSuccess }: { product: any; onSucces
       plaats: formData.get('plaats') as string,
       opmerkingen: formData.get('opmerkingen') as string || '',
       
-      // Product information (automatically filled from selected package)
+      // Productinformatie (automatisch ingevuld vanaf geselecteerd pakket)
       type_paneel: product.title,
       aantal_panelen: parseInt(product.panels) || 0,
       vermogen: parseInt(product.wattage) || 0,
       merk: product.brand || 'Zonnepanelen pakket',
       conditie: product.condition || 'Nieuw',
-      dak_type: 'Nog te bepalen',
+      dak_type: formData.get('dak_type') as string || 'Nog te bepalen',
       
-      // System fields
+      // Systeemvelden
       status: 'nieuw'
     };
 
-    console.log('Saving zonnepanelen request:', requestData);
+    console.log('Opslaan zonnepanelen aanvraag:', requestData);
 
     try {
       const { data, error } = await supabase
@@ -144,126 +156,155 @@ function SimpleZonnepanelenForm({ product, onSuccess }: { product: any; onSucces
         .select();
 
       if (error) {
-        console.error('Database error:', error);
+        console.error('Database fout:', error);
         throw error;
       }
 
-      console.log('Successfully saved:', data);
-      toast.success("Bedankt voor uw aanvraag! We nemen binnen 24 uur contact met u op.");
+      console.log('Succesvol opgeslagen:', data);
+      toast.success("🎉 Bedankt voor uw aanvraag! We nemen binnen 24 uur contact met u op.", {
+        duration: 6000,
+        position: 'top-center',
+      });
       onSuccess();
     } catch (error) {
-      console.error('Error saving request:', error);
-      toast.error("Er is een fout opgetreden. Probeer het later opnieuw.");
+      console.error('Fout bij opslaan aanvraag:', error);
+      toast.error("Er is een fout opgetreden. Probeer het later opnieuw.", {
+        duration: 5000,
+        position: 'top-center',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="mt-4">
-      {/* Selected package info */}
-      <div className="bg-brand-green/10 p-3 rounded-lg mb-4 border border-brand-green/20">
-        <h3 className="font-semibold mb-1 text-sm text-brand-darkGreen">Geselecteerd pakket:</h3>
-        <p className="text-base font-medium text-brand-darkGreen">{product.title}</p>
-        <p className="text-lg font-bold text-brand-darkGreen">{product.price}</p>
+    <div className="mt-6">
+      {/* Geselecteerd pakket info - prominenter weergegeven */}
+      <div className="bg-gradient-to-r from-brand-green/10 to-green-100 p-6 rounded-xl mb-6 border-2 border-brand-green/30">
+        <h3 className="font-bold mb-2 text-lg text-brand-darkGreen">✅ Geselecteerd pakket:</h3>
+        <p className="text-xl font-bold text-brand-darkGreen mb-2">{product.title}</p>
+        <p className="text-2xl font-bold text-green-700">{product.price}</p>
+        {product.yearlySavings && (
+          <p className="text-sm text-green-600 mt-2">
+            💰 Jaarlijkse besparing: {product.yearlySavings}
+          </p>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>
-          <input 
-            type="text" 
-            name="naam" 
-            required 
-            className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
-            placeholder="Uw volledige naam"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">E-mailadres *</label>
-          <input 
-            type="email" 
-            name="email" 
-            required 
-            className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
-            placeholder="uw.email@voorbeeld.nl"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer *</label>
-          <input 
-            type="tel" 
-            name="telefoon" 
-            required 
-            className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
-            placeholder="06 12345678"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Adres *</label>
-          <input 
-            type="text" 
-            name="adres" 
-            required 
-            className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
-            placeholder="Straatnaam + huisnummer"
-          />
-        </div>
-        
-        <div className="grid grid-cols-2 gap-2">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Naam *</label>
             <input 
               type="text" 
-              name="postcode" 
-              className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
-              placeholder="1234 AB"
+              name="naam" 
+              required 
+              className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+              placeholder="Uw volledige naam"
             />
           </div>
+          
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plaats *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">E-mailadres *</label>
+            <input 
+              type="email" 
+              name="email" 
+              required 
+              className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+              placeholder="uw.email@voorbeeld.nl"
+            />
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Telefoonnummer *</label>
+            <input 
+              type="tel" 
+              name="telefoon" 
+              required 
+              className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+              placeholder="06 12345678"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Plaats *</label>
             <input 
               type="text" 
               name="plaats" 
               required 
-              className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
               placeholder="Uw woonplaats"
             />
           </div>
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Opmerkingen</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Adres *</label>
+          <input 
+            type="text" 
+            name="adres" 
+            required 
+            className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+            placeholder="Straatnaam + huisnummer"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Postcode</label>
+          <input 
+            type="text" 
+            name="postcode" 
+            className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+            placeholder="1234 AB"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Type dak (indien bekend)</label>
+          <select 
+            name="dak_type"
+            className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+          >
+            <option value="Nog te bepalen">Weet ik niet zeker</option>
+            <option value="Hellend dak">Hellend dak (schuine pannen)</option>
+            <option value="Plat dak">Plat dak</option>
+            <option value="Bitumen dak">Bitumen dak</option>
+            <option value="Metalen dak">Metalen dak</option>
+            <option value="Anders">Anders</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Uw vraag of aanvullende informatie</label>
           <textarea 
             name="opmerkingen" 
-            rows={2}
-            className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-green focus:border-brand-green"
-            placeholder="Heeft u vragen of aanvullende informatie?"
+            rows={4}
+            className="w-full p-3 border-2 border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-brand-green focus:border-brand-green transition-all"
+            placeholder="Heeft u vragen of wensen? Vertel ons meer over uw situatie..."
           />
         </div>
 
-        <div className="flex items-start space-x-2">
+        <div className="flex items-start space-x-3 bg-gray-50 p-4 rounded-lg">
           <input
             type="checkbox"
             id="terms"
             checked={termsAccepted}
             onChange={(e) => setTermsAccepted(e.target.checked)}
-            className="mt-1"
+            className="mt-1 w-5 h-5 text-brand-green"
           />
-          <label htmlFor="terms" className="text-xs text-gray-700">
-            Ik ga akkoord met de algemene voorwaarden en geef toestemming voor het verwerken van mijn gegevens voor deze offerte aanvraag.
+          <label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed">
+            Ik ga akkoord met de algemene voorwaarden en geef toestemming voor het verwerken van mijn gegevens voor deze offerte aanvraag. We nemen binnen 24 uur contact met u op.
           </label>
         </div>
         
         <button 
           type="submit" 
-          disabled={isSubmitting}
-          className="w-full bg-brand-green hover:bg-brand-darkGreen text-white py-2 px-4 rounded font-medium transition-colors text-sm disabled:opacity-50"
+          disabled={isSubmitting || !termsAccepted}
+          className="w-full bg-gradient-to-r from-brand-green to-green-600 hover:from-green-600 hover:to-brand-darkGreen text-white py-4 px-6 rounded-lg font-bold text-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg"
         >
-          {isSubmitting ? 'Bezig met verzenden...' : 'Offerte aanvragen'}
+          {isSubmitting ? '🔄 Bezig met verzenden...' : '🚀 Gratis Offerte Aanvragen'}
         </button>
       </form>
     </div>
