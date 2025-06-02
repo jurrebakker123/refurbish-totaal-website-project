@@ -50,7 +50,6 @@ export function ZonnepanelenProducts() {
                   ))}
                 </ul>
                 
-                {/* Add yearly savings information */}
                 {product.yearlySavings && (
                   <p className="text-sm text-brand-darkGreen font-medium mt-2 bg-brand-green/10 p-2 rounded">
                     Jaarlijkse besparing: {product.yearlySavings} bij {product.kwhPrice}/kWh
@@ -63,7 +62,7 @@ export function ZonnepanelenProducts() {
                   onClick={() => openRequestForm(product)}
                   className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-slate-50"
                 >
-                  Offerte aanvragen
+                  Gratis offerte aanvragen
                 </Button>
               </CardFooter>
             </Card>
@@ -76,7 +75,7 @@ export function ZonnepanelenProducts() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-brand-darkGreen">
-              Offerte aanvragen - {selectedProduct?.title}
+              Gratis offerte aanvragen - {selectedProduct?.title}
             </DialogTitle>
           </DialogHeader>
           
@@ -86,26 +85,54 @@ export function ZonnepanelenProducts() {
                 <h3 className="font-semibold mb-2">Geselecteerd pakket:</h3>
                 <p className="text-lg font-medium text-brand-darkGreen">{selectedProduct.title}</p>
                 <p className="text-2xl font-bold text-brand-darkGreen mt-2">{selectedProduct.price}</p>
+                {selectedProduct.yearlySavings && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    Jaarlijkse besparing: {selectedProduct.yearlySavings}
+                  </p>
+                )}
               </div>
               
               <ReusableForm
                 title=""
-                description="Vul uw gegevens in voor een persoonlijke offerte. We nemen binnen 24 uur contact met u op."
-                templateId="template_ezfzaao"
-                buttonText="Offerte aanvragen"
+                description="Vul uw gegevens in voor een gratis, vrijblijvende offerte. We nemen binnen 24 uur contact met u op."
+                templateId="template_zonnepanelen_aanvraag"
+                buttonText="Gratis offerte aanvragen"
+                supabaseTable="refurbished_zonnepanelen"
                 additionalFields={[
                   {
-                    name: 'geselecteerd_pakket',
-                    label: 'Geselecteerd pakket',
-                    type: 'text',
+                    name: 'type_paneel',
+                    label: 'Type zonnepaneel',
+                    type: 'hidden',
                     required: true,
-                    placeholder: selectedProduct.title
+                    defaultValue: selectedProduct.title
                   },
                   {
-                    name: 'pakket_prijs',
-                    label: 'Pakket prijs',
+                    name: 'aantal_panelen',
+                    label: 'Aantal panelen',
                     type: 'hidden',
-                    required: false
+                    required: true,
+                    defaultValue: selectedProduct.panels || '12'
+                  },
+                  {
+                    name: 'vermogen',
+                    label: 'Vermogen per paneel (W)',
+                    type: 'hidden',
+                    required: true,
+                    defaultValue: selectedProduct.wattage || '400'
+                  },
+                  {
+                    name: 'merk',
+                    label: 'Merk',
+                    type: 'hidden',
+                    required: true,
+                    defaultValue: selectedProduct.brand || 'Premium'
+                  },
+                  {
+                    name: 'conditie',
+                    label: 'Conditie',
+                    type: 'hidden',
+                    required: true,
+                    defaultValue: 'Refurbished A-grade'
                   },
                   {
                     name: 'dak_type',
@@ -147,12 +174,23 @@ export function ZonnepanelenProducts() {
                   },
                   {
                     name: 'gewenste_opbrengst',
-                    label: 'Gewenste jaarlijkse opbrengst (kWh)',
+                    label: 'Huidige jaarlijkse energieverbruik (kWh)',
                     type: 'number',
                     required: false,
-                    placeholder: 'Bijv. 3000'
+                    placeholder: 'Bijv. 3500 kWh (staat op uw energierekening)'
+                  },
+                  {
+                    name: 'opmerkingen',
+                    label: 'Aanvullende informatie',
+                    type: 'textarea',
+                    required: false,
+                    placeholder: 'Bijv. specifieke wensen, vragen over installatie, etc.'
                   }
                 ]}
+                onSuccess={() => {
+                  setIsFormOpen(false);
+                  setSelectedProduct(null);
+                }}
               />
             </div>
           )}

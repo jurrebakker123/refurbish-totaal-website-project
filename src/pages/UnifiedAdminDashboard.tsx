@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -608,11 +607,17 @@ const UnifiedAdminDashboard = () => {
             </TabsContent>
             
             <TabsContent value="conversie" className="space-y-6">
-              <ConversieStats 
-                configuraties={projectType === 'dakkapel' ? allConfiguraties : []} 
-                zonnepanelen={projectType === 'zonnepanelen' ? allZonnepanelen : []}
-                type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'} 
-              />
+              {projectType === 'dakkapel' ? (
+                <ConversieStats 
+                  configuraties={allConfiguraties}
+                  type="dakkapel" 
+                />
+              ) : (
+                <ConversieStats 
+                  configuraties={allZonnepanelen}
+                  type="zonnepaneel" 
+                />
+              )}
             </TabsContent>
             
             <TabsContent value="facturatie" className="space-y-6">
