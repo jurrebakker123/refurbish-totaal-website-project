@@ -29,7 +29,7 @@ import TuinhuizenModelPage from "./pages/TuinhuizenModelPage";
 import BouwhulpPage from "./pages/BouwhulpPage";
 import SolarProductDetailPage from "./pages/SolarProductDetailPage";
 import CertificaatPage from "./pages/CertificaatPage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
+import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import InterestConfirmationPage from "./pages/InterestConfirmationPage";
 import "./App.css";
@@ -64,8 +64,9 @@ function App() {
             <Route path="/bouwhulp" element={<BouwhulpPage />} />
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
-            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin-dashboard" element={<UnifiedAdminDashboard />} />
+            <Route path="/admin" element={<UnifiedAdminDashboard />} />
+            <Route path="/admin-zonnepanelen" element={<AdminZonnepanelenPage />} />
             <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
