@@ -1,12 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { OptimizedImage } from '@/components/ui/optimized-image';
-import { Link } from 'react-router-dom';
 import { solarProducts } from '@/data/solarProducts';
+import ReusableForm from '@/components/common/ReusableForm';
 
 export function ZonnepanelenProducts() {
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const openRequestForm = (product: any) => {
+    setSelectedProduct(product);
+    setIsFormOpen(true);
+  };
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container">
@@ -50,16 +59,105 @@ export function ZonnepanelenProducts() {
               </CardContent>
               <CardFooter className="flex flex-col items-start pt-2 w-full">
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
-                <Link to={`/product/${product.slug}`} className="w-full">
-                  <Button className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-slate-50">
-                    Opties selecteren
-                  </Button>
-                </Link>
+                <Button 
+                  onClick={() => openRequestForm(product)}
+                  className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-slate-50"
+                >
+                  Offerte aanvragen
+                </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       </div>
+
+      {/* Request Form Dialog */}
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-brand-darkGreen">
+              Offerte aanvragen - {selectedProduct?.title}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedProduct && (
+            <div className="mt-4">
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 className="font-semibold mb-2">Geselecteerd pakket:</h3>
+                <p className="text-lg font-medium text-brand-darkGreen">{selectedProduct.title}</p>
+                <p className="text-2xl font-bold text-brand-darkGreen mt-2">{selectedProduct.price}</p>
+              </div>
+              
+              <ReusableForm
+                title=""
+                description="Vul uw gegevens in voor een persoonlijke offerte. We nemen binnen 24 uur contact met u op."
+                templateId="template_ezfzaao"
+                buttonText="Offerte aanvragen"
+                additionalFields={[
+                  {
+                    name: 'geselecteerd_pakket',
+                    label: 'Geselecteerd pakket',
+                    type: 'text',
+                    required: true,
+                    placeholder: selectedProduct.title
+                  },
+                  {
+                    name: 'pakket_prijs',
+                    label: 'Pakket prijs',
+                    type: 'hidden',
+                    required: false
+                  },
+                  {
+                    name: 'dak_type',
+                    label: 'Type dak',
+                    type: 'select',
+                    required: true,
+                    options: [
+                      { value: 'hellend_dak', label: 'Hellend dak (schuine pannen)' },
+                      { value: 'plat_dak', label: 'Plat dak' },
+                      { value: 'bitumen_dak', label: 'Bitumen dak' },
+                      { value: 'metalen_dak', label: 'Metalen dak' },
+                      { value: 'anders', label: 'Anders' }
+                    ]
+                  },
+                  {
+                    name: 'dak_materiaal',
+                    label: 'Dak materiaal',
+                    type: 'select',
+                    required: false,
+                    options: [
+                      { value: 'dakpannen', label: 'Dakpannen' },
+                      { value: 'leien', label: 'Leien' },
+                      { value: 'bitumen', label: 'Bitumen' },
+                      { value: 'metaal', label: 'Metaal' },
+                      { value: 'anders', label: 'Anders' }
+                    ]
+                  },
+                  {
+                    name: 'schaduw_situatie',
+                    label: 'Schaduw op het dak',
+                    type: 'select',
+                    required: false,
+                    options: [
+                      { value: 'geen_schaduw', label: 'Geen schaduw' },
+                      { value: 'weinig_schaduw', label: 'Weinig schaduw (ochtend/avond)' },
+                      { value: 'matige_schaduw', label: 'Matige schaduw (gedeeltelijk overdag)' },
+                      { value: 'veel_schaduw', label: 'Veel schaduw' }
+                    ]
+                  },
+                  {
+                    name: 'gewenste_opbrengst',
+                    label: 'Gewenste jaarlijkse opbrengst (kWh)',
+                    type: 'number',
+                    required: false,
+                    placeholder: 'Bijv. 3000'
+                  }
+                ]}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

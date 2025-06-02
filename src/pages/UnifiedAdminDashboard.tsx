@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -381,7 +382,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={teVerwerken}
+                    configuraties={projectType === 'dakkapel' ? teVerwerken as DakkapelConfiguratie[] : undefined}
                     zonnepanelen={projectType === 'zonnepanelen' ? teVerwerken as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -409,7 +410,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={wachtOpReactie}
+                    configuraties={projectType === 'dakkapel' ? wachtOpReactie as DakkapelConfiguratie[] : undefined}
                     zonnepanelen={projectType === 'zonnepanelen' ? wachtOpReactie as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -434,7 +435,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={interesseBevestigd}
+                    configuraties={projectType === 'dakkapel' ? interesseBevestigd as DakkapelConfiguratie[] : undefined}
                     zonnepanelen={projectType === 'zonnepanelen' ? interesseBevestigd as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -459,7 +460,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={akkoord}
+                    configuraties={projectType === 'dakkapel' ? akkoord as DakkapelConfiguratie[] : undefined}
                     zonnepanelen={projectType === 'zonnepanelen' ? akkoord as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -484,7 +485,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={nietAkkoord}
+                    configuraties={projectType === 'dakkapel' ? nietAkkoord as DakkapelConfiguratie[] : undefined}
                     zonnepanelen={projectType === 'zonnepanelen' ? nietAkkoord as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -572,7 +573,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={inAanbouw}
+                    configuraties={projectType === 'dakkapel' ? inAanbouw as DakkapelConfiguratie[] : undefined}
                     zonnepanelen={projectType === 'zonnepanelen' ? inAanbouw as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
@@ -597,7 +598,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ProcessedRequestsTable 
-                    configuraties={afgerond}
+                    configuraties={projectType === 'dakkapel' ? afgerond as DakkapelConfiguratie[] : afgerond as any[]}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
                     type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
