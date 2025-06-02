@@ -85,13 +85,13 @@ const ReusableForm = ({
     
     // Prepare data for Supabase
     if (supabaseTable) {
-      const supabaseData: Record<string, any> = {
+      const supabaseData: any = {
         naam: formData.get('naam') as string,
         email: formData.get('email') as string,
         telefoon: formData.get('telefoon') as string,
-        adres: formData.get('woonplaats') as string, // Map woonplaats to adres for compatibility
+        adres: formData.get('woonplaats') as string,
         plaats: formData.get('woonplaats') as string,
-        postcode: '', // Will be filled later if needed
+        postcode: '',
         opmerkingen: formData.get('bericht') as string,
         status: 'nieuw'
       };
@@ -110,7 +110,7 @@ const ReusableForm = ({
 
       try {
         const { data, error } = await supabase
-          .from(supabaseTable)
+          .from(supabaseTable as any)
           .insert([supabaseData]);
 
         if (error) {
@@ -198,96 +198,70 @@ const ReusableForm = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-2xl p-6 md:p-8 max-w-3xl mx-auto">
-      {title && <h2 className="text-2xl font-bold text-brand-darkGreen mb-4">{title}</h2>}
-      {description && <p className="mb-6 text-gray-600">{description}</p>}
+    <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+      {title && <h2 className="text-xl font-bold text-brand-darkGreen mb-4">{title}</h2>}
+      {description && <p className="mb-4 text-gray-600 text-sm">{description}</p>}
       
-      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-3" onSubmit={handleSubmit}>
         <div className="field">
-          <label htmlFor="naam" className="block font-medium mb-1 text-gray-700">Naam</label>
+          <label htmlFor="naam" className="block font-medium mb-1 text-gray-700 text-sm">Naam</label>
           <input 
             type="text" 
             name="naam" 
             id="naam"
             required 
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
             placeholder="Uw naam"
           />
         </div>
         
         <div className="field">
-          <label htmlFor="email" className="block font-medium mb-1 text-gray-700">E-mailadres</label>
+          <label htmlFor="email" className="block font-medium mb-1 text-gray-700 text-sm">E-mailadres</label>
           <input 
             type="email" 
             name="email" 
             id="email"
             required 
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
             placeholder="uw.email@voorbeeld.nl"
           />
         </div>
         
         <div className="field">
-          <label htmlFor="telefoon" className="block font-medium mb-1 text-gray-700">Telefoonnummer</label>
+          <label htmlFor="telefoon" className="block font-medium mb-1 text-gray-700 text-sm">Telefoonnummer</label>
           <input 
             type="tel" 
             name="telefoon" 
             id="telefoon"
             required 
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
             placeholder="06 12345678"
           />
         </div>
         
-        {showServiceInput && (
-          <div className="field">
-            <label htmlFor="dienst" className="block font-medium mb-1 text-gray-700">Dienst</label>
-            <input 
-              type="text" 
-              name="dienst" 
-              id="dienst"
-              required 
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
-              placeholder="Bijv. Dakkapel, Schilderwerk, etc."
-            />
-          </div>
-        )}
-        
         <div className="field">
-          <label htmlFor="woonplaats" className="block font-medium mb-1 text-gray-700">Woonplaats</label>
+          <label htmlFor="woonplaats" className="block font-medium mb-1 text-gray-700 text-sm">Woonplaats</label>
           <input 
             type="text" 
             name="woonplaats" 
             id="woonplaats"
             required 
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
             placeholder="Uw woonplaats"
           />
         </div>
         
-        {showDateField && (
-          <div className="field">
-            <label htmlFor="datum" className="block font-medium mb-1 text-gray-700">Gewenste datum</label>
-            <input 
-              type="date" 
-              name="datum" 
-              id="datum"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
-            />
-          </div>
-        )}
-        
         {additionalFields.map((field) => (
           <div className="field" key={field.name}>
             {field.type !== 'hidden' && (
-              <label htmlFor={field.name} className="block font-medium mb-1 text-gray-700">{field.label}</label>
+              <label htmlFor={field.name} className="block font-medium mb-1 text-gray-700 text-sm">{field.label}</label>
             )}
             {field.type === 'select' ? (
               <select
                 name={field.name}
                 id={field.name}
                 required={field.required}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
               >
                 <option value="">Selecteer een optie</option>
                 {field.options?.map((option) => (
@@ -302,8 +276,8 @@ const ReusableForm = ({
                 id={field.name}
                 required={field.required}
                 placeholder={field.placeholder}
-                rows={5}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+                rows={3}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
               ></textarea>
             ) : field.type === 'hidden' ? (
               <input
@@ -319,36 +293,23 @@ const ReusableForm = ({
                 id={field.name}
                 required={field.required}
                 placeholder={field.placeholder}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
               />
             )}
           </div>
         ))}
         
         <div className="field">
-          <label htmlFor="bericht" className="block font-medium mb-1 text-gray-700">Bericht</label>
+          <label htmlFor="bericht" className="block font-medium mb-1 text-gray-700 text-sm">Bericht</label>
           <textarea 
             name="bericht" 
             id="bericht"
-            rows={5} 
+            rows={3} 
             required 
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black text-sm"
             placeholder="Uw bericht of vraag"
           ></textarea>
         </div>
-        
-        {showFileUpload && (
-          <div className="field">
-            <label className="block font-medium mb-1 text-gray-700">Upload bestanden</label>
-            <input
-              type="hidden"
-              name="tekening_link"
-            />
-            <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-              <p className="text-gray-500">Bestandsupload tijdelijk uitgeschakeld</p>
-            </div>
-          </div>
-        )}
 
         <div className="field">
           <div className="flex items-start space-x-2">
@@ -362,7 +323,7 @@ const ReusableForm = ({
               }}
               className="mt-1"
             />
-            <label htmlFor="terms" className={`text-sm ${termsError ? 'text-red-600' : 'text-gray-700'}`}>
+            <label htmlFor="terms" className={`text-xs ${termsError ? 'text-red-600' : 'text-gray-700'}`}>
               Ik ga akkoord met de <Link to="/voorwaarden" className="text-brand-lightGreen hover:underline">algemene voorwaarden</Link>
             </label>
           </div>
@@ -372,7 +333,7 @@ const ReusableForm = ({
         <div className="field">
           <button 
             type="submit" 
-            className="w-full bg-brand-lightGreen text-white py-3 px-6 rounded-md font-medium hover:bg-opacity-90 transition-colors"
+            className="w-full bg-brand-green hover:bg-brand-darkGreen text-white py-2 px-4 rounded-md font-medium transition-colors text-sm"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Bezig met verzenden...' : buttonText}

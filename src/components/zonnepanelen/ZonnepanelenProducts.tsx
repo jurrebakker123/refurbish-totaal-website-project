@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { solarProducts } from '@/data/solarProducts';
-import ReusableForm from '@/components/common/ReusableForm';
+import { supabase } from '@/integrations/supabase/client';
 
 export function ZonnepanelenProducts() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -72,116 +72,23 @@ export function ZonnepanelenProducts() {
 
       {/* Request Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-brand-darkGreen">
-              Gratis offerte aanvragen - {selectedProduct?.title}
+            <DialogTitle className="text-lg font-bold text-brand-darkGreen">
+              Offerte aanvragen
             </DialogTitle>
           </DialogHeader>
           
           {selectedProduct && (
             <div className="mt-4">
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 className="font-semibold mb-2">Geselecteerd pakket:</h3>
-                <p className="text-lg font-medium text-brand-darkGreen">{selectedProduct.title}</p>
-                <p className="text-2xl font-bold text-brand-darkGreen mt-2">{selectedProduct.price}</p>
-                {selectedProduct.yearlySavings && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    Jaarlijkse besparing: {selectedProduct.yearlySavings}
-                  </p>
-                )}
+              <div className="bg-brand-green/10 p-3 rounded-lg mb-4 border border-brand-green/20">
+                <h3 className="font-semibold mb-1 text-sm text-brand-darkGreen">Geselecteerd pakket:</h3>
+                <p className="text-base font-medium text-brand-darkGreen">{selectedProduct.title}</p>
+                <p className="text-lg font-bold text-brand-darkGreen">{selectedProduct.price}</p>
               </div>
               
-              <ReusableForm
-                title=""
-                description="Vul uw gegevens in voor een gratis, vrijblijvende offerte. We nemen binnen 24 uur contact met u op."
-                templateId="template_zonnepanelen_aanvraag"
-                buttonText="Gratis offerte aanvragen"
-                supabaseTable="refurbished_zonnepanelen"
-                additionalFields={[
-                  {
-                    name: 'type_paneel',
-                    label: 'Type zonnepaneel',
-                    type: 'hidden',
-                    required: true
-                  },
-                  {
-                    name: 'aantal_panelen',
-                    label: 'Aantal panelen',
-                    type: 'hidden',
-                    required: true
-                  },
-                  {
-                    name: 'vermogen',
-                    label: 'Vermogen per paneel (W)',
-                    type: 'hidden',
-                    required: true
-                  },
-                  {
-                    name: 'merk',
-                    label: 'Merk',
-                    type: 'hidden',
-                    required: true
-                  },
-                  {
-                    name: 'conditie',
-                    label: 'Conditie',
-                    type: 'hidden',
-                    required: true
-                  },
-                  {
-                    name: 'dak_type',
-                    label: 'Type dak',
-                    type: 'select',
-                    required: true,
-                    options: [
-                      { value: 'hellend_dak', label: 'Hellend dak (schuine pannen)' },
-                      { value: 'plat_dak', label: 'Plat dak' },
-                      { value: 'bitumen_dak', label: 'Bitumen dak' },
-                      { value: 'metalen_dak', label: 'Metalen dak' },
-                      { value: 'anders', label: 'Anders' }
-                    ]
-                  },
-                  {
-                    name: 'dak_materiaal',
-                    label: 'Dak materiaal',
-                    type: 'select',
-                    required: false,
-                    options: [
-                      { value: 'dakpannen', label: 'Dakpannen' },
-                      { value: 'leien', label: 'Leien' },
-                      { value: 'bitumen', label: 'Bitumen' },
-                      { value: 'metaal', label: 'Metaal' },
-                      { value: 'anders', label: 'Anders' }
-                    ]
-                  },
-                  {
-                    name: 'schaduw_situatie',
-                    label: 'Schaduw op het dak',
-                    type: 'select',
-                    required: false,
-                    options: [
-                      { value: 'geen_schaduw', label: 'Geen schaduw' },
-                      { value: 'weinig_schaduw', label: 'Weinig schaduw (ochtend/avond)' },
-                      { value: 'matige_schaduw', label: 'Matige schaduw (gedeeltelijk overdag)' },
-                      { value: 'veel_schaduw', label: 'Veel schaduw' }
-                    ]
-                  },
-                  {
-                    name: 'gewenste_opbrengst',
-                    label: 'Huidige jaarlijkse energieverbruik (kWh)',
-                    type: 'number',
-                    required: false,
-                    placeholder: 'Bijv. 3500 kWh (staat op uw energierekening)'
-                  },
-                  {
-                    name: 'opmerkingen',
-                    label: 'Aanvullende informatie',
-                    type: 'textarea',
-                    required: false,
-                    placeholder: 'Bijv. specifieke wensen, vragen over installatie, etc.'
-                  }
-                ]}
+              <SimpleProductForm 
+                product={selectedProduct}
                 onSuccess={() => {
                   setIsFormOpen(false);
                   setSelectedProduct(null);
@@ -192,5 +99,165 @@ export function ZonnepanelenProducts() {
         </DialogContent>
       </Dialog>
     </section>
+  );
+}
+
+// Simpel formulier component voor zonnepanelen aanvragen
+function SimpleProductForm({ product, onSuccess }: { product: any; onSuccess: () => void }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!termsAccepted) {
+      alert("U dient akkoord te gaan met onze voorwaarden");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    // Prepare data voor Supabase met automatische productinformatie
+    const supabaseData = {
+      naam: formData.get('naam') as string,
+      email: formData.get('email') as string,
+      telefoon: formData.get('telefoon') as string,
+      adres: formData.get('adres') as string,
+      plaats: formData.get('plaats') as string,
+      postcode: formData.get('postcode') as string || '',
+      opmerkingen: formData.get('opmerkingen') as string || '',
+      // Automatische productinformatie
+      type_paneel: product.title,
+      aantal_panelen: parseInt(product.panels) || 0,
+      vermogen: parseInt(product.wattage) || 0,
+      merk: product.brand || product.title,
+      conditie: product.condition || 'Nieuw',
+      status: 'nieuw'
+    };
+
+    console.log('Saving zonnepanelen aanvraag:', supabaseData);
+
+    try {
+      const { data, error } = await supabase
+        .from('refurbished_zonnepanelen')
+        .insert([supabaseData]);
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Saved successfully:', data);
+      alert("Bedankt voor uw aanvraag! We nemen binnen 24 uur contact met u op.");
+      onSuccess();
+    } catch (error) {
+      console.error('Error saving:', error);
+      alert("Er is een fout opgetreden. Probeer het later opnieuw.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Naam *</label>
+        <input 
+          type="text" 
+          name="naam" 
+          required 
+          className="w-full p-2 border border-gray-300 rounded text-sm"
+          placeholder="Uw volledige naam"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">E-mailadres *</label>
+        <input 
+          type="email" 
+          name="email" 
+          required 
+          className="w-full p-2 border border-gray-300 rounded text-sm"
+          placeholder="uw.email@voorbeeld.nl"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Telefoonnummer *</label>
+        <input 
+          type="tel" 
+          name="telefoon" 
+          required 
+          className="w-full p-2 border border-gray-300 rounded text-sm"
+          placeholder="06 12345678"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Adres *</label>
+        <input 
+          type="text" 
+          name="adres" 
+          required 
+          className="w-full p-2 border border-gray-300 rounded text-sm"
+          placeholder="Straatnaam + huisnummer"
+        />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+          <input 
+            type="text" 
+            name="postcode" 
+            className="w-full p-2 border border-gray-300 rounded text-sm"
+            placeholder="1234 AB"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Plaats *</label>
+          <input 
+            type="text" 
+            name="plaats" 
+            required 
+            className="w-full p-2 border border-gray-300 rounded text-sm"
+            placeholder="Uw woonplaats"
+          />
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Opmerkingen</label>
+        <textarea 
+          name="opmerkingen" 
+          rows={2}
+          className="w-full p-2 border border-gray-300 rounded text-sm"
+          placeholder="Aanvullende informatie of vragen..."
+        />
+      </div>
+
+      <div className="flex items-start space-x-2">
+        <input
+          type="checkbox"
+          id="terms"
+          checked={termsAccepted}
+          onChange={(e) => setTermsAccepted(e.target.checked)}
+          className="mt-1"
+        />
+        <label htmlFor="terms" className="text-xs text-gray-700">
+          Ik ga akkoord met de algemene voorwaarden
+        </label>
+      </div>
+      
+      <button 
+        type="submit" 
+        disabled={isSubmitting}
+        className="w-full bg-brand-green hover:bg-brand-darkGreen text-white py-2 px-4 rounded font-medium transition-colors text-sm"
+      >
+        {isSubmitting ? 'Bezig met verzenden...' : 'Offerte aanvragen'}
+      </button>
+    </form>
   );
 }
