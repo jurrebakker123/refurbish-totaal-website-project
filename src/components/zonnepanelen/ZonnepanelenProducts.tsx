@@ -134,6 +134,7 @@ function SimpleProductForm({ product, onSuccess }: { product: any; onSuccess: ()
       vermogen: parseInt(product.wattage) || 0,
       merk: product.brand || product.title,
       conditie: product.condition || 'Nieuw',
+      dak_type: 'Nog te bepalen', // Required field with default value
       status: 'nieuw'
     };
 
