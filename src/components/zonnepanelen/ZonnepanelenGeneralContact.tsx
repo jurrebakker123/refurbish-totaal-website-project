@@ -84,7 +84,7 @@ export function ZonnepanelenGeneralContact() {
 
       {/* Contact Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-brand-darkGreen">
               Contact opnemen - Zonnepanelen
@@ -103,36 +103,31 @@ export function ZonnepanelenGeneralContact() {
                   name: 'type_paneel',
                   label: 'Type aanvraag',
                   type: 'hidden',
-                  required: true,
-                  defaultValue: 'Algemene vraag'
+                  required: true
                 },
                 {
                   name: 'aantal_panelen',
                   label: 'Aantal panelen',
                   type: 'hidden',
-                  required: true,
-                  defaultValue: '0'
+                  required: true
                 },
                 {
                   name: 'vermogen',
                   label: 'Vermogen',
                   type: 'hidden',
-                  required: true,
-                  defaultValue: '0'
+                  required: true
                 },
                 {
                   name: 'merk',
                   label: 'Merk',
                   type: 'hidden',
-                  required: true,
-                  defaultValue: 'Algemene vraag'
+                  required: true
                 },
                 {
                   name: 'conditie',
                   label: 'Conditie',
                   type: 'hidden',
-                  required: true,
-                  defaultValue: 'Adviesgesprek'
+                  required: true
                 },
                 {
                   name: 'dak_type',

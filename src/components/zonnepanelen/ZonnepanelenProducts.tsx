@@ -60,7 +60,7 @@ export function ZonnepanelenProducts() {
                 <p className="text-2xl font-bold text-brand-darkGreen mb-4">{product.price}</p>
                 <Button 
                   onClick={() => openRequestForm(product)}
-                  className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-slate-50"
+                  className="w-full bg-brand-green hover:bg-brand-darkGreen transition-colors text-white font-medium"
                 >
                   Gratis offerte aanvragen
                 </Button>
@@ -72,7 +72,7 @@ export function ZonnepanelenProducts() {
 
       {/* Request Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-brand-darkGreen">
               Gratis offerte aanvragen - {selectedProduct?.title}
@@ -103,36 +103,31 @@ export function ZonnepanelenProducts() {
                     name: 'type_paneel',
                     label: 'Type zonnepaneel',
                     type: 'hidden',
-                    required: true,
-                    defaultValue: selectedProduct.title
+                    required: true
                   },
                   {
                     name: 'aantal_panelen',
                     label: 'Aantal panelen',
                     type: 'hidden',
-                    required: true,
-                    defaultValue: selectedProduct.panels || '12'
+                    required: true
                   },
                   {
                     name: 'vermogen',
                     label: 'Vermogen per paneel (W)',
                     type: 'hidden',
-                    required: true,
-                    defaultValue: selectedProduct.wattage || '400'
+                    required: true
                   },
                   {
                     name: 'merk',
                     label: 'Merk',
                     type: 'hidden',
-                    required: true,
-                    defaultValue: selectedProduct.brand || 'Premium'
+                    required: true
                   },
                   {
                     name: 'conditie',
                     label: 'Conditie',
                     type: 'hidden',
-                    required: true,
-                    defaultValue: 'Refurbished A-grade'
+                    required: true
                   },
                   {
                     name: 'dak_type',
