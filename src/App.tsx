@@ -10,17 +10,9 @@ import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import AdminDakkapelPage from "./pages/AdminDakkapelPage";
 import AdminZonnepanelenDashboardPage from "./pages/AdminZonnepanelenDashboardPage";
-import DakkapelPage from "./pages/DakkapelPage";
-import DakkapelCalculatorPage from "./pages/DakkapelCalculatorPage";
-import DakkapelConfiguratorPage from "./pages/DakkapelConfiguratorPage";
-import ZonnepanelenPage from "./pages/ZonnepanelenPage";
-import RefurbishedZonnepanelenPage from "./pages/RefurbishedZonnepanelenPage";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
-import CityServicePage from "./pages/CityServicePage";
 import DienstDetailPage from "./pages/DienstDetailPage";
-import IsolatiePage from "./pages/IsolatiePage";
 import BouwhulpPage from "./pages/BouwhulpPage";
-import TuinhuisPage from "./pages/TuinhuisPage";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -44,16 +36,8 @@ function App() {
           
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/dakkapel" element={<DakkapelPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
-            <Route path="/dakkapel-configurator" element={<DakkapelConfiguratorPage />} />
-            <Route path="/zonnepanelen" element={<ZonnepanelenPage />} />
-            <Route path="/refurbished-zonnepanelen" element={<RefurbishedZonnepanelenPage />} />
-            <Route path="/isolatie" element={<IsolatiePage />} />
-            <Route path="/bouwhulp" element={<BouwhulpPage />} />
-            <Route path="/tuinhuis" element={<TuinhuisPage />} />
             <Route path="/dienst/:dienstSlug" element={<DienstDetailPage />} />
-            <Route path="/:city" element={<CityServicePage />} />
+            <Route path="/bouwhulp" element={<BouwhulpPage />} />
             
             {/* Admin Routes */}
             <Route path="/admin-dashboard" element={

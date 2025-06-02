@@ -64,14 +64,9 @@ const UnifiedAdminDashboard = () => {
     setLoading(false);
   };
 
-  // Get current data based on active project type
-  const getCurrentData = () => {
-    return activeProjectType === 'dakkapel' ? allConfiguraties : allZonnepanelen;
-  };
-
   // Filter and sort data based on current filters and project type
-  const filteredData = useMemo(() => {
-    let filtered = [...getCurrentData()];
+  const filteredDakkapelData = useMemo(() => {
+    let filtered = [...allConfiguraties];
 
     // Search filter
     if (filters.search) {
@@ -143,38 +138,120 @@ const UnifiedAdminDashboard = () => {
     });
 
     return filtered;
-  }, [allConfiguraties, allZonnepanelen, filters, activeProjectType]);
+  }, [allConfiguraties, filters]);
+
+  const filteredZonnepanelenData = useMemo(() => {
+    let filtered = [...allZonnepanelen];
+
+    // Search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(item => 
+        item.naam.toLowerCase().includes(searchLower) ||
+        item.email.toLowerCase().includes(searchLower) ||
+        item.plaats.toLowerCase().includes(searchLower) ||
+        item.telefoon.includes(filters.search)
+      );
+    }
+
+    // Status filter
+    if (filters.status !== 'all') {
+      filtered = filtered.filter(item => item.status === filters.status);
+    }
+
+    // Date filter
+    if (filters.dateFilter !== 'all') {
+      const now = new Date();
+      const filterDate = new Date();
+      
+      switch (filters.dateFilter) {
+        case 'today':
+          filterDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          filterDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          filterDate.setMonth(now.getMonth() - 1);
+          break;
+      }
+      
+      if (filters.dateFilter !== 'all') {
+        filtered = filtered.filter(item => 
+          new Date(item.created_at) >= filterDate
+        );
+      }
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (filters.sortBy) {
+        case 'naam':
+          aValue = a.naam.toLowerCase();
+          bValue = b.naam.toLowerCase();
+          break;
+        case 'totaal_prijs':
+          aValue = a.totaal_prijs || 0;
+          bValue = b.totaal_prijs || 0;
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        default:
+          aValue = new Date(a.created_at).getTime();
+          bValue = new Date(b.created_at).getTime();
+      }
+      
+      if (filters.sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return filtered;
+  }, [allZonnepanelen, filters]);
+
+  // Get current filtered data based on active project type
+  const getCurrentFilteredData = () => {
+    return activeProjectType === 'dakkapel' ? filteredDakkapelData : filteredZonnepanelenData;
+  };
+
+  const currentFilteredData = getCurrentFilteredData();
 
   // Split data by status categories
-  const teVerwerken = filteredData.filter(item => 
+  const teVerwerken = currentFilteredData.filter(item => 
     item.status === 'nieuw' || item.status === 'in_behandeling'
   );
   
-  const wachtOpReactie = filteredData.filter(item => 
+  const wachtOpReactie = currentFilteredData.filter(item => 
     item.status === 'offerte_verzonden'
   );
   
-  const interesseBevestigd = filteredData.filter(item => 
+  const interesseBevestigd = currentFilteredData.filter(item => 
     item.status === 'interesse_bevestigd'
   );
   
-  const akkoord = filteredData.filter(item => 
+  const akkoord = currentFilteredData.filter(item => 
     item.status === 'akkoord'
   );
   
-  const nietAkkoord = filteredData.filter(item => 
+  const nietAkkoord = currentFilteredData.filter(item => 
     item.status === 'niet_akkoord' || item.status === 'geen_interesse'
   );
   
-  const opLocatie = filteredData.filter(item => 
+  const opLocatie = currentFilteredData.filter(item => 
     item.status === 'op_locatie'
   );
   
-  const inAanbouw = filteredData.filter(item => 
+  const inAanbouw = currentFilteredData.filter(item => 
     item.status === 'in_aanbouw'
   );
   
-  const afgerond = filteredData.filter(item => 
+  const afgerond = currentFilteredData.filter(item => 
     item.status === 'afgehandeld'
   );
 
@@ -391,8 +468,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={activeProjectType === 'dakkapel' ? teVerwerken : undefined}
-                    zonnepanelen={activeProjectType === 'zonnepaneel' ? teVerwerken : undefined}
+                    configuraties={activeProjectType === 'dakkapel' ? teVerwerken as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={activeProjectType === 'zonnepaneel' ? teVerwerken as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -421,8 +498,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={activeProjectType === 'dakkapel' ? wachtOpReactie : undefined}
-                    zonnepanelen={activeProjectType === 'zonnepaneel' ? wachtOpReactie : undefined}
+                    configuraties={activeProjectType === 'dakkapel' ? wachtOpReactie as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={activeProjectType === 'zonnepaneel' ? wachtOpReactie as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -450,7 +527,7 @@ const UnifiedAdminDashboard = () => {
                     />
                     
                     <ConfiguratorRequestsTable 
-                      configuraties={interesseBevestigd}
+                      configuraties={interesseBevestigd as DakkapelConfiguratie[]}
                       onViewDetails={openDetails}
                       onOpenQuoteDialog={openQuoteDialog}
                       onDataChange={loadDashboardData}
@@ -478,8 +555,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={activeProjectType === 'dakkapel' ? akkoord : undefined}
-                    zonnepanelen={activeProjectType === 'zonnepaneel' ? akkoord : undefined}
+                    configuraties={activeProjectType === 'dakkapel' ? akkoord as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={activeProjectType === 'zonnepaneel' ? akkoord as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -506,8 +583,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={activeProjectType === 'dakkapel' ? nietAkkoord : undefined}
-                    zonnepanelen={activeProjectType === 'zonnepaneel' ? nietAkkoord : undefined}
+                    configuraties={activeProjectType === 'dakkapel' ? nietAkkoord as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={activeProjectType === 'zonnepaneel' ? nietAkkoord as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -604,8 +681,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={activeProjectType === 'dakkapel' ? inAanbouw : undefined}
-                    zonnepanelen={activeProjectType === 'zonnepaneel' ? inAanbouw : undefined}
+                    configuraties={activeProjectType === 'dakkapel' ? inAanbouw as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={activeProjectType === 'zonnepaneel' ? inAanbouw as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -632,7 +709,7 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ProcessedRequestsTable 
-                    configuraties={afgerond}
+                    configuraties={afgerond as DakkapelConfiguratie[]}
                     onViewDetails={openDetails}
                     onDataChange={loadDashboardData}
                     type={activeProjectType}
@@ -644,7 +721,7 @@ const UnifiedAdminDashboard = () => {
             {/* Conversie Stats Tab */}
             <TabsContent value="conversie" className="space-y-6">
               <ConversieStats 
-                configuraties={activeProjectType === 'dakkapel' ? allConfiguraties : allZonnepanelen} 
+                configuraties={activeProjectType === 'dakkapel' ? allConfiguraties : allZonnepanelen as any} 
                 type={activeProjectType} 
               />
             </TabsContent>
