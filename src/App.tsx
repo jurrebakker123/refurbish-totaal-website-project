@@ -2,77 +2,89 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route } from "react-router-dom";
-import { CartProvider } from "@/context/CartContext";
-import GoogleTagManager from "@/components/GoogleTagManager";
-import CookieConsent from "@/components/CookieConsent";
-import WhatsAppButton from "@/components/WhatsAppButton";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import Index from "./pages/Index";
-import DienstenPage from "./pages/DienstenPage";
-import DienstDetailPage from "./pages/DienstDetailPage";
-import OffertePage from "./pages/OffertePage";
-import ContactPage from "./pages/ContactPage";
-import OverOnsPage from "./pages/OverOnsPage";
-import ProjectenPage from "./pages/ProjectenPage";
-import VoorwaardenPage from "./pages/VoorwaardenPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import NotFound from "./pages/NotFound";
-import DakkapelLandingPage from "./pages/DakkapelLandingPage";
-import DakkapelCalculatorPage from "./pages/DakkapelCalculatorPage";
-import DakkapelCalculatorConceptPage from "./pages/DakkapelCalculatorConceptPage";
-import IsolatieSelectiePage from "./pages/IsolatieSelectiePage";
-import IsolatietechniekPage from "./pages/IsolatietechniekPage";
-import KozijntechniekPage from "./pages/KozijntechniekPage";
-import ZonnepanelenPage from "./pages/ZonnepanelenPage";
-import TuinhuizenPage from "./pages/TuinhuizenPage";
-import TuinhuizenModelPage from "./pages/TuinhuizenModelPage";
-import BouwhulpPage from "./pages/BouwhulpPage";
-import SolarProductDetailPage from "./pages/SolarProductDetailPage";
-import CertificaatPage from "./pages/CertificaatPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
-import InterestConfirmationPage from "./pages/InterestConfirmationPage";
+import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
+import AdminDakkapelPage from "./pages/AdminDakkapelPage";
+import AdminZonnepanelenDashboardPage from "./pages/AdminZonnepanelenDashboardPage";
+import DakkapelPage from "./pages/DakkapelPage";
+import DakkapelCalculatorPage from "./pages/DakkapelCalculatorPage";
+import DakkapelConfiguratorPage from "./pages/DakkapelConfiguratorPage";
+import ZonnepanelenPage from "./pages/ZonnepanelenPage";
+import RefurbishedZonnepanelenPage from "./pages/RefurbishedZonnepanelenPage";
+import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
+import CityServicePage from "./pages/CityServicePage";
+import DienstDetailPage from "./pages/DienstDetailPage";
+import IsolatiePage from "./pages/IsolatiePage";
+import BouwhulpPage from "./pages/BouwhulpPage";
+import TuinhuisPage from "./pages/TuinhuisPage";
 import "./App.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
+      <BrowserRouter>
         <TooltipProvider>
-          <GoogleTagManager />
+          <Helmet>
+            <title>Refurbish Totaal Nederland - Dakkapellen & Zonnepanelen</title>
+            <meta name="description" content="Specialist in dakkapellen en zonnepanelen. Kwaliteit, duurzaamheid en vakmanschap voor uw woning." />
+          </Helmet>
+          
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/diensten" element={<DienstenPage />} />
-            <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
-            <Route path="/offerte" element={<OffertePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/over-ons" element={<OverOnsPage />} />
-            <Route path="/projecten" element={<ProjectenPage />} />
-            <Route path="/voorwaarden" element={<VoorwaardenPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/dakkapel" element={<DakkapelLandingPage />} />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
-            <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
-            <Route path="/isolatietechniek" element={<IsolatietechniekPage />} />
-            <Route path="/kozijntechniek" element={<KozijntechniekPage />} />
+            <Route path="/dakkapel" element={<DakkapelPage />} />
+            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorPage />} />
+            <Route path="/dakkapel-configurator" element={<DakkapelConfiguratorPage />} />
             <Route path="/zonnepanelen" element={<ZonnepanelenPage />} />
-            <Route path="/tuinhuizen" element={<TuinhuizenPage />} />
-            <Route path="/tuinhuizen/model/:id" element={<TuinhuizenModelPage />} />
+            <Route path="/refurbished-zonnepanelen" element={<RefurbishedZonnepanelenPage />} />
+            <Route path="/isolatie" element={<IsolatiePage />} />
             <Route path="/bouwhulp" element={<BouwhulpPage />} />
-            <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
-            <Route path="/certificaat" element={<CertificaatPage />} />
-            <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-            <Route path="/admin" element={<AdminDashboardPage />} />
-            <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/tuinhuis" element={<TuinhuisPage />} />
+            <Route path="/dienst/:dienstSlug" element={<DienstDetailPage />} />
+            <Route path="/:city" element={<CityServicePage />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin-dashboard" element={
+              <ProtectedAdminRoute>
+                <UnifiedAdminDashboard />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-dashboard-old" element={
+              <ProtectedAdminRoute>
+                <AdminDashboardPage />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-dakkapel" element={
+              <ProtectedAdminRoute>
+                <AdminDakkapelPage />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-zonnepanelen-dashboard" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenDashboardPage />
+              </ProtectedAdminRoute>
+            } />
           </Routes>
-          <CookieConsent />
-          <WhatsAppButton />
+          <Toaster />
         </TooltipProvider>
-      </CartProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
