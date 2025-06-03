@@ -192,64 +192,7 @@ const VacaturesPage = () => {
         {/* Sollicitatie Formulier */}
         <section className="py-16 bg-gray-50" id="sollicitatie-form">
           <div className="container">
-            <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl font-bold text-center mb-8 text-brand-darkGreen">
-                Solliciteer Direct
-              </h2>
-              <p className="text-center text-gray-600 mb-8">
-                Interesse in een van onze vacatures? Stuur je sollicitatie direct naar ons toe!
-              </p>
-              
-              <ReusableForm title="" description="Vul onderstaand formulier in en wij nemen zo snel mogelijk contact met je op." buttonText="Sollicitatie Versturen" templateId="template_ezfzaao" additionalFields={[{
-              name: 'vacature',
-              label: 'Vacature waar je op solliciteert',
-              type: 'select',
-              required: true,
-              options: [{
-                value: 'Isolatiemonteur',
-                label: 'Ervaren Isolatiemonteur'
-              }, {
-                value: 'Kozijntechnicus',
-                label: 'Kozijntechnicus / Monteur'
-              }, {
-                value: 'Elektricien',
-                label: 'Elektricien / Installatiemonteur'
-              }, {
-                value: 'Projectleider',
-                label: 'Projectleider Renovatie'
-              }, {
-                value: 'Open sollicitatie',
-                label: 'Open sollicitatie'
-              }]
-            }, {
-              name: 'ervaring',
-              label: 'Aantal jaren relevante werkervaring',
-              type: 'select',
-              required: true,
-              options: [{
-                value: '0-1 jaar',
-                label: '0-1 jaar'
-              }, {
-                value: '1-3 jaar',
-                label: '1-3 jaar'
-              }, {
-                value: '3-5 jaar',
-                label: '3-5 jaar'
-              }, {
-                value: '5-10 jaar',
-                label: '5-10 jaar'
-              }, {
-                value: '10+ jaar',
-                label: '10+ jaar'
-              }]
-            }, {
-              name: 'motivatie',
-              label: 'Waarom wil je bij ons werken?',
-              type: 'textarea',
-              required: true,
-              placeholder: 'Vertel ons waarom je bij Refurbish Totaal Nederland wilt werken...'
-            }]} />
-            </div>
+            
           </div>
         </section>
       </main>
