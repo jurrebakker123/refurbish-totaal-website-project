@@ -3,8 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -68,12 +66,17 @@ const ContentManager = () => {
 
   const saveContentSection = async (section: Partial<ContentSection>) => {
     try {
+      // Ensure required fields are present
+      const sectionData = {
+        ...section,
+        page_name: section.page_name || selectedPage,
+        section_name: section.section_name || '',
+        updated_at: new Date().toISOString()
+      };
+
       const { error } = await supabase
         .from('content_sections')
-        .upsert({
-          ...section,
-          updated_at: new Date().toISOString()
-        });
+        .upsert(sectionData);
 
       if (error) throw error;
       

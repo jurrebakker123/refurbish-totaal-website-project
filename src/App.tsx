@@ -7,7 +7,6 @@ import { CartProvider } from "@/context/CartContext";
 import GoogleTagManager from "@/components/GoogleTagManager";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import ProtectedAdminRoute from "@/components/admin/ProtectedAdminRoute";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
 import DienstDetailPage from "./pages/DienstDetailPage";
@@ -34,7 +33,6 @@ import CertificaatPage from "./pages/CertificaatPage";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import InterestConfirmationPage from "./pages/InterestConfirmationPage";
-import AdminLogin from "./components/admin/AdminLogin";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -68,22 +66,9 @@ function App() {
             <Route path="/bouwhulp" element={<BouwhulpPage />} />
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin-dashboard" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin-zonnepanelen" element={
-              <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
-              </ProtectedAdminRoute>
-            } />
+            <Route path="/admin-dashboard" element={<UnifiedAdminDashboard />} />
+            <Route path="/admin" element={<UnifiedAdminDashboard />} />
+            <Route path="/admin-zonnepanelen" element={<AdminZonnepanelenPage />} />
             <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
