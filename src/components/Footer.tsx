@@ -50,6 +50,9 @@ const Footer = () => {
                 <Link to="/projecten" className="hover:text-brand-lightGreen transition-colors hover-underline">Projecten</Link>
               </li>
               <li>
+                <Link to="/vacatures" className="hover:text-brand-lightGreen transition-colors hover-underline">Vacatures</Link>
+              </li>
+              <li>
                 <Link to="/offerte" className="hover:text-brand-lightGreen transition-colors hover-underline">Offerte Aanvragen</Link>
               </li>
               <li>
@@ -140,7 +143,8 @@ const Footer = () => {
           <div className="mt-2 md:mt-0">
             <Link to="/privacy" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Privacybeleid</Link>
             <Link to="/voorwaarden" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Algemene Voorwaarden</Link>
-            <Link to="/certificaat" className="hover:text-brand-lightGreen transition-colors hover-underline">Certificering</Link>
+            <Link to="/certificaat" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Certificering</Link>
+            <Link to="/admin-login" className="hover:text-brand-lightGreen transition-colors hover-underline">Admin Login</Link>
           </div>
         </div>
       </div>

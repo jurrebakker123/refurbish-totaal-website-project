@@ -16,6 +16,7 @@ import OverOnsPage from "./pages/OverOnsPage";
 import ProjectenPage from "./pages/ProjectenPage";
 import VoorwaardenPage from "./pages/VoorwaardenPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import VacaturesPage from "./pages/VacaturesPage";
 import NotFound from "./pages/NotFound";
 import DakkapelLandingPage from "./pages/DakkapelLandingPage";
 import DakkapelCalculatorPage from "./pages/DakkapelCalculatorPage";
@@ -32,6 +33,7 @@ import CertificaatPage from "./pages/CertificaatPage";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import InterestConfirmationPage from "./pages/InterestConfirmationPage";
+import AdminLogin from "./components/admin/AdminLogin";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/over-ons" element={<OverOnsPage />} />
             <Route path="/projecten" element={<ProjectenPage />} />
+            <Route path="/vacatures" element={<VacaturesPage />} />
             <Route path="/voorwaarden" element={<VoorwaardenPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/dakkapel" element={<DakkapelLandingPage />} />
@@ -64,6 +67,7 @@ function App() {
             <Route path="/bouwhulp" element={<BouwhulpPage />} />
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
+            <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin-dashboard" element={<UnifiedAdminDashboard />} />
             <Route path="/admin" element={<UnifiedAdminDashboard />} />
             <Route path="/admin-zonnepanelen" element={<AdminZonnepanelenPage />} />
