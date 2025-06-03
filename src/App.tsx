@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext";
 import GoogleTagManager from "@/components/GoogleTagManager";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ProtectedAdminRoute from "@/components/admin/ProtectedAdminRoute";
 import Index from "./pages/Index";
 import DienstenPage from "./pages/DienstenPage";
 import DienstDetailPage from "./pages/DienstDetailPage";
@@ -68,9 +69,21 @@ function App() {
             <Route path="/zonnepanelen/:slug" element={<SolarProductDetailPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
             <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin-dashboard" element={<UnifiedAdminDashboard />} />
-            <Route path="/admin" element={<UnifiedAdminDashboard />} />
-            <Route path="/admin-zonnepanelen" element={<AdminZonnepanelenPage />} />
+            <Route path="/admin-dashboard" element={
+              <ProtectedAdminRoute>
+                <UnifiedAdminDashboard />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedAdminRoute>
+                <UnifiedAdminDashboard />
+              </ProtectedAdminRoute>
+            } />
+            <Route path="/admin-zonnepanelen" element={
+              <ProtectedAdminRoute>
+                <AdminZonnepanelenPage />
+              </ProtectedAdminRoute>
+            } />
             <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

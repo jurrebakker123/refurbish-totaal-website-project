@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
+import ContentManager from '@/components/admin/ContentManager';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
 import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
@@ -320,7 +321,7 @@ const UnifiedAdminDashboard = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-11 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-12 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({teVerwerken.length})
                 </TabsTrigger>
@@ -350,6 +351,9 @@ const UnifiedAdminDashboard = () => {
                 </TabsTrigger>
                 <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   💰 Facturatie
+                </TabsTrigger>
+                <TabsTrigger value="content" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  📝 Content Beheer
                 </TabsTrigger>
                 <TabsTrigger value="prijzen" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Prijsbeheer
@@ -604,6 +608,10 @@ const UnifiedAdminDashboard = () => {
                   />
                 </CardContent>
               </Card>
+            </TabsContent>
+            
+            <TabsContent value="content" className="space-y-6">
+              <ContentManager />
             </TabsContent>
             
             <TabsContent value="conversie" className="space-y-6">

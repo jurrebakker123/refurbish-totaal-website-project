@@ -30,6 +30,54 @@ export type Database = {
         }
         Relationships: []
       }
+      content_sections: {
+        Row: {
+          button_link: string | null
+          button_text: string | null
+          content: string | null
+          content_type: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          order_index: number | null
+          page_name: string
+          section_name: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          button_link?: string | null
+          button_text?: string | null
+          content?: string | null
+          content_type?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          order_index?: number | null
+          page_name: string
+          section_name: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          button_link?: string | null
+          button_text?: string | null
+          content?: string | null
+          content_type?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          order_index?: number | null
+          page_name?: string
+          section_name?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dakkapel_calculator_aanvragen: {
         Row: {
           aantalramen: number
@@ -393,6 +441,104 @@ export type Database = {
           type_paneel?: string
           updated_at?: string
           vermogen?: number
+        }
+        Relationships: []
+      }
+      sollicitaties: {
+        Row: {
+          created_at: string
+          cv_url: string | null
+          email: string
+          id: string
+          motivatie: string | null
+          naam: string
+          notities: string | null
+          status: string | null
+          telefoon: string
+          updated_at: string
+          vacature_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          id?: string
+          motivatie?: string | null
+          naam: string
+          notities?: string | null
+          status?: string | null
+          telefoon: string
+          updated_at?: string
+          vacature_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          id?: string
+          motivatie?: string | null
+          naam?: string
+          notities?: string | null
+          status?: string | null
+          telefoon?: string
+          updated_at?: string
+          vacature_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sollicitaties_vacature_id_fkey"
+            columns: ["vacature_id"]
+            isOneToOne: false
+            referencedRelation: "vacatures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vacatures: {
+        Row: {
+          benefits: string[] | null
+          created_at: string
+          description: string
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          location: string
+          order_index: number | null
+          requirements: string[] | null
+          salary_range: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          benefits?: string[] | null
+          created_at?: string
+          description: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          location: string
+          order_index?: number | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          benefits?: string[] | null
+          created_at?: string
+          description?: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string
+          order_index?: number | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
