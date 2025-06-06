@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +17,7 @@ import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
 import InvoiceOverview from '@/components/admin/InvoiceOverview';
 import ConversieStats from '@/components/admin/ConversieStats';
-import NotificationCenter;
+import NotificationCenter from '@/components/admin/NotificationCenter';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
