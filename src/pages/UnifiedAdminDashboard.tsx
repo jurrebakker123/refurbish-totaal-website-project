@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import ContentManager from '@/components/admin/ContentManager';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
 import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
@@ -17,8 +16,7 @@ import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
 import InvoiceOverview from '@/components/admin/InvoiceOverview';
 import ConversieStats from '@/components/admin/ConversieStats';
-import NotificationCenter from '@/components/admin/NotificationCenter';
-import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
+import NotificationCenter;
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
@@ -67,7 +65,6 @@ const UnifiedAdminDashboard = () => {
   // Get current project data based on selected project type
   const currentProjectData = projectType === 'dakkapel' ? allConfiguraties : allZonnepanelen;
 
-  // Filter and sort data based on current filters
   const filteredData = useMemo(() => {
     let filtered = [...currentProjectData];
 
@@ -250,10 +247,6 @@ const UnifiedAdminDashboard = () => {
     }
   };
 
-  const handleSendMessage = (message: any) => {
-    toast.success('Bericht verzonden!');
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -273,7 +266,6 @@ const UnifiedAdminDashboard = () => {
         </div>
         <div className="flex items-center gap-4">
           <NotificationCenter configuraties={allConfiguraties} />
-          <AutomatedCommunication onSendMessage={handleSendMessage} />
           <EmailMarketingDialog onCampaignSent={loadDashboardData} />
           <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
@@ -321,7 +313,7 @@ const UnifiedAdminDashboard = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-12 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-10 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({teVerwerken.length})
                 </TabsTrigger>
@@ -352,16 +344,10 @@ const UnifiedAdminDashboard = () => {
                 <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   💰 Facturatie
                 </TabsTrigger>
-                <TabsTrigger value="content" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  📝 Content Beheer
-                </TabsTrigger>
-                <TabsTrigger value="prijzen" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Prijsbeheer
-                </TabsTrigger>
               </TabsList>
             </div>
             
-            {/* Te Verwerken Tab */}
+            
             <TabsContent value="te-verwerken" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -399,7 +385,6 @@ const UnifiedAdminDashboard = () => {
               </Card>
             </TabsContent>
 
-            {/* Other tabs follow same pattern... */}
             <TabsContent value="wacht-op-reactie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
@@ -610,10 +595,6 @@ const UnifiedAdminDashboard = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="content" className="space-y-6">
-              <ContentManager />
-            </TabsContent>
-            
             <TabsContent value="conversie" className="space-y-6">
               {projectType === 'dakkapel' ? (
                 <ConversieStats 
@@ -630,10 +611,6 @@ const UnifiedAdminDashboard = () => {
             
             <TabsContent value="facturatie" className="space-y-6">
               <InvoiceOverview />
-            </TabsContent>
-            
-            <TabsContent value="prijzen">
-              <AdminPriceEditor />
             </TabsContent>
           </Tabs>
         </div>
