@@ -12,7 +12,109 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Eye, Send, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { emailTemplates, getTemplatesByCategory, getTemplateById, EmailTemplate } from './EmailTemplates';
+
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  html: string;
+  preview: string;
+  category: 'promotional' | 'seasonal' | 'informational' | 'followup';
+}
+
+const emailTemplates: EmailTemplate[] = [
+  {
+    id: '1',
+    name: 'Lente Renovatie Actie',
+    subject: '🌸 Lente Renovatie Actie - 15% korting op dakkapellen!',
+    preview: 'Maak van de lente het perfecte moment voor uw dakkapel renovatie',
+    category: 'seasonal',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #10B981, #059669); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🌸 Lente Renovatie Actie</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">15% korting op dakkapellen!</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            De lente is het perfecte moment voor renovaties! Profiteer nu van onze exclusieve lente-actie:
+          </p>
+          
+          <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #0369a1; margin: 0 0 10px 0;">✨ Lente Voordelen:</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              <li>15% korting op alle dakkapel projecten</li>
+              <li>Gratis dakonderzoek ter waarde van €150</li>
+              <li>Snelle realisatie in het voorjaar</li>
+            </ul>
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+            <strong>Actie geldig tot 31 mei 2024</strong>
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/dakkapel" 
+               style="background: #10B981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Bekijk Onze Dakkapellen
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: '2',
+    name: 'Zonnepanelen Promotie',
+    subject: '☀️ Bespaar nu op uw energierekening met refurbished zonnepanelen',
+    preview: 'Ontdek onze hoogwaardige refurbished zonnepanelen tegen scherpe prijzen',
+    category: 'promotional',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">☀️ Zonnepanelen Actie</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Refurbished kwaliteit, nieuwe prestaties</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Maak de overstap naar duurzame energie met onze hoogwaardige refurbished zonnepanelen!
+          </p>
+          
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #92400e; margin: 0 0 10px 0;">🌟 Waarom kiezen voor onze zonnepanelen?</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              <li>Tot 40% goedkoper dan nieuwe panelen</li>
+              <li>Volledige garantie en certificering</li>
+              <li>Professionele installatie door experts</li>
+              <li>Directe besparing op uw energierekening</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/zonnepanelen" 
+               style="background: #f59e0b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Bekijk Zonnepanelen
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  }
+];
 
 interface EmailMarketingDialogProps {
   onCampaignSent: () => void;
