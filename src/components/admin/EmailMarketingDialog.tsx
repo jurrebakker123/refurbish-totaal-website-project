@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -191,6 +190,112 @@ const emailTemplates: EmailTemplate[] = [
       </div>
     `
   },
+  {
+    id: 'dakkapel_laatste_kans',
+    name: 'Dakkapel - Laatste Kans',
+    subject: '🚨 Laatste kans: Uw dakkapel aanvraag verloopt binnenkort',
+    preview: 'We hebben nog plek in onze planning voor uw dakkapel project',
+    projectType: 'dakkapel',
+    category: 'laatste_kans',
+    trigger: 'auto_30d',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #dc2626, #b91c1c); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🚨 Laatste Kans</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Uw dakkapel aanvraag verloopt binnenkort</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Een maand geleden heeft u interesse getoond in onze dakkapel diensten. We willen u graag nog één keer de kans geven om uw droomproject te realiseren.
+          </p>
+          
+          <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #dc2626;">
+            <h3 style="color: #991b1b; margin: 0 0 15px 0; text-align: center;">⏰ Beperkte Planning Beschikbaar</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #991b1b;">
+              <li>Laatste plekken voor uitvoering dit seizoen</li>
+              <li>Na deze maand stijgen materiaalkosten met 8%</li>
+              <li>Wachttijd wordt langer door grote vraag</li>
+            </ul>
+          </div>
+          
+          <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #065f46; margin: 0 0 10px 0;">🎁 Laatste Kans Voordeel</h3>
+            <p style="margin: 0; font-size: 18px; font-weight: bold; color: #065f46;">20% korting + gratis extra isolatie</p>
+            <p style="margin: 5px 0 0 0; color: #065f46;">Bij bevestiging binnen 7 dagen</p>
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+            <strong>Bel nu direct:</strong> 085 4444 255 om uw plek te reserveren!
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/contact" 
+               style="background: #dc2626; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Reserveer Nu Uw Plek
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'dakkapel_seizoen_lente',
+    name: 'Dakkapel - Lente Campagne',
+    subject: '🌸 Lente is het perfecte seizoen voor uw dakkapel!',
+    preview: 'Optimale weersomstandigheden en speciale lente-actie',
+    projectType: 'dakkapel',
+    category: 'seizoen',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🌸 Lente Dakkapel Actie</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Het perfecte seizoen voor uw project!</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            De lente is aangebroken en dat betekent optimale omstandigheden voor uw dakkapel project! Profiteer nu van onze speciale lente-actie.
+          </p>
+          
+          <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #166534; margin: 0 0 10px 0;">🌞 Waarom de lente perfect is:</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #166534;">
+              <li>Stabiele weersomstandigheden</li>
+              <li>Langere dagen = meer werkuren</li>
+              <li>Ideaal voor droogproces materialen</li>
+              <li>Klaar voor de zomer om van extra ruimte te genieten</li>
+            </ul>
+          </div>
+          
+          <div style="background: #fefce8; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+            <h3 style="color: #a16207; margin: 0 0 10px 0;">🌸 Lente Actie</h3>
+            <p style="margin: 0; font-size: 20px; font-weight: bold; color: #a16207;">€2.500 korting + gratis styling advies</p>
+            <p style="margin: 5px 0 0 0; color: #a16207;">Geldig tot 31 mei</p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/contact" 
+               style="background: #22c55e; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Profiteer Van Lente Actie
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  },
 
   // ZONNEPANELEN TEMPLATES
   {
@@ -367,6 +472,214 @@ const emailTemplates: EmailTemplate[] = [
             <a href="https://refurbishtotaalnederland.nl/contact" 
                style="background: #dc2626; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
               Claim Uw Voordeel Nu
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'zonnepanelen_subsidie',
+    name: 'Zonnepanelen - Subsidie Informatie',
+    subject: '🏛️ Laatste kans: Subsidie regeling eindigt binnenkort',
+    preview: 'Profiteer nu van beschikbare subsidies en regelingen',
+    projectType: 'zonnepanelen',
+    category: 'subsidie',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🏛️ Subsidie Alert</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Bespaar duizenden euro's met overheidsregelingen</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Er zijn nog steeds aantrekkelijke subsidies beschikbaar voor zonnepanelen. Wij helpen u om maximaal te profiteren van alle beschikbare regelingen.
+          </p>
+          
+          <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #3b82f6;">
+            <h3 style="color: #1e40af; margin: 0 0 15px 0; text-align: center;">💰 Beschikbare Voordelen</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #1e40af;">
+              <li><strong>BTW teruggave:</strong> 21% van de totale investering</li>
+              <li><strong>Energiebelasting voordeel:</strong> €0,131 per kWh</li>
+              <li><strong>Salderingsregeling:</strong> Tot 2031 verlengd</li>
+              <li><strong>Lokale subsidies:</strong> Vaak €500-€2000 extra</li>
+            </ul>
+          </div>
+          
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #92400e; margin: 0 0 10px 0;">⚠️ Let Op!</h3>
+            <p style="margin: 0; color: #92400e;">
+              <strong>Salderingsregeling wordt vanaf 2027 afgebouwd.</strong> 
+              Hoe eerder u start, hoe meer u bespaart. Wacht niet te lang!
+            </p>
+          </div>
+          
+          <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #065f46; margin: 0 0 10px 0;">✅ Wij regelen voor u:</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #065f46;">
+              <li>Subsidie aanvragen en begeleiding</li>
+              <li>BTW teruggave procedure</li>
+              <li>Contact met lokale overheid</li>
+              <li>Alle benodigde documentatie</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/contact" 
+               style="background: #3b82f6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Claim Uw Subsidies Nu
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'zonnepanelen_referentie',
+    name: 'Zonnepanelen - Referentie Projecten',
+    subject: '📸 Bekijk onze nieuwste zonnepaneel installaties',
+    preview: 'Inspiratie uit echte projecten in uw omgeving',
+    projectType: 'zonnepanelen',
+    category: 'referentie',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #059669, #047857); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">📸 Referentie Projecten</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Onze nieuwste zonnepaneel installaties</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+            Bekijk onze nieuwste zonnepaneel projecten en laat u inspireren door de resultaten die wij voor onze klanten hebben gerealiseerd:
+          </p>
+          
+          <!-- Project 1 -->
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
+            <h4 style="margin: 0 0 10px 0; color: #047857;">🏡 Woning Amersfoort - 16 panelen (6,4 kW)</h4>
+            <p style="margin: 0 0 10px 0; color: #374151;">
+              <strong>Besparing:</strong> €1.280 per jaar<br>
+              <strong>Terugverdientijd:</strong> 6,8 jaar<br>
+              <strong>CO2 reductie:</strong> 2.400 kg per jaar
+            </p>
+            <p style="margin: 0; font-style: italic; color: #6b7280;">
+              "Fantastische service en prachtig resultaat. Onze energierekening is meer dan gehalveerd!"
+            </p>
+          </div>
+          
+          <!-- Project 2 -->
+          <div style="background: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+            <h4 style="margin: 0 0 10px 0; color: #d97706;">🏠 Villa Utrecht - 24 panelen (9,6 kW)</h4>
+            <p style="margin: 0 0 10px 0; color: #374151;">
+              <strong>Besparing:</strong> €1.920 per jaar<br>
+              <strong>Terugverdientijd:</strong> 7,2 jaar<br>
+              <strong>Zelfvoorzieningsgraad:</strong> 85%
+            </p>
+            <p style="margin: 0; font-style: italic; color: #6b7280;">
+              "Professionele installatie en uitstekende begeleiding. Zeer tevreden!"
+            </p>
+          </div>
+          
+          <!-- Project 3 -->
+          <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+            <h4 style="margin: 0 0 10px 0; color: #2563eb;">🏘️ Rijtjeshuis Amsterdam - 12 panelen (4,8 kW)</h4>
+            <p style="margin: 0 0 10px 0; color: #374151;">
+              <strong>Besparing:</strong> €960 per jaar<br>
+              <strong>Terugverdientijd:</strong> 6,5 jaar<br>
+              <strong>Woningwaarde stijging:</strong> €8.500
+            </p>
+            <p style="margin: 0; font-style: italic; color: #6b7280;">
+              "Snelle installatie en directe besparing zichtbaar. Top!"
+            </p>
+          </div>
+          
+          <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #065f46; margin: 0 0 10px 0;">✨ Waarom deze resultaten?</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #065f46;">
+              <li>Gebruik van hoogkwaliteit panelen en omvormers</li>
+              <li>Optimale plaatsing en oriëntatie</li>
+              <li>Professionele installatie door gecertificeerde monteurs</li>
+              <li>Uitgebreide monitoring en service</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/contact" 
+               style="background: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Plan Uw Persoonlijke Advies
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f9fafb; padding: 20px; text-align: center; font-size: 14px; color: #6b7280;">
+          <p style="margin: 0;">Met vriendelijke groet,<br>Het team van Refurbish Totaal Nederland</p>
+        </div>
+      </div>
+    `
+  },
+
+  // BEIDE PROJECTEN
+  {
+    id: 'both_nieuwjaars_actie',
+    name: 'Nieuwjaars Actie - Beide Projecten',
+    subject: '🎊 Nieuwjaar, Nieuwe Energie! Mega kortingen op alle projecten',
+    preview: 'Start het nieuwe jaar duurzaam met dakkapel én zonnepanelen voordeel',
+    projectType: 'both',
+    category: 'seizoen',
+    html: `
+      <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #7c3aed, #5b21b6); padding: 40px 20px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🎊 Nieuwjaars Mega Actie</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 18px;">Nieuwe energie voor het nieuwe jaar!</p>
+        </div>
+        
+        <div style="padding: 30px 20px; background: white;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Beste {klant_naam},</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Start het nieuwe jaar met nieuwe plannen! Profiteer van onze grootste actie van het jaar op zowel dakkapellen als zonnepanelen.
+          </p>
+          
+          <div style="background: #fef3c7; padding: 25px; border-radius: 8px; margin: 20px 0; border: 2px solid #f59e0b;">
+            <h3 style="color: #92400e; margin: 0 0 15px 0; text-align: center;">🎯 Nieuwjaars Voordelen</h3>
+            <div style="text-align: center;">
+              <p style="margin: 0 0 10px 0; font-size: 20px; font-weight: bold; color: #92400e;">Dakkapel: €3.000 korting</p>
+              <p style="margin: 0 0 10px 0; font-size: 20px; font-weight: bold; color: #92400e;">Zonnepanelen: €1.500 korting</p>
+              <p style="margin: 0; font-size: 24px; font-weight: bold; color: #dc2626;">Combinatie: €5.000 korting!</p>
+            </div>
+          </div>
+          
+          <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #065f46; margin: 0 0 10px 0;">💡 Waarom beide projecten combineren?</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #065f46;">
+              <li>Meer ruimte + eigen energie = maximale woningwaarde stijging</li>
+              <li>Één aannemer, één planning, minder overlast</li>
+              <li>Dakkapel verbruik direct opwekken met zonnepanelen</li>
+              <li>Combinatie korting = grootste besparing mogelijk</li>
+            </ul>
+          </div>
+          
+          <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+            <h3 style="color: #991b1b; margin: 0 0 10px 0;">⏰ Beperkte Actie</h3>
+            <p style="margin: 0; color: #991b1b;"><strong>Geldig tot 31 januari - Slechts 10 plekken beschikbaar!</strong></p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://refurbishtotaalnederland.nl/contact" 
+               style="background: #7c3aed; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Claim Uw Nieuwjaars Voordeel
             </a>
           </div>
         </div>
