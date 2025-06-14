@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import GoogleTagManager from "@/components/GoogleTagManager";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Index from "./pages/Index";
@@ -43,6 +44,7 @@ function App() {
       <CartProvider>
         <TooltipProvider>
           <GoogleTagManager />
+          <GoogleAnalytics />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/diensten" element={<DienstenPage />} />

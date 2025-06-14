@@ -1,8 +1,10 @@
+
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import GoogleTagManager from './components/GoogleTagManager';
+import GoogleAnalytics from './components/GoogleAnalytics';
 import DakkapelLandingPage from './pages/DakkapelLandingPage.tsx';
 import ZonnepanelenPage from './pages/ZonnepanelenPage.tsx';
 import SolarProductDetailPage from './pages/SolarProductDetailPage.tsx';
@@ -48,6 +50,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering DakkapelLandingPage');
     return (
       <BrowserRouter>
+        <GoogleAnalytics />
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<DakkapelLandingPage />} />
@@ -77,6 +80,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering ZonnepanelenPage with product routes');
     return (
       <BrowserRouter>
+        <GoogleAnalytics />
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<ZonnepanelenPage />} />
@@ -105,6 +109,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering BouwhulpPage');
     return (
       <BrowserRouter>
+        <GoogleAnalytics />
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<BouwhulpPage />} />
@@ -132,6 +137,7 @@ const renderBasedOnDomain = () => {
     console.log('Rendering IsolatieSelectiePage');
     return (
       <BrowserRouter>
+        <GoogleAnalytics />
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/" element={<IsolatieSelectiePage />} />
@@ -161,6 +167,7 @@ const renderBasedOnDomain = () => {
     return (
       <BrowserRouter>
         <GoogleTagManager />
+        <GoogleAnalytics />
         <SidebarProvider defaultCollapsed={true}>
           <Routes>
             <Route path="/*" element={<App />} />
