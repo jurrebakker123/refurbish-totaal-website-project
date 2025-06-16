@@ -34,6 +34,7 @@ import CertificaatPage from "./pages/CertificaatPage";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import AdminZonnepanelenPage from "./pages/AdminZonnepanelenPage";
 import InterestConfirmationPage from "./pages/InterestConfirmationPage";
+import BedrijvenPage from "./pages/BedrijvenPage";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ function App() {
             <Route path="/admin" element={<UnifiedAdminDashboard />} />
             <Route path="/admin-zonnepanelen" element={<AdminZonnepanelenPage />} />
             <Route path="/interesse-bevestiging" element={<InterestConfirmationPage />} />
+            <Route path="/bedrijven" element={<BedrijvenPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
