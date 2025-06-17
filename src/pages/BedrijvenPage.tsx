@@ -96,11 +96,11 @@ const BedrijvenPage = () => {
               
               <div className="relative">
                 <div className="relative">
-                  {/* Construction workers illustration */}
+                  {/* Green Netherlands map */}
                   <div className="relative bg-brand-lightGreen rounded-xl p-8 overflow-hidden">
                     <OptimizedImage
-                      src="/lovable-uploads/8069b82a-7aa8-4b93-84f1-af687a946ca0.png"
-                      alt="Vakspecialisten aan het werk - renovatie en bouw"
+                      src="/lovable-uploads/68edc6b4-407f-4d87-bbf9-fedaf436b627.png"
+                      alt="Nederland kaart met werkgebieden - vind vakspecialisten in heel Nederland"
                       className="w-full h-auto animate-fade-in"
                     />
                     {/* Animated location pins */}
@@ -209,8 +209,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="/lovable-uploads/68edc6b4-407f-4d87-bbf9-fedaf436b627.png"
-                  alt="Nederland kaart met werkgebieden"
+                  src="/lovable-uploads/3c00538c-4cbf-4810-a3a0-2d8b32951077.png"
+                  alt="Vakspecialisten werken samen aan huisrenovatie project"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
@@ -372,8 +372,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="/lovable-uploads/68edc6b4-407f-4d87-bbf9-fedaf436b627.png"
-                  alt="Nederland overzicht werkgebieden"
+                  src="/lovable-uploads/0275681a-91c4-464b-837c-e5a5e2e32f12.png"
+                  alt="Professionele aannemer bespreekt bouwproject met klant"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
