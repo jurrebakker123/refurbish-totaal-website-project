@@ -20,37 +20,17 @@ import {
   ArrowRight,
   Euro,
   Target,
-  Zap
+  Zap,
+  Settings,
+  FileText,
+  Megaphone,
+  HeadphonesIcon,
+  BarChart3,
+  Wrench,
+  ChevronDown
 } from 'lucide-react';
 
 const BedrijvenPage = () => {
-  const benefits = [
-    {
-      icon: <Euro className="h-12 w-12 text-brand-lightGreen" />,
-      title: "Meer omzet",
-      description: "Vergroot je klantenkring en genereer meer opdrachten door onderdeel te worden van ons netwerk."
-    },
-    {
-      icon: <Target className="h-12 w-12 text-brand-lightGreen" />,
-      title: "Kwaliteitsklanten",
-      description: "Krijg toegang tot klanten die op zoek zijn naar professionele, betrouwbare aannemers."
-    },
-    {
-      icon: <Zap className="h-12 w-12 text-brand-lightGreen" />,
-      title: "Snelle matching",
-      description: "Ons platform zorgt voor efficiënte koppeling tussen jouw diensten en klantenvragen."
-    }
-  ];
-
-  const features = [
-    "Gratis aanmelding en profiel",
-    "Direct contact met klanten",
-    "Geen verborgen kosten",
-    "Flexibele samenwerking",
-    "Marketing ondersteuning",
-    "24/7 platform beschikbaarheid"
-  ];
-
   return (
     <>
       <Helmet>
@@ -59,82 +39,54 @@ const BedrijvenPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-white">
-        {/* Header Section - like HomeDeal */}
+        {/* Simple Header */}
         <section className="bg-white py-4 border-b">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Building2 className="h-8 w-8 text-brand-darkGreen" />
-                <span className="text-xl font-bold text-brand-darkGreen">Refurbish Partners</span>
+                <span className="text-xl font-bold text-brand-darkGreen">Refurbish Totaal Nederland</span>
+                <span className="text-sm text-gray-500">Voor bedrijven</span>
               </div>
-              <div className="hidden md:flex items-center space-x-6 text-sm text-gray-600">
-                <span>085 401 3642</span>
-                <span>info@refurbishtotaalnederland.nl</span>
+              <div className="text-sm">
+                <Button variant="outline" size="sm">Log in</Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Hero Section - HomeDeal style */}
-        <section className="bg-gradient-to-br from-gray-50 to-white py-20">
+        {/* Hero Section - Exactly like HomeDeal */}
+        <section className="bg-gradient-to-br from-blue-50 to-gray-50 py-20">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                    Groei je
-                    <span className="text-brand-lightGreen"> bouwbedrijf</span>
-                  </h1>
-                  <p className="text-xl text-gray-600 leading-relaxed">
-                    Sluit je aan bij Nederland's grootste netwerk van professionele aannemers. 
-                    Krijg direct toegang tot nieuwe klanten en projecten.
-                  </p>
-                </div>
+              <div className="space-y-6">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Altijd nieuwe klussen binnen handbereik
+                </h1>
+                <p className="text-xl text-gray-600 leading-relaxed">
+                  Kom in contact met klanten die op zoek zijn naar vakmensen zoals jij
+                </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    size="lg" 
-                    className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white text-lg px-8 py-4 rounded-lg"
-                  >
-                    Gratis aanmelden
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="border-2 border-brand-lightGreen text-brand-darkGreen hover:bg-brand-lightGreen hover:text-white text-lg px-8 py-4 rounded-lg"
-                  >
-                    <Phone className="mr-2 h-5 w-5" />
-                    085 401 3642
-                  </Button>
-                </div>
-
-                {/* Trust indicators */}
-                <div className="flex items-center space-x-8 pt-8">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-brand-darkGreen">500+</div>
-                    <div className="text-sm text-gray-600">Actieve partners</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-brand-darkGreen">1000+</div>
-                    <div className="text-sm text-gray-600">Projecten per maand</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-brand-darkGreen">15+</div>
-                    <div className="text-sm text-gray-600">Jaar ervaring</div>
-                  </div>
-                </div>
+                <Button 
+                  size="lg" 
+                  className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white text-lg px-8 py-4 rounded-lg"
+                >
+                  Schrijf je gratis in
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
               </div>
               
               <div className="relative">
-                <div className="bg-white rounded-2xl shadow-2xl p-8">
+                <div className="relative">
+                  {/* Netherlands Map Illustration - Using existing image as placeholder */}
                   <OptimizedImage
-                    src="/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png"
-                    alt="Professionele aannemer"
+                    src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
+                    alt="Nederland kaart met locaties"
                     className="rounded-xl w-full h-auto"
                   />
-                  <div className="absolute -top-4 -right-4 bg-brand-lightGreen text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    ✓ Kwaliteit gegarandeerd
+                  {/* Sample location pins */}
+                  <div className="absolute top-1/4 right-1/3 bg-white rounded-lg px-3 py-2 shadow-lg text-sm">
+                    Rita zoekt een isolatie specialist
                   </div>
                 </div>
               </div>
@@ -142,202 +94,407 @@ const BedrijvenPage = () => {
           </div>
         </section>
 
-        {/* Benefits Section - HomeDeal cards style */}
-        <section className="py-20 bg-white">
+        {/* Top Benefits - 3 column icons */}
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Waarom kiezen meer dan 500 bedrijven voor ons?
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Ontdek hoe ons platform jouw bedrijf kan laten groeien
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
-              {benefits.map((benefit, index) => (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl">
-                  <CardContent className="p-8 text-center">
-                    <div className="mb-6">
-                      {benefit.icon}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                      {benefit.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {benefit.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div>
+                <div className="flex justify-center mb-4">
+                  <CheckCircle className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Zicht op serieuze aanvragen</h3>
+                <p className="text-gray-600">
+                  Check telefoonverificatie en klantentie om betere keuzes te maken.
+                </p>
+              </div>
+              
+              <div>
+                <div className="flex justify-center mb-4">
+                  <CheckCircle className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Blijf de concurrentie voor</h3>
+                <p className="text-gray-600">
+                  Je betaalt alleen voor de offerteaanvragen die je besluit te benaderen.
+                </p>
+              </div>
+              
+              <div>
+                <div className="flex justify-center mb-4">
+                  <CheckCircle className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Flexibiliteit zonder verplichtingen</h3>
+                <p className="text-gray-600">
+                  Volledige controle: geen abonnement, alleen betalen als jij kiest voor een klus.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Features Grid - HomeDeal style */}
-        <section className="py-20 bg-gray-50">
+        {/* How it Works Section */}
+        <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-8">
-                  Alles wat je nodig hebt om te groeien
-                </h2>
-                <div className="grid grid-cols-1 gap-4">
-                  {features.map((feature, index) => (
-                    <div key={index} className="flex items-center space-x-3 bg-white p-4 rounded-lg shadow-sm">
-                      <CheckCircle className="h-6 w-6 text-brand-lightGreen flex-shrink-0" />
-                      <span className="text-gray-700 font-medium">{feature}</span>
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="bg-white rounded-2xl p-8 shadow-sm">
+                <h2 className="text-3xl font-bold text-gray-900 mb-8">Zo werkt het</h2>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      1
                     </div>
-                  ))}
+                    <div>
+                      <p className="text-gray-700">
+                        Deel je vakgebied, werkgebied en bedrijfsgegevens.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      2
+                    </div>
+                    <div>
+                      <p className="text-gray-700">
+                        Ontvang dagelijks updates over de nieuwe aanvragen die passen bij je bedrijf.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <p className="text-gray-700">
+                        Ontgrendel de contactgegevens van de aanvragers die je interessant vindt, zodat je contact kunt opnemen met de aanvrager.
+                      </p>
+                    </div>
+                  </div>
                 </div>
+                
+                <Button 
+                  className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white mt-6"
+                >
+                  Schrijf je gratis in
+                </Button>
               </div>
-              <div className="relative">
+              
+              <div>
                 <OptimizedImage
-                  src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
-                  alt="Platform features"
-                  className="rounded-2xl shadow-xl w-full h-auto"
+                  src="/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png"
+                  alt="Professionele vakmensen aan het werk"
+                  className="rounded-xl w-full h-auto"
                 />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Process Section - HomeDeal numbered steps */}
-        <section className="py-20 bg-white">
+        {/* What we offer - Grid with icons */}
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Zo eenvoudig word je partner
-              </h2>
-              <p className="text-xl text-gray-600">
-                In drie simpele stappen ben je onderdeel van ons netwerk
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center relative">
-                <div className="bg-brand-lightGreen text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg">
-                  1
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+              Wat Refurbish Totaal Nederland jou biedt
+            </h2>
+            
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Settings className="h-12 w-12 text-blue-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Meld je aan</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Vul het aanmeldformulier in met je bedrijfsgegevens en specialisaties. Volledig gratis en zonder verplichtingen.
+                <h3 className="text-lg font-semibold mb-3">Kwalitatieve leads</h3>
+                <p className="text-gray-600 text-sm">
+                  Ontvang kwalitatieve leads en haal echten klanten binnen.
                 </p>
-                {/* Connection line */}
-                <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gray-200 -z-10"></div>
-              </div>
-              
-              <div className="text-center relative">
-                <div className="bg-brand-lightGreen text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg">
-                  2
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Verificatie</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  We controleren je kwalificaties en voeren een korte screening uit om kwaliteit te waarborgen.
-                </p>
-                {/* Connection line */}
-                <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gray-200 -z-10"></div>
               </div>
               
               <div className="text-center">
-                <div className="bg-brand-lightGreen text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg">
-                  3
+                <div className="flex justify-center mb-4">
+                  <FileText className="h-12 w-12 text-blue-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Start met verdienen</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Zodra je goedgekeurd bent, ontvang je direct toegang tot nieuwe klanten en projecten.
+                <h3 className="text-lg font-semibold mb-3">Duidelijke kosten</h3>
+                <p className="text-gray-600 text-sm">
+                  Betaal per offerteaanvraag, je weet dus precies waar je aan toe bent.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Mail className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Direct contact</h3>
+                <p className="text-gray-600 text-sm">
+                  Neem contact op met de klant via mail of telefoon.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <BarChart3 className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Volledige controle</h3>
+                <p className="text-gray-600 text-sm">
+                  Selecteer zelf je vakgebied(en) en regio('s) in je online account.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Megaphone className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Online bedrijfsprofiel</h3>
+                <p className="text-gray-600 text-sm">
+                  Bouw je bedrijfsprofiel uit tot je online visitekaartje.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Star className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Klanten reviews</h3>
+                <p className="text-gray-600 text-sm">
+                  Toon je kwaliteit en verhoog je betrouwbaarheid met reviews.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <TrendingUp className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Eerlijke concurrentie</h3>
+                <p className="text-gray-600 text-sm">
+                  Per vakgebied een passende verdeling.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Euro className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Controle over je kosten</h3>
+                <p className="text-gray-600 text-sm">
+                  Je hebt zelf controle over hoeveel je uitgeeft, omdat je alleen betaalt voor de aanvragen die je ontgrendelt.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Wrench className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Flexibiliteit</h3>
+                <p className="text-gray-600 text-sm">
+                  Maak gebruik van de dienst wanneer je het nodig hebt, zonder langetermijnverplichtingen of vaste maandelijkse kosten.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <HeadphonesIcon className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Persoonlijke accountmanager</h3>
+                <p className="text-gray-600 text-sm">
+                  Eenvoudig contact met je persoonlijke accountmanager.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Euro className="h-12 w-12 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">Reclameservice</h3>
+                <p className="text-gray-600 text-sm">
+                  Eerlijk is eerlijk: betaal alleen voor kwalitatieve leads.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section - HomeDeal style with form preview */}
-        <section className="py-20 bg-gradient-to-r from-brand-darkGreen to-brand-lightGreen">
+        {/* Testimonials Section */}
+        <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+              Wat vakspecialisten over Refurbish Totaal Nederland vertellen
+            </h2>
+            
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="text-white">
-                <h2 className="text-4xl font-bold mb-6">
-                  Klaar om je bedrijf te laten groeien?
-                </h2>
-                <p className="text-xl mb-8 opacity-90">
-                  Sluit je vandaag nog aan bij meer dan 500 professionele partners en begin direct met het uitbreiden van je klantenkring.
-                </p>
+              <div className="bg-white rounded-2xl p-8 shadow-sm">
+                <div className="mb-6">
+                  <p className="text-gray-700 text-lg leading-relaxed mb-4">
+                    "Wij doen al erg lang mee met Refurbish Totaal Nederland. Vanaf het begin houden wij er veel klanten aan over. Als ik een vraag heb, krijg ik ook altijd heel snel een reactie! Wij zijn heel tevreden!"
+                  </p>
+                  
+                  <div className="border-t pt-4">
+                    <p className="font-semibold text-gray-900">Kimberly Van den Wijngaert</p>
+                    <p className="text-brand-lightGreen font-medium">van EMVE Zonwering & Raamdecoratie vof</p>
+                  </div>
+                </div>
                 
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-6 w-6 text-white" />
-                    <span>100% gratis aanmelden</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-6 w-6 text-white" />
-                    <span>Direct toegang tot klanten</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-6 w-6 text-white" />
-                    <span>Geen maandelijkse kosten</span>
-                  </div>
+                {/* Navigation arrows */}
+                <div className="flex space-x-2">
+                  <button className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+                    <ArrowRight className="h-5 w-5 rotate-180" />
+                  </button>
+                  <button className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
                 </div>
-
-                <Button 
-                  size="lg" 
-                  className="bg-white text-brand-darkGreen hover:bg-gray-100 text-lg px-8 py-4 rounded-lg"
-                >
-                  <Mail className="mr-2 h-5 w-5" />
-                  Nu aanmelden
-                </Button>
               </div>
-
-              {/* Mock form card */}
-              <div className="bg-white rounded-2xl shadow-2xl p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Start je aanmelding</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Bedrijfsnaam</label>
-                    <div className="h-12 bg-gray-100 rounded-lg"></div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">E-mailadres</label>
-                    <div className="h-12 bg-gray-100 rounded-lg"></div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Specialisatie</label>
-                    <div className="h-12 bg-gray-100 rounded-lg"></div>
-                  </div>
-                  <Button className="w-full bg-brand-lightGreen hover:bg-brand-darkGreen text-white py-3 rounded-lg">
-                    Aanmelden
-                  </Button>
-                </div>
+              
+              <div>
+                <OptimizedImage
+                  src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
+                  alt="Tevreden vakspecialist aan het werk"
+                  className="rounded-xl w-full h-auto"
+                />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Footer Contact - Simple like HomeDeal */}
-        <section className="py-12 bg-gray-900 text-white">
+        {/* CTA Banner */}
+        <section className="py-12 bg-blue-100">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-3 gap-8 text-center">
-              <div>
-                <Phone className="h-8 w-8 text-brand-lightGreen mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Bel ons</h3>
-                <p className="text-gray-300">085 401 3642</p>
-                <p className="text-gray-400 text-sm">Ma-Vr: 08:00 - 17:00</p>
+            <div className="flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Wil jij ook in contact komen met nieuwe klanten?
+              </h3>
+              <Button 
+                className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-8"
+              >
+                Schrijf je gratis in
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+              Veelgestelde vragen
+            </h2>
+            
+            <div className="max-w-3xl mx-auto space-y-4">
+              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+                <span className="text-lg font-medium">Hoeveel offerteaanvragen kan ik verwachten?</span>
+                <ChevronDown className="h-5 w-5 text-gray-500" />
               </div>
-              <div>
-                <Mail className="h-8 w-8 text-brand-lightGreen mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">E-mail</h3>
-                <p className="text-gray-300">info@refurbishtotaalnederland.nl</p>
-                <p className="text-gray-400 text-sm">Reactie binnen 24 uur</p>
+              
+              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+                <span className="text-lg font-medium">Wat is de prijs per offerteaanvraag?</span>
+                <ChevronDown className="h-5 w-5 text-gray-500" />
               </div>
-              <div>
-                <MapPin className="h-8 w-8 text-brand-lightGreen mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Locatie</h3>
-                <p className="text-gray-300">Heel Nederland</p>
-                <p className="text-gray-400 text-sm">Van Groningen tot Maastricht</p>
+              
+              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+                <span className="text-lg font-medium">Zijn er onverwachte kosten?</span>
+                <ChevronDown className="h-5 w-5 text-gray-500" />
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+                <span className="text-lg font-medium">Op welke manieren kan ik contact opnemen met de klant?</span>
+                <ChevronDown className="h-5 w-5 text-gray-500" />
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+                <span className="text-lg font-medium">Hoe snel moet ik reageren op een offerteaanvraag?</span>
+                <ChevronDown className="h-5 w-5 text-gray-500" />
               </div>
             </div>
           </div>
         </section>
+
+        {/* Partner Logos */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+              500+ bedrijven maken gebruik van Refurbish Totaal Nederland om nieuwe klanten te werven
+            </h2>
+            
+            <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+              {/* Placeholder logos - in real implementation these would be actual partner logos */}
+              <div className="bg-gray-200 h-16 w-32 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">Partner Logo</span>
+              </div>
+              <div className="bg-gray-200 h-16 w-32 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">Partner Logo</span>
+              </div>
+              <div className="bg-gray-200 h-16 w-32 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">Partner Logo</span>
+              </div>
+              <div className="bg-gray-200 h-16 w-32 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">Partner Logo</span>
+              </div>
+              <div className="bg-gray-200 h-16 w-32 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">Partner Logo</span>
+              </div>
+              <div className="bg-gray-200 h-16 w-32 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">Partner Logo</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-12 bg-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="grid md:grid-cols-4 gap-8">
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4">Jouw project</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><a href="#" className="hover:text-brand-lightGreen">Voor consumenten</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Inspiratie</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Prijsgidsen</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Veelgestelde vragen</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4">Vakspecialisten</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><a href="#" className="hover:text-brand-lightGreen">Aanmelden</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Meer informatie</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Blog</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Inloggen</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4">Over Refurbish Totaal Nederland</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><a href="#" className="hover:text-brand-lightGreen">Ons verhaal</a></li>
+                  <li><a href="#" className="hover:text-brand-lightGreen">Contact</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4">Vragen over onze service?</h4>
+                <div className="flex items-center space-x-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div>
+                    <p className="text-brand-lightGreen font-semibold">info@refurbishtotaalnederland.nl</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-t mt-8 pt-8 flex justify-between items-center text-sm text-gray-500">
+              <div className="flex space-x-4">
+                <span>© 2024 Refurbish Totaal Nederland</span>
+                <a href="#" className="hover:text-brand-lightGreen">Disclaimer</a>
+                <a href="#" className="hover:text-brand-lightGreen">Privacy</a>
+                <a href="#" className="hover:text-brand-lightGreen">Cookies</a>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Building2 className="h-6 w-6 text-brand-lightGreen" />
+                <span className="font-semibold text-brand-lightGreen">Refurbish Totaal Nederland</span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </>
   );
