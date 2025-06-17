@@ -115,7 +115,7 @@ const BedrijvenPage = () => {
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <div className="flex justify-center mb-4">
-                  <CheckCircle className="h-12 w-12 text-blue-500" />
+                  <CheckCircle className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Zicht op serieuze aanvragen</h3>
                 <p className="text-gray-600">
@@ -125,7 +125,7 @@ const BedrijvenPage = () => {
               
               <div>
                 <div className="flex justify-center mb-4">
-                  <CheckCircle className="h-12 w-12 text-blue-500" />
+                  <CheckCircle className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Blijf de concurrentie voor</h3>
                 <p className="text-gray-600">
@@ -135,7 +135,7 @@ const BedrijvenPage = () => {
               
               <div>
                 <div className="flex justify-center mb-4">
-                  <CheckCircle className="h-12 w-12 text-blue-500" />
+                  <CheckCircle className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Flexibiliteit zonder verplichtingen</h3>
                 <p className="text-gray-600">
@@ -155,7 +155,7 @@ const BedrijvenPage = () => {
                 
                 <div className="space-y-6">
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div className="bg-brand-lightGreen text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                       1
                     </div>
                     <div>
@@ -166,7 +166,7 @@ const BedrijvenPage = () => {
                   </div>
                   
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div className="bg-brand-lightGreen text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                       2
                     </div>
                     <div>
@@ -177,7 +177,7 @@ const BedrijvenPage = () => {
                   </div>
                   
                   <div className="flex items-start space-x-4">
-                    <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div className="bg-brand-lightGreen text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                       3
                     </div>
                     <div>
@@ -216,7 +216,7 @@ const BedrijvenPage = () => {
             <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Settings className="h-12 w-12 text-blue-500" />
+                  <Settings className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Kwalitatieve leads</h3>
                 <p className="text-gray-600 text-sm">
@@ -226,7 +226,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <FileText className="h-12 w-12 text-blue-500" />
+                  <FileText className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Duidelijke kosten</h3>
                 <p className="text-gray-600 text-sm">
@@ -236,7 +236,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Mail className="h-12 w-12 text-blue-500" />
+                  <Mail className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Direct contact</h3>
                 <p className="text-gray-600 text-sm">
@@ -246,7 +246,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <BarChart3 className="h-12 w-12 text-blue-500" />
+                  <BarChart3 className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Volledige controle</h3>
                 <p className="text-gray-600 text-sm">
@@ -256,7 +256,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Megaphone className="h-12 w-12 text-blue-500" />
+                  <Megaphone className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Online bedrijfsprofiel</h3>
                 <p className="text-gray-600 text-sm">
@@ -266,7 +266,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Star className="h-12 w-12 text-blue-500" />
+                  <Star className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Klanten reviews</h3>
                 <p className="text-gray-600 text-sm">
@@ -276,7 +276,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <TrendingUp className="h-12 w-12 text-blue-500" />
+                  <TrendingUp className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Eerlijke concurrentie</h3>
                 <p className="text-gray-600 text-sm">
@@ -286,7 +286,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Euro className="h-12 w-12 text-blue-500" />
+                  <Euro className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Controle over je kosten</h3>
                 <p className="text-gray-600 text-sm">
@@ -296,7 +296,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Wrench className="h-12 w-12 text-blue-500" />
+                  <Wrench className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Flexibiliteit</h3>
                 <p className="text-gray-600 text-sm">
@@ -306,7 +306,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <HeadphonesIcon className="h-12 w-12 text-blue-500" />
+                  <HeadphonesIcon className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Persoonlijke accountmanager</h3>
                 <p className="text-gray-600 text-sm">
@@ -316,7 +316,7 @@ const BedrijvenPage = () => {
               
               <div className="text-center">
                 <div className="flex justify-center mb-4">
-                  <Euro className="h-12 w-12 text-blue-500" />
+                  <Euro className="h-12 w-12 text-brand-lightGreen" />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Reclameservice</h3>
                 <p className="text-gray-600 text-sm">
@@ -481,9 +481,12 @@ const BedrijvenPage = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Vragen over onze service?
               </h3>
-              <p className="text-brand-lightGreen text-xl font-semibold">
+              <a 
+                href="mailto:info@refurbishtotaalnederland.nl"
+                className="text-brand-lightGreen text-xl font-semibold hover:text-brand-darkGreen transition-colors"
+              >
                 info@refurbishtotaalnederland.nl
-              </p>
+              </a>
             </div>
           </div>
         </section>
