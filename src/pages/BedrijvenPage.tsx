@@ -209,8 +209,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="/lovable-uploads/3321c751-dd2d-47ea-8590-4b48558120ed.png"
-                  alt="Bouwvakkers en aannemers in gesprek over een bouwproject"
+                  src="/lovable-uploads/68edc6b4-407f-4d87-bbf9-fedaf436b627.png"
+                  alt="Nederland kaart met werkgebieden"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
@@ -372,8 +372,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&h=400&fit=crop&crop=center"
-                  alt="Tevreden aannemer aan het werk met bouwgereedschap"
+                  src="/lovable-uploads/68edc6b4-407f-4d87-bbf9-fedaf436b627.png"
+                  alt="Nederland overzicht werkgebieden"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
