@@ -29,6 +29,13 @@ import {
   Wrench,
   ChevronDown
 } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import Footer from '@/components/Footer';
 
 const BedrijvenPage = () => {
   return (
@@ -55,7 +62,7 @@ const BedrijvenPage = () => {
           </div>
         </section>
 
-        {/* Hero Section - Exactly like HomeDeal */}
+        {/* Hero Section with Netherlands Map */}
         <section className="bg-gradient-to-br from-blue-50 to-gray-50 py-20">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -78,15 +85,23 @@ const BedrijvenPage = () => {
               
               <div className="relative">
                 <div className="relative">
-                  {/* Netherlands Map Illustration - Using existing image as placeholder */}
-                  <OptimizedImage
-                    src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
-                    alt="Nederland kaart met locaties"
-                    className="rounded-xl w-full h-auto"
-                  />
-                  {/* Sample location pins */}
-                  <div className="absolute top-1/4 right-1/3 bg-white rounded-lg px-3 py-2 shadow-lg text-sm">
-                    Rita zoekt een isolatie specialist
+                  {/* Netherlands Map with Animation */}
+                  <div className="relative bg-brand-lightGreen rounded-xl p-8 overflow-hidden">
+                    <OptimizedImage
+                      src="/lovable-uploads/c2df9845-98c4-4f4e-abaa-693c1a5135bd.png"
+                      alt="Nederland kaart met locaties"
+                      className="w-full h-auto animate-fade-in"
+                    />
+                    {/* Animated location pins */}
+                    <div className="absolute top-1/4 right-1/3 bg-white rounded-lg px-3 py-2 shadow-lg text-sm animate-pulse">
+                      Rita zoekt een isolatie specialist
+                    </div>
+                    <div className="absolute bottom-1/3 left-1/4 bg-white rounded-lg px-3 py-2 shadow-lg text-sm animate-bounce">
+                      Jan wil zijn dak renoveren
+                    </div>
+                    <div className="absolute top-1/2 left-1/2 bg-white rounded-lg px-3 py-2 shadow-lg text-sm animate-float">
+                      Marie zoekt een vakman
+                    </div>
                   </div>
                 </div>
               </div>
@@ -182,7 +197,7 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="/lovable-uploads/69fecf8d-ab7b-4e38-a678-41f8e4e80ad2.png"
+                  src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=400&fit=crop&crop=center"
                   alt="Professionele vakmensen aan het werk"
                   className="rounded-xl w-full h-auto"
                 />
@@ -345,7 +360,7 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="/lovable-uploads/976a3243-6071-40c3-bf04-e4c43cf72f67.png"
+                  src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&h=400&fit=crop&crop=center"
                   alt="Tevreden vakspecialist aan het werk"
                   className="rounded-xl w-full h-auto"
                 />
@@ -370,38 +385,60 @@ const BedrijvenPage = () => {
           </div>
         </section>
 
-        {/* FAQ Section */}
+        {/* FAQ Section with Working Accordion */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
               Veelgestelde vragen
             </h2>
             
-            <div className="max-w-3xl mx-auto space-y-4">
-              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-                <span className="text-lg font-medium">Hoeveel offerteaanvragen kan ik verwachten?</span>
-                <ChevronDown className="h-5 w-5 text-gray-500" />
-              </div>
-              
-              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-                <span className="text-lg font-medium">Wat is de prijs per offerteaanvraag?</span>
-                <ChevronDown className="h-5 w-5 text-gray-500" />
-              </div>
-              
-              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-                <span className="text-lg font-medium">Zijn er onverwachte kosten?</span>
-                <ChevronDown className="h-5 w-5 text-gray-500" />
-              </div>
-              
-              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-                <span className="text-lg font-medium">Op welke manieren kan ik contact opnemen met de klant?</span>
-                <ChevronDown className="h-5 w-5 text-gray-500" />
-              </div>
-              
-              <div className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
-                <span className="text-lg font-medium">Hoe snel moet ik reageren op een offerteaanvraag?</span>
-                <ChevronDown className="h-5 w-5 text-gray-500" />
-              </div>
+            <div className="max-w-3xl mx-auto">
+              <Accordion type="single" collapsible className="space-y-4">
+                <AccordionItem value="item-1" className="bg-gray-50 rounded-lg px-6">
+                  <AccordionTrigger className="text-lg font-medium hover:no-underline">
+                    Hoeveel offerteaanvragen kan ik verwachten?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-4">
+                    Het aantal offerteaanvragen dat je ontvangt hangt af van verschillende factoren zoals je vakgebied, werkgebied en de vraag in jouw regio. Gemiddeld ontvangen onze partners 3-8 relevante aanvragen per week.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="item-2" className="bg-gray-50 rounded-lg px-6">
+                  <AccordionTrigger className="text-lg font-medium hover:no-underline">
+                    Wat is de prijs per offerteaanvraag?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-4">
+                    De prijs per offerteaanvraag varieert tussen €15 en €45, afhankelijk van het type klus en de complexiteit. Je betaalt alleen voor de aanvragen die je daadwerkelijk ontgrendelt.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="item-3" className="bg-gray-50 rounded-lg px-6">
+                  <AccordionTrigger className="text-lg font-medium hover:no-underline">
+                    Zijn er onverwachte kosten?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-4">
+                    Nee, er zijn geen verborgen kosten. Je betaalt alleen voor de contactgegevens die je ontgrendelt. Er zijn geen abonnementskosten of andere verplichtingen.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="item-4" className="bg-gray-50 rounded-lg px-6">
+                  <AccordionTrigger className="text-lg font-medium hover:no-underline">
+                    Op welke manieren kan ik contact opnemen met de klant?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-4">
+                    Na het ontgrendelen van een aanvraag krijg je toegang tot de volledige contactgegevens: telefoonnummer, e-mailadres en postadres. Je kunt de klant direct bellen, mailen of een bezoek inplannen.
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="item-5" className="bg-gray-50 rounded-lg px-6">
+                  <AccordionTrigger className="text-lg font-medium hover:no-underline">
+                    Hoe snel moet ik reageren op een offerteaanvraag?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-4">
+                    We adviseren om binnen 24 uur contact op te nemen met de klant. Snelle reacties verhogen je kans op het binnenhalen van de klus aanzienlijk. Klanten waarderen een snelle en professionele benadering.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         </section>
@@ -437,64 +474,22 @@ const BedrijvenPage = () => {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="py-12 bg-gray-100">
+        {/* Contact Block */}
+        <section className="py-12 bg-white">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-4 gap-8">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4">Jouw project</h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li><a href="#" className="hover:text-brand-lightGreen">Voor consumenten</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Inspiratie</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Prijsgidsen</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Veelgestelde vragen</a></li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4">Vakspecialisten</h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li><a href="#" className="hover:text-brand-lightGreen">Aanmelden</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Meer informatie</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Blog</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Inloggen</a></li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4">Over Refurbish Totaal Nederland</h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li><a href="#" className="hover:text-brand-lightGreen">Ons verhaal</a></li>
-                  <li><a href="#" className="hover:text-brand-lightGreen">Contact</a></li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4">Vragen over onze service?</h4>
-                <div className="flex items-center space-x-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                  <div>
-                    <p className="text-brand-lightGreen font-semibold">info@refurbishtotaalnederland.nl</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="border-t mt-8 pt-8 flex justify-between items-center text-sm text-gray-500">
-              <div className="flex space-x-4">
-                <span>© 2024 Refurbish Totaal Nederland</span>
-                <a href="#" className="hover:text-brand-lightGreen">Disclaimer</a>
-                <a href="#" className="hover:text-brand-lightGreen">Privacy</a>
-                <a href="#" className="hover:text-brand-lightGreen">Cookies</a>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Building2 className="h-6 w-6 text-brand-lightGreen" />
-                <span className="font-semibold text-brand-lightGreen">Refurbish Totaal Nederland</span>
-              </div>
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Vragen over onze service?
+              </h3>
+              <p className="text-brand-lightGreen text-xl font-semibold">
+                info@refurbishtotaalnederland.nl
+              </p>
             </div>
           </div>
-        </footer>
+        </section>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </>
   );
