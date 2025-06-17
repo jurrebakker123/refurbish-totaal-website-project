@@ -1,9 +1,12 @@
 
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  return <footer className="bg-brand-gray text-white pt-16 pb-8">
+
+  return (
+    <footer className="bg-brand-gray text-white pt-16 pb-8">
       <div className="container">
         {/* Top Footer Area */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -32,9 +35,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="animate-fade-in" style={{
-          animationDelay: '0.1s'
-        }}>
+          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <h3 className="text-xl font-bold mb-4">Snelle Links</h3>
             <ul className="space-y-2">
               <li>
@@ -48,6 +49,9 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/projecten" className="hover:text-brand-lightGreen transition-colors hover-underline">Projecten</Link>
+              </li>
+              <li>
+                <Link to="/bedrijven" className="hover:text-brand-lightGreen transition-colors hover-underline">Bedrijven</Link>
               </li>
               <li>
                 <Link to="/vacatures" className="hover:text-brand-lightGreen transition-colors hover-underline">Vacatures</Link>
@@ -148,6 +152,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
+
 export default Footer;

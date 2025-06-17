@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Building2, 
   Users, 
@@ -36,16 +37,17 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Footer from '@/components/Footer';
+import LoginDemo from '@/components/demo/LoginDemo';
 
 const BedrijvenPage = () => {
+  const [showLoginDemo, setShowLoginDemo] = useState(false);
+
   const handleLogin = () => {
-    // Demo login functionality
-    alert('Demo: Login functionaliteit zou hier werken. Gebruiker wordt doorgestuurd naar het vakspecialist dashboard.');
+    setShowLoginDemo(true);
   };
 
   const handleSignup = () => {
-    // Demo signup functionality
-    alert('Demo: Hier zou de aanmeldingsprocedure starten. Vakspecialist vult gegevens in en wordt toegevoegd aan het platform.');
+    setShowLoginDemo(true);
   };
 
   return (
@@ -66,7 +68,17 @@ const BedrijvenPage = () => {
                 <span className="text-sm text-gray-500">Voor bedrijven</span>
               </div>
               <div className="text-sm">
-                <Button variant="outline" size="sm" onClick={handleLogin}>Log in</Button>
+                <Dialog open={showLoginDemo} onOpenChange={setShowLoginDemo}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" onClick={handleLogin}>Log in</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Demo Login Portal</DialogTitle>
+                    </DialogHeader>
+                    <LoginDemo />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
@@ -388,12 +400,22 @@ const BedrijvenPage = () => {
               <h3 className="text-2xl font-bold text-gray-900">
                 Wil jij ook in contact komen met nieuwe klanten?
               </h3>
-              <Button 
-                className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-8"
-                onClick={handleSignup}
-              >
-                Schrijf je gratis in
-              </Button>
+              <Dialog open={showLoginDemo} onOpenChange={setShowLoginDemo}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-8"
+                    onClick={handleSignup}
+                  >
+                    Schrijf je gratis in
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Demo Aanmeld Portal</DialogTitle>
+                  </DialogHeader>
+                  <LoginDemo />
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </section>
