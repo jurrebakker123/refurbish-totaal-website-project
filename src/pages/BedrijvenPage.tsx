@@ -38,6 +38,16 @@ import {
 import Footer from '@/components/Footer';
 
 const BedrijvenPage = () => {
+  const handleLogin = () => {
+    // Demo login functionality
+    alert('Demo: Login functionaliteit zou hier werken. Gebruiker wordt doorgestuurd naar het vakspecialist dashboard.');
+  };
+
+  const handleSignup = () => {
+    // Demo signup functionality
+    alert('Demo: Hier zou de aanmeldingsprocedure starten. Vakspecialist vult gegevens in en wordt toegevoegd aan het platform.');
+  };
+
   return (
     <>
       <Helmet>
@@ -56,7 +66,7 @@ const BedrijvenPage = () => {
                 <span className="text-sm text-gray-500">Voor bedrijven</span>
               </div>
               <div className="text-sm">
-                <Button variant="outline" size="sm">Log in</Button>
+                <Button variant="outline" size="sm" onClick={handleLogin}>Log in</Button>
               </div>
             </div>
           </div>
@@ -77,6 +87,7 @@ const BedrijvenPage = () => {
                 <Button 
                   size="lg" 
                   className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white text-lg px-8 py-4 rounded-lg"
+                  onClick={handleSignup}
                 >
                   Schrijf je gratis in
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -85,11 +96,11 @@ const BedrijvenPage = () => {
               
               <div className="relative">
                 <div className="relative">
-                  {/* Netherlands Map with Animation */}
+                  {/* Construction workers illustration */}
                   <div className="relative bg-brand-lightGreen rounded-xl p-8 overflow-hidden">
                     <OptimizedImage
-                      src="/lovable-uploads/c2df9845-98c4-4f4e-abaa-693c1a5135bd.png"
-                      alt="Nederland kaart met locaties"
+                      src="/lovable-uploads/8069b82a-7aa8-4b93-84f1-af687a946ca0.png"
+                      alt="Vakspecialisten aan het werk - renovatie en bouw"
                       className="w-full h-auto animate-fade-in"
                     />
                     {/* Animated location pins */}
@@ -190,6 +201,7 @@ const BedrijvenPage = () => {
                 
                 <Button 
                   className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white mt-6"
+                  onClick={handleSignup}
                 >
                   Schrijf je gratis in
                 </Button>
@@ -197,8 +209,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=600&h=400&fit=crop&crop=center"
-                  alt="Professionele aannemers en vakmensen aan het werk op een bouwplaats"
+                  src="/lovable-uploads/3321c751-dd2d-47ea-8590-4b48558120ed.png"
+                  alt="Bouwvakkers en aannemers in gesprek over een bouwproject"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
@@ -378,6 +390,7 @@ const BedrijvenPage = () => {
               </h3>
               <Button 
                 className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-8"
+                onClick={handleSignup}
               >
                 Schrijf je gratis in
               </Button>
