@@ -197,8 +197,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=400&fit=crop&crop=center"
-                  alt="Professionele vakmensen aan het werk"
+                  src="https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=600&h=400&fit=crop&crop=center"
+                  alt="Professionele aannemers en vakmensen aan het werk op een bouwplaats"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
@@ -360,8 +360,8 @@ const BedrijvenPage = () => {
               
               <div>
                 <OptimizedImage
-                  src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&h=400&fit=crop&crop=center"
-                  alt="Tevreden vakspecialist aan het werk"
+                  src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&h=400&fit=crop&crop=center"
+                  alt="Tevreden aannemer aan het werk met bouwgereedschap"
                   className="rounded-xl w-full h-auto"
                 />
               </div>
