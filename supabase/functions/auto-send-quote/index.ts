@@ -6,13 +6,9 @@ import { Resend } from "npm:resend@2.0.0";
 console.log("=== AUTO-SEND-QUOTE FUNCTION STARTED ===");
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
-const whatsappApiKey = Deno.env.get("WHATSAPP_API_KEY");
-const whatsappPhoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
 
 console.log("Environment check:");
 console.log("RESEND_API_KEY configured:", !!resendApiKey);
-console.log("WHATSAPP_API_KEY configured:", !!whatsappApiKey);
-console.log("WHATSAPP_PHONE_NUMBER_ID configured:", !!whatsappPhoneNumberId);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,7 +24,6 @@ interface AutoQuoteRequest {
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW AUTO-QUOTE REQUEST ===");
   console.log("Request method:", req.method);
-  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
     console.log("Handling OPTIONS request");
@@ -118,7 +113,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     const customerEmail = requestData.email || requestData.emailadres;
     const customerName = requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`;
-    const customerPhone = requestData.telefoon;
 
     if (!customerEmail) {
       console.error("No email address found for customer");
@@ -137,7 +131,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (type === 'zonnepaneel') {
       defaultTemplate = `Beste ${customerName},
 
-Hartelijk dank voor uw interesse in onze refurbished zonnepanelen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van zonnepanelen volgens uw specificaties.
+Hartelijk dank voor uw interesse in onze refurbished zonnepanelen. Hierbij ontvangt u uw persoonlijke offerte.
 
 De prijs is inclusief:
 - Transport naar locatie  
@@ -148,10 +142,9 @@ De prijs is inclusief:
 
 Wij hanteren een levertijd van 4-6 weken na definitieve opdracht.
 
-Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
+Voor vragen kunt u contact met ons opnemen.
 
 Met vriendelijke groet,
-
 Het team van Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl`;
@@ -172,7 +165,7 @@ info@refurbishtotaalnederland.nl`;
     } else {
       defaultTemplate = `Beste ${customerName},
 
-Hartelijk dank voor uw interesse in onze dakkapellen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van een dakkapel volgens uw specificaties.
+Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u uw persoonlijke offerte.
 
 De prijs is inclusief:
 - Transport naar locatie
@@ -183,15 +176,13 @@ De prijs is inclusief:
 
 Wij hanteren een levertijd van 6-8 weken na definitieve opdracht.
 
-Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
+Voor vragen kunt u contact met ons opnemen.
 
 Met vriendelijke groet,
-
 Het team van Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl`;
 
-      // For dakkapel calculator requests
       productDetails = `
         <h3>Uw Dakkapel Configuratie:</h3>
         <ul>
@@ -215,7 +206,7 @@ info@refurbishtotaalnederland.nl`;
       `${requestData.adres}, ${requestData.postcode} ${requestData.plaats}`;
 
     const priceInfo = requestData.totaal_prijs ? 
-      `<p style="font-size: 18px; font-weight: bold; color: #2563eb;">Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
+      `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
       '<p>Prijs wordt binnenkort meegedeeld.</p>';
 
     // Create interest response URLs
@@ -224,67 +215,66 @@ info@refurbishtotaalnederland.nl`;
     const noUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestId}&response=nee&type=${type}`;
 
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #059669; color: white; padding: 20px; text-align: center;">
-          <h1>Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - Refurbish Totaal Nederland</h1>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
+          <h1 style="margin: 0; font-size: 24px;">Uw Offerte - Refurbish Totaal Nederland</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}</p>
         </div>
         
-        <div style="padding: 20px; background-color: #f9f9f9;">
-          <div style="white-space: pre-line;">${defaultTemplate.replace(/\n/g, '<br/>')}</div>
+        <div style="padding: 30px;">
+          <div style="white-space: pre-line; line-height: 1.6; margin-bottom: 30px;">${defaultTemplate.replace(/\n/g, '<br/>')}</div>
           
-          <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 25px 0; text-align: center;">
-            <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u daadwerkelijk interesse om door te gaan?</h3>
-            <p style="color: #856404; margin: 15px 0;">Klik op één van de onderstaande knoppen om uw interesse te bevestigen:</p>
+          ${priceInfo}
+          
+          <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 30px 0; text-align: center;">
+            <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u interesse om door te gaan?</h3>
+            <p style="color: #856404; margin: 15px 0;">Klik op één van onderstaande knoppen:</p>
             <div style="margin: 25px 0;">
-              <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✓ JA, IK HEB INTERESSE</a>
+              <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✓ JA, IK HEB INTERESSE</a>
               <br><br>
-              <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✗ NEE, GEEN INTERESSE</a>
+              <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✗ NEE, GEEN INTERESSE</a>
             </div>
-            <p style="font-size: 14px; color: #856404; margin-bottom: 0;">Deze knoppen werken direct vanuit uw email.</p>
           </div>
           
           ${productDetails}
           
-          <div style="background-color: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            ${priceInfo}
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+            <p style="margin: 0;"><strong>Uw adresgegevens:</strong><br>
+            ${customerAddress}</p>
           </div>
           
-          <p><strong>Uw adresgegevens:</strong><br>
-          ${customerAddress}</p>
-          
-          <div style="background-color: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3>Contact:</h3>
-            <p>
+          <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
+            <h3 style="margin-top: 0;">Contact:</h3>
+            <p style="margin-bottom: 0;">
               <strong>Refurbish Totaal Nederland</strong><br>
               E-mail: info@refurbishtotaalnederland.nl<br>
-              Telefoon: +31 85 4444 255
+              Telefoon: 085-1301578
             </p>
           </div>
         </div>
         
-        <div style="background-color: #059669; color: white; padding: 10px; text-align: center; font-size: 12px;">
-          <p>© 2024 Refurbish Totaal Nederland</p>
+        <div style="background-color: #059669; color: white; padding: 20px; text-align: center; font-size: 14px;">
+          <p style="margin: 0;">© 2024 Refurbish Totaal Nederland</p>
         </div>
       </div>
     `;
 
-    // Send email with better error handling
+    // Send email using Resend
     console.log("Sending automatic quote email to:", customerEmail);
-    console.log("Email from address: Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>");
-    console.log("Email subject:", `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`);
+    console.log("Using Resend API with key:", resendApiKey ? "***configured***" : "NOT CONFIGURED");
     
     try {
       const emailResponse = await resend.emails.send({
         from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
         to: [customerEmail],
-        subject: `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`,
+        subject: `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - Refurbish Totaal Nederland`,
         html: emailHtml,
       });
 
-      console.log("Resend API response:", emailResponse);
+      console.log("✅ Resend API response:", emailResponse);
 
       if (emailResponse.error) {
-        console.error("Resend API error:", emailResponse.error);
+        console.error("❌ Resend API error:", emailResponse.error);
         return new Response(
           JSON.stringify({ 
             success: false, 
@@ -296,7 +286,7 @@ info@refurbishtotaalnederland.nl`;
       }
 
       if (!emailResponse.data || !emailResponse.data.id) {
-        console.error("No email ID returned from Resend");
+        console.error("❌ No email ID returned from Resend");
         return new Response(
           JSON.stringify({ 
             success: false, 
@@ -309,7 +299,7 @@ info@refurbishtotaalnederland.nl`;
       console.log("✅ Email sent successfully! Email ID:", emailResponse.data.id);
 
       // Update status in database
-      console.log("Updating database status to 'offerte_verzonden'...");
+      console.log("Updating database status...");
       const { error: updateError } = await supabaseClient
         .from(table)
         .update({
@@ -320,7 +310,7 @@ info@refurbishtotaalnederland.nl`;
         .eq('id', requestId);
 
       if (updateError) {
-        console.error('Error updating database status:', updateError);
+        console.error('❌ Error updating database status:', updateError);
       } else {
         console.log('✅ Database status updated successfully');
       }
@@ -330,7 +320,6 @@ info@refurbishtotaalnederland.nl`;
       return new Response(JSON.stringify({ 
         success: true, 
         message: 'Automatische offerte succesvol verzonden',
-        emailSent: true,
         emailId: emailResponse.data.id,
         sentTo: customerEmail
       }), {
@@ -340,14 +329,10 @@ info@refurbishtotaalnederland.nl`;
 
     } catch (emailError: any) {
       console.error("=== EMAIL SENDING ERROR ===", emailError);
-      console.error("Email error details:", emailError.message);
-      console.error("Email error stack:", emailError.stack);
-      
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: `Email verzenden mislukt: ${emailError.message}`,
-          details: emailError
+          error: `Email verzenden mislukt: ${emailError.message}`
         }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
@@ -355,13 +340,10 @@ info@refurbishtotaalnederland.nl`;
 
   } catch (error: any) {
     console.error("=== CRITICAL ERROR IN AUTO-SEND-QUOTE ===", error);
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: `Onverwachte fout: ${error.message}`,
-        details: error
+        error: `Onverwachte fout: ${error.message}`
       }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
