@@ -11,12 +11,11 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://www.refurbishtotaalnederland.nl/" />
 
-    <!-- Favicon -->
-    <link rel="icon" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png" />
-    
-    <!-- Force favicon refresh with timestamp -->
-    <link rel="shortcut icon" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png?v=20250618" />
+    <!-- Enhanced Favicon Configuration with Cache Busting -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png?v=20250618-2" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png?v=20250618-2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png?v=20250618-2" />
+    <link rel="shortcut icon" href="/lovable-uploads/adbb873b-bd0c-4ad2-829f-2f7c8273a163.png?v=20250618-2" type="image/png" />
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -74,6 +73,19 @@
     
     <!-- Important: Keep the GPT Engineer script for select functionality -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    
+    <!-- Force favicon refresh script -->
+    <script>
+      // Force favicon refresh by removing and re-adding the link elements
+      setTimeout(() => {
+        const links = document.querySelectorAll('link[rel*="icon"]');
+        links.forEach(link => {
+          const newLink = link.cloneNode();
+          newLink.href = link.href.split('?')[0] + '?v=' + Date.now();
+          link.parentNode.replaceChild(newLink, link);
+        });
+      }, 100);
+    </script>
   </head>
 
   <body>
