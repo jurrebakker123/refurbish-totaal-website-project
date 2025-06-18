@@ -1,69 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Homepage -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/</loc>
-    <lastmod>2025-04-22</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.refurbishtotaalnederland.nl/lovable-uploads/01e952fe-5435-4105-9ea9-5e2a423020c6.png</image:loc>
+      <image:title>Refurbish Totaal Nederland Logo</image:title>
+    </image:image>
   </url>
+  
+  <!-- Main service pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten</loc>
-    <lastmod>2025-04-22</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  
   <!-- Schilderwerk pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/schilderwerk/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -71,55 +79,111 @@
   <!-- Dakrenovatie pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/dakrenovatie/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Dakkapel pages -->
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/eindhoven</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/rotterdam</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/breda</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/amsterdam</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/lelystad</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/zwolle</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/doetinchem</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/diensten/dakkapel/venray</loc>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -127,55 +191,55 @@
   <!-- Stukadoren pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/stukadoren/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -183,55 +247,55 @@
   <!-- Installatietechniek pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/installatietechniek/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -239,55 +303,55 @@
   <!-- Aan- en verbouw pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/aan-en-verbouw/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -295,55 +359,55 @@
   <!-- Behangen pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/behangen/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -351,55 +415,55 @@
   <!-- PVC Vloeren pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/eindhoven</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/rotterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/breda</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/amsterdam</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/lelystad</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/zwolle</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/doetinchem</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/diensten/pvc-vloeren/venray</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -407,38 +471,90 @@
   <!-- Other main pages -->
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/over-ons</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/projecten</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/offerte</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/contact</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.refurbishtotaalnederland.nl/bedrijven</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/vacatures</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/dakkapel-calculator</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Specialized pages -->
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/isolatie</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/tuinhuizen</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/zonnepanelen</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/bouwhulp</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Footer pages -->
+  <url>
     <loc>https://www.refurbishtotaalnederland.nl/privacy</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.refurbishtotaalnederland.nl/voorwaarden</loc>
-    <lastmod>2025-04-22</lastmod>
+    <lastmod>2024-12-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.refurbishtotaalnederland.nl/certificaat</loc>
+    <lastmod>2024-12-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

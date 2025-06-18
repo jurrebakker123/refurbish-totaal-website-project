@@ -1,26 +1,34 @@
 
 # Robots.txt voor Refurbish Totaal Nederland
+# Optimized for better SEO indexing
+
 User-agent: *
 Allow: /
 
-# Allow all search engines
+# Specific search engine directives
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 2
 
 User-agent: Slurp
 Allow: /
+Crawl-delay: 2
 
 User-agent: DuckDuckBot
 Allow: /
+Crawl-delay: 2
 
 User-agent: Baiduspider
 Allow: /
+Crawl-delay: 5
 
-User-agent: Yandex
+User-agent: YandexBot
 Allow: /
+Crawl-delay: 5
 
 User-agent: Twitterbot
 Allow: /
@@ -28,16 +36,58 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-# Configuratie voor betere crawling
-Crawl-delay: 10
+User-agent: LinkedInBot
+Allow: /
 
-# Sitemap locaties
+User-agent: WhatsApp
+Allow: /
+
+# Block unwanted bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Allow important pages and prioritize them
+Allow: /diensten/
+Allow: /offerte
+Allow: /contact
+Allow: /bedrijven
+Allow: /projecten
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*?*
+Disallow: /offerte/bedankt
+Disallow: /404
+Disallow: /500
+
+# Disallow duplicate content and parameters
+Disallow: /*utm_*
+Disallow: /*ref=*
+Disallow: /*source=*
+Disallow: /*fbclid=*
+Disallow: /*gclid=*
+
+# Allow all images and assets
+Allow: /lovable-uploads/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+
+# Sitemap locations (updated)
 Sitemap: https://www.refurbishtotaalnederland.nl/sitemap-index.xml
 Sitemap: https://www.refurbishtotaalnederland.nl/sitemap.xml
 
-# Belangrijk voor index-pagina's
-Disallow: /offerte/bedankt
-Disallow: /*?*
-
-# Disallow admin content
-Disallow: /admin/
+# Host declaration
+Host: https://www.refurbishtotaalnederland.nl
