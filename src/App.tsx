@@ -9,7 +9,7 @@ import SEOOptimizer from '@/components/SEOOptimizer';
 import { CursorEffects } from '@/components/CursorEffects';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import CookieConsent from '@/components/CookieConsent';
-import { LeaveSiteNotification } from '@/components/LeaveSiteNotification';
+import LeaveSiteNotification from '@/components/LeaveSiteNotification';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import ChatBot from '@/components/ChatBot';
 import Index from "./pages/Index";
