@@ -47,6 +47,13 @@ import NotFound from "./pages/NotFound";
 import MarketplacePage from "./pages/MarketplacePage";
 import MarketplaceAuthPage from "./pages/MarketplaceAuthPage";
 
+// New Vakman Pages
+import VakmanRegistrationPage from "./pages/VakmanRegistrationPage";
+import VakmanDashboardPage from "./pages/VakmanDashboardPage";
+import VakmanOffertePage from "./pages/VakmanOffertePage";
+import VakmanProfielPage from "./pages/VakmanProfielPage";
+import VakmanWerkgebiedPage from "./pages/VakmanWerkgebiedPage";
+
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -99,8 +106,14 @@ function App() {
           {/* New Marketplace Routes */}
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/marketplace/login" element={<MarketplaceAuthPage />} />
-          <Route path="/marketplace/vakman-registratie" element={<MarketplaceAuthPage />} />
+          <Route path="/marketplace/vakman-registratie" element={<VakmanRegistrationPage />} />
           <Route path="/marketplace/klus-plaatsen" element={<MarketplaceAuthPage />} />
+          
+          {/* New Vakman Dashboard Routes */}
+          <Route path="/vakman-dashboard" element={<VakmanDashboardPage />} />
+          <Route path="/vakman-dashboard/offerteaanvragen" element={<VakmanOffertePage />} />
+          <Route path="/vakman-dashboard/bedrijfsprofiel" element={<VakmanProfielPage />} />
+          <Route path="/vakman-dashboard/werkgebied" element={<VakmanWerkgebiedPage />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
