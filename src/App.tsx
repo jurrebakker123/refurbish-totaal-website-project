@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -46,6 +45,7 @@ import NotFound from "./pages/NotFound";
 // New Marketplace Pages
 import MarketplacePage from "./pages/MarketplacePage";
 import MarketplaceAuthPage from "./pages/MarketplaceAuthPage";
+import KlusPlaasten from "./pages/KlusPlaasten";
 
 // New Vakman Pages
 import VakmanRegistrationPage from "./pages/VakmanRegistrationPage";
@@ -107,7 +107,7 @@ function App() {
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/marketplace/login" element={<MarketplaceAuthPage />} />
           <Route path="/marketplace/vakman-registratie" element={<VakmanRegistrationPage />} />
-          <Route path="/marketplace/klus-plaatsen" element={<MarketplaceAuthPage />} />
+          <Route path="/marketplace/klus-plaasten" element={<KlusPlaasten />} />
           
           {/* New Vakman Dashboard Routes */}
           <Route path="/vakman-dashboard" element={<VakmanDashboardPage />} />
