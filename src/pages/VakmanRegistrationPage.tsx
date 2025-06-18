@@ -1,17 +1,16 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, ArrowLeft, Check, MapPin, Search } from 'lucide-react';
+import { Building2, ArrowLeft, Check, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import MapboxMap from '@/components/ui/MapboxMap';
 
 const VakmanRegistrationPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -22,7 +21,8 @@ const VakmanRegistrationPage = () => {
   const [formData, setFormData] = useState({
     // Step 1: Location
     werklocatie: '',
-    straal: '30',
+    werklocatieCoordinates: [5.2913, 52.1326] as [number, number],
+    straal: 30,
     
     // Step 2: Services
     selectedServices: [] as string[],
@@ -102,6 +102,14 @@ const VakmanRegistrationPage = () => {
     { number: 3, title: 'Bedrijfsgegevens', completed: currentStep > 3 },
     { number: 4, title: 'Contactgegevens', completed: currentStep > 4 }
   ];
+
+  const handleLocationSelect = (location: { address: string; coordinates: [number, number] }) => {
+    setFormData({
+      ...formData,
+      werklocatie: location.address,
+      werklocatieCoordinates: location.coordinates
+    });
+  };
 
   const handleServiceToggle = (serviceName: string) => {
     const newSelected = formData.selectedServices.includes(serviceName)
@@ -188,15 +196,15 @@ const VakmanRegistrationPage = () => {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold mb-2">Wat is je werkgebied?</h2>
-              <p className="text-gray-600 mb-6">Kies je werklocatie en selecteer een straal</p>
+              <p className="text-gray-600 mb-6">Klik op de kaart om je werklocatie te selecteren en stel je werkstraal in</p>
               
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <Label htmlFor="werklocatie">Je werklocatie</Label>
                   <div className="relative">
                     <Input
                       id="werklocatie"
-                      placeholder="Zoek je adres of postcode"
+                      placeholder="Klik op de kaart of typ je adres"
                       value={formData.werklocatie}
                       onChange={(e) => setFormData({ ...formData, werklocatie: e.target.value })}
                       className="pr-10"
@@ -206,28 +214,33 @@ const VakmanRegistrationPage = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="straal">Straal</Label>
-                  <Select value={formData.straal} onValueChange={(value) => setFormData({ ...formData, straal: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="10">10 Km</SelectItem>
-                      <SelectItem value="20">20 Km</SelectItem>
-                      <SelectItem value="30">30 Km</SelectItem>
-                      <SelectItem value="50">50 Km</SelectItem>
-                      <SelectItem value="100">100 Km</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="straal">Werkstraal: {formData.straal} km</Label>
+                  <input
+                    id="straal"
+                    type="range"
+                    min="5"
+                    max="100"
+                    step="5"
+                    value={formData.straal}
+                    onChange={(e) => setFormData({ ...formData, straal: parseInt(e.target.value) })}
+                    className="w-full mt-2"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>5 km</span>
+                    <span>100 km</span>
+                  </div>
                 </div>
               </div>
               
-              {/* Map placeholder - In real app, integrate with Google Maps or similar */}
-              <div className="mt-6 bg-green-50 rounded-lg p-8 text-center border-2 border-dashed border-green-200">
-                <MapPin className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <p className="text-gray-600">Kaart integratie komt hier</p>
-                <p className="text-sm text-gray-500">Klik op de kaart om je werkgebied te selecteren</p>
-              </div>
+              <MapboxMap
+                onLocationSelect={handleLocationSelect}
+                center={formData.werklocatieCoordinates}
+                zoom={8}
+                height="400px"
+                showRadiusControl={true}
+                radius={formData.straal}
+                onRadiusChange={(radius) => setFormData({ ...formData, straal: radius })}
+              />
             </div>
             
             <Button 

@@ -2,19 +2,29 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { Building2, MapPin, Plus, Edit } from 'lucide-react';
+import { Building2, Plus, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import MapboxMap from '@/components/ui/MapboxMap';
 
 const VakmanWerkgebiedPage = () => {
   const [werkgebieden] = useState([
     {
       id: 1,
       locatie: 'Radius 30km vanuit Enschede, Nederland',
+      coordinates: [6.8936, 52.2215] as [number, number],
+      radius: 30,
       rubrieken: ['Dakkapel plaatsen', 'Dakkapel plaatsen met nokverhoging']
     }
   ]);
+
+  const [selectedLocation, setSelectedLocation] = useState<{ address: string; coordinates: [number, number] } | null>(null);
+
+  const handleLocationSelect = (location: { address: string; coordinates: [number, number] }) => {
+    setSelectedLocation(location);
+    console.log('Selected location:', location);
+  };
 
   return (
     <>
@@ -70,8 +80,33 @@ const VakmanWerkgebiedPage = () => {
               </div>
 
               <p className="text-gray-600">
-                Breid je vakgebied uit met nieuwe categorieën.
+                Breid je vakgebied uit met nieuwe categorieën. Klik op de kaart om je werkgebied aan te passen.
               </p>
+
+              {/* Map Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Werkgebied op kaart</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <MapboxMap
+                    onLocationSelect={handleLocationSelect}
+                    center={werkgebieden[0]?.coordinates || [5.2913, 52.1326]}
+                    zoom={9}
+                    height="400px"
+                    showRadiusControl={true}
+                    radius={werkgebieden[0]?.radius || 30}
+                    onRadiusChange={(radius) => console.log('Radius changed to:', radius)}
+                  />
+                  {selectedLocation && (
+                    <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                      <p className="text-sm text-green-700">
+                        <strong>Nieuwe locatie geselecteerd:</strong> {selectedLocation.address}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
               {/* Current Regions */}
               <Card>
@@ -90,7 +125,6 @@ const VakmanWerkgebiedPage = () => {
                           <div>
                             <h3 className="font-medium mb-2">Werkgebied</h3>
                             <div className="flex items-center space-x-2 text-gray-600">
-                              <MapPin className="h-4 w-4" />
                               <span className="text-sm">{gebied.locatie}</span>
                             </div>
                           </div>
@@ -138,7 +172,10 @@ const VakmanWerkgebiedPage = () => {
                     <div>
                       <h4 className="font-medium mb-2">Tips & Best Practices</h4>
                       <p className="text-sm text-gray-600 mb-2">
-                        Maak een keuze uit 166 regio's om nieuwe klanten te werven
+                        Klik op de kaart om je werklocatie aan te passen
+                      </p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Gebruik de straal-schuifregelaar om je werkgebied in te stellen
                       </p>
                       <p className="text-sm text-gray-600">
                         Kies uit verschillende rubrieken per regio
