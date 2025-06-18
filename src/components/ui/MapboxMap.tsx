@@ -109,10 +109,18 @@ const MapboxMap: React.FC<MapboxMapProps> = ({
     }
   };
 
-  const updateRadiusCircle = (center?: [number, number]) => {
+  const updateRadiusCircle = (centerCoords?: [number, number]) => {
     if (!map.current) return;
 
-    const mapCenter = center || map.current.getCenter();
+    // Get center coordinates - either provided or from map center
+    let mapCenter: { lng: number; lat: number };
+    if (centerCoords) {
+      mapCenter = { lng: centerCoords[0], lat: centerCoords[1] };
+    } else {
+      const center = map.current.getCenter();
+      mapCenter = { lng: center.lng, lat: center.lat };
+    }
+
     const radiusInMeters = radius * 1000;
 
     // Remove existing circle
