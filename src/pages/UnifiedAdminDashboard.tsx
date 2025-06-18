@@ -523,10 +523,6 @@ const UnifiedAdminDashboard = () => {
                             >
                               Details
                             </Button>
-                            <InvoiceActions 
-                              item={item} 
-                              onInvoiceSent={loadDashboardData}
-                            />
                           </div>
                         </div>
                       </Card>
