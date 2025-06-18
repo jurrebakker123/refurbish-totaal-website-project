@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { MoveLeft, MoveRight } from 'lucide-react';
 import { DakkapelConfiguration } from './DakkapelCalculator';
 import { toast } from 'sonner';
-import { sendEmail } from '@/config/email';
 import { calculateTotalPrice } from '@/utils/calculatorUtils';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -101,72 +99,8 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
       
       console.log('✅ Successfully saved to database with ID:', savedData.id);
 
-      // Step 2: Send admin notification email using EmailJS
-      console.log('📧 Step 2: Sending admin notification...');
-      
-      const configDetails = `
-Type: ${configuration.type}
-Breedte: ${configuration.breedte} cm
-Hoogte: ${configuration.hoogte} cm
-Materiaal: ${configuration.materiaal}
-Aantal ramen: ${configuration.aantalRamen}
-Kozijn hoogte: ${configuration.kozijnHoogte}
-Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
-Kozijnkleur: ${configuration.kleurKozijnen}
-Zijkanten kleur: ${configuration.kleurZijkanten}
-Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
-RC-waarde: ${configuration.rcWaarde}
-Woning zijde: ${configuration.woningZijde}
-Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}`;
-      
-      const selectedOptions = Object.entries(configuration.opties)
-        .filter(([_, value]) => value)
-        .map(([key]) => key)
-        .join(', ');
-      
-      const contactInfo = `
-Naam: ${formData.voornaam} ${formData.achternaam}
-Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
-Telefoon: ${formData.telefoon}
-Email: ${formData.emailadres}`;
-      
-      const adminEmailMessage = `
-${contactInfo}
-
-DAKKAPEL CONFIGURATIE:
-${configDetails}
-
-GEKOZEN OPTIES:
-${selectedOptions || 'Geen extra opties geselecteerd'}
-
-BERICHT VAN KLANT:
-${formData.bericht || 'Geen aanvullend bericht'}`;
-      
-      const adminEmailResult = await sendEmail({
-        from_name: `${formData.voornaam} ${formData.achternaam}`,
-        from_email: formData.emailadres,
-        to_name: "Refurbish Totaal Nederland",
-        to_email: "info@refurbishtotaalnederland.nl",
-        subject: `Dakkapel Calculator Aanvraag: €${totalPrice.toLocaleString('nl-NL')}`,
-        message: adminEmailMessage,
-        phone: formData.telefoon,
-        location: `${formData.plaats}`,
-        service: "Dakkapel",
-        templateId: "template_ezfzaao"
-      });
-
-      console.log('Admin email result:', adminEmailResult);
-
-      if (!adminEmailResult.success) {
-        console.error('❌ Admin email failed:', adminEmailResult.error);
-        // Don't throw error, continue to customer email
-        console.log('⚠️ Continuing despite admin email failure...');
-      } else {
-        console.log('✅ Admin notification sent successfully');
-      }
-
-      // Step 3: Send automatic quote to customer using Supabase edge function
-      console.log('🎯 Step 3: Sending customer quote via edge function...');
+      // Step 2: Send automatic quote using your existing edge function
+      console.log('🎯 Step 2: Sending automatic quote via edge function...');
       
       try {
         console.log('Calling auto-send-quote edge function...');
