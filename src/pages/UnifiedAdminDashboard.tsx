@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,8 +13,6 @@ import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 import DashboardStats from '@/components/admin/DashboardStats';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
-import InvoiceActions from '@/components/admin/InvoiceActions';
-import InvoiceOverview from '@/components/admin/InvoiceOverview';
 import ConversieStats from '@/components/admin/ConversieStats';
 import NotificationCenter from '@/components/admin/NotificationCenter';
 import { toast } from 'sonner';
@@ -314,7 +311,7 @@ const UnifiedAdminDashboard = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-10 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-9 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({teVerwerken.length})
                 </TabsTrigger>
@@ -331,7 +328,7 @@ const UnifiedAdminDashboard = () => {
                   Niet Akkoord ({nietAkkoord.length})
                 </TabsTrigger>
                 <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie/Factureren ({opLocatie.length})
+                  Op Locatie ({opLocatie.length})
                 </TabsTrigger>
                 <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   In Aanbouw ({inAanbouw.length})
@@ -342,12 +339,8 @@ const UnifiedAdminDashboard = () => {
                 <TabsTrigger value="conversie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   📊 Conversie Stats
                 </TabsTrigger>
-                <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  💰 Facturatie
-                </TabsTrigger>
               </TabsList>
             </div>
-            
             
             <TabsContent value="te-verwerken" className="space-y-6">
               <Card>
@@ -489,8 +482,8 @@ const UnifiedAdminDashboard = () => {
             <TabsContent value="op-locatie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie/Factureren {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({opLocatie.length})</CardTitle>
-                  <p className="text-sm text-gray-600">Projecten die klaar zijn voor locatiebezoek en facturering</p>
+                  <CardTitle className="text-xl">Op Locatie {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({opLocatie.length})</CardTitle>
+                  <p className="text-sm text-gray-600">Projecten die klaar zijn voor locatiebezoek</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -597,21 +590,7 @@ const UnifiedAdminDashboard = () => {
             </TabsContent>
             
             <TabsContent value="conversie" className="space-y-6">
-              {projectType === 'dakkapel' ? (
-                <ConversieStats 
-                  configuraties={allConfiguraties}
-                  type="dakkapel" 
-                />
-              ) : (
-                <ConversieStats 
-                  configuraties={allZonnepanelen}
-                  type="zonnepaneel" 
-                />
-              )}
-            </TabsContent>
-            
-            <TabsContent value="facturatie" className="space-y-6">
-              <InvoiceOverview />
+              <ConversieStats configuraties={allConfiguraties} type="dakkapel" />
             </TabsContent>
           </Tabs>
         </div>

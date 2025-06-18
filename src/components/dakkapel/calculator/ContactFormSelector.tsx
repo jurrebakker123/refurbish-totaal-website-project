@@ -40,7 +40,7 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validate required fields (all fields except bericht)
+    // Validate required fields
     const requiredFields = ['voornaam', 'achternaam', 'straatnaam', 'huisnummer', 'postcode', 'plaats', 'telefoon', 'emailadres'];
     const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
 
@@ -51,11 +51,10 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     }
 
     try {
-      // Calculate total price
       const totalPrice = calculateTotalPrice(configuration);
       
-      // Save to Supabase database first - fix column names to match schema
-      const { error: dbError } = await supabase
+      // Save to Supabase database
+      const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -71,26 +70,28 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
           breedte: configuration.breedte,
           hoogte: configuration.hoogte,
           materiaal: configuration.materiaal,
-          aantalramen: configuration.aantalRamen, // Fixed: use lowercase column name
-          kozijnhoogte: configuration.kozijnHoogte, // Fixed: use lowercase column name
-          dakhelling: configuration.dakHelling, // Fixed: use lowercase column name
-          dakhellingtype: configuration.dakHellingType, // Fixed: use lowercase column name
-          kleurkozijnen: configuration.kleurKozijnen, // Fixed: use lowercase column name
-          kleurzijkanten: configuration.kleurZijkanten, // Fixed: use lowercase column name
-          kleurdraaikiepramen: configuration.kleurDraaikiepramen, // Fixed: use lowercase column name
-          rcwaarde: configuration.rcWaarde, // Fixed: use lowercase column name
-          woningzijde: configuration.woningZijde, // Fixed: use lowercase column name
+          aantalramen: configuration.aantalRamen,
+          kozijnhoogte: configuration.kozijnHoogte,
+          dakhelling: configuration.dakHelling,
+          dakhellingtype: configuration.dakHellingType,
+          kleurkozijnen: configuration.kleurKozijnen,
+          kleurzijkanten: configuration.kleurZijkanten,
+          kleurdraaikiepramen: configuration.kleurDraaikiepramen,
+          rcwaarde: configuration.rcWaarde,
+          woningzijde: configuration.woningZijde,
           opties: configuration.opties,
           totaal_prijs: totalPrice,
           status: 'nieuw'
-        });
+        })
+        .select()
+        .single();
 
       if (dbError) {
         console.error('Database error:', dbError);
         throw dbError;
       }
 
-      // Format configuration details for email
+      // Send admin notification email
       const configDetails = `
         Type: ${configuration.type}
         Breedte: ${configuration.breedte} cm
@@ -107,13 +108,11 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
         Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}
       `;
       
-      // Format options for email
       const selectedOptions = Object.entries(configuration.opties)
         .filter(([_, value]) => value)
         .map(([key]) => key)
         .join(', ');
       
-      // Format contact info for the message
       const contactInfo = `
         Naam: ${formData.voornaam} ${formData.achternaam}
         Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
@@ -134,7 +133,7 @@ BERICHT VAN KLANT:
 ${formData.bericht || 'Geen aanvullend bericht'}
       `;
       
-      // Send email
+      // Send admin notification
       const result = await sendEmail({
         from_name: `${formData.voornaam} ${formData.achternaam}`,
         from_email: formData.emailadres,
@@ -149,14 +148,43 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       });
 
       if (result.success) {
-        toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op.");
+        // Automatically send quote to customer
+        try {
+          console.log('Sending automatic quote for request:', savedData.id);
+          
+          const autoQuoteResponse = await fetch('/functions/v1/auto-send-quote', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              requestId: savedData.id,
+              type: 'dakkapel'
+            })
+          });
+
+          const autoQuoteResult = await autoQuoteResponse.json();
+          
+          if (autoQuoteResult.success) {
+            toast.success("Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email" + 
+              (autoQuoteResult.whatsappSent ? " en WhatsApp" : "") + 
+              ". We nemen zo spoedig mogelijk contact met u op.");
+          } else {
+            console.error('Auto quote failed:', autoQuoteResult.error);
+            toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
+          }
+        } catch (autoQuoteError) {
+          console.error('Auto quote error:', autoQuoteError);
+          toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
+        }
+        
         onNext();
       } else {
-        throw new Error("Er ging iets mis bij het verzenden van de email");
+        throw new Error("Er ging iets mis bij het verzenden van de admin notificatie");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Er is een probleem opgetreden bij het verzenden. De gegevens zijn wel opgeslagen. Probeer het later opnieuw of neem direct contact op.");
+      toast.error("Er is een probleem opgetreden bij het verzenden. Probeer het later opnieuw of neem direct contact op.");
     } finally {
       setIsSubmitting(false);
     }
@@ -169,7 +197,7 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       <div>
         <h2 className="text-2xl font-bold mb-4">Contact gegevens</h2>
         <p className="mb-6 text-gray-600">
-          Vul uw contactgegevens in om een vrijblijvende offerte te ontvangen.
+          Vul uw contactgegevens in om automatisch een vrijblijvende offerte te ontvangen per email en WhatsApp.
         </p>
       </div>
 

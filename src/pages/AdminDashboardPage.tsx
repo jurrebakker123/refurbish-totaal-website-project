@@ -278,7 +278,7 @@ const AdminDashboardPage = () => {
           
           <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-11 w-full gap-2 h-auto p-2 bg-gray-100">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-10 w-full gap-2 h-auto p-2 bg-gray-100">
                 <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Te Verwerken ({dakkapelTeVerwerken.length})
                 </TabsTrigger>
@@ -295,7 +295,7 @@ const AdminDashboardPage = () => {
                   Niet Akkoord ({dakkapelNietAkkoord.length})
                 </TabsTrigger>
                 <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie/Factureren ({dakkapelOpLocatie.length})
+                  Op Locatie ({dakkapelOpLocatie.length})
                 </TabsTrigger>
                 <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   In Aanbouw ({dakkapelInAanbouw.length})
@@ -305,9 +305,6 @@ const AdminDashboardPage = () => {
                 </TabsTrigger>
                 <TabsTrigger value="conversie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   📊 Conversie Stats
-                </TabsTrigger>
-                <TabsTrigger value="facturatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  💰 Facturatie
                 </TabsTrigger>
                 <TabsTrigger value="prijzen" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Prijsbeheer
@@ -456,8 +453,8 @@ const AdminDashboardPage = () => {
             <TabsContent value="op-locatie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie/Factureren Dakkapel ({dakkapelOpLocatie.length})</CardTitle>
-                  <p className="text-sm text-gray-600">Projecten die klaar zijn voor locatiebezoek en facturering</p>
+                  <CardTitle className="text-xl">Op Locatie Dakkapel ({dakkapelOpLocatie.length})</CardTitle>
+                  <p className="text-sm text-gray-600">Projecten die klaar zijn voor locatiebezoek</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -492,10 +489,6 @@ const AdminDashboardPage = () => {
                             >
                               Details
                             </Button>
-                            <InvoiceActions 
-                              item={item} 
-                              onInvoiceSent={loadDashboardData}
-                            />
                           </div>
                         </div>
                       </Card>
@@ -562,11 +555,6 @@ const AdminDashboardPage = () => {
             {/* Conversie Stats Tab */}
             <TabsContent value="conversie" className="space-y-6">
               <ConversieStats configuraties={allConfiguraties} type="dakkapel" />
-            </TabsContent>
-            
-            {/* Facturatie Tab */}
-            <TabsContent value="facturatie" className="space-y-6">
-              <InvoiceOverview />
             </TabsContent>
             
             {/* Prijsbeheer Tab */}

@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { sendEmail } from "@/config/email";
 import React, { useState, useEffect, useRef } from 'react';
 import { SERVICES } from "./constants";
+import { supabase } from '@/integrations/supabase/client';
 
 declare global {
   interface Window {
@@ -84,13 +85,51 @@ export function OfferteForm() {
     setIsSubmitting(true);
 
     try {
-      // Log more details about the submission
       console.log('Offerte Form Submission:', { 
         ...data,
         tekeningLink: data.tekening_link || "Geen tekening"
       });
 
-      // Formatteer geselecteerde diensten als string
+      // Check if this is a zonnepaneel request
+      const isZonnepaneelRequest = data.diensten.some(service => 
+        service.toLowerCase().includes('zonnepaneel') || 
+        service.toLowerCase().includes('solar')
+      );
+
+      let savedRequestId = null;
+
+      // If it's a zonnepaneel request, save to the zonnepaneel table for auto-quote
+      if (isZonnepaneelRequest) {
+        try {
+          const { data: savedData, error: dbError } = await supabase
+            .from('refurbished_zonnepanelen')
+            .insert({
+              naam: data.naam,
+              email: data.email,
+              telefoon: data.telefoon,
+              adres: 'Niet opgegeven',
+              postcode: 'Niet opgegeven', 
+              plaats: data.woonplaats,
+              type_paneel: 'Te bepalen',
+              merk: 'Te bepalen',
+              conditie: 'Refurbished',
+              dak_type: 'Te bepalen',
+              aantal_panelen: 10, // Default waarde
+              vermogen: 400, // Default waarde
+              opmerkingen: data.bericht,
+              status: 'nieuw'
+            })
+            .select()
+            .single();
+
+          if (!dbError && savedData) {
+            savedRequestId = savedData.id;
+          }
+        } catch (dbSaveError) {
+          console.error('Error saving to zonnepaneel database:', dbSaveError);
+        }
+      }
+
       const selectedServices = data.diensten.join(", ");
 
       const result = await sendEmail({
@@ -104,16 +143,57 @@ export function OfferteForm() {
         location: data.woonplaats,
         service: selectedServices,
         preferred_date: data.datum || "Niet opgegeven",
-        tekening_link: data.tekening_link || "",  // Ensure this is always defined
-        tekening_beschikbaar: data.tekening_link ? "Ja" : "Nee", // Add this flag for clarity
-        templateId: "template_ezfzaao" // Sjabloon ID voor offerteaanvragen
+        tekening_link: data.tekening_link || "",
+        tekening_beschikbaar: data.tekening_link ? "Ja" : "Nee",
+        templateId: "template_ezfzaao"
       });
 
       if (result.success) {
-        toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
-          duration: 5000,
-          position: 'top-center',
-        });
+        // If we have a saved zonnepaneel request, try to send automatic quote
+        if (savedRequestId && isZonnepaneelRequest) {
+          try {
+            console.log('Sending automatic quote for zonnepaneel request:', savedRequestId);
+            
+            const autoQuoteResponse = await fetch('/functions/v1/auto-send-quote', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                requestId: savedRequestId,
+                type: 'zonnepaneel'
+              })
+            });
+
+            const autoQuoteResult = await autoQuoteResponse.json();
+            
+            if (autoQuoteResult.success) {
+              toast.success("Bedankt voor uw aanvraag! U ontvangt automatisch een offerte per email" + 
+                (autoQuoteResult.whatsappSent ? " en WhatsApp" : "") + 
+                ". We nemen zo spoedig mogelijk contact met u op.", {
+                duration: 5000,
+                position: 'top-center',
+              });
+            } else {
+              console.error('Auto quote failed:', autoQuoteResult.error);
+              toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+                duration: 5000,
+                position: 'top-center',
+              });
+            }
+          } catch (autoQuoteError) {
+            console.error('Auto quote error:', autoQuoteError);
+            toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+              duration: 5000,
+              position: 'top-center',
+            });
+          }
+        } else {
+          toast.success("Bedankt voor uw aanvraag! We nemen zo spoedig mogelijk contact met u op.", {
+            duration: 5000,
+            position: 'top-center',
+          });
+        }
         
         form.reset();
         
