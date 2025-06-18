@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,101 +34,6 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const sendCustomerQuote = async (customerData: any, totalPrice: number) => {
-    try {
-      console.log('=== SENDING CUSTOMER QUOTE EMAIL ===');
-      console.log('Customer email:', customerData.emailadres);
-      console.log('Customer name:', `${customerData.voornaam} ${customerData.achternaam}`);
-      
-      const customerName = `${customerData.voornaam} ${customerData.achternaam}`;
-      const customerAddress = `${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}`;
-
-      // Create detailed configuration text
-      const configDetails = `
-Type: ${configuration.type}
-Breedte: ${configuration.breedte} cm
-Hoogte: ${configuration.hoogte} cm
-Materiaal: ${configuration.materiaal}
-Aantal ramen: ${configuration.aantalRamen}
-Kozijn hoogte: ${configuration.kozijnHoogte}
-Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
-Kozijnkleur: ${configuration.kleurKozijnen}
-Zijkanten kleur: ${configuration.kleurZijkanten}
-Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
-RC-waarde: ${configuration.rcWaarde}
-Woning zijde: ${configuration.woningZijde}`;
-      
-      const selectedOptions = Object.entries(configuration.opties)
-        .filter(([_, value]) => value)
-        .map(([key]) => key)
-        .join(', ');
-
-      const quoteMessage = `Beste ${customerName},
-
-Hartelijk dank voor uw interesse in onze dakkapellen! Hierbij ontvangt u automatisch een vrijblijvende offerte.
-
-🏠 UW DAKKAPEL CONFIGURATIE:
-${configDetails}
-
-✅ GEKOZEN OPTIES:
-${selectedOptions || 'Geen extra opties geselecteerd'}
-
-💰 TOTAALPRIJS: €${totalPrice.toLocaleString('nl-NL')}
-(Deze prijs is bij afhalen op depot)
-
-📍 UW ADRESGEGEVENS:
-${customerAddress}
-
-📝 UW BERICHT:
-${customerData.bericht || 'Geen aanvullend bericht'}
-
-DEZE PRIJS IS INCLUSIEF:
-• Dakkapel volgens uw specificaties
-• 10 jaar garantie op constructie en waterdichtheid  
-• 5 jaar garantie op de gebruikte materialen
-• Levertijd: 6-8 weken na definitieve opdracht
-
-BELANGRIJK: De afgesproken prijs is bij afhalen op depot. Eventuele montage en transport worden apart berekend.
-
-Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
-
-Met vriendelijke groet,
-
-Het team van Refurbish Totaal Nederland
-📞 085-1301578
-📧 info@refurbishtotaalnederland.nl`;
-
-      console.log('Sending customer quote with EmailJS...');
-      
-      // Send quote email to customer using EmailJS
-      const quoteResult = await sendEmail({
-        from_name: "Refurbish Totaal Nederland",
-        from_email: "info@refurbishtotaalnederland.nl",
-        to_name: customerName,
-        to_email: customerData.emailadres,
-        subject: `Automatische Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')}`,
-        message: quoteMessage,
-        phone: customerData.telefoon,
-        location: customerData.plaats,
-        service: "Dakkapel Offerte",
-        templateId: "template_ix4mdjh" // Using the standard template
-      });
-
-      console.log('Customer quote email result:', quoteResult);
-
-      if (quoteResult.success) {
-        console.log('✅ Customer quote email sent successfully!');
-        return { success: true, result: quoteResult };
-      } else {
-        console.error('❌ Customer quote email failed:', quoteResult.error);
-        return { success: false, error: quoteResult.error };
-      }
-    } catch (error) {
-      console.error('❌ Error in sendCustomerQuote:', error);
-      return { success: false, error };
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -195,7 +101,7 @@ Het team van Refurbish Totaal Nederland
       
       console.log('✅ Successfully saved to database with ID:', savedData.id);
 
-      // Step 2: Send admin notification email
+      // Step 2: Send admin notification email using EmailJS
       console.log('📧 Step 2: Sending admin notification...');
       
       const configDetails = `
@@ -259,29 +165,48 @@ ${formData.bericht || 'Geen aanvullend bericht'}`;
         console.log('✅ Admin notification sent successfully');
       }
 
-      // Step 3: Send automatic quote to customer
-      console.log('🎯 Step 3: Sending customer quote...');
+      // Step 3: Send automatic quote to customer using Supabase edge function
+      console.log('🎯 Step 3: Sending customer quote via edge function...');
       
-      const customerQuoteResult = await sendCustomerQuote(formData, totalPrice);
-      
-      if (customerQuoteResult.success) {
-        console.log('✅ Customer quote sent successfully!');
-        
-        // Update database status
-        await supabase
-          .from('dakkapel_calculator_aanvragen')
-          .update({
-            status: 'offerte_verzonden',
-            offerte_verzonden_op: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', savedData.id);
-        
-        toast.success(
-          "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email. We nemen zo spoedig mogelijk contact met u op."
-        );
-      } else {
-        console.error('❌ Customer quote failed:', customerQuoteResult.error);
+      try {
+        console.log('Calling auto-send-quote edge function...');
+        const { data: quoteResponse, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
+          body: {
+            requestId: savedData.id,
+            type: 'dakkapel'
+          }
+        });
+
+        console.log('Edge function response:', quoteResponse);
+        console.log('Edge function error:', quoteError);
+
+        if (quoteError) {
+          console.error('❌ Edge function error:', quoteError);
+          throw new Error(`Quote sending failed: ${quoteError.message}`);
+        }
+
+        if (quoteResponse?.success) {
+          console.log('✅ Customer quote sent successfully via edge function!');
+          
+          // Update database status
+          await supabase
+            .from('dakkapel_calculator_aanvragen')
+            .update({
+              status: 'offerte_verzonden',
+              offerte_verzonden_op: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', savedData.id);
+          
+          toast.success(
+            "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email. We nemen zo spoedig mogelijk contact met u op."
+          );
+        } else {
+          console.error('❌ Quote sending failed:', quoteResponse);
+          toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
+        }
+      } catch (edgeFunctionError) {
+        console.error('❌ Edge function call failed:', edgeFunctionError);
         toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
       }
       
