@@ -36,10 +36,14 @@ const KlusPlaasten = () => {
     // Step 3: What needs to be done
     actions: [] as string[],
     
-    // Step 4: Area size (for bestrating example)
+    // Service-specific questions
     oppervlakte: '',
+    hoogte: '',
+    kamers: '',
+    materiaal: '',
+    kleur: '',
     
-    // Step 5: Where
+    // Step 5: Where/Location specific
     locatie: '',
     
     // Step 6: Access
@@ -47,12 +51,12 @@ const KlusPlaasten = () => {
     toegankelijkheidAnders: '',
     
     // Step 7: Material
-    materiaal: '',
+    materiaalType: '',
     materiaalAnders: '',
     
-    // Step 8: Current surface
-    huidigOppervlak: '',
-    huidigOppervlakAnders: '',
+    // Step 8: Current state
+    huidigeToestand: '',
+    huidigeToestandAnders: '',
     
     // Step 9: Timeline
     termijn: '',
@@ -90,40 +94,186 @@ const KlusPlaasten = () => {
     'Repareren'
   ];
 
-  const bestratingLocaties = [
-    'Tuin of Patio',
-    'Looppad of stoep',
-    'Oprit',
-    'Terras of balkon',
-    'Tuinpaden',
-    'Anders'
-  ];
-
-  const toegankelijkheidOpties = [
-    'Vrij toegankelijk',
-    'Via de woning',
-    'Via het tuinhek / poort',
-    'Andere reden, namelijk'
-  ];
-
-  const materiaalOpties = [
-    'Bakstenen (klinkers)',
-    'Beton',
-    'Kasseien',
-    'Grind',
-    'Hout',
-    'Tegels',
-    'In overleg',
-    'Anders, namelijk'
-  ];
-
-  const huidigOppervlakOpties = [
-    'Oude bestrating',
-    'Asfalt of cement',
-    'Aarde of gras',
-    'Stenen of grind',
-    'Anders, namelijk'
-  ];
+  // Service-specific questions configuration
+  const getServiceQuestions = (serviceId: string) => {
+    switch (serviceId) {
+      case 'bestrating':
+        return {
+          specificQuestion: 'Wat is de geschatte oppervlakte van het gebied dat bestraat moet worden in m²?',
+          specificPlaceholder: 'Bijvoorbeeld: 50',
+          specificUnit: 'm²',
+          locatieOptions: [
+            'Tuin of Patio',
+            'Looppad of stoep',
+            'Oprit',
+            'Terras of balkon',
+            'Tuinpaden',
+            'Anders'
+          ],
+          materiaalOptions: [
+            'Bakstenen (klinkers)',
+            'Beton',
+            'Kasseien',
+            'Grind',
+            'Hout',
+            'Tegels',
+            'In overleg',
+            'Anders, namelijk'
+          ],
+          huidigeToestandOptions: [
+            'Oude bestrating',
+            'Asfalt of cement',
+            'Aarde of gras',
+            'Stenen of grind',
+            'Anders, namelijk'
+          ]
+        };
+      
+      case 'schilderwerk':
+        return {
+          specificQuestion: 'Hoeveel m² moet er geschilderd worden?',
+          specificPlaceholder: 'Bijvoorbeeld: 100',
+          specificUnit: 'm²',
+          locatieOptions: [
+            'Binnen (woonkamer)',
+            'Binnen (slaapkamer)',
+            'Binnen (keuken)',
+            'Binnen (badkamer)',
+            'Buiten (gevel)',
+            'Buiten (kozijnen)',
+            'Anders'
+          ],
+          materiaalOptions: [
+            'Latex verf',
+            'Alkydverf',
+            'Beits',
+            'Grondverf',
+            'In overleg',
+            'Anders, namelijk'
+          ],
+          huidigeToestandOptions: [
+            'Nog niet geschilderd',
+            'Oude verf (goed)',
+            'Oude verf (slecht)',
+            'Behang',
+            'Kale muur',
+            'Anders, namelijk'
+          ]
+        };
+      
+      case 'dakkapel':
+        return {
+          specificQuestion: 'Wat is de gewenste breedte van de dakkapel?',
+          specificPlaceholder: 'Bijvoorbeeld: 3',
+          specificUnit: 'meter',
+          locatieOptions: [
+            'Voorkant woning',
+            'Achterkant woning',
+            'Zijkant woning',
+            'Nog niet bepaald'
+          ],
+          materiaalOptions: [
+            'Hout',
+            'Kunststof',
+            'Aluminium',
+            'Zink',
+            'In overleg',
+            'Anders, namelijk'
+          ],
+          huidigeToestandOptions: [
+            'Nieuwbouw',
+            'Bestaand dak (goed)',
+            'Bestaand dak (renovatie nodig)',
+            'Anders, namelijk'
+          ]
+        };
+      
+      case 'loodgieterwerk':
+        return {
+          specificQuestion: 'Hoeveel punten/kranen moeten worden aangesloten?',
+          specificPlaceholder: 'Bijvoorbeeld: 2',
+          specificUnit: 'stuks',
+          locatieOptions: [
+            'Keuken',
+            'Badkamer',
+            'Toilet',
+            'Wasruimte',
+            'Tuin',
+            'Kelder',
+            'Anders'
+          ],
+          materiaalOptions: [
+            'Koperen leidingen',
+            'Kunststof leidingen',
+            'RVS leidingen',
+            'In overleg',
+            'Anders, namelijk'
+          ],
+          huidigeToestandOptions: [
+            'Nieuwbouw',
+            'Bestaande leidingen (goed)',
+            'Bestaande leidingen (vervangen)',
+            'Lekkage',
+            'Anders, namelijk'
+          ]
+        };
+      
+      case 'tuinonderhoud':
+        return {
+          specificQuestion: 'Wat is de geschatte oppervlakte van de tuin?',
+          specificPlaceholder: 'Bijvoorbeeld: 200',
+          specificUnit: 'm²',
+          locatieOptions: [
+            'Voor- en achtertuin',
+            'Alleen voortuin',
+            'Alleen achtertuin',
+            'Zijkanten',
+            'Dakterras',
+            'Anders'
+          ],
+          materiaalOptions: [
+            'Nieuwe beplanting',
+            'Graszaad',
+            'Kunstgras',
+            'Tegels/bestrating',
+            'In overleg',
+            'Anders, namelijk'
+          ],
+          huidigeToestandOptions: [
+            'Verwilderde tuin',
+            'Onderhouden tuin',
+            'Kale grond',
+            'Veel onkruid',
+            'Anders, namelijk'
+          ]
+        };
+      
+      default:
+        return {
+          specificQuestion: 'Kun je de omvang van het project omschrijven?',
+          specificPlaceholder: 'Bijvoorbeeld: 3 kamers',
+          specificUnit: '',
+          locatieOptions: [
+            'Binnen',
+            'Buiten',
+            'Beide',
+            'Anders'
+          ],
+          materiaalOptions: [
+            'Standaard materialen',
+            'Premium materialen',
+            'In overleg',
+            'Anders, namelijk'
+          ],
+          huidigeToestandOptions: [
+            'Nieuw',
+            'Bestaand (goed)',
+            'Bestaand (renovatie nodig)',
+            'Anders, namelijk'
+          ]
+        };
+    }
+  };
 
   const termijnOpties = [
     'Met spoed',
@@ -131,6 +281,13 @@ const KlusPlaasten = () => {
     'Binnen 2 weken',
     'Binnen een maand',
     'Binnen een paar maanden'
+  ];
+
+  const toegankelijkheidOpties = [
+    'Vrij toegankelijk',
+    'Via de woning',
+    'Via het tuinhek / poort',
+    'Andere reden, namelijk'
   ];
 
   const handleNext = () => {
@@ -150,7 +307,13 @@ const KlusPlaasten = () => {
     }));
   };
 
+  const getCurrentServiceQuestions = () => {
+    return getServiceQuestions(formData.selectedCategory);
+  };
+
   const renderStep = () => {
+    const serviceQuestions = getCurrentServiceQuestions();
+    
     switch (currentStep) {
       case 1:
         return (
@@ -237,18 +400,19 @@ const KlusPlaasten = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Wat is de geschatte oppervlakte?</h2>
-              <p className="text-gray-600">Wat is de geschatte oppervlakte van het gebied dat bestraat moet worden in m²?</p>
-              <p className="text-sm text-gray-500">Een ruwe schatting is voldoende voor de vakman</p>
+              <h2 className="text-2xl font-bold mb-2">{serviceQuestions.specificQuestion}</h2>
+              <p className="text-gray-600">Een ruwe schatting is voldoende voor de vakman</p>
             </div>
             
             <div className="max-w-md mx-auto">
-              <Label htmlFor="oppervlakte">Oppervlakte in m²</Label>
+              <Label htmlFor="specifiek">
+                {serviceQuestions.specificUnit ? `Aantal/Omvang in ${serviceQuestions.specificUnit}` : 'Omvang'}
+              </Label>
               <Input
-                id="oppervlakte"
+                id="specifiek"
                 value={formData.oppervlakte}
                 onChange={(e) => setFormData(prev => ({ ...prev, oppervlakte: e.target.value }))}
-                placeholder="Bijvoorbeeld: 50"
+                placeholder={serviceQuestions.specificPlaceholder}
                 type="number"
               />
             </div>
@@ -259,12 +423,12 @@ const KlusPlaasten = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Waar moet de bestrating worden gelegd?</h2>
+              <h2 className="text-2xl font-bold mb-2">Waar moet het werk worden uitgevoerd?</h2>
             </div>
             
             <div className="max-w-md mx-auto">
               <RadioGroup value={formData.locatie} onValueChange={(value) => setFormData(prev => ({ ...prev, locatie: value }))}>
-                {bestratingLocaties.map((locatie) => (
+                {serviceQuestions.locatieOptions.map((locatie) => (
                   <div key={locatie} className="flex items-center space-x-2">
                     <RadioGroupItem value={locatie} id={locatie} />
                     <Label htmlFor={locatie}>{locatie}</Label>
@@ -279,7 +443,7 @@ const KlusPlaasten = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Hoe kan het te bestraten gedeelte worden bereikt?</h2>
+              <h2 className="text-2xl font-bold mb-2">Hoe kan de werklocatie worden bereikt?</h2>
             </div>
             
             <div className="max-w-md mx-auto space-y-4">
@@ -311,8 +475,8 @@ const KlusPlaasten = () => {
             </div>
             
             <div className="max-w-md mx-auto space-y-4">
-              <RadioGroup value={formData.materiaal} onValueChange={(value) => setFormData(prev => ({ ...prev, materiaal: value }))}>
-                {materiaalOpties.map((materiaal) => (
+              <RadioGroup value={formData.materiaalType} onValueChange={(value) => setFormData(prev => ({ ...prev, materiaalType: value }))}>
+                {serviceQuestions.materiaalOptions.map((materiaal) => (
                   <div key={materiaal} className="flex items-center space-x-2">
                     <RadioGroupItem value={materiaal} id={materiaal} />
                     <Label htmlFor={materiaal}>{materiaal}</Label>
@@ -320,7 +484,7 @@ const KlusPlaasten = () => {
                 ))}
               </RadioGroup>
               
-              {formData.materiaal === 'Anders, namelijk' && (
+              {formData.materiaalType === 'Anders, namelijk' && (
                 <Input
                   value={formData.materiaalAnders}
                   onChange={(e) => setFormData(prev => ({ ...prev, materiaalAnders: e.target.value }))}
@@ -335,25 +499,25 @@ const KlusPlaasten = () => {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Wat is het huidige oppervlak?</h2>
+              <h2 className="text-2xl font-bold mb-2">Wat is de huidige toestand?</h2>
               <p className="text-gray-600">(optioneel)</p>
             </div>
             
             <div className="max-w-md mx-auto space-y-4">
-              <RadioGroup value={formData.huidigOppervlak} onValueChange={(value) => setFormData(prev => ({ ...prev, huidigOppervlak: value }))}>
-                {huidigOppervlakOpties.map((oppervlak) => (
-                  <div key={oppervlak} className="flex items-center space-x-2">
-                    <RadioGroupItem value={oppervlak} id={oppervlak} />
-                    <Label htmlFor={oppervlak}>{oppervlak}</Label>
+              <RadioGroup value={formData.huidigeToestand} onValueChange={(value) => setFormData(prev => ({ ...prev, huidigeToestand: value }))}>
+                {serviceQuestions.huidigeToestandOptions.map((toestand) => (
+                  <div key={toestand} className="flex items-center space-x-2">
+                    <RadioGroupItem value={toestand} id={toestand} />
+                    <Label htmlFor={toestand}>{toestand}</Label>
                   </div>
                 ))}
               </RadioGroup>
               
-              {formData.huidigOppervlak === 'Anders, namelijk' && (
+              {formData.huidigeToestand === 'Anders, namelijk' && (
                 <Input
-                  value={formData.huidigOppervlakAnders}
-                  onChange={(e) => setFormData(prev => ({ ...prev, huidigOppervlakAnders: e.target.value }))}
-                  placeholder="Beschrijf het huidige oppervlak"
+                  value={formData.huidigeToestandAnders}
+                  onChange={(e) => setFormData(prev => ({ ...prev, huidigeToestandAnders: e.target.value }))}
+                  placeholder="Beschrijf de huidige toestand"
                 />
               )}
             </div>
