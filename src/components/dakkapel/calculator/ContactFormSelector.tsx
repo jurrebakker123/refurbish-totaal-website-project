@@ -109,7 +109,6 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
           type: 'dakkapel'
         });
         
-        // Use supabase.functions.invoke instead of fetch for better reliability
         const { data: quoteResponse, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
           body: {
             requestId: savedData.id,
@@ -122,14 +121,13 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
 
         if (quoteError) {
           console.error('❌ Edge function error:', quoteError);
-          // Don't throw error - still show success to user
-          console.log('⚠️ Continuing despite quote sending failure...');
+          console.log('⚠️ Quote sending failed, but continuing...');
           
           toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
         } else if (quoteResponse?.success) {
           console.log('✅ Customer quote sent successfully via edge function!');
           
-          // Update database status
+          // Update database status only if email was sent successfully
           await supabase
             .from('dakkapel_calculator_aanvragen')
             .update({

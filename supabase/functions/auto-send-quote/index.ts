@@ -268,136 +268,101 @@ info@refurbishtotaalnederland.nl`;
       </div>
     `;
 
-    // Send email
+    // Send email with better error handling
     console.log("Sending automatic quote email to:", customerEmail);
+    console.log("Email from address: Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>");
+    console.log("Email subject:", `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`);
     
-    const emailResponse = await resend.emails.send({
-      from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
-      to: [customerEmail],
-      subject: `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`,
-      html: emailHtml,
-    });
+    try {
+      const emailResponse = await resend.emails.send({
+        from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
+        to: [customerEmail],
+        subject: `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`,
+        html: emailHtml,
+      });
 
-    console.log("Email send result:", emailResponse);
+      console.log("Resend API response:", emailResponse);
 
-    if (emailResponse.error) {
-      console.error("Email sending failed:", emailResponse.error);
+      if (emailResponse.error) {
+        console.error("Resend API error:", emailResponse.error);
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: `Email sending failed: ${emailResponse.error.message}`,
+            details: emailResponse.error 
+          }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      if (!emailResponse.data || !emailResponse.data.id) {
+        console.error("No email ID returned from Resend");
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: "Email sending failed: No email ID returned" 
+          }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      console.log("✅ Email sent successfully! Email ID:", emailResponse.data.id);
+
+      // Update status in database
+      console.log("Updating database status to 'offerte_verzonden'...");
+      const { error: updateError } = await supabaseClient
+        .from(table)
+        .update({
+          status: 'offerte_verzonden',
+          offerte_verzonden_op: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
+
+      if (updateError) {
+        console.error('Error updating database status:', updateError);
+      } else {
+        console.log('✅ Database status updated successfully');
+      }
+
+      console.log("=== AUTO-QUOTE PROCESS COMPLETED SUCCESSFULLY ===");
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Automatische offerte succesvol verzonden',
+        emailSent: true,
+        emailId: emailResponse.data.id,
+        sentTo: customerEmail
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+
+    } catch (emailError: any) {
+      console.error("=== EMAIL SENDING ERROR ===", emailError);
+      console.error("Email error details:", emailError.message);
+      console.error("Email error stack:", emailError.stack);
+      
       return new Response(
-        JSON.stringify({ success: false, error: `Email sending failed: ${emailResponse.error.message}` }),
+        JSON.stringify({ 
+          success: false, 
+          error: `Email verzenden mislukt: ${emailError.message}`,
+          details: emailError
+        }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("Email sent successfully! Email ID:", emailResponse.data?.id);
-
-    let whatsappSent = false;
-    
-    // Send WhatsApp message if API keys are configured and phone number is available
-    if (whatsappApiKey && whatsappPhoneNumberId && customerPhone) {
-      try {
-        console.log("Sending WhatsApp message to:", customerPhone);
-        
-        // Clean phone number (remove spaces, dashes, etc.)
-        const cleanPhone = customerPhone.replace(/[\s\-\(\)]/g, '');
-        const formattedPhone = cleanPhone.startsWith('+') ? cleanPhone.substring(1) : cleanPhone;
-        
-        const whatsappMessage = `🏠 *Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}*
-
-Beste ${customerName},
-
-Hartelijk dank voor uw aanvraag! We hebben automatisch een offerte verstuurd naar uw email: ${customerEmail}
-
-${type === 'zonnepaneel' ? 
-  `🔋 *Zonnepanelen Details:*
-• Aantal: ${requestData.aantal_panelen} panelen
-• Vermogen: ${requestData.vermogen}W
-• Merk: ${requestData.merk}` :
-  `🏠 *Dakkapel Details:*
-• Type: ${requestData.type}
-• Afmetingen: ${requestData.breedte}cm x ${requestData.hoogte}cm
-• Materiaal: ${requestData.materiaal}`
-}
-
-${requestData.totaal_prijs ? `💰 *Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}*` : '💰 *Prijs wordt binnenkort meegedeeld*'}
-
-📧 Controleer uw email voor de volledige offerte met alle details en de mogelijkheid om uw interesse te bevestigen.
-
-Heeft u vragen? Bel ons op 085-1301578 of stuur een WhatsApp bericht terug!
-
-Met vriendelijke groet,
-Refurbish Totaal Nederland`;
-
-        const whatsappResponse = await fetch(`https://graph.facebook.com/v17.0/${whatsappPhoneNumberId}/messages`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${whatsappApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            messaging_product: 'whatsapp',
-            to: formattedPhone,
-            type: 'text',
-            text: {
-              body: whatsappMessage
-            }
-          })
-        });
-
-        if (whatsappResponse.ok) {
-          whatsappSent = true;
-          console.log("WhatsApp message sent successfully");
-        } else {
-          const errorText = await whatsappResponse.text();
-          console.error("WhatsApp API error:", errorText);
-        }
-      } catch (whatsappError) {
-        console.error("WhatsApp sending failed:", whatsappError);
-      }
-    } else {
-      console.log("WhatsApp not configured or phone number missing:", {
-        hasApiKey: !!whatsappApiKey,
-        hasPhoneId: !!whatsappPhoneNumberId,
-        hasCustomerPhone: !!customerPhone
-      });
-    }
-
-    // Update status in database
-    console.log("Updating database status to 'offerte_verzonden'...");
-    const { error: updateError } = await supabaseClient
-      .from(table)
-      .update({
-        status: 'offerte_verzonden',
-        offerte_verzonden_op: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', requestId);
-
-    if (updateError) {
-      console.error('Error updating database status:', updateError);
-    } else {
-      console.log('Database status updated successfully');
-    }
-
-    console.log("=== AUTO-QUOTE PROCESS COMPLETED SUCCESSFULLY ===");
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Automatische offerte succesvol verzonden',
-      emailSent: true,
-      whatsappSent,
-      emailId: emailResponse.data?.id,
-      sentTo: customerEmail,
-      phone: customerPhone
-    }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders }
-    });
-
   } catch (error: any) {
     console.error("=== CRITICAL ERROR IN AUTO-SEND-QUOTE ===", error);
+    console.error("Error message:", error.message);
     console.error("Error stack:", error.stack);
     return new Response(
-      JSON.stringify({ success: false, error: `Onverwachte fout: ${error.message}` }),
+      JSON.stringify({ 
+        success: false, 
+        error: `Onverwachte fout: ${error.message}`,
+        details: error
+      }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
