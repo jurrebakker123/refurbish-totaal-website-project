@@ -354,6 +354,177 @@ export type Database = {
         }
         Relationships: []
       }
+      klus_reacties: {
+        Row: {
+          bericht: string
+          beschikbaarheid: string | null
+          created_at: string | null
+          geschatte_duur: string | null
+          geschatte_prijs: number | null
+          id: string
+          klus_id: string | null
+          status: string | null
+          updated_at: string | null
+          vakman_id: string | null
+        }
+        Insert: {
+          bericht: string
+          beschikbaarheid?: string | null
+          created_at?: string | null
+          geschatte_duur?: string | null
+          geschatte_prijs?: number | null
+          id?: string
+          klus_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vakman_id?: string | null
+        }
+        Update: {
+          bericht?: string
+          beschikbaarheid?: string | null
+          created_at?: string | null
+          geschatte_duur?: string | null
+          geschatte_prijs?: number | null
+          id?: string
+          klus_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vakman_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klus_reacties_klus_id_fkey"
+            columns: ["klus_id"]
+            isOneToOne: false
+            referencedRelation: "klussen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "klus_reacties_vakman_id_fkey"
+            columns: ["vakman_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      klussen: {
+        Row: {
+          beschrijving: string
+          budget_max: number | null
+          budget_min: number | null
+          category_id: string | null
+          created_at: string | null
+          id: string
+          klant_id: string | null
+          plaats: string
+          postcode: string
+          status: string | null
+          titel: string
+          updated_at: string | null
+          urgentie: string | null
+        }
+        Insert: {
+          beschrijving: string
+          budget_max?: number | null
+          budget_min?: number | null
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          klant_id?: string | null
+          plaats: string
+          postcode: string
+          status?: string | null
+          titel: string
+          updated_at?: string | null
+          urgentie?: string | null
+        }
+        Update: {
+          beschrijving?: string
+          budget_max?: number | null
+          budget_min?: number | null
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          klant_id?: string | null
+          plaats?: string
+          postcode?: string
+          status?: string | null
+          titel?: string
+          updated_at?: string | null
+          urgentie?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "klussen_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "klussen_klant_id_fkey"
+            columns: ["klant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          achternaam: string
+          adres: string | null
+          avatar_url: string | null
+          bedrijfsnaam: string | null
+          beschrijving: string | null
+          btw_nummer: string | null
+          created_at: string | null
+          id: string
+          kvk_nummer: string | null
+          plaats: string | null
+          postcode: string | null
+          telefoon: string | null
+          updated_at: string | null
+          user_type: string
+          voornaam: string
+        }
+        Insert: {
+          achternaam: string
+          adres?: string | null
+          avatar_url?: string | null
+          bedrijfsnaam?: string | null
+          beschrijving?: string | null
+          btw_nummer?: string | null
+          created_at?: string | null
+          id: string
+          kvk_nummer?: string | null
+          plaats?: string | null
+          postcode?: string | null
+          telefoon?: string | null
+          updated_at?: string | null
+          user_type: string
+          voornaam: string
+        }
+        Update: {
+          achternaam?: string
+          adres?: string | null
+          avatar_url?: string | null
+          bedrijfsnaam?: string | null
+          beschrijving?: string | null
+          btw_nummer?: string | null
+          created_at?: string | null
+          id?: string
+          kvk_nummer?: string | null
+          plaats?: string | null
+          postcode?: string | null
+          telefoon?: string | null
+          updated_at?: string | null
+          user_type?: string
+          voornaam?: string
+        }
+        Relationships: []
+      }
       refurbished_zonnepanelen: {
         Row: {
           aantal_panelen: number
@@ -441,6 +612,85 @@ export type Database = {
           type_paneel?: string
           updated_at?: string
           vermogen?: number
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          klus_id: string | null
+          rating: number
+          reviewed_id: string | null
+          reviewer_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          klus_id?: string | null
+          rating: number
+          reviewed_id?: string | null
+          reviewer_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          klus_id?: string | null
+          rating?: number
+          reviewed_id?: string | null
+          reviewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_klus_id_fkey"
+            columns: ["klus_id"]
+            isOneToOne: false
+            referencedRelation: "klussen"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewed_id_fkey"
+            columns: ["reviewed_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_categories: {
+        Row: {
+          beschrijving: string | null
+          created_at: string | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          naam: string
+        }
+        Insert: {
+          beschrijving?: string | null
+          created_at?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          naam: string
+        }
+        Update: {
+          beschrijving?: string | null
+          created_at?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          naam?: string
         }
         Relationships: []
       }
@@ -541,6 +791,42 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      vakman_categories: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          id: string
+          vakman_id: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          vakman_id?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          vakman_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vakman_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vakman_categories_vakman_id_fkey"
+            columns: ["vakman_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

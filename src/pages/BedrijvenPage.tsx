@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { OptimizedImage } from '@/components/ui/optimized-image';
@@ -28,7 +27,8 @@ import {
   HeadphonesIcon,
   BarChart3,
   Wrench,
-  ChevronDown
+  ChevronDown,
+  Briefcase
 } from 'lucide-react';
 import {
   Accordion,
@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/accordion";
 import Footer from '@/components/Footer';
 import LoginDemo from '@/components/demo/LoginDemo';
+import { Link } from 'react-router-dom';
 
 const BedrijvenPage = () => {
   const [showLoginDemo, setShowLoginDemo] = useState(false);
@@ -67,7 +68,13 @@ const BedrijvenPage = () => {
                 <span className="text-xl font-bold text-brand-darkGreen">Refurbish Totaal Nederland</span>
                 <span className="text-sm text-gray-500">Voor bedrijven</span>
               </div>
-              <div className="text-sm">
+              <div className="flex items-center gap-4">
+                <Link to="/marketplace">
+                  <Button variant="outline" size="sm">
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    Marketplace
+                  </Button>
+                </Link>
                 <Dialog open={showLoginDemo} onOpenChange={setShowLoginDemo}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm" onClick={handleLogin}>Log in</Button>
@@ -79,6 +86,50 @@ const BedrijvenPage = () => {
                     <LoginDemo />
                   </DialogContent>
                 </Dialog>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* New Marketplace Hero Section */}
+        <section className="bg-gradient-to-br from-blue-50 to-green-50 py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Nieuwe Marketplace Platform
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                Verbind klanten met vakmannen. Plaats klussen, ontvang offertes en vind de juiste professional voor elke bouwklus.
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <Card className="p-6 text-center">
+                  <Users className="h-12 w-12 text-brand-lightGreen mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-3">Voor Vakmannen</h3>
+                  <p className="text-gray-600 mb-6">
+                    Registreer je bedrijf, ontvang klussen in jouw regio en bouw je klantenkring uit.
+                  </p>
+                  <Link to="/marketplace/vakman-registratie">
+                    <Button className="bg-brand-lightGreen hover:bg-brand-darkGreen">
+                      Word Vakman Partner
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </Card>
+                
+                <Card className="p-6 text-center">
+                  <Briefcase className="h-12 w-12 text-brand-lightGreen mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-3">Voor Klanten</h3>
+                  <p className="text-gray-600 mb-6">
+                    Plaats je klus gratis en ontvang offertes van gekwalificeerde vakmannen in de buurt.
+                  </p>
+                  <Link to="/marketplace/klus-plaatsen">
+                    <Button className="bg-brand-lightGreen hover:bg-brand-darkGreen">
+                      Plaats Je Klus
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </Card>
               </div>
             </div>
           </div>
