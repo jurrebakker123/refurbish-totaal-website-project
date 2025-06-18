@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,11 +100,16 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
       
       console.log('✅ Successfully saved to database with ID:', savedData.id);
 
-      // Step 2: Send automatic quote using your existing edge function
+      // Step 2: Send automatic quote using Supabase edge function
       console.log('🎯 Step 2: Sending automatic quote via edge function...');
       
       try {
-        console.log('Calling auto-send-quote edge function...');
+        console.log('Calling auto-send-quote edge function with data:', {
+          requestId: savedData.id,
+          type: 'dakkapel'
+        });
+        
+        // Use supabase.functions.invoke instead of fetch for better reliability
         const { data: quoteResponse, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
           body: {
             requestId: savedData.id,
@@ -116,10 +122,11 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
 
         if (quoteError) {
           console.error('❌ Edge function error:', quoteError);
-          throw new Error(`Quote sending failed: ${quoteError.message}`);
-        }
-
-        if (quoteResponse?.success) {
+          // Don't throw error - still show success to user
+          console.log('⚠️ Continuing despite quote sending failure...');
+          
+          toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
+        } else if (quoteResponse?.success) {
           console.log('✅ Customer quote sent successfully via edge function!');
           
           // Update database status
@@ -133,7 +140,8 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
             .eq('id', savedData.id);
           
           toast.success(
-            "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email. We nemen zo spoedig mogelijk contact met u op."
+            "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email. We nemen zo spoedig mogelijk contact met u op.",
+            { duration: 6000 }
           );
         } else {
           console.error('❌ Quote sending failed:', quoteResponse);

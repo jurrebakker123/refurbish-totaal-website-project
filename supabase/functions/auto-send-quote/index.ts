@@ -274,7 +274,7 @@ info@refurbishtotaalnederland.nl`;
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [customerEmail],
-      subject: `Automatische Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`,
+      subject: `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`,
       html: emailHtml,
     });
 
