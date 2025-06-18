@@ -8,6 +8,8 @@ const whatsappApiKey = Deno.env.get("WHATSAPP_API_KEY");
 const whatsappPhoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
 
 console.log("Starting auto-send-quote function");
+console.log("RESEND_API_KEY configured:", !!resendApiKey);
+console.log("WHATSAPP_API_KEY configured:", !!whatsappApiKey);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,6 +23,8 @@ interface AutoQuoteRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("Received request method:", req.method);
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -33,7 +37,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: "Email service not configured" 
+          error: "Email service not configured - RESEND_API_KEY missing" 
         }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
@@ -41,6 +45,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     const resend = new Resend(resendApiKey);
     const requestBody = await req.json();
+    console.log("Request body:", requestBody);
+    
     const { requestId, type }: AutoQuoteRequest = requestBody;
     
     if (!requestId) {
@@ -55,6 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
     
     if (!supabaseUrl || !supabaseKey) {
+      console.error("Missing Supabase configuration");
       return new Response(
         JSON.stringify({ success: false, error: "Missing Supabase configuration" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -64,9 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
     // Determine table based on type
-    const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 
-                  type === 'dakkapel' && requestId.includes('calc') ? 'dakkapel_calculator_aanvragen' :
-                  'dakkapel_configuraties';
+    const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
 
     console.log("Fetching data for ID:", requestId, "from table:", table);
     
@@ -79,12 +84,15 @@ const handler = async (req: Request): Promise<Response> => {
     if (error || !requestData) {
       console.error("Error fetching data:", error);
       return new Response(
-        JSON.stringify({ success: false, error: 'Aanvraag niet gevonden' }),
+        JSON.stringify({ success: false, error: 'Aanvraag niet gevonden', details: error }),
         { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("Request data found:", { naam: requestData.naam || requestData.voornaam, email: requestData.email || requestData.emailadres });
+    console.log("Request data found:", { 
+      naam: requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`, 
+      email: requestData.email || requestData.emailadres 
+    });
 
     const customerEmail = requestData.email || requestData.emailadres;
     const customerName = requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`;
@@ -158,37 +166,23 @@ Het team van Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl`;
 
-      if (table === 'dakkapel_calculator_aanvragen') {
-        productDetails = `
-          <h3>Uw Dakkapel Configuratie:</h3>
-          <ul>
-            <li><strong>Type:</strong> ${requestData.type}</li>
-            <li><strong>Afmetingen:</strong> ${requestData.breedte}cm x ${requestData.hoogte}cm</li>
-            <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
-            <li><strong>Aantal ramen:</strong> ${requestData.aantalramen}</li>
-            <li><strong>Kozijn hoogte:</strong> ${requestData.kozijnhoogte}</li>
-            <li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhellingtype})</li>
-            <li><strong>Kleur kozijnen:</strong> ${requestData.kleurkozijnen}</li>
-            <li><strong>Kleur zijkanten:</strong> ${requestData.kleurzijkanten}</li>
-            <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleurdraaikiepramen}</li>
-            <li><strong>RC-waarde:</strong> ${requestData.rcwaarde}</li>
-            <li><strong>Woning zijde:</strong> ${requestData.woningzijde}</li>
-          </ul>
-        `;
-      } else {
-        productDetails = `
-          <h3>Uw Dakkapel Configuratie:</h3>
-          <ul>
-            <li><strong>Model:</strong> ${requestData.model}</li>
-            <li><strong>Breedte:</strong> ${requestData.breedte}cm</li>
-            <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
-            <li><strong>Kleur kozijn:</strong> ${requestData.kleur_kozijn}</li>
-            <li><strong>Kleur zijkanten:</strong> ${requestData.kleur_zijkanten}</li>
-            <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleur_draaikiepramen}</li>
-            ${requestData.dakhelling ? `<li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhelling_type})</li>` : ''}
-          </ul>
-        `;
-      }
+      // For dakkapel calculator requests
+      productDetails = `
+        <h3>Uw Dakkapel Configuratie:</h3>
+        <ul>
+          <li><strong>Type:</strong> ${requestData.type}</li>
+          <li><strong>Afmetingen:</strong> ${requestData.breedte}cm x ${requestData.hoogte}cm</li>
+          <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
+          <li><strong>Aantal ramen:</strong> ${requestData.aantalramen}</li>
+          <li><strong>Kozijn hoogte:</strong> ${requestData.kozijnhoogte}</li>
+          <li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhellingtype})</li>
+          <li><strong>Kleur kozijnen:</strong> ${requestData.kleurkozijnen}</li>
+          <li><strong>Kleur zijkanten:</strong> ${requestData.kleurzijkanten}</li>
+          <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleurdraaikiepramen}</li>
+          <li><strong>RC-waarde:</strong> ${requestData.rcwaarde}</li>
+          <li><strong>Woning zijde:</strong> ${requestData.woningzijde}</li>
+        </ul>
+      `;
     }
 
     const customerAddress = table === 'dakkapel_calculator_aanvragen' ? 
@@ -254,9 +248,11 @@ info@refurbishtotaalnederland.nl`;
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [customerEmail],
-      subject: `Automatische Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - ${type === 'zonnepaneel' ? requestData.merk : (requestData.model || requestData.type)}`,
+      subject: `Automatische Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - ${type === 'zonnepaneel' ? requestData.merk : requestData.type}`,
       html: emailHtml,
     });
+
+    console.log("Email response:", emailResponse);
 
     let whatsappSent = false;
     
@@ -280,14 +276,9 @@ ${type === 'zonnepaneel' ?
 • Aantal: ${requestData.aantal_panelen} panelen
 • Vermogen: ${requestData.vermogen}W
 • Merk: ${requestData.merk}` :
-  table === 'dakkapel_calculator_aanvragen' ?
   `🏠 *Dakkapel Details:*
 • Type: ${requestData.type}
 • Afmetingen: ${requestData.breedte}cm x ${requestData.hoogte}cm
-• Materiaal: ${requestData.materiaal}` :
-  `🏠 *Dakkapel Details:*
-• Model: ${requestData.model}
-• Breedte: ${requestData.breedte}cm
 • Materiaal: ${requestData.materiaal}`
 }
 
@@ -326,6 +317,8 @@ Refurbish Totaal Nederland`;
       } catch (whatsappError) {
         console.error("WhatsApp sending failed:", whatsappError);
       }
+    } else {
+      console.log("WhatsApp not configured or phone number missing");
     }
 
     if (emailResponse.error) {
@@ -337,6 +330,7 @@ Refurbish Totaal Nederland`;
     }
 
     // Update status in database
+    console.log("Updating status in database...");
     const { error: updateError } = await supabaseClient
       .from(table)
       .update({
@@ -348,6 +342,8 @@ Refurbish Totaal Nederland`;
 
     if (updateError) {
       console.error('Error updating status:', updateError);
+    } else {
+      console.log('Status updated successfully');
     }
 
     console.log("Automatic quote sent successfully!");

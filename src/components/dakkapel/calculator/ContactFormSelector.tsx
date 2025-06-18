@@ -53,6 +53,12 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     try {
       const totalPrice = calculateTotalPrice(configuration);
       
+      console.log('Starting dakkapel calculator submission...', {
+        formData,
+        totalPrice,
+        configuration
+      });
+      
       // Save to Supabase database
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
@@ -90,8 +96,10 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
         console.error('Database error:', dbError);
         throw dbError;
       }
+      
+      console.log('Successfully saved to database:', savedData);
 
-      // Send admin notification email
+      // Send admin notification email first
       const configDetails = `
         Type: ${configuration.type}
         Breedte: ${configuration.breedte} cm
@@ -133,6 +141,8 @@ BERICHT VAN KLANT:
 ${formData.bericht || 'Geen aanvullend bericht'}
       `;
       
+      console.log('Sending admin notification email...');
+      
       // Send admin notification
       const result = await sendEmail({
         from_name: `${formData.voornaam} ${formData.achternaam}`,
@@ -148,14 +158,18 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       });
 
       if (result.success) {
-        // Automatically send quote to customer
+        console.log('Admin notification sent successfully, now sending automatic quote...');
+        
+        // Automatically send quote to customer using the edge function
         try {
-          console.log('Sending automatic quote for request:', savedData.id);
+          console.log('Calling auto-send-quote function for request:', savedData.id);
           
-          const autoQuoteResponse = await fetch('/functions/v1/auto-send-quote', {
+          // Use the full Supabase URL to call the edge function
+          const response = await fetch(`https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/auto-send-quote`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${supabase.supabaseKey}`,
             },
             body: JSON.stringify({
               requestId: savedData.id,
@@ -163,7 +177,16 @@ ${formData.bericht || 'Geen aanvullend bericht'}
             })
           });
 
-          const autoQuoteResult = await autoQuoteResponse.json();
+          console.log('Auto-quote response status:', response.status);
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Auto-quote response error:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+          }
+
+          const autoQuoteResult = await response.json();
+          console.log('Auto-quote result:', autoQuoteResult);
           
           if (autoQuoteResult.success) {
             toast.success("Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email" + 
@@ -180,6 +203,7 @@ ${formData.bericht || 'Geen aanvullend bericht'}
         
         onNext();
       } else {
+        console.error('Admin notification failed:', result.error);
         throw new Error("Er ging iets mis bij het verzenden van de admin notificatie");
       }
     } catch (error) {
@@ -197,7 +221,7 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       <div>
         <h2 className="text-2xl font-bold mb-4">Contact gegevens</h2>
         <p className="mb-6 text-gray-600">
-          Vul uw contactgegevens in om automatisch een vrijblijvende offerte te ontvangen per email en WhatsApp.
+          Vul uw contactgegevens in om automatisch een vrijblijvende offerte te ontvangen per email.
         </p>
       </div>
 
