@@ -157,6 +157,9 @@ const Header = () => {
             <Link to="/contact" className={cn("font-medium transition-colors hover-underline", isActive('/contact') ? "text-brand-lightGreen" : "hover:text-brand-lightGreen")}>
               Contact
             </Link>
+            <Link to="/marketplace" className={cn("font-medium transition-colors hover-underline", isActive('/marketplace') ? "text-brand-lightGreen" : "hover:text-brand-lightGreen")}>
+              Marketplace
+            </Link>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button asChild className="bg-brand-lightGreen hover:bg-opacity-90">
                 <Link to="/offerte">Offerte Aanvragen</Link>
@@ -203,6 +206,11 @@ const Header = () => {
             <motion.div variants={menuItemVariants}>
               <Link to="/contact" className={cn("font-medium px-3 py-2 rounded-md hover:bg-gray-100 block", isActive('/contact') ? "text-brand-lightGreen" : "")} onClick={toggleMenu}>
                 Contact
+              </Link>
+            </motion.div>
+            <motion.div variants={menuItemVariants}>
+              <Link to="/marketplace" className={cn("font-medium px-3 py-2 rounded-md hover:bg-gray-100 block", isActive('/marketplace') ? "text-brand-lightGreen" : "")} onClick={toggleMenu}>
+                Marketplace
               </Link>
             </motion.div>
             <motion.div variants={menuItemVariants}>

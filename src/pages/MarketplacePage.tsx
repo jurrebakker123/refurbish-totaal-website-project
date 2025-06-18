@@ -30,7 +30,7 @@ const MarketplacePage = () => {
         <section className="bg-white py-4 border-b">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between">
-              <Link to="/bedrijven" className="flex items-center space-x-2">
+              <Link to="/" className="flex items-center space-x-2">
                 <Building2 className="h-8 w-8 text-brand-darkGreen" />
                 <span className="text-xl font-bold text-brand-darkGreen">Refurbish Totaal Nederland</span>
                 <span className="text-sm text-gray-500">Marketplace</span>
@@ -66,7 +66,7 @@ const MarketplacePage = () => {
                 <p className="text-gray-600 mb-6">
                   Plaats je klus in 3 minuten en ontvang binnen 24 uur offertes van vakmannen
                 </p>
-                <Link to="/marketplace/klus-plaatsen">
+                <Link to="/marketplace/klus-plaasten">
                   <Button size="lg" className="w-full bg-brand-lightGreen hover:bg-brand-darkGreen">
                     Plaats Je Klus Gratis
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -222,7 +222,7 @@ const MarketplacePage = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/marketplace/klus-plaatsen">
+              <Link to="/marketplace/klus-plaasten">
                 <Button size="lg" className="bg-white text-brand-darkGreen hover:bg-gray-100">
                   Plaats Een Klus
                   <ArrowRight className="ml-2 h-5 w-5" />
