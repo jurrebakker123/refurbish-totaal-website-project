@@ -160,40 +160,31 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       if (result.success) {
         console.log('Admin notification sent successfully, now sending automatic quote...');
         
-        // Automatically send quote to customer using the edge function
+        // Automatically send quote to customer using the edge function with proper Supabase client
         try {
           console.log('Calling auto-send-quote function for request:', savedData.id);
           
-          // Use the full Supabase URL to call the edge function
-          const response = await fetch(`https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/auto-send-quote`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${supabase.supabaseKey}`,
-            },
-            body: JSON.stringify({
+          // Use the Supabase client to invoke the edge function
+          const { data: autoQuoteResult, error: functionError } = await supabase.functions.invoke('auto-send-quote', {
+            body: {
               requestId: savedData.id,
               type: 'dakkapel'
-            })
+            }
           });
 
-          console.log('Auto-quote response status:', response.status);
+          console.log('Auto-quote function response:', autoQuoteResult);
           
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Auto-quote response error:', errorText);
-            throw new Error(`HTTP ${response.status}: ${errorText}`);
+          if (functionError) {
+            console.error('Auto-quote function error:', functionError);
+            throw functionError;
           }
 
-          const autoQuoteResult = await response.json();
-          console.log('Auto-quote result:', autoQuoteResult);
-          
-          if (autoQuoteResult.success) {
+          if (autoQuoteResult?.success) {
             toast.success("Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email" + 
               (autoQuoteResult.whatsappSent ? " en WhatsApp" : "") + 
               ". We nemen zo spoedig mogelijk contact met u op.");
           } else {
-            console.error('Auto quote failed:', autoQuoteResult.error);
+            console.error('Auto quote failed:', autoQuoteResult?.error);
             toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
           }
         } catch (autoQuoteError) {
