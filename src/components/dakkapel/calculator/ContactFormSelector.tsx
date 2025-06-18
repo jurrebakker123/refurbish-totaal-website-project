@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,110 +35,98 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const sendAutomaticQuote = async (requestId: string, customerData: any, totalPrice: number) => {
+  const sendCustomerQuote = async (customerData: any, totalPrice: number) => {
     try {
-      console.log('=== SENDING AUTOMATIC QUOTE ===');
-      console.log('Request ID:', requestId);
+      console.log('=== SENDING CUSTOMER QUOTE EMAIL ===');
       console.log('Customer email:', customerData.emailadres);
+      console.log('Customer name:', `${customerData.voornaam} ${customerData.achternaam}`);
       
       const customerName = `${customerData.voornaam} ${customerData.achternaam}`;
       const customerAddress = `${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}`;
 
-      // Create quote content
+      // Create detailed configuration text
       const configDetails = `
-        Type: ${configuration.type}
-        Breedte: ${configuration.breedte} cm
-        Hoogte: ${configuration.hoogte} cm
-        Materiaal: ${configuration.materiaal}
-        Aantal ramen: ${configuration.aantalRamen}
-        Kozijn hoogte: ${configuration.kozijnHoogte}
-        Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
-        Kozijnkleur: ${configuration.kleurKozijnen}
-        Zijkanten kleur: ${configuration.kleurZijkanten}
-        Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
-        RC-waarde: ${configuration.rcWaarde}
-        Woning zijde: ${configuration.woningZijde}
-        Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}
-      `;
+Type: ${configuration.type}
+Breedte: ${configuration.breedte} cm
+Hoogte: ${configuration.hoogte} cm
+Materiaal: ${configuration.materiaal}
+Aantal ramen: ${configuration.aantalRamen}
+Kozijn hoogte: ${configuration.kozijnHoogte}
+Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
+Kozijnkleur: ${configuration.kleurKozijnen}
+Zijkanten kleur: ${configuration.kleurZijkanten}
+Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
+RC-waarde: ${configuration.rcWaarde}
+Woning zijde: ${configuration.woningZijde}`;
       
       const selectedOptions = Object.entries(configuration.opties)
         .filter(([_, value]) => value)
         .map(([key]) => key)
         .join(', ');
 
-      const quoteMessage = `
-Beste ${customerName},
+      const quoteMessage = `Beste ${customerName},
 
-Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u automatisch een offerte voor uw dakkapel.
+Hartelijk dank voor uw interesse in onze dakkapellen! Hierbij ontvangt u automatisch een vrijblijvende offerte.
 
-AFHALEN OP DEPOT
-De afgesproken prijs is bij afhalen op depot. Eventuele montage en transport worden apart berekend.
-
-UW DAKKAPEL CONFIGURATIE:
+🏠 UW DAKKAPEL CONFIGURATIE:
 ${configDetails}
 
-GEKOZEN OPTIES:
+✅ GEKOZEN OPTIES:
 ${selectedOptions || 'Geen extra opties geselecteerd'}
 
-UW ADRESGEGEVENS:
+💰 TOTAALPRIJS: €${totalPrice.toLocaleString('nl-NL')}
+(Deze prijs is bij afhalen op depot)
+
+📍 UW ADRESGEGEVENS:
 ${customerAddress}
 
-AANVULLEND BERICHT:
+📝 UW BERICHT:
 ${customerData.bericht || 'Geen aanvullend bericht'}
 
-De prijs is inclusief:
-- Dakkapel volgens specificaties
-- Garantie van 10 jaar op constructie en waterdichtheid
-- 5 jaar garantie op de gebruikte materialen
+DEZE PRIJS IS INCLUSIEF:
+• Dakkapel volgens uw specificaties
+• 10 jaar garantie op constructie en waterdichtheid  
+• 5 jaar garantie op de gebruikte materialen
+• Levertijd: 6-8 weken na definitieve opdracht
 
-Wij hanteren een levertijd van 6-8 weken na definitieve opdracht.
+BELANGRIJK: De afgesproken prijs is bij afhalen op depot. Eventuele montage en transport worden apart berekend.
 
 Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
 
 Met vriendelijke groet,
 
 Het team van Refurbish Totaal Nederland
-085-1301578
-info@refurbishtotaalnederland.nl
-      `;
+📞 085-1301578
+📧 info@refurbishtotaalnederland.nl`;
 
-      // Send automatic quote email to customer
-      console.log('Sending automatic quote email...');
+      console.log('Sending customer quote with EmailJS...');
       
+      // Send quote email to customer using EmailJS
       const quoteResult = await sendEmail({
         from_name: "Refurbish Totaal Nederland",
         from_email: "info@refurbishtotaalnederland.nl",
         to_name: customerName,
         to_email: customerData.emailadres,
-        subject: `Automatische Offerte Dakkapel - €${totalPrice.toLocaleString('nl-NL')}`,
+        subject: `Automatische Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')}`,
         message: quoteMessage,
         phone: customerData.telefoon,
         location: customerData.plaats,
-        service: "Dakkapel",
-        templateId: "template_ezfzaao"
+        service: "Dakkapel Offerte",
+        templateId: "template_ix4mdjh" // Using the standard template
       });
 
+      console.log('Customer quote email result:', quoteResult);
+
       if (quoteResult.success) {
-        console.log('Automatic quote sent successfully to customer');
-        
-        // Update database status
-        await supabase
-          .from('dakkapel_calculator_aanvragen')
-          .update({
-            status: 'offerte_verzonden',
-            offerte_verzonden_op: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', requestId);
-          
-        return true;
+        console.log('✅ Customer quote email sent successfully!');
+        return { success: true, result: quoteResult };
       } else {
-        console.error('Failed to send automatic quote:', quoteResult.error);
-        return false;
+        console.error('❌ Customer quote email failed:', quoteResult.error);
+        return { success: false, error: quoteResult.error };
       }
     } catch (error) {
-      console.error('Error in sendAutomaticQuote:', error);
-      return false;
+      console.error('❌ Error in sendCustomerQuote:', error);
+      return { success: false, error };
     }
   };
 
@@ -168,7 +155,7 @@ info@refurbishtotaalnederland.nl
       console.log('Configuration:', configuration);
       
       // Step 1: Save to database first
-      console.log('Step 1: Saving to database...');
+      console.log('📝 Step 1: Saving to database...');
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert({
@@ -206,26 +193,25 @@ info@refurbishtotaalnederland.nl
         throw new Error(`Database error: ${dbError.message}`);
       }
       
-      console.log('Successfully saved to database with ID:', savedData.id);
+      console.log('✅ Successfully saved to database with ID:', savedData.id);
 
       // Step 2: Send admin notification email
-      console.log('Step 2: Sending admin notification...');
+      console.log('📧 Step 2: Sending admin notification...');
       
       const configDetails = `
-        Type: ${configuration.type}
-        Breedte: ${configuration.breedte} cm
-        Hoogte: ${configuration.hoogte} cm
-        Materiaal: ${configuration.materiaal}
-        Aantal ramen: ${configuration.aantalRamen}
-        Kozijn hoogte: ${configuration.kozijnHoogte}
-        Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
-        Kozijnkleur: ${configuration.kleurKozijnen}
-        Zijkanten kleur: ${configuration.kleurZijkanten}
-        Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
-        RC-waarde: ${configuration.rcWaarde}
-        Woning zijde: ${configuration.woningZijde}
-        Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}
-      `;
+Type: ${configuration.type}
+Breedte: ${configuration.breedte} cm
+Hoogte: ${configuration.hoogte} cm
+Materiaal: ${configuration.materiaal}
+Aantal ramen: ${configuration.aantalRamen}
+Kozijn hoogte: ${configuration.kozijnHoogte}
+Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
+Kozijnkleur: ${configuration.kleurKozijnen}
+Zijkanten kleur: ${configuration.kleurZijkanten}
+Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
+RC-waarde: ${configuration.rcWaarde}
+Woning zijde: ${configuration.woningZijde}
+Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}`;
       
       const selectedOptions = Object.entries(configuration.opties)
         .filter(([_, value]) => value)
@@ -233,13 +219,12 @@ info@refurbishtotaalnederland.nl
         .join(', ');
       
       const contactInfo = `
-        Naam: ${formData.voornaam} ${formData.achternaam}
-        Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
-        Telefoon: ${formData.telefoon}
-        Email: ${formData.emailadres}
-      `;
+Naam: ${formData.voornaam} ${formData.achternaam}
+Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
+Telefoon: ${formData.telefoon}
+Email: ${formData.emailadres}`;
       
-      const emailMessage = `
+      const adminEmailMessage = `
 ${contactInfo}
 
 DAKKAPEL CONFIGURATIE:
@@ -249,8 +234,7 @@ GEKOZEN OPTIES:
 ${selectedOptions || 'Geen extra opties geselecteerd'}
 
 BERICHT VAN KLANT:
-${formData.bericht || 'Geen aanvullend bericht'}
-      `;
+${formData.bericht || 'Geen aanvullend bericht'}`;
       
       const adminEmailResult = await sendEmail({
         from_name: `${formData.voornaam} ${formData.achternaam}`,
@@ -258,7 +242,7 @@ ${formData.bericht || 'Geen aanvullend bericht'}
         to_name: "Refurbish Totaal Nederland",
         to_email: "info@refurbishtotaalnederland.nl",
         subject: `Dakkapel Calculator Aanvraag: €${totalPrice.toLocaleString('nl-NL')}`,
-        message: emailMessage,
+        message: adminEmailMessage,
         phone: formData.telefoon,
         location: `${formData.plaats}`,
         service: "Dakkapel",
@@ -268,24 +252,36 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       console.log('Admin email result:', adminEmailResult);
 
       if (!adminEmailResult.success) {
-        console.error('Admin email failed:', adminEmailResult.error);
-        throw new Error("Admin notificatie email mislukt");
+        console.error('❌ Admin email failed:', adminEmailResult.error);
+        // Don't throw error, continue to customer email
+        console.log('⚠️ Continuing despite admin email failure...');
+      } else {
+        console.log('✅ Admin notification sent successfully');
       }
 
-      console.log('Admin notification sent successfully');
-
       // Step 3: Send automatic quote to customer
-      console.log('Step 3: Sending automatic customer quote...');
+      console.log('🎯 Step 3: Sending customer quote...');
       
-      const quoteSuccess = await sendAutomaticQuote(savedData.id, formData, totalPrice);
+      const customerQuoteResult = await sendCustomerQuote(formData, totalPrice);
       
-      if (quoteSuccess) {
-        console.log('Automatic quote sent successfully!');
+      if (customerQuoteResult.success) {
+        console.log('✅ Customer quote sent successfully!');
+        
+        // Update database status
+        await supabase
+          .from('dakkapel_calculator_aanvragen')
+          .update({
+            status: 'offerte_verzonden',
+            offerte_verzonden_op: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', savedData.id);
+        
         toast.success(
           "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email. We nemen zo spoedig mogelijk contact met u op."
         );
       } else {
-        console.log('Automatic quote failed, but request was saved');
+        console.error('❌ Customer quote failed:', customerQuoteResult.error);
         toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
       }
       
