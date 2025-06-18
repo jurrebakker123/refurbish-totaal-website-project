@@ -36,6 +36,113 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const sendAutomaticQuote = async (requestId: string, customerData: any, totalPrice: number) => {
+    try {
+      console.log('=== SENDING AUTOMATIC QUOTE ===');
+      console.log('Request ID:', requestId);
+      console.log('Customer email:', customerData.emailadres);
+      
+      const customerName = `${customerData.voornaam} ${customerData.achternaam}`;
+      const customerAddress = `${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}`;
+
+      // Create quote content
+      const configDetails = `
+        Type: ${configuration.type}
+        Breedte: ${configuration.breedte} cm
+        Hoogte: ${configuration.hoogte} cm
+        Materiaal: ${configuration.materiaal}
+        Aantal ramen: ${configuration.aantalRamen}
+        Kozijn hoogte: ${configuration.kozijnHoogte}
+        Dakhelling: ${configuration.dakHelling}° (${configuration.dakHellingType})
+        Kozijnkleur: ${configuration.kleurKozijnen}
+        Zijkanten kleur: ${configuration.kleurZijkanten}
+        Draaikiepramen kleur: ${configuration.kleurDraaikiepramen}
+        RC-waarde: ${configuration.rcWaarde}
+        Woning zijde: ${configuration.woningZijde}
+        Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}
+      `;
+      
+      const selectedOptions = Object.entries(configuration.opties)
+        .filter(([_, value]) => value)
+        .map(([key]) => key)
+        .join(', ');
+
+      const quoteMessage = `
+Beste ${customerName},
+
+Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u automatisch een offerte voor uw dakkapel.
+
+AFHALEN OP DEPOT
+De afgesproken prijs is bij afhalen op depot. Eventuele montage en transport worden apart berekend.
+
+UW DAKKAPEL CONFIGURATIE:
+${configDetails}
+
+GEKOZEN OPTIES:
+${selectedOptions || 'Geen extra opties geselecteerd'}
+
+UW ADRESGEGEVENS:
+${customerAddress}
+
+AANVULLEND BERICHT:
+${customerData.bericht || 'Geen aanvullend bericht'}
+
+De prijs is inclusief:
+- Dakkapel volgens specificaties
+- Garantie van 10 jaar op constructie en waterdichtheid
+- 5 jaar garantie op de gebruikte materialen
+
+Wij hanteren een levertijd van 6-8 weken na definitieve opdracht.
+
+Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
+
+Met vriendelijke groet,
+
+Het team van Refurbish Totaal Nederland
+085-1301578
+info@refurbishtotaalnederland.nl
+      `;
+
+      // Send automatic quote email to customer
+      console.log('Sending automatic quote email...');
+      
+      const quoteResult = await sendEmail({
+        from_name: "Refurbish Totaal Nederland",
+        from_email: "info@refurbishtotaalnederland.nl",
+        to_name: customerName,
+        to_email: customerData.emailadres,
+        subject: `Automatische Offerte Dakkapel - €${totalPrice.toLocaleString('nl-NL')}`,
+        message: quoteMessage,
+        phone: customerData.telefoon,
+        location: customerData.plaats,
+        service: "Dakkapel",
+        templateId: "template_ezfzaao"
+      });
+
+      if (quoteResult.success) {
+        console.log('Automatic quote sent successfully to customer');
+        
+        // Update database status
+        await supabase
+          .from('dakkapel_calculator_aanvragen')
+          .update({
+            status: 'offerte_verzonden',
+            offerte_verzonden_op: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', requestId);
+          
+        return true;
+      } else {
+        console.error('Failed to send automatic quote:', quoteResult.error);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error in sendAutomaticQuote:', error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -170,36 +277,15 @@ ${formData.bericht || 'Geen aanvullend bericht'}
       // Step 3: Send automatic quote to customer
       console.log('Step 3: Sending automatic customer quote...');
       
-      try {
-        const { data: autoQuoteResult, error: functionError } = await supabase.functions.invoke('auto-send-quote', {
-          body: {
-            requestId: savedData.id,
-            type: 'dakkapel'
-          }
-        });
-
-        console.log('Auto-quote function called. Result:', autoQuoteResult);
-        console.log('Auto-quote function error:', functionError);
-
-        if (functionError) {
-          console.error('Edge function error:', functionError);
-          throw new Error(`Edge function error: ${functionError.message}`);
-        }
-
-        if (autoQuoteResult?.success) {
-          console.log('Automatic quote sent successfully!');
-          toast.success(
-            "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email" + 
-            (autoQuoteResult.whatsappSent ? " en WhatsApp" : "") + 
-            ". We nemen zo spoedig mogelijk contact met u op."
-          );
-        } else {
-          console.error('Auto quote failed with result:', autoQuoteResult);
-          toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
-        }
-      } catch (autoQuoteError) {
-        console.error('Auto quote error:', autoQuoteError);
-        // Don't fail the whole process if auto-quote fails
+      const quoteSuccess = await sendAutomaticQuote(savedData.id, formData, totalPrice);
+      
+      if (quoteSuccess) {
+        console.log('Automatic quote sent successfully!');
+        toast.success(
+          "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email. We nemen zo spoedig mogelijk contact met u op."
+        );
+      } else {
+        console.log('Automatic quote failed, but request was saved');
         toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
       }
       
