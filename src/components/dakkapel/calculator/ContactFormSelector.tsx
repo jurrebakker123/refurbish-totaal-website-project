@@ -40,11 +40,14 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     e.preventDefault();
     setIsSubmitting(true);
 
+    console.log('=== STARTING DAKKAPEL FORM SUBMISSION ===');
+
     // Validate required fields
     const requiredFields = ['voornaam', 'achternaam', 'straatnaam', 'huisnummer', 'postcode', 'plaats', 'telefoon', 'emailadres'];
     const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
 
     if (missingFields.length > 0) {
+      console.log('Missing required fields:', missingFields);
       toast.error("Vul alle verplichte velden in (gemarkeerd met *)");
       setIsSubmitting(false);
       return;
@@ -53,13 +56,12 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
     try {
       const totalPrice = calculateTotalPrice(configuration);
       
-      console.log('Starting dakkapel calculator submission...', {
-        formData,
-        totalPrice,
-        configuration
-      });
+      console.log('Form data:', formData);
+      console.log('Total price:', totalPrice);
+      console.log('Configuration:', configuration);
       
-      // Save to Supabase database
+      // Step 1: Save to database first
+      console.log('Step 1: Saving to database...');
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert({
@@ -93,13 +95,15 @@ export function ContactFormSelector({ configuration, onPrevious, onNext }: Conta
         .single();
 
       if (dbError) {
-        console.error('Database error:', dbError);
-        throw dbError;
+        console.error('Database save error:', dbError);
+        throw new Error(`Database error: ${dbError.message}`);
       }
       
-      console.log('Successfully saved to database:', savedData);
+      console.log('Successfully saved to database with ID:', savedData.id);
 
-      // Send admin notification email first
+      // Step 2: Send admin notification email
+      console.log('Step 2: Sending admin notification...');
+      
       const configDetails = `
         Type: ${configuration.type}
         Breedte: ${configuration.breedte} cm
@@ -141,10 +145,7 @@ BERICHT VAN KLANT:
 ${formData.bericht || 'Geen aanvullend bericht'}
       `;
       
-      console.log('Sending admin notification email...');
-      
-      // Send admin notification
-      const result = await sendEmail({
+      const adminEmailResult = await sendEmail({
         from_name: `${formData.voornaam} ${formData.achternaam}`,
         from_email: formData.emailadres,
         to_name: "Refurbish Totaal Nederland",
@@ -157,51 +158,60 @@ ${formData.bericht || 'Geen aanvullend bericht'}
         templateId: "template_ezfzaao"
       });
 
-      if (result.success) {
-        console.log('Admin notification sent successfully, now sending automatic quote...');
-        
-        // Automatically send quote to customer using the edge function with proper Supabase client
-        try {
-          console.log('Calling auto-send-quote function for request:', savedData.id);
-          
-          // Use the Supabase client to invoke the edge function
-          const { data: autoQuoteResult, error: functionError } = await supabase.functions.invoke('auto-send-quote', {
-            body: {
-              requestId: savedData.id,
-              type: 'dakkapel'
-            }
-          });
+      console.log('Admin email result:', adminEmailResult);
 
-          console.log('Auto-quote function response:', autoQuoteResult);
-          
-          if (functionError) {
-            console.error('Auto-quote function error:', functionError);
-            throw functionError;
-          }
+      if (!adminEmailResult.success) {
+        console.error('Admin email failed:', adminEmailResult.error);
+        throw new Error("Admin notificatie email mislukt");
+      }
 
-          if (autoQuoteResult?.success) {
-            toast.success("Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email" + 
-              (autoQuoteResult.whatsappSent ? " en WhatsApp" : "") + 
-              ". We nemen zo spoedig mogelijk contact met u op.");
-          } else {
-            console.error('Auto quote failed:', autoQuoteResult?.error);
-            toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
+      console.log('Admin notification sent successfully');
+
+      // Step 3: Send automatic quote to customer
+      console.log('Step 3: Sending automatic customer quote...');
+      
+      try {
+        const { data: autoQuoteResult, error: functionError } = await supabase.functions.invoke('auto-send-quote', {
+          body: {
+            requestId: savedData.id,
+            type: 'dakkapel'
           }
-        } catch (autoQuoteError) {
-          console.error('Auto quote error:', autoQuoteError);
+        });
+
+        console.log('Auto-quote function called. Result:', autoQuoteResult);
+        console.log('Auto-quote function error:', functionError);
+
+        if (functionError) {
+          console.error('Edge function error:', functionError);
+          throw new Error(`Edge function error: ${functionError.message}`);
+        }
+
+        if (autoQuoteResult?.success) {
+          console.log('Automatic quote sent successfully!');
+          toast.success(
+            "Uw aanvraag is succesvol verzonden! U ontvangt automatisch een offerte per email" + 
+            (autoQuoteResult.whatsappSent ? " en WhatsApp" : "") + 
+            ". We nemen zo spoedig mogelijk contact met u op."
+          );
+        } else {
+          console.error('Auto quote failed with result:', autoQuoteResult);
           toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
         }
-        
-        onNext();
-      } else {
-        console.error('Admin notification failed:', result.error);
-        throw new Error("Er ging iets mis bij het verzenden van de admin notificatie");
+      } catch (autoQuoteError) {
+        console.error('Auto quote error:', autoQuoteError);
+        // Don't fail the whole process if auto-quote fails
+        toast.success("Uw aanvraag is succesvol verzonden en opgeslagen! We nemen zo spoedig mogelijk contact met u op en versturen een offerte.");
       }
+      
+      // Success - move to next step
+      onNext();
+
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("=== FORM SUBMISSION ERROR ===", error);
       toast.error("Er is een probleem opgetreden bij het verzenden. Probeer het later opnieuw of neem direct contact op.");
     } finally {
       setIsSubmitting(false);
+      console.log('=== DAKKAPEL FORM SUBMISSION COMPLETE ===');
     }
   };
 

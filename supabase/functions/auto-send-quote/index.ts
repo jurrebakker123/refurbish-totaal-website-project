@@ -3,13 +3,16 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
 
+console.log("=== AUTO-SEND-QUOTE FUNCTION STARTED ===");
+
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const whatsappApiKey = Deno.env.get("WHATSAPP_API_KEY");
 const whatsappPhoneNumberId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
 
-console.log("Starting auto-send-quote function");
+console.log("Environment check:");
 console.log("RESEND_API_KEY configured:", !!resendApiKey);
 console.log("WHATSAPP_API_KEY configured:", !!whatsappApiKey);
+console.log("WHATSAPP_PHONE_NUMBER_ID configured:", !!whatsappPhoneNumberId);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,17 +26,18 @@ interface AutoQuoteRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("Received request method:", req.method);
+  console.log("=== NEW AUTO-QUOTE REQUEST ===");
+  console.log("Request method:", req.method);
+  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
+    console.log("Handling OPTIONS request");
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("Processing auto quote request...");
-
     if (!resendApiKey) {
-      console.error("RESEND_API_KEY is not configured");
+      console.error("CRITICAL: RESEND_API_KEY is not configured");
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -43,22 +47,31 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log("Initializing Resend client...");
     const resend = new Resend(resendApiKey);
+    
+    console.log("Parsing request body...");
     const requestBody = await req.json();
-    console.log("Request body:", requestBody);
+    console.log("Request body received:", requestBody);
     
     const { requestId, type }: AutoQuoteRequest = requestBody;
     
     if (!requestId) {
+      console.error("Missing requestId in request");
       return new Response(
         JSON.stringify({ success: false, error: "Missing requestId" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
     
+    console.log("Processing auto-quote for:", { requestId, type });
+    
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
+    
+    console.log("Supabase URL:", supabaseUrl);
+    console.log("Supabase Key configured:", !!supabaseKey);
     
     if (!supabaseUrl || !supabaseKey) {
       console.error("Missing Supabase configuration");
@@ -73,7 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Determine table based on type
     const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
 
-    console.log("Fetching data for ID:", requestId, "from table:", table);
+    console.log("Fetching data from table:", table, "for ID:", requestId);
     
     const { data: requestData, error } = await supabaseClient
       .from(table)
@@ -81,17 +94,26 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('id', requestId)
       .single();
     
-    if (error || !requestData) {
-      console.error("Error fetching data:", error);
+    if (error) {
+      console.error("Database error:", error);
       return new Response(
-        JSON.stringify({ success: false, error: 'Aanvraag niet gevonden', details: error }),
+        JSON.stringify({ success: false, error: 'Database error', details: error }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!requestData) {
+      console.error("No data found for requestId:", requestId);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Aanvraag niet gevonden' }),
         { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("Request data found:", { 
+    console.log("Request data found for:", { 
       naam: requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`, 
-      email: requestData.email || requestData.emailadres 
+      email: requestData.email || requestData.emailadres,
+      id: requestData.id 
     });
 
     const customerEmail = requestData.email || requestData.emailadres;
@@ -99,11 +121,14 @@ const handler = async (req: Request): Promise<Response> => {
     const customerPhone = requestData.telefoon;
 
     if (!customerEmail) {
+      console.error("No email address found for customer");
       return new Response(
         JSON.stringify({ success: false, error: 'Geen email adres gevonden' }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
+
+    console.log("Preparing email content for:", customerEmail);
 
     // Generate quote content based on type
     let productDetails = '';
@@ -245,6 +270,7 @@ info@refurbishtotaalnederland.nl`;
 
     // Send email
     console.log("Sending automatic quote email to:", customerEmail);
+    
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [customerEmail],
@@ -252,7 +278,17 @@ info@refurbishtotaalnederland.nl`;
       html: emailHtml,
     });
 
-    console.log("Email response:", emailResponse);
+    console.log("Email send result:", emailResponse);
+
+    if (emailResponse.error) {
+      console.error("Email sending failed:", emailResponse.error);
+      return new Response(
+        JSON.stringify({ success: false, error: `Email sending failed: ${emailResponse.error.message}` }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log("Email sent successfully! Email ID:", emailResponse.data?.id);
 
     let whatsappSent = false;
     
@@ -318,19 +354,15 @@ Refurbish Totaal Nederland`;
         console.error("WhatsApp sending failed:", whatsappError);
       }
     } else {
-      console.log("WhatsApp not configured or phone number missing");
-    }
-
-    if (emailResponse.error) {
-      console.error("Email sending failed:", emailResponse.error);
-      return new Response(
-        JSON.stringify({ success: false, error: `Email sending failed: ${emailResponse.error.message}` }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      console.log("WhatsApp not configured or phone number missing:", {
+        hasApiKey: !!whatsappApiKey,
+        hasPhoneId: !!whatsappPhoneNumberId,
+        hasCustomerPhone: !!customerPhone
+      });
     }
 
     // Update status in database
-    console.log("Updating status in database...");
+    console.log("Updating database status to 'offerte_verzonden'...");
     const { error: updateError } = await supabaseClient
       .from(table)
       .update({
@@ -341,12 +373,12 @@ Refurbish Totaal Nederland`;
       .eq('id', requestId);
 
     if (updateError) {
-      console.error('Error updating status:', updateError);
+      console.error('Error updating database status:', updateError);
     } else {
-      console.log('Status updated successfully');
+      console.log('Database status updated successfully');
     }
 
-    console.log("Automatic quote sent successfully!");
+    console.log("=== AUTO-QUOTE PROCESS COMPLETED SUCCESSFULLY ===");
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -362,7 +394,8 @@ Refurbish Totaal Nederland`;
     });
 
   } catch (error: any) {
-    console.error("Unexpected error in auto-send-quote function:", error);
+    console.error("=== CRITICAL ERROR IN AUTO-SEND-QUOTE ===", error);
+    console.error("Error stack:", error.stack);
     return new Response(
       JSON.stringify({ success: false, error: `Onverwachte fout: ${error.message}` }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
