@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet';
 
@@ -96,8 +95,8 @@ const SEOOptimizer: React.FC<SEOOptimizerProps> = ({
       <link rel="dns-prefetch" href="//www.google-analytics.com" />
       
       {/* Hreflang for international SEO */}
-      <link rel="alternate" href="https://www.refurbishtotaalnederland.nl/" hreflang="nl" />
-      <link rel="alternate" href="https://www.refurbishtotaalnederland.nl/" hreflang="nl-nl" />
+      <link rel="alternate" href="https://www.refurbishtotaalnederland.nl/" hrefLang="nl" />
+      <link rel="alternate" href="https://www.refurbishtotaalnederland.nl/" hrefLang="nl-nl" />
       
       {/* City-specific hreflang if applicable */}
       {city && service && targetCities.map(targetCity => (
@@ -105,7 +104,7 @@ const SEOOptimizer: React.FC<SEOOptimizerProps> = ({
           key={targetCity}
           rel="alternate" 
           href={`https://www.refurbishtotaalnederland.nl/diensten/${service.toLowerCase().replace(/\s+/g, '-')}/${targetCity}`} 
-          hreflang={`nl-${targetCity}`} 
+          hrefLang={`nl-${targetCity}`} 
         />
       ))}
       
