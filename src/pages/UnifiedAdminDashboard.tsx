@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +15,6 @@ import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import ConversieStats from '@/components/admin/ConversieStats';
 import NotificationCenter from '@/components/admin/NotificationCenter';
-import ManualAutoQuoteTest from '@/components/admin/ManualAutoQuoteTest';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
@@ -266,8 +264,6 @@ const UnifiedAdminDashboard = () => {
               </button>
             </div>
           </div>
-
-          <ManualAutoQuoteTest />
           
           {projectType === 'dakkapel' && <DashboardStats configuraties={allConfiguraties} />}
           
