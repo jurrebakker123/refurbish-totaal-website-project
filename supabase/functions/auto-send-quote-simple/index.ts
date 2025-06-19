@@ -13,7 +13,6 @@ const corsHeaders = {
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW REQUEST RECEIVED ===");
   console.log("Request method:", req.method);
-  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -40,40 +39,43 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
     
-    // Check if this is a direct request with specific requestId
+    // Get request body to check for specific requestId
     let requestBody = null;
     try {
       requestBody = await req.json();
-      console.log("Request body:", requestBody);
+      console.log("📨 Request body:", requestBody);
     } catch (e) {
-      console.log("No request body provided, checking for all new requests");
+      console.log("ℹ️ No request body provided, checking for all new requests");
     }
 
     let dakkapelRequests = [];
     
     if (requestBody?.requestId) {
-      // Direct request for specific ID
-      console.log("=== PROCESSING SPECIFIC REQUEST ===");
-      console.log("Request ID:", requestBody.requestId);
+      // Direct request for specific ID - get immediately
+      console.log("🎯 Processing specific request ID:", requestBody.requestId);
       
       const { data: specificRequest, error: specificError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .select('*')
         .eq('id', requestBody.requestId)
-        .eq('status', 'nieuw')
-        .is('offerte_verzonden_op', null)
         .single();
 
       if (!specificError && specificRequest) {
         dakkapelRequests = [specificRequest];
         console.log("✅ Found specific request:", specificRequest.id);
       } else {
-        console.log("❌ Specific request not found or already processed");
+        console.log("❌ Specific request not found:", specificError);
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: `Request ${requestBody.requestId} not found`,
+        }), {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
       }
     } else {
       // Check for all new requests
-      console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
-      console.log("Current time:", new Date().toISOString());
+      console.log("🔍 Checking for new dakkapel requests...");
       
       const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       console.log("Looking for requests after:", cutoffTime);
@@ -93,19 +95,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`📊 Found ${dakkapelRequests.length} requests to process`);
     
-    if (dakkapelRequests.length > 0) {
-      console.log("📋 Request details:");
-      dakkapelRequests.forEach((req, index) => {
-        console.log(`  ${index + 1}. ID: ${req.id}, Email: ${req.emailadres}, Created: ${req.created_at}`);
-      });
-    }
-    
     if (dakkapelRequests.length === 0) {
-      console.log("ℹ️ No new dakkapel requests found that need quotes");
+      console.log("ℹ️ No new dakkapel requests found");
       return new Response(JSON.stringify({ 
         success: true, 
-        message: 'No new requests found that need quotes',
-        processed: { dakkapel: 0, total: 0 }
+        message: 'No new requests found',
+        processed: 0
       }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders }
@@ -116,10 +111,9 @@ const handler = async (req: Request): Promise<Response> => {
     let errorCount = 0;
 
     for (const request of dakkapelRequests) {
-      console.log(`\n=== PROCESSING REQUEST ${request.id} ===`);
-      console.log(`Customer: ${request.voornaam} ${request.achternaam}`);
-      console.log(`Email: ${request.emailadres}`);
-      console.log(`Created: ${request.created_at}`);
+      console.log(`\n🔄 Processing request ${request.id}`);
+      console.log(`👤 Customer: ${request.voornaam} ${request.achternaam}`);
+      console.log(`📧 Email: ${request.emailadres}`);
 
       try {
         const customerName = `${request.voornaam} ${request.achternaam}`;
@@ -142,6 +136,8 @@ const handler = async (req: Request): Promise<Response> => {
           if (request.opties.extra_isolatie) totalPrice += 800;
           if (request.opties.horren) totalPrice += 400;
         }
+
+        console.log(`💰 Calculated price: €${totalPrice.toLocaleString('nl-NL')}`);
 
         const emailTemplate = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
@@ -276,20 +272,20 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       // Small delay between requests
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
 
-    console.log(`\n=== BATCH PROCESS COMPLETED ===`);
+    console.log(`\n=== PROCESSING COMPLETED ===`);
     console.log(`✅ Successful: ${successCount}`);
     console.log(`❌ Errors: ${errorCount}`);
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `Automatic quote process completed. Sent ${successCount} quotes.`,
+      message: `Processed ${successCount + errorCount} requests. Sent ${successCount} emails.`,
       processed: {
-        dakkapel: successCount,
-        errors: errorCount,
-        total: successCount + errorCount
+        total: successCount + errorCount,
+        successful: successCount,
+        errors: errorCount
       }
     }), {
       status: 200,

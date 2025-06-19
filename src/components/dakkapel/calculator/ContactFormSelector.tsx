@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,7 +49,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     try {
       console.log('Saving dakkapel request to database...');
       
-      // Save to database
+      // Save to database first
       const { data: savedData, error } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert({
@@ -89,32 +88,26 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('Dakkapel request saved successfully:', savedData);
 
-      // Send automatic quote email immediately
-      console.log('Sending automatic quote email...');
+      // Send automatic quote email immediately using the edge function
+      console.log('Triggering automatic quote email...');
       
-      const response = await fetch('https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/auto-send-quote-simple', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`,
-        },
-        body: JSON.stringify({
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('auto-send-quote-simple', {
+        body: {
           requestId: savedData.id,
           type: 'dakkapel',
           immediate: true
-        })
+        }
       });
 
-      const emailResult = await response.json();
-      console.log('Email service response:', emailResult);
+      console.log('Email function response:', emailData);
 
-      if (emailResult.success) {
-        toast.success("Aanvraag verzonden! U ontvangt binnen enkele minuten een offerte per email.", {
+      if (emailError) {
+        console.error('Email function error:', emailError);
+        toast.success("Aanvraag verzonden! We nemen zo spoedig mogelijk contact met u op.", {
           duration: 5000,
         });
       } else {
-        console.warn('Email service returned error:', emailResult.error);
-        toast.success("Aanvraag verzonden! We nemen zo spoedig mogelijk contact met u op.", {
+        toast.success("Aanvraag verzonden! U ontvangt binnen enkele minuten een offerte per email.", {
           duration: 5000,
         });
       }
