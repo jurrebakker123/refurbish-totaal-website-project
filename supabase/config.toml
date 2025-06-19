@@ -6,3 +6,9 @@ verify_jwt = false
 
 [functions.send-quote]
 verify_jwt = true
+
+[functions.auto-send-quote]
+verify_jwt = false
+
+[functions.auto-send-quote-batch]
+verify_jwt = false
