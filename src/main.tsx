@@ -10,13 +10,12 @@ import ZonnepanelenPage from './pages/ZonnepanelenPage.tsx';
 import SolarProductDetailPage from './pages/SolarProductDetailPage.tsx';
 import IsolatieSelectiePage from './pages/IsolatieSelectiePage.tsx';
 import ProtectedAdminRoute from './components/admin/ProtectedAdminRoute.tsx';
-import AdminDashboardPage from './pages/AdminDashboardPage.tsx';
+import UnifiedAdminDashboard from './pages/UnifiedAdminDashboard.tsx';
 import AdminLogin from './components/admin/AdminLogin.tsx';
 import { SidebarProvider } from './components/ui/sidebar';
 import DakkapelCalculatorConceptPage from './pages/DakkapelCalculatorConceptPage.tsx';
 import DakkapelCalculatorPage from './pages/DakkapelCalculatorPage.tsx';
 import BouwhulpPage from './pages/BouwhulpPage.tsx';
-import AdminZonnepanelenPage from './pages/AdminZonnepanelenPage.tsx';
 import ContactPage from './pages/ContactPage.tsx';
 import OffertePage from './pages/OffertePage.tsx';
 import DienstDetailPage from './pages/DienstDetailPage.tsx';
@@ -58,12 +57,12 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
-                <AdminDashboardPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/admin-zonnepanelen" element={
               <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
@@ -87,13 +86,13 @@ const renderBasedOnDomain = () => {
             <Route path="/product/:productId" element={<SolarProductDetailPage />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/admin-zonnepanelen" element={
               <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
-              </ProtectedAdminRoute>
+                <UnifiedAdminDashboard />
+              </ProtectedAdminRate>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
@@ -116,12 +115,12 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
-                <AdminDashboardPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/admin-zonnepanelen" element={
               <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/offerte" element={<OffertePage />} />
@@ -144,12 +143,12 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
-                <AdminDashboardPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/admin-zonnepanelen" element={
               <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
@@ -179,12 +178,12 @@ const renderBasedOnDomain = () => {
             <Route path="/login" element={<AdminLogin />} />
             <Route path="/admin" element={
               <ProtectedAdminRoute>
-                <AdminDashboardPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/admin-zonnepanelen" element={
               <ProtectedAdminRoute>
-                <AdminZonnepanelenPage />
+                <UnifiedAdminDashboard />
               </ProtectedAdminRoute>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
