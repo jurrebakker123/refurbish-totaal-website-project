@@ -22,7 +22,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const resendApiKey = "re_Z8QG3U8T_LDwuuUYmbCvL2WTixAVzewhG"; // Direct API key
+    const resendApiKey = Deno.env.get('RESEND_API_KEY') || "re_Z8QG3U8T_LDwuuUYmbCvL2WTixAVzewhG";
 
     console.log("🔍 Environment check:");
     console.log("- SUPABASE_URL:", supabaseUrl ? "✅ Set" : "❌ Missing");
@@ -97,21 +97,24 @@ const handler = async (req: Request): Promise<Response> => {
       materiaal: request.materiaal
     });
 
-    // Calculate price
+    // Calculate price with proper null checks
     let totalPrice = 15000; // Base price
     
-    if (request.breedte > 300) totalPrice += 2000;
-    if (request.hoogte > 175) totalPrice += 1500;
+    if (request.breedte && request.breedte > 300) totalPrice += 2000;
+    if (request.hoogte && request.hoogte > 175) totalPrice += 1500;
     if (request.materiaal === 'hout') totalPrice += 3000;
     if (request.materiaal === 'aluminium') totalPrice += 4000;
-    if (request.aantalramen > 2) totalPrice += (request.aantalramen - 2) * 800;
+    if (request.aantalramen && request.aantalramen > 2) totalPrice += (request.aantalramen - 2) * 800;
     
-    // Add options pricing
+    // Add options pricing with null check
     if (request.opties) {
       if (request.opties.ventilatie) totalPrice += 500;
       if (request.opties.zonwering) totalPrice += 1200;
       if (request.opties.extra_isolatie) totalPrice += 800;
       if (request.opties.horren) totalPrice += 400;
+      if (request.opties.kader_dakkapel) totalPrice += 1140;
+      if (request.opties.minirooftop) totalPrice += 3178;
+      if (request.opties.dak_versteviging) totalPrice += 400;
     }
 
     console.log(`💰 Calculated price: €${totalPrice.toLocaleString('nl-NL')}`);
@@ -143,16 +146,16 @@ const handler = async (req: Request): Promise<Response> => {
     <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #374151;">Uw Dakkapel Configuratie:</h3>
       <ul style="margin: 0; padding-left: 20px; color: #4b5563;">
-        <li><strong>Type:</strong> ${request.type}</li>
-        <li><strong>Afmetingen:</strong> ${request.breedte}cm x ${request.hoogte}cm</li>
-        <li><strong>Materiaal:</strong> ${request.materiaal}</li>
-        <li><strong>Aantal ramen:</strong> ${request.aantalramen}</li>
-        <li><strong>Kozijn hoogte:</strong> ${request.kozijnhoogte}</li>
-        <li><strong>Dakhelling:</strong> ${request.dakhelling}°</li>
-        <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen}</li>
-        <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten}</li>
-        <li><strong>RC-waarde:</strong> ${request.rcwaarde}</li>
-        <li><strong>Woning zijde:</strong> ${request.woningzijde}</li>
+        <li><strong>Type:</strong> ${request.type || 'Niet opgegeven'}</li>
+        <li><strong>Afmetingen:</strong> ${request.breedte || 0}cm x ${request.hoogte || 0}cm</li>
+        <li><strong>Materiaal:</strong> ${request.materiaal || 'Niet opgegeven'}</li>
+        <li><strong>Aantal ramen:</strong> ${request.aantalramen || 1}</li>
+        <li><strong>Kozijn hoogte:</strong> ${request.kozijnhoogte || 'Standaard'}</li>
+        <li><strong>Dakhelling:</strong> ${request.dakhelling || 45}°</li>
+        <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen || 'Wit'}</li>
+        <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten || 'Wit'}</li>
+        <li><strong>RC-waarde:</strong> ${request.rcwaarde || 'Standaard'}</li>
+        <li><strong>Woning zijde:</strong> ${request.woningzijde || 'Niet opgegeven'}</li>
       </ul>
     </div>
 
