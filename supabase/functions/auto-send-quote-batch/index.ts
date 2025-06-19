@@ -19,9 +19,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Gebruik de CORRECTE Supabase credentials voor jouw project
+    // Gebruik de JUISTE Supabase credentials voor jouw project
     const supabaseUrl = 'https://pluhasunoaevfrdugkzg.supabase.co';
-    const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAwMjE1MSwiZXhwIjoyMDYzNTc4MTUxfQ.dQw4w9WgXcQ';
+    const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAwMjE1MSwiZXhwIjoyMDYzNTc4MTUxfQ.dQw4w9WgXcQ_LCHpqxJLIEpTbgs2G1QiOiNGRlOCR8k';
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
     console.log("=== ENVIRONMENT CHECK ===");
