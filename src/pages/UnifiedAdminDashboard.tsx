@@ -26,7 +26,7 @@ const UnifiedAdminDashboard = () => {
   const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectType, setProjectType] = useState('dakkapel');
-  const [activeTab, setActiveTab] = useState('overzicht');
+  const [activeTab, setActiveTab] = useState('nieuw');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState<string | null>(null);
@@ -139,60 +139,18 @@ const UnifiedAdminDashboard = () => {
     return filtered;
   }, [currentProjectData, filters]);
 
-  // Split data by categories for tabs
-  const overzicht = filteredData.filter(item => 
-    item.status === 'nieuw' || item.status === 'in_behandeling'
-  );
-  
-  const offertesVerzonden = filteredData.filter(item => 
-    item.status === 'offerte_verzonden'
-  );
-  
-  const interesseBevestigd = filteredData.filter(item => 
-    item.status === 'interesse_bevestigd'
-  );
-  
-  const akkoord = filteredData.filter(item => 
-    item.status === 'akkoord'
-  );
-  
-  const nietAkkoord = filteredData.filter(item => 
-    item.status === 'niet_akkoord' || item.status === 'geen_interesse'
-  );
-  
-  const opLocatie = filteredData.filter(item => 
-    item.status === 'op_locatie'
-  );
-  
-  const inAanbouw = filteredData.filter(item => 
-    item.status === 'in_aanbouw'
-  );
-  
-  const afgerond = filteredData.filter(item => 
-    item.status === 'afgehandeld'
-  );
+  // Split data by status for tabs
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    filteredData.forEach(item => {
+      counts[item.status] = (counts[item.status] || 0) + 1;
+    });
+    return counts;
+  }, [filteredData]);
 
   const getCurrentTabData = () => {
-    switch (activeTab) {
-      case 'overzicht':
-        return overzicht;
-      case 'offertes':
-        return offertesVerzonden;
-      case 'interesse':
-        return interesseBevestigd;
-      case 'akkoord':
-        return akkoord;
-      case 'nietakkoord':
-        return nietAkkoord;
-      case 'oplocatie':
-        return opLocatie;
-      case 'inaanbouw':
-        return inAanbouw;
-      case 'afgerond':
-        return afgerond;
-      default:
-        return [];
-    }
+    if (activeTab === 'all') return filteredData;
+    return filteredData.filter(item => item.status === activeTab);
   };
 
   const currentTabData = getCurrentTabData();
@@ -310,46 +268,59 @@ const UnifiedAdminDashboard = () => {
           
           {projectType === 'dakkapel' && <DashboardStats configuraties={allConfiguraties} />}
           
-          <Tabs defaultValue="overzicht" className="space-y-8" onValueChange={setActiveTab}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full gap-2 h-auto p-2 bg-gray-100">
-                <TabsTrigger value="overzicht" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Overzicht ({overzicht.length})
+              <TabsList className="grid grid-cols-9 w-full gap-2 h-auto p-2 bg-gray-100">
+                <TabsTrigger value="all" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Alle ({filteredData.length})
                 </TabsTrigger>
-                <TabsTrigger value="offertes" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Offertes ({offertesVerzonden.length})
+                <TabsTrigger value="nieuw" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Nieuw ({statusCounts['nieuw'] || 0})
                 </TabsTrigger>
-                <TabsTrigger value="interesse" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Interesse ({interesseBevestigd.length})
+                <TabsTrigger value="in_behandeling" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  In Behandeling ({statusCounts['in_behandeling'] || 0})
+                </TabsTrigger>
+                <TabsTrigger value="offerte_verzonden" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Offerte Verzonden ({statusCounts['offerte_verzonden'] || 0})
+                </TabsTrigger>
+                <TabsTrigger value="interesse_bevestigd" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Interesse Bevestigd ({statusCounts['interesse_bevestigd'] || 0})
                 </TabsTrigger>
                 <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Akkoord ({akkoord.length})
+                  Akkoord ({statusCounts['akkoord'] || 0})
                 </TabsTrigger>
-                <TabsTrigger value="nietakkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Niet Akkoord ({nietAkkoord.length})
+                <TabsTrigger value="niet_akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Niet Akkoord ({statusCounts['niet_akkoord'] || 0})
                 </TabsTrigger>
-                <TabsTrigger value="oplocatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie ({opLocatie.length})
+                <TabsTrigger value="op_locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Op Locatie ({statusCounts['op_locatie'] || 0})
                 </TabsTrigger>
-                <TabsTrigger value="inaanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  In Aanbouw ({inAanbouw.length})
-                </TabsTrigger>
-                <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Afgerond ({afgerond.length})
+                <TabsTrigger value="afgehandeld" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Afgehandeld ({statusCounts['afgehandeld'] || 0})
                 </TabsTrigger>
               </TabsList>
             </div>
             
-            <TabsContent value="overzicht" className="space-y-6">
+            <TabsContent value={activeTab} className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Te Verwerken {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvragen ({overzicht.length})</CardTitle>
+                  <CardTitle className="text-xl">
+                    {activeTab === 'all' ? 'Alle' : 
+                     activeTab === 'nieuw' ? 'Nieuwe' :
+                     activeTab === 'in_behandeling' ? 'In Behandeling' :
+                     activeTab === 'offerte_verzonden' ? 'Offerte Verzonden' :
+                     activeTab === 'interesse_bevestigd' ? 'Interesse Bevestigd' :
+                     activeTab === 'akkoord' ? 'Akkoord' :
+                     activeTab === 'niet_akkoord' ? 'Niet Akkoord' :
+                     activeTab === 'op_locatie' ? 'Op Locatie' :
+                     activeTab === 'afgehandeld' ? 'Afgehandelde' : ''} {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvragen ({currentTabData.length})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
                     filters={filters} 
                     onFiltersChange={setFilters}
-                    showStatusFilter={false}
+                    showStatusFilter={true}
                   />
                   
                   <BulkActions
@@ -362,189 +333,26 @@ const UnifiedAdminDashboard = () => {
                     type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
                   />
                   
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? overzicht as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? overzicht as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    selectedIds={selectedIds}
-                    onSelectItem={handleSelectItem}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="offertes" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Offertes Verzonden {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({offertesVerzonden.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? offertesVerzonden as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? offertesVerzonden as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="interesse" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Interesse Bevestigd {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({interesseBevestigd.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? interesseBevestigd as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? interesseBevestigd as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="akkoord" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Akkoord {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({akkoord.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? akkoord as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? akkoord as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="nietakkoord" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Niet Akkoord {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({nietAkkoord.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? nietAkkoord as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? nietAkkoord as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="oplocatie" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({opLocatie.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? opLocatie as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? opLocatie as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="inaanbouw" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">In Aanbouw {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({inAanbouw.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? inAanbouw as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? inAanbouw as RefurbishedZonnepaneel[] : undefined}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="afgerond" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Afgeronde {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvragen ({afgerond.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ProcessedRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? afgerond as DakkapelConfiguratie[] : afgerond as any[]}
-                    onViewDetails={openDetails}
-                    onDataChange={loadDashboardData}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
-                  />
+                  {activeTab === 'afgehandeld' ? (
+                    <ProcessedRequestsTable 
+                      configuraties={projectType === 'dakkapel' ? currentTabData as DakkapelConfiguratie[] : currentTabData as any[]}
+                      onViewDetails={openDetails}
+                      onDataChange={loadDashboardData}
+                      type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
+                    />
+                  ) : (
+                    <ConfiguratorRequestsTable 
+                      configuraties={projectType === 'dakkapel' ? currentTabData as DakkapelConfiguratie[] : undefined}
+                      zonnepanelen={projectType === 'zonnepanelen' ? currentTabData as RefurbishedZonnepaneel[] : undefined}
+                      onViewDetails={openDetails}
+                      onOpenQuoteDialog={openQuoteDialog}
+                      onDataChange={loadDashboardData}
+                      sendingQuote={sendingQuote}
+                      selectedIds={selectedIds}
+                      onSelectItem={handleSelectItem}
+                      type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
+                    />
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
