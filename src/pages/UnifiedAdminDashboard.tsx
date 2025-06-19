@@ -266,8 +266,6 @@ const UnifiedAdminDashboard = () => {
             </div>
           </div>
           
-          <AutoQuoteSystemTest />
-          
           {projectType === 'dakkapel' && <DashboardStats configuraties={allConfiguraties} />}
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
