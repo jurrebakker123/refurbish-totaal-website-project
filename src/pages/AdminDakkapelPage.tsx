@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +14,7 @@ import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import MobileAdminHeader from '@/components/admin/MobileAdminHeader';
 import MobileAdminFilters from '@/components/admin/MobileAdminFilters';
 import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
+import AutoQuoteManager from '@/components/admin/AutoQuoteManager';
 import { usePWA } from '@/hooks/usePWA';
 import { useIsMobile } from '@/hooks/use-mobile';
 

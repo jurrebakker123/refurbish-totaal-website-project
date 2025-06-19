@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,8 @@ import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
 import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import InvoiceActions from '@/components/admin/InvoiceActions';
+import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
+import AutoQuoteManager from '@/components/admin/AutoQuoteManager';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
