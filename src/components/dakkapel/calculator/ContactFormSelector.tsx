@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -97,12 +96,10 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('✅ Saved to database with ID:', savedData.id);
 
-      // DIRECT WEBHOOK CALL - Fixed URL and approach
-      console.log('🚀 CALLING WEBHOOK HANDLER DIRECTLY');
+      // CALL WEBHOOK VIA SUPABASE FUNCTIONS
+      console.log('🚀 CALLING WEBHOOK VIA SUPABASE FUNCTIONS');
       
       try {
-        const webhookUrl = `https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler`;
-        
         const webhookPayload = {
           event: 'ConfiguratorComplete',
           requestId: savedData.id,
@@ -117,29 +114,29 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
           immediate: true
         };
 
-        console.log('📡 Sending webhook payload:', webhookPayload);
+        console.log('📡 Calling webhook via supabase.functions.invoke:', webhookPayload);
 
-        const webhookResponse = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMDIxNTEsImV4cCI6MjA2MzU3ODE1MX0.vgmnDOcff2-I-ji4r51cKKCjl4w4FcMQHsoZJqlPxRA`,
-          },
-          body: JSON.stringify(webhookPayload)
+        const { data: webhookResult, error: webhookError } = await supabase.functions.invoke('dakkapel-webhook-handler', {
+          body: webhookPayload
         });
 
-        const webhookResult = await webhookResponse.json();
         console.log('📡 Webhook response:', webhookResult);
+        console.log('📡 Webhook error:', webhookError);
 
-        if (!webhookResponse.ok || webhookResult.error) {
-          console.error('⚠️ Webhook error:', webhookResult);
+        if (webhookError) {
+          console.error('⚠️ Webhook error:', webhookError);
           toast.error("Er ging iets mis bij het verzenden van de offerte email. We hebben uw aanvraag wel ontvangen.", {
             duration: 6000,
           });
-        } else {
+        } else if (webhookResult?.success) {
           console.log('✅ WEBHOOK SUCCESS - Email sent!');
           toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
             duration: 8000,
+          });
+        } else {
+          console.log('⚠️ Webhook completed but with warnings:', webhookResult);
+          toast.success("Aanvraag verzonden! We verwerken uw offerte zo snel mogelijk.", {
+            duration: 5000,
           });
         }
       } catch (webhookError) {
