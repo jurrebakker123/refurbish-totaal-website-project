@@ -43,80 +43,166 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     resolver: zodResolver(contactFormSchema),
   });
 
+  const sendEmailDirectly = async (requestData: any) => {
+    console.log('=== SENDING EMAIL DIRECTLY ===');
+    
+    try {
+      // Calculate total price
+      let totalPrice = 15000; // Base price
+      
+      if (requestData.breedte > 300) totalPrice += 2000;
+      if (requestData.hoogte > 175) totalPrice += 1500;
+      if (requestData.materiaal === 'hout') totalPrice += 3000;
+      if (requestData.materiaal === 'aluminium') totalPrice += 4000;
+      if (requestData.aantalramen > 2) totalPrice += (requestData.aantalramen - 2) * 800;
+      
+      if (requestData.opties) {
+        if (requestData.opties.ventilatie) totalPrice += 500;
+        if (requestData.opties.zonwering) totalPrice += 1200;
+        if (requestData.opties.extra_isolatie) totalPrice += 800;
+        if (requestData.opties.horren) totalPrice += 400;
+      }
+
+      console.log('Calculated price:', totalPrice);
+      
+      const customerName = `${requestData.voornaam} ${requestData.achternaam}`;
+      const customerAddress = `${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}`;
+
+      // Use the emailjs configuration to send email directly
+      const emailParams = {
+        from_name: customerName,
+        from_email: requestData.emailadres,
+        to_name: "Refurbish Totaal Nederland",
+        to_email: "info@refurbishtotaalnederland.nl",
+        subject: `Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')} - ${customerName}`,
+        message: `
+NIEUWE DAKKAPEL AANVRAAG
+
+Klantgegevens:
+- Naam: ${customerName}
+- Email: ${requestData.emailadres}
+- Telefoon: ${requestData.telefoon}
+- Adres: ${customerAddress}
+
+Dakkapel Configuratie:
+- Type: ${requestData.type}
+- Afmetingen: ${requestData.breedte}cm x ${requestData.hoogte}cm
+- Materiaal: ${requestData.materiaal}
+- Aantal ramen: ${requestData.aantalramen}
+- Kozijn hoogte: ${requestData.kozijnhoogte}
+- Dakhelling: ${requestData.dakhelling}°
+- Kleur kozijnen: ${requestData.kleurkozijnen}
+- Kleur zijkanten: ${requestData.kleurzijkanten}
+- RC-waarde: ${requestData.rcwaarde}
+- Woning zijde: ${requestData.woningzijde}
+
+BEREKENDE PRIJS: €${totalPrice.toLocaleString('nl-NL')}
+
+${requestData.bericht ? `Bericht: ${requestData.bericht}` : ''}
+        `,
+        phone: requestData.telefoon,
+        dakkapel_type: requestData.type,
+        dakkapel_breedte: requestData.breedte,
+        dakkapel_hoogte: requestData.hoogte,
+        dakkapel_materiaal: requestData.materiaal,
+        dakkapel_prijs: totalPrice,
+        customer_address: customerAddress
+      };
+
+      console.log('Sending email with params:', emailParams);
+
+      // Import and use emailjs directly
+      const { sendEmail } = await import('@/config/email');
+      const emailResult = await sendEmail(emailParams);
+      
+      console.log('Email sending result:', emailResult);
+      
+      if (emailResult.success) {
+        console.log('✅ EMAIL SENT SUCCESSFULLY!');
+        return true;
+      } else {
+        console.error('❌ EMAIL FAILED:', emailResult.error);
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('❌ EMAIL ERROR:', error);
+      return false;
+    }
+  };
+
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
     
     try {
-      console.log('Saving dakkapel request to database...');
+      console.log('=== DAKKAPEL SUBMISSION START ===');
+      console.log('Form data:', data);
+      console.log('Configuration:', configuration);
       
-      // Save to database first
-      const { data: savedData, error } = await supabase
+      // Prepare request data
+      const requestData = {
+        voornaam: data.voornaam,
+        achternaam: data.achternaam,
+        emailadres: data.emailadres,
+        telefoon: data.telefoon,
+        straatnaam: data.straatnaam,
+        huisnummer: data.huisnummer,
+        postcode: data.postcode,
+        plaats: data.plaats,
+        bericht: data.bericht || '',
+        type: configuration.type,
+        breedte: configuration.breedte,
+        hoogte: configuration.hoogte,
+        materiaal: configuration.materiaal,
+        aantalramen: configuration.aantalRamen,
+        dakhelling: configuration.dakHelling,
+        dakhellingtype: configuration.dakHellingType,
+        kleurkozijnen: configuration.kleurKozijnen,
+        kleurzijkanten: configuration.kleurZijkanten,
+        kleurdraaikiepramen: configuration.kleurDraaikiepramen,
+        kozijnhoogte: configuration.kozijnHoogte,
+        woningzijde: configuration.woningZijde,
+        rcwaarde: configuration.rcWaarde,
+        opties: configuration.opties,
+        status: 'nieuw'
+      };
+
+      // Save to database
+      console.log('Saving to database...');
+      const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
-        .insert({
-          voornaam: data.voornaam,
-          achternaam: data.achternaam,
-          emailadres: data.emailadres,
-          telefoon: data.telefoon,
-          straatnaam: data.straatnaam,
-          huisnummer: data.huisnummer,
-          postcode: data.postcode,
-          plaats: data.plaats,
-          bericht: data.bericht || '',
-          type: configuration.type,
-          breedte: configuration.breedte,
-          hoogte: configuration.hoogte,
-          materiaal: configuration.materiaal,
-          aantalramen: configuration.aantalRamen,
-          dakhelling: configuration.dakHelling,
-          dakhellingtype: configuration.dakHellingType,
-          kleurkozijnen: configuration.kleurKozijnen,
-          kleurzijkanten: configuration.kleurZijkanten,
-          kleurdraaikiepramen: configuration.kleurDraaikiepramen,
-          kozijnhoogte: configuration.kozijnHoogte,
-          woningzijde: configuration.woningZijde,
-          rcwaarde: configuration.rcWaarde,
-          opties: configuration.opties,
-          status: 'nieuw'
-        })
+        .insert(requestData)
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
       }
 
-      console.log('Dakkapel request saved successfully:', savedData);
+      console.log('✅ Saved to database:', savedData);
 
-      // Send automatic quote email immediately using the edge function
-      console.log('Triggering automatic quote email...');
+      // Send email immediately using emailjs
+      console.log('Sending email immediately...');
+      const emailSent = await sendEmailDirectly(requestData);
       
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('auto-send-quote-simple', {
-        body: {
-          requestId: savedData.id,
-          type: 'dakkapel',
-          immediate: true
-        }
-      });
-
-      console.log('Email function response:', emailData);
-
-      if (emailError) {
-        console.error('Email function error:', emailError);
+      if (emailSent) {
+        toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
+          duration: 8000,
+        });
+        console.log('✅ EMAIL SENT TO CUSTOMER!');
+      } else {
         toast.success("Aanvraag verzonden! We nemen zo spoedig mogelijk contact met u op.", {
           duration: 5000,
         });
-      } else {
-        toast.success("Aanvraag verzonden! U ontvangt binnen enkele minuten een offerte per email.", {
-          duration: 5000,
-        });
+        console.log('⚠️ Email failed but request saved');
       }
 
       setSubmitSuccess(true);
       onNext();
       
     } catch (error) {
-      console.error("Failed to submit dakkapel request:", error);
+      console.error("❌ SUBMISSION ERROR:", error);
       toast.error("Er is een fout opgetreden bij het verzenden van uw aanvraag. Probeer het later nog eens.", {
         duration: 5000,
       });
@@ -131,7 +217,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         <div className="bg-green-50 p-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-4 text-green-800">Aanvraag succesvol verzonden!</h2>
           <p className="text-lg text-green-700 mb-4">
-            Bedankt voor uw aanvraag. U ontvangt binnen enkele minuten een offerte per email.
+            Bedankt voor uw aanvraag. U ontvangt direct een offerte per email.
           </p>
           <p className="text-green-600">
             Controleer ook uw spam/junk folder voor de offerte email.
