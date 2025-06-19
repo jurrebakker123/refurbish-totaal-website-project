@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,7 +47,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     setIsSubmitting(true);
     
     try {
-      console.log('=== DAKKAPEL WEBHOOK TRIGGERED ===');
+      console.log('=== DAKKAPEL FORM SUBMISSION STARTED ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
@@ -97,37 +96,43 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('✅ Saved to database with ID:', savedData.id);
 
-      // IMMEDIATE WEBHOOK TRIGGER - Send HTTP request with all data
-      console.log('🚀 TRIGGERING WEBHOOK - Sending HTTP request...');
+      // DIRECT WEBHOOK CALL with specific requestId
+      console.log('🚀 CALLING WEBHOOK HANDLER WITH REQUEST ID:', savedData.id);
       
-      const webhookResponse = await supabase.functions.invoke('dakkapel-webhook-handler', {
-        body: { 
-          event: 'ConfiguratorComplete',
-          requestId: savedData.id,
-          customerData: {
-            name: `${data.voornaam} ${data.achternaam}`,
-            email: data.emailadres,
-            phone: data.telefoon,
-            address: `${data.straatnaam} ${data.huisnummer}, ${data.postcode} ${data.plaats}`
-          },
-          configurationData: configuration,
-          timestamp: new Date().toISOString(),
-          immediate: true
-        }
-      });
-
-      console.log('📡 Webhook response:', webhookResponse);
-
-      if (webhookResponse.error) {
-        console.error('⚠️ Webhook error:', webhookResponse.error);
-        // Continue anyway - data is saved
-        toast.success("Aanvraag verzonden! We verwerken uw offerte.", {
-          duration: 5000,
+      try {
+        const webhookResponse = await supabase.functions.invoke('dakkapel-webhook-handler', {
+          body: { 
+            event: 'ConfiguratorComplete',
+            requestId: savedData.id,
+            customerData: {
+              name: `${data.voornaam} ${data.achternaam}`,
+              email: data.emailadres,
+              phone: data.telefoon,
+              address: `${data.straatnaam} ${data.huisnummer}, ${data.postcode} ${data.plaats}`
+            },
+            configurationData: configuration,
+            timestamp: new Date().toISOString(),
+            immediate: true
+          }
         });
-      } else {
-        console.log('✅ WEBHOOK SUCCESS - Email sent!');
-        toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
-          duration: 8000,
+
+        console.log('📡 Webhook response:', webhookResponse);
+
+        if (webhookResponse.error) {
+          console.error('⚠️ Webhook error:', webhookResponse.error);
+          toast.error("Er ging iets mis bij het verzenden van de offerte email. We hebben uw aanvraag wel ontvangen.", {
+            duration: 6000,
+          });
+        } else {
+          console.log('✅ WEBHOOK SUCCESS - Email sent!');
+          toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
+            duration: 8000,
+          });
+        }
+      } catch (webhookError) {
+        console.error('❌ Webhook call failed:', webhookError);
+        toast.success("Aanvraag verzonden! We verwerken uw offerte zo snel mogelijk.", {
+          duration: 5000,
         });
       }
 

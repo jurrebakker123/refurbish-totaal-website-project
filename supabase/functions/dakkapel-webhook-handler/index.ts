@@ -13,6 +13,7 @@ const corsHeaders = {
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== WEBHOOK REQUEST RECEIVED ===");
   console.log("Request method:", req.method);
+  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -41,7 +42,7 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Get webhook payload
     const payload = await req.json();
-    console.log("📨 Webhook payload:", payload);
+    console.log("📨 Webhook payload:", JSON.stringify(payload, null, 2));
 
     const { event, requestId, customerData, configurationData, immediate } = payload;
 
@@ -52,6 +53,17 @@ const handler = async (req: Request): Promise<Response> => {
         message: 'Event ignored' 
       }), {
         status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    if (!requestId) {
+      console.error("❌ No requestId provided");
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Request ID is required' 
+      }), {
+        status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders }
       });
     }
@@ -77,6 +89,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log("✅ Found request data:", request.id);
+    console.log("📋 Request details:", {
+      voornaam: request.voornaam,
+      achternaam: request.achternaam,
+      emailadres: request.emailadres,
+      type: request.type,
+      materiaal: request.materiaal
+    });
 
     // Calculate price
     let totalPrice = 15000; // Base price
@@ -227,6 +246,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("=== WEBHOOK ERROR ===", error);
+    console.error("Error stack:", error.stack);
     return new Response(
       JSON.stringify({ success: false, error: `Webhook error: ${error.message}` }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
