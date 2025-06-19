@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
@@ -22,6 +23,8 @@ const handler = async (req: Request): Promise<Response> => {
   console.log("=== BATCH AUTO-QUOTE PROCESS STARTED ===");
   console.log("Request method:", req.method);
   console.log("Request URL:", req.url);
+  console.log("User Agent:", req.headers.get('User-Agent'));
+  console.log("Authorization header present:", !!req.headers.get('Authorization'));
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -46,6 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log("Creating Supabase client...");
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
     
     // Check for new dakkapel requests without quotes sent (last 24 hours)
@@ -57,7 +61,10 @@ const handler = async (req: Request): Promise<Response> => {
       .is('offerte_verzonden_op', null)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-    console.log("Dakkapel query result:", { dakkapelRequests, dakkapelError });
+    console.log("Dakkapel query result:", { 
+      requestsCount: dakkapelRequests?.length || 0, 
+      error: dakkapelError?.message || 'none' 
+    });
 
     if (dakkapelError) {
       console.error("Error fetching dakkapel requests:", dakkapelError);
@@ -65,9 +72,16 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`Found ${dakkapelRequests.length} new dakkapel requests`);
       
       for (const request of dakkapelRequests) {
-        console.log(`Processing dakkapel request: ${request.id}`);
+        console.log(`Processing dakkapel request: ${request.id} for ${request.emailadres}`);
         const success = await processAutoQuote(request, 'dakkapel', supabaseClient);
         console.log(`Dakkapel request ${request.id} processed:`, success);
+        
+        if (success) {
+          console.log(`✅ Successfully processed dakkapel request ${request.id}`);
+        } else {
+          console.log(`❌ Failed to process dakkapel request ${request.id}`);
+        }
+        
         // Small delay between requests
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -84,7 +98,10 @@ const handler = async (req: Request): Promise<Response> => {
       .is('offerte_verzonden_op', null)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-    console.log("Zonnepaneel query result:", { zonnepaneelRequests, zonnepaneelError });
+    console.log("Zonnepaneel query result:", { 
+      requestsCount: zonnepaneelRequests?.length || 0, 
+      error: zonnepaneelError?.message || 'none' 
+    });
 
     if (zonnepaneelError) {
       console.error("Error fetching zonnepaneel requests:", zonnepaneelError);
@@ -92,9 +109,16 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`Found ${zonnepaneelRequests.length} new zonnepaneel requests`);
       
       for (const request of zonnepaneelRequests) {
-        console.log(`Processing zonnepaneel request: ${request.id}`);
+        console.log(`Processing zonnepaneel request: ${request.id} for ${request.email}`);
         const success = await processAutoQuote(request, 'zonnepaneel', supabaseClient);
         console.log(`Zonnepaneel request ${request.id} processed:`, success);
+        
+        if (success) {
+          console.log(`✅ Successfully processed zonnepaneel request ${request.id}`);
+        } else {
+          console.log(`❌ Failed to process zonnepaneel request ${request.id}`);
+        }
+        
         // Small delay between requests
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -102,14 +126,16 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("No new zonnepaneel requests found");
     }
 
-    console.log("=== BATCH AUTO-QUOTE PROCESS COMPLETED ===");
+    const totalProcessed = (dakkapelRequests?.length || 0) + (zonnepaneelRequests?.length || 0);
+    console.log(`=== BATCH AUTO-QUOTE PROCESS COMPLETED - Processed ${totalProcessed} requests ===`);
 
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Batch auto-quote process completed',
       processed: {
         dakkapel: dakkapelRequests?.length || 0,
-        zonnepaneel: zonnepaneelRequests?.length || 0
+        zonnepaneel: zonnepaneelRequests?.length || 0,
+        total: totalProcessed
       }
     }), {
       status: 200,
@@ -118,6 +144,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("=== CRITICAL ERROR IN BATCH AUTO-QUOTE ===", error);
+    console.error("Error stack:", error.stack);
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -131,15 +158,20 @@ const handler = async (req: Request): Promise<Response> => {
 
 async function processAutoQuote(requestData: any, type: 'dakkapel' | 'zonnepaneel', supabaseClient: any) {
   try {
-    console.log(`Processing auto-quote for ${type} request:`, requestData.id);
+    console.log(`=== Processing auto-quote for ${type} request: ${requestData.id} ===`);
     
     const customerEmail = requestData.email || requestData.emailadres;
     const customerName = requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`;
 
-    console.log(`Customer: ${customerName}, Email: ${customerEmail}`);
+    console.log(`Customer details: Name="${customerName}", Email="${customerEmail}"`);
 
     if (!customerEmail) {
-      console.error("No email address found for customer:", requestData.id);
+      console.error(`❌ No email address found for customer: ${requestData.id}`);
+      return false;
+    }
+
+    if (!customerName || customerName.trim() === '') {
+      console.error(`❌ No name found for customer: ${requestData.id}`);
       return false;
     }
 
@@ -279,7 +311,7 @@ info@refurbishtotaalnederland.nl`;
     `;
 
     // Send email using Resend
-    console.log("Sending automatic quote email to:", customerEmail);
+    console.log(`📧 Sending automatic quote email to: ${customerEmail}`);
     
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
@@ -288,21 +320,23 @@ info@refurbishtotaalnederland.nl`;
       html: emailHtml,
     });
 
-    console.log("Email response:", emailResponse);
+    console.log("Resend API response:", emailResponse);
 
     if (emailResponse.error) {
-      console.error("Email sending failed:", emailResponse.error);
+      console.error("❌ Email sending failed:", emailResponse.error);
       return false;
     }
 
     if (!emailResponse.data || !emailResponse.data.id) {
-      console.error("No email ID returned");
+      console.error("❌ No email ID returned");
       return false;
     }
 
+    console.log(`✅ Email sent successfully! Email ID: ${emailResponse.data.id}`);
+
     // Update status in database
     const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
-    console.log(`Updating status in table: ${table} for ID: ${requestData.id}`);
+    console.log(`📝 Updating status in table: ${table} for ID: ${requestData.id}`);
     
     const { error: updateError } = await supabaseClient
       .from(table)
@@ -314,15 +348,17 @@ info@refurbishtotaalnederland.nl`;
       .eq('id', requestData.id);
 
     if (updateError) {
-      console.error('Database update error:', updateError);
+      console.error('❌ Database update error:', updateError);
       return false;
     }
 
-    console.log(`✅ Auto-quote successfully sent for ${type} request:`, requestData.id);
+    console.log(`✅ Database updated successfully for ${type} request: ${requestData.id}`);
     return true;
 
   } catch (error: any) {
-    console.error(`Error processing auto-quote for ${type}:`, error);
+    console.error(`❌ Error processing auto-quote for ${type}:`, error);
+    console.error("Error details:", error.message);
+    console.error("Error stack:", error.stack);
     return false;
   }
 }
