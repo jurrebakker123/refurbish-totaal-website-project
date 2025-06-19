@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
@@ -19,31 +18,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Gebruik environment variables voor Supabase credentials
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"); 
+    // Gebruik de juiste Supabase credentials
+    const supabaseUrl = 'https://pluhasunoaevfrdugkzg.supabase.co';
+    const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
     console.log("=== ENVIRONMENT CHECK ===");
     console.log("SUPABASE_URL:", !!supabaseUrl);
     console.log("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseServiceKey);
     console.log("RESEND_API_KEY:", !!resendApiKey);
-
-    if (!supabaseUrl) {
-      console.error("❌ SUPABASE_URL is missing!");
-      return new Response(
-        JSON.stringify({ success: false, error: "SUPABASE_URL not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    if (!supabaseServiceKey) {
-      console.error("❌ SUPABASE_SERVICE_ROLE_KEY is missing!");
-      return new Response(
-        JSON.stringify({ success: false, error: "SUPABASE_SERVICE_ROLE_KEY not configured" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
 
     if (!resendApiKey) {
       console.error("❌ RESEND_API_KEY is missing!");
