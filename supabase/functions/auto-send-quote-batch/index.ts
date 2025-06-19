@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
@@ -9,6 +8,11 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+console.log("Environment check:");
+console.log("SUPABASE_URL:", !!supabaseUrl);
+console.log("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseKey);
+console.log("RESEND_API_KEY:", !!Deno.env.get("RESEND_API_KEY"));
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -16,6 +20,8 @@ const corsHeaders = {
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== BATCH AUTO-QUOTE PROCESS STARTED ===");
+  console.log("Request method:", req.method);
+  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -24,8 +30,18 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     if (!supabaseUrl || !supabaseKey) {
       console.error("Missing Supabase configuration");
+      console.error("SUPABASE_URL:", !!supabaseUrl);
+      console.error("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseKey);
       return new Response(
         JSON.stringify({ success: false, error: "Missing Supabase configuration" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!Deno.env.get("RESEND_API_KEY")) {
+      console.error("Missing RESEND_API_KEY");
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing RESEND_API_KEY" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -41,13 +57,17 @@ const handler = async (req: Request): Promise<Response> => {
       .is('offerte_verzonden_op', null)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
+    console.log("Dakkapel query result:", { dakkapelRequests, dakkapelError });
+
     if (dakkapelError) {
       console.error("Error fetching dakkapel requests:", dakkapelError);
     } else if (dakkapelRequests && dakkapelRequests.length > 0) {
       console.log(`Found ${dakkapelRequests.length} new dakkapel requests`);
       
       for (const request of dakkapelRequests) {
-        await processAutoQuote(request, 'dakkapel', supabaseClient);
+        console.log(`Processing dakkapel request: ${request.id}`);
+        const success = await processAutoQuote(request, 'dakkapel', supabaseClient);
+        console.log(`Dakkapel request ${request.id} processed:`, success);
         // Small delay between requests
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -64,13 +84,17 @@ const handler = async (req: Request): Promise<Response> => {
       .is('offerte_verzonden_op', null)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
+    console.log("Zonnepaneel query result:", { zonnepaneelRequests, zonnepaneelError });
+
     if (zonnepaneelError) {
       console.error("Error fetching zonnepaneel requests:", zonnepaneelError);
     } else if (zonnepaneelRequests && zonnepaneelRequests.length > 0) {
       console.log(`Found ${zonnepaneelRequests.length} new zonnepaneel requests`);
       
       for (const request of zonnepaneelRequests) {
-        await processAutoQuote(request, 'zonnepaneel', supabaseClient);
+        console.log(`Processing zonnepaneel request: ${request.id}`);
+        const success = await processAutoQuote(request, 'zonnepaneel', supabaseClient);
+        console.log(`Zonnepaneel request ${request.id} processed:`, success);
         // Small delay between requests
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
@@ -97,7 +121,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: `Batch process failed: ${error.message}`
+        error: `Batch process failed: ${error.message}`,
+        stack: error.stack
       }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
@@ -110,6 +135,8 @@ async function processAutoQuote(requestData: any, type: 'dakkapel' | 'zonnepanee
     
     const customerEmail = requestData.email || requestData.emailadres;
     const customerName = requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`;
+
+    console.log(`Customer: ${customerName}, Email: ${customerEmail}`);
 
     if (!customerEmail) {
       console.error("No email address found for customer:", requestData.id);
@@ -275,6 +302,8 @@ info@refurbishtotaalnederland.nl`;
 
     // Update status in database
     const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
+    console.log(`Updating status in table: ${table} for ID: ${requestData.id}`);
+    
     const { error: updateError } = await supabaseClient
       .from(table)
       .update({
