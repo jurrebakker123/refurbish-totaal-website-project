@@ -12,6 +12,8 @@ const corsHeaders = {
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW REQUEST RECEIVED ===");
+  console.log("Request method:", req.method);
+  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -39,14 +41,18 @@ const handler = async (req: Request): Promise<Response> => {
     const resend = new Resend(resendApiKey);
     
     console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
+    console.log("Current time:", new Date().toISOString());
     
-    // Get new dakkapel requests without quotes - check last 72 hours for more coverage
+    // Check for new dakkapel requests without quotes - check last 24 hours
+    const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    console.log("Looking for requests after:", cutoffTime);
+
     const { data: dakkapelRequests, error: dakkapelError } = await supabase
       .from('dakkapel_calculator_aanvragen')
       .select('*')
       .eq('status', 'nieuw')
       .is('offerte_verzonden_op', null)
-      .gte('created_at', new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString())
+      .gte('created_at', cutoffTime)
       .order('created_at', { ascending: false });
 
     if (dakkapelError) {
@@ -57,14 +63,40 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`📊 Found ${dakkapelRequests?.length || 0} requests to process`);
+    console.log(`📊 Query result: Found ${dakkapelRequests?.length || 0} requests`);
+    
+    if (dakkapelRequests && dakkapelRequests.length > 0) {
+      console.log("📋 Request details:");
+      dakkapelRequests.forEach((req, index) => {
+        console.log(`  ${index + 1}. ID: ${req.id}, Email: ${req.emailadres}, Created: ${req.created_at}, Status: ${req.status}`);
+      });
+    }
     
     if (!dakkapelRequests || dakkapelRequests.length === 0) {
       console.log("ℹ️ No new dakkapel requests found that need quotes");
+      
+      // Let's also check what requests exist in total for debugging
+      const { data: allRequests, error: allError } = await supabase
+        .from('dakkapel_calculator_aanvragen')
+        .select('id, emailadres, status, offerte_verzonden_op, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (!allError && allRequests) {
+        console.log("📋 Last 10 requests in database:");
+        allRequests.forEach((req, index) => {
+          console.log(`  ${index + 1}. ID: ${req.id}, Email: ${req.emailadres}, Status: ${req.status}, Quote sent: ${req.offerte_verzonden_op || 'No'}, Created: ${req.created_at}`);
+        });
+      }
+      
       return new Response(JSON.stringify({ 
         success: true, 
         message: 'No new requests found that need quotes',
-        processed: { dakkapel: 0, total: 0 }
+        processed: { dakkapel: 0, total: 0 },
+        debug: {
+          totalRequestsChecked: allRequests?.length || 0,
+          cutoffTime
+        }
       }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders }
