@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -92,7 +91,7 @@ const renderBasedOnDomain = () => {
             <Route path="/admin-zonnepanelen" element={
               <ProtectedAdminRoute>
                 <UnifiedAdminDashboard />
-              </ProtectedAdminRate>
+              </ProtectedAdminRoute>
             } />
             <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
             <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
