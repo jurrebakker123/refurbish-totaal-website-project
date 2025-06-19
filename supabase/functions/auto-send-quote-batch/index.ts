@@ -5,216 +5,120 @@ import { Resend } from "npm:resend@2.0.0";
 
 console.log("=== AUTO-SEND-QUOTE-BATCH FUNCTION STARTED ===");
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-console.log("Environment check:");
-console.log("SUPABASE_URL:", !!supabaseUrl);
-console.log("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseKey);
-console.log("RESEND_API_KEY:", !!Deno.env.get("RESEND_API_KEY"));
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("=== BATCH AUTO-QUOTE PROCESS STARTED ===");
-  console.log("Request method:", req.method);
-  console.log("Request URL:", req.url);
-  console.log("User Agent:", req.headers.get('User-Agent'));
-  console.log("Authorization header present:", !!req.headers.get('Authorization'));
+  console.log("=== NEW REQUEST RECEIVED ===");
+  console.log("Method:", req.method);
+  console.log("Headers:", Object.fromEntries(req.headers));
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (!supabaseUrl || !supabaseKey) {
-      console.error("Missing Supabase configuration");
-      console.error("SUPABASE_URL:", !!supabaseUrl);
-      console.error("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseKey);
+    // Environment check
+    const supabaseUrl = 'https://pluhasunoaevfrdugkzg.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
+    console.log("=== ENVIRONMENT CHECK ===");
+    console.log("SUPABASE_URL:", !!supabaseUrl);
+    console.log("SUPABASE_KEY:", !!supabaseKey);
+    console.log("RESEND_API_KEY:", !!resendApiKey);
+
+    if (!resendApiKey) {
+      console.error("❌ RESEND_API_KEY is missing!");
       return new Response(
-        JSON.stringify({ success: false, error: "Missing Supabase configuration" }),
+        JSON.stringify({ success: false, error: "RESEND_API_KEY not configured" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    if (!Deno.env.get("RESEND_API_KEY")) {
-      console.error("Missing RESEND_API_KEY");
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing RESEND_API_KEY" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    console.log("Creating Supabase client...");
+    console.log("✅ All environment variables are configured");
+    
+    const resend = new Resend(resendApiKey);
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
     
-    // Check for new dakkapel requests without quotes sent (last 24 hours)
-    console.log("Checking for new dakkapel requests...");
-    const { data: dakkapelRequests, error: dakkapelError } = await supabaseClient
+    console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
+    
+    // Get all dakkapel requests from last 48 hours, regardless of status
+    const { data: allRequests, error: fetchError } = await supabaseClient
       .from('dakkapel_calculator_aanvragen')
       .select('*')
-      .eq('status', 'nieuw')
-      .is('offerte_verzonden_op', null)
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+      .gte('created_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
+      .order('created_at', { ascending: false });
 
-    console.log("Dakkapel query result:", { 
-      requestsCount: dakkapelRequests?.length || 0, 
-      error: dakkapelError?.message || 'none' 
-    });
-
-    if (dakkapelError) {
-      console.error("Error fetching dakkapel requests:", dakkapelError);
-    } else if (dakkapelRequests && dakkapelRequests.length > 0) {
-      console.log(`Found ${dakkapelRequests.length} new dakkapel requests`);
-      
-      for (const request of dakkapelRequests) {
-        console.log(`Processing dakkapel request: ${request.id} for ${request.emailadres}`);
-        const success = await processAutoQuote(request, 'dakkapel', supabaseClient);
-        console.log(`Dakkapel request ${request.id} processed:`, success);
-        
-        if (success) {
-          console.log(`✅ Successfully processed dakkapel request ${request.id}`);
-        } else {
-          console.log(`❌ Failed to process dakkapel request ${request.id}`);
-        }
-        
-        // Small delay between requests
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    } else {
-      console.log("No new dakkapel requests found");
+    console.log("All dakkapel requests from last 48 hours:", allRequests?.length || 0);
+    
+    if (fetchError) {
+      console.error("❌ Database fetch error:", fetchError);
+      return new Response(
+        JSON.stringify({ success: false, error: "Database fetch failed", details: fetchError }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
-    // Check for new zonnepaneel requests without quotes sent (last 24 hours)
-    console.log("Checking for new zonnepaneel requests...");
-    const { data: zonnepaneelRequests, error: zonnepaneelError } = await supabaseClient
-      .from('refurbished_zonnepanelen')
-      .select('*')
-      .eq('status', 'nieuw')
-      .is('offerte_verzonden_op', null)
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-
-    console.log("Zonnepaneel query result:", { 
-      requestsCount: zonnepaneelRequests?.length || 0, 
-      error: zonnepaneelError?.message || 'none' 
-    });
-
-    if (zonnepaneelError) {
-      console.error("Error fetching zonnepaneel requests:", zonnepaneelError);
-    } else if (zonnepaneelRequests && zonnepaneelRequests.length > 0) {
-      console.log(`Found ${zonnepaneelRequests.length} new zonnepaneel requests`);
-      
-      for (const request of zonnepaneelRequests) {
-        console.log(`Processing zonnepaneel request: ${request.id} for ${request.email}`);
-        const success = await processAutoQuote(request, 'zonnepaneel', supabaseClient);
-        console.log(`Zonnepaneel request ${request.id} processed:`, success);
-        
-        if (success) {
-          console.log(`✅ Successfully processed zonnepaneel request ${request.id}`);
-        } else {
-          console.log(`❌ Failed to process zonnepaneel request ${request.id}`);
-        }
-        
-        // Small delay between requests
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    } else {
-      console.log("No new zonnepaneel requests found");
+    if (!allRequests || allRequests.length === 0) {
+      console.log("ℹ️ No dakkapel requests found in last 48 hours");
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'No requests found in last 48 hours',
+        processed: { dakkapel: 0, total: 0 }
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
     }
 
-    const totalProcessed = (dakkapelRequests?.length || 0) + (zonnepaneelRequests?.length || 0);
-    console.log(`=== BATCH AUTO-QUOTE PROCESS COMPLETED - Processed ${totalProcessed} requests ===`);
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Batch auto-quote process completed',
-      processed: {
-        dakkapel: dakkapelRequests?.length || 0,
-        zonnepaneel: zonnepaneelRequests?.length || 0,
-        total: totalProcessed
-      }
-    }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders }
-    });
-
-  } catch (error: any) {
-    console.error("=== CRITICAL ERROR IN BATCH AUTO-QUOTE ===", error);
-    console.error("Error stack:", error.stack);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: `Batch process failed: ${error.message}`,
-        stack: error.stack
-      }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    // Filter for new requests without quotes
+    const newRequests = allRequests.filter(req => 
+      req.status === 'nieuw' && !req.offerte_verzonden_op
     );
-  }
-};
 
-async function processAutoQuote(requestData: any, type: 'dakkapel' | 'zonnepaneel', supabaseClient: any) {
-  try {
-    console.log(`=== Processing auto-quote for ${type} request: ${requestData.id} ===`);
+    console.log("Requests breakdown:");
+    console.log("- Total requests:", allRequests.length);
+    console.log("- New requests without quotes:", newRequests.length);
     
-    const customerEmail = requestData.email || requestData.emailadres;
-    const customerName = requestData.naam || `${requestData.voornaam} ${requestData.achternaam}`;
+    allRequests.forEach(req => {
+      console.log(`Request ${req.id}: status="${req.status}", offerte_verzonden_op="${req.offerte_verzonden_op}", email="${req.emailadres}"`);
+    });
 
-    console.log(`Customer details: Name="${customerName}", Email="${customerEmail}"`);
-
-    if (!customerEmail) {
-      console.error(`❌ No email address found for customer: ${requestData.id}`);
-      return false;
+    if (newRequests.length === 0) {
+      console.log("ℹ️ No new requests found that need quotes");
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'No new requests found that need quotes',
+        processed: { dakkapel: 0, total: 0 }
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
     }
 
-    if (!customerName || customerName.trim() === '') {
-      console.error(`❌ No name found for customer: ${requestData.id}`);
-      return false;
-    }
+    console.log(`🎯 Found ${newRequests.length} requests that need quotes`);
 
-    // Generate quote content based on type
-    let productDetails = '';
-    let defaultTemplate = '';
-    
-    if (type === 'zonnepaneel') {
-      defaultTemplate = `Beste ${customerName},
+    let successCount = 0;
+    let errorCount = 0;
 
-Hartelijk dank voor uw interesse in onze refurbished zonnepanelen. Hierbij ontvangt u uw persoonlijke offerte.
+    for (const request of newRequests) {
+      console.log(`\n=== PROCESSING REQUEST ${request.id} ===`);
+      console.log(`Customer: ${request.voornaam} ${request.achternaam}`);
+      console.log(`Email: ${request.emailadres}`);
+      console.log(`Created: ${request.created_at}`);
 
-De prijs is inclusief:
-- Transport naar locatie  
-- Montage van de zonnepanelen
-- Bekabeling en aansluiting
-- Garantie van 5 jaar op de refurbished panelen
-- 2 jaar garantie op de montage
+      try {
+        const customerName = `${request.voornaam} ${request.achternaam}`;
+        const customerAddress = `${request.straatnaam} ${request.huisnummer}, ${request.postcode} ${request.plaats}`;
 
-Wij hanteren een levertijd van 4-6 weken na definitieve opdracht.
+        const priceInfo = request.totaal_prijs ? 
+          `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${request.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
+          '<p style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Prijs wordt binnenkort meegedeeld.</p>';
 
-Voor vragen kunt u contact met ons opnemen.
-
-Met vriendelijke groet,
-Het team van Refurbish Totaal Nederland
-085-1301578
-info@refurbishtotaalnederland.nl`;
-
-      productDetails = `
-        <h3>Uw Zonnepanelen Configuratie:</h3>
-        <ul>
-          <li><strong>Aantal panelen:</strong> ${requestData.aantal_panelen}</li>
-          <li><strong>Vermogen:</strong> ${requestData.vermogen}W</li>
-          <li><strong>Type paneel:</strong> ${requestData.type_paneel}</li>
-          <li><strong>Merk:</strong> ${requestData.merk}</li>
-          <li><strong>Conditie:</strong> ${requestData.conditie}</li>
-          <li><strong>Dak type:</strong> ${requestData.dak_type}</li>
-          ${requestData.dak_materiaal ? `<li><strong>Dak materiaal:</strong> ${requestData.dak_materiaal}</li>` : ''}
-          ${requestData.schaduw_situatie ? `<li><strong>Schaduw situatie:</strong> ${requestData.schaduw_situatie}</li>` : ''}
-        </ul>
-      `;
-    } else {
-      defaultTemplate = `Beste ${customerName},
+        const defaultTemplate = `Beste ${customerName},
 
 Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u uw persoonlijke offerte.
 
@@ -234,133 +138,160 @@ Het team van Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl`;
 
-      productDetails = `
-        <h3>Uw Dakkapel Configuratie:</h3>
-        <ul>
-          <li><strong>Type:</strong> ${requestData.type}</li>
-          <li><strong>Afmetingen:</strong> ${requestData.breedte}cm x ${requestData.hoogte}cm</li>
-          <li><strong>Materiaal:</strong> ${requestData.materiaal}</li>
-          <li><strong>Aantal ramen:</strong> ${requestData.aantalramen}</li>
-          <li><strong>Kozijn hoogte:</strong> ${requestData.kozijnhoogte}</li>
-          <li><strong>Dakhelling:</strong> ${requestData.dakhelling}° (${requestData.dakhellingtype})</li>
-          <li><strong>Kleur kozijnen:</strong> ${requestData.kleurkozijnen}</li>
-          <li><strong>Kleur zijkanten:</strong> ${requestData.kleurzijkanten}</li>
-          <li><strong>Kleur draaikiepramen:</strong> ${requestData.kleurdraaikiepramen}</li>
-          <li><strong>RC-waarde:</strong> ${requestData.rcwaarde}</li>
-          <li><strong>Woning zijde:</strong> ${requestData.woningzijde}</li>
-        </ul>
-      `;
-    }
+        const productDetails = `
+          <h3>Uw Dakkapel Configuratie:</h3>
+          <ul>
+            <li><strong>Type:</strong> ${request.type}</li>
+            <li><strong>Afmetingen:</strong> ${request.breedte}cm x ${request.hoogte}cm</li>
+            <li><strong>Materiaal:</strong> ${request.materiaal}</li>
+            <li><strong>Aantal ramen:</strong> ${request.aantalramen}</li>
+            <li><strong>Kozijn hoogte:</strong> ${request.kozijnhoogte}</li>
+            <li><strong>Dakhelling:</strong> ${request.dakhelling}° (${request.dakhellingtype})</li>
+            <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen}</li>
+            <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten}</li>
+            <li><strong>Kleur draaikiepramen:</strong> ${request.kleurdraaikiepramen}</li>
+            <li><strong>RC-waarde:</strong> ${request.rcwaarde}</li>
+            <li><strong>Woning zijde:</strong> ${request.woningzijde}</li>
+          </ul>
+        `;
 
-    const customerAddress = type === 'dakkapel' ? 
-      `${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}` :
-      `${requestData.adres}, ${requestData.postcode} ${requestData.plaats}`;
+        // Create interest response URLs
+        const yesUrl = `https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/handle-interest-response?id=${request.id}&response=ja&type=dakkapel`;
+        const noUrl = `https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/handle-interest-response?id=${request.id}&response=nee&type=dakkapel`;
 
-    const priceInfo = requestData.totaal_prijs ? 
-      `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${requestData.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
-      '<p>Prijs wordt binnenkort meegedeeld.</p>';
-
-    // Create interest response URLs
-    const baseUrl = supabaseUrl.replace('/rest/v1', '');
-    const yesUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestData.id}&response=ja&type=${type}`;
-    const noUrl = `${baseUrl}/functions/v1/handle-interest-response?id=${requestData.id}&response=nee&type=${type}`;
-
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-        <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
-          <h1 style="margin: 0; font-size: 24px;">Uw Offerte - Refurbish Totaal Nederland</h1>
-          <p style="margin: 10px 0 0 0; font-size: 16px;">${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}</p>
-        </div>
-        
-        <div style="padding: 30px;">
-          <div style="white-space: pre-line; line-height: 1.6; margin-bottom: 30px;">${defaultTemplate.replace(/\n/g, '<br/>')}</div>
-          
-          ${priceInfo}
-          
-          <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 30px 0; text-align: center;">
-            <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u interesse om door te gaan?</h3>
-            <p style="color: #856404; margin: 15px 0;">Klik op één van onderstaande knoppen:</p>
-            <div style="margin: 25px 0;">
-              <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✓ JA, IK HEB INTERESSE</a>
-              <br><br>
-              <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✗ NEE, GEEN INTERESSE</a>
+        const emailHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
+              <h1 style="margin: 0; font-size: 24px;">Uw Offerte - Refurbish Totaal Nederland</h1>
+              <p style="margin: 10px 0 0 0; font-size: 16px;">Dakkapel</p>
+            </div>
+            
+            <div style="padding: 30px;">
+              <div style="white-space: pre-line; line-height: 1.6; margin-bottom: 30px;">${defaultTemplate.replace(/\n/g, '<br/>')}</div>
+              
+              ${priceInfo}
+              
+              <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 30px 0; text-align: center;">
+                <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u interesse om door te gaan?</h3>
+                <p style="color: #856404; margin: 15px 0;">Klik op één van onderstaande knoppen:</p>
+                <div style="margin: 25px 0;">
+                  <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✓ JA, IK HEB INTERESSE</a>
+                  <br><br>
+                  <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✗ NEE, GEEN INTERESSE</a>
+                </div>
+              </div>
+              
+              ${productDetails}
+              
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                <p style="margin: 0;"><strong>Uw adresgegevens:</strong><br>
+                ${customerAddress}</p>
+              </div>
+              
+              <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                <h3 style="margin-top: 0;">Contact:</h3>
+                <p style="margin-bottom: 0;">
+                  <strong>Refurbish Totaal Nederland</strong><br>
+                  E-mail: info@refurbishtotaalnederland.nl<br>
+                  Telefoon: 085-1301578
+                </p>
+              </div>
+            </div>
+            
+            <div style="background-color: #059669; color: white; padding: 20px; text-align: center; font-size: 14px;">
+              <p style="margin: 0;">© 2024 Refurbish Totaal Nederland</p>
             </div>
           </div>
-          
-          ${productDetails}
-          
-          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
-            <p style="margin: 0;"><strong>Uw adresgegevens:</strong><br>
-            ${customerAddress}</p>
-          </div>
-          
-          <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
-            <h3 style="margin-top: 0;">Contact:</h3>
-            <p style="margin-bottom: 0;">
-              <strong>Refurbish Totaal Nederland</strong><br>
-              E-mail: info@refurbishtotaalnederland.nl<br>
-              Telefoon: 085-1301578
-            </p>
-          </div>
-        </div>
-        
-        <div style="background-color: #059669; color: white; padding: 20px; text-align: center; font-size: 14px;">
-          <p style="margin: 0;">© 2024 Refurbish Totaal Nederland</p>
-        </div>
-      </div>
-    `;
+        `;
 
-    // Send email using Resend
-    console.log(`📧 Sending automatic quote email to: ${customerEmail}`);
-    
-    const emailResponse = await resend.emails.send({
-      from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
-      to: [customerEmail],
-      subject: `${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} Offerte - Refurbish Totaal Nederland`,
-      html: emailHtml,
+        console.log(`📧 Sending email to: ${request.emailadres}`);
+
+        const emailResponse = await resend.emails.send({
+          from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
+          to: [request.emailadres],
+          subject: 'Dakkapel Offerte - Refurbish Totaal Nederland',
+          html: emailHtml,
+        });
+
+        console.log("Resend response:", emailResponse);
+
+        if (emailResponse.error) {
+          console.error(`❌ Email error for ${request.id}:`, emailResponse.error);
+          errorCount++;
+          continue;
+        }
+
+        if (!emailResponse.data?.id) {
+          console.error(`❌ No email ID returned for ${request.id}`);
+          errorCount++;
+          continue;
+        }
+
+        console.log(`✅ Email sent successfully! ID: ${emailResponse.data.id}`);
+
+        // Update database
+        const { error: updateError } = await supabaseClient
+          .from('dakkapel_calculator_aanvragen')
+          .update({
+            status: 'offerte_verzonden',
+            offerte_verzonden_op: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', request.id);
+
+        if (updateError) {
+          console.error(`❌ Database update error for ${request.id}:`, updateError);
+          errorCount++;
+        } else {
+          console.log(`✅ Database updated for ${request.id}`);
+          successCount++;
+        }
+
+      } catch (requestError) {
+        console.error(`❌ Error processing request ${request.id}:`, requestError);
+        errorCount++;
+      }
+
+      // Small delay between requests
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    console.log(`\n=== BATCH PROCESS COMPLETED ===`);
+    console.log(`✅ Successful: ${successCount}`);
+    console.log(`❌ Errors: ${errorCount}`);
+    console.log(`📊 Total processed: ${successCount + errorCount}`);
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: `Batch auto-quote process completed`,
+      processed: {
+        dakkapel: successCount,
+        errors: errorCount,
+        total: successCount + errorCount
+      },
+      details: {
+        totalRequests: allRequests.length,
+        newRequests: newRequests.length,
+        successfulEmails: successCount,
+        failedEmails: errorCount
+      }
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders }
     });
 
-    console.log("Resend API response:", emailResponse);
-
-    if (emailResponse.error) {
-      console.error("❌ Email sending failed:", emailResponse.error);
-      return false;
-    }
-
-    if (!emailResponse.data || !emailResponse.data.id) {
-      console.error("❌ No email ID returned");
-      return false;
-    }
-
-    console.log(`✅ Email sent successfully! Email ID: ${emailResponse.data.id}`);
-
-    // Update status in database
-    const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
-    console.log(`📝 Updating status in table: ${table} for ID: ${requestData.id}`);
-    
-    const { error: updateError } = await supabaseClient
-      .from(table)
-      .update({
-        status: 'offerte_verzonden',
-        offerte_verzonden_op: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', requestData.id);
-
-    if (updateError) {
-      console.error('❌ Database update error:', updateError);
-      return false;
-    }
-
-    console.log(`✅ Database updated successfully for ${type} request: ${requestData.id}`);
-    return true;
-
   } catch (error: any) {
-    console.error(`❌ Error processing auto-quote for ${type}:`, error);
-    console.error("Error details:", error.message);
+    console.error("=== CRITICAL ERROR ===", error);
     console.error("Error stack:", error.stack);
-    return false;
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: `Critical error: ${error.message}`,
+        stack: error.stack
+      }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   }
-}
+};
 
 serve(handler);
