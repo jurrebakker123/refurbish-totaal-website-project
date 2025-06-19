@@ -22,7 +22,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    const resendApiKey = "re_Z8QG3U8T_LDwuuUYmbCvL2WTixAVzewhG"; // Direct API key
 
     console.log("🔍 Environment check:");
     console.log("- SUPABASE_URL:", supabaseUrl ? "✅ Set" : "❌ Missing");

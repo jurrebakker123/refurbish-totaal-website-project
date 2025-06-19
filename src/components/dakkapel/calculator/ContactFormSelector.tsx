@@ -96,30 +96,42 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('✅ Saved to database with ID:', savedData.id);
 
-      // DIRECT WEBHOOK CALL with specific requestId
-      console.log('🚀 CALLING WEBHOOK HANDLER WITH REQUEST ID:', savedData.id);
+      // DIRECT WEBHOOK CALL - Fixed URL and approach
+      console.log('🚀 CALLING WEBHOOK HANDLER DIRECTLY');
       
       try {
-        const webhookResponse = await supabase.functions.invoke('dakkapel-webhook-handler', {
-          body: { 
-            event: 'ConfiguratorComplete',
-            requestId: savedData.id,
-            customerData: {
-              name: `${data.voornaam} ${data.achternaam}`,
-              email: data.emailadres,
-              phone: data.telefoon,
-              address: `${data.straatnaam} ${data.huisnummer}, ${data.postcode} ${data.plaats}`
-            },
-            configurationData: configuration,
-            timestamp: new Date().toISOString(),
-            immediate: true
-          }
+        const webhookUrl = `https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler`;
+        
+        const webhookPayload = {
+          event: 'ConfiguratorComplete',
+          requestId: savedData.id,
+          customerData: {
+            name: `${data.voornaam} ${data.achternaam}`,
+            email: data.emailadres,
+            phone: data.telefoon,
+            address: `${data.straatnaam} ${data.huisnummer}, ${data.postcode} ${data.plaats}`
+          },
+          configurationData: configuration,
+          timestamp: new Date().toISOString(),
+          immediate: true
+        };
+
+        console.log('📡 Sending webhook payload:', webhookPayload);
+
+        const webhookResponse = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabase.supabaseKey}`,
+          },
+          body: JSON.stringify(webhookPayload)
         });
 
-        console.log('📡 Webhook response:', webhookResponse);
+        const webhookResult = await webhookResponse.json();
+        console.log('📡 Webhook response:', webhookResult);
 
-        if (webhookResponse.error) {
-          console.error('⚠️ Webhook error:', webhookResponse.error);
+        if (!webhookResponse.ok || webhookResult.error) {
+          console.error('⚠️ Webhook error:', webhookResult);
           toast.error("Er ging iets mis bij het verzenden van de offerte email. We hebben uw aanvraag wel ontvangen.", {
             duration: 6000,
           });
