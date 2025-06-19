@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +26,7 @@ const UnifiedAdminDashboard = () => {
   const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectType, setProjectType] = useState('dakkapel');
-  const [activeTab, setActiveTab] = useState('te-verwerken');
+  const [activeTab, setActiveTab] = useState('overzicht');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState<string | null>(null);
@@ -139,11 +140,11 @@ const UnifiedAdminDashboard = () => {
   }, [currentProjectData, filters]);
 
   // Split data by categories for tabs
-  const teVerwerken = filteredData.filter(item => 
+  const overzicht = filteredData.filter(item => 
     item.status === 'nieuw' || item.status === 'in_behandeling'
   );
   
-  const wachtOpReactie = filteredData.filter(item => 
+  const offertesVerzonden = filteredData.filter(item => 
     item.status === 'offerte_verzonden'
   );
   
@@ -173,19 +174,19 @@ const UnifiedAdminDashboard = () => {
 
   const getCurrentTabData = () => {
     switch (activeTab) {
-      case 'te-verwerken':
-        return teVerwerken;
-      case 'wacht-op-reactie':
-        return wachtOpReactie;
-      case 'interesse-bevestigd':
+      case 'overzicht':
+        return overzicht;
+      case 'offertes':
+        return offertesVerzonden;
+      case 'interesse':
         return interesseBevestigd;
       case 'akkoord':
         return akkoord;
-      case 'niet-akkoord':
+      case 'nietakkoord':
         return nietAkkoord;
-      case 'op-locatie':
+      case 'oplocatie':
         return opLocatie;
-      case 'in-aanbouw':
+      case 'inaanbouw':
         return inAanbouw;
       case 'afgerond':
         return afgerond;
@@ -309,43 +310,40 @@ const UnifiedAdminDashboard = () => {
           
           {projectType === 'dakkapel' && <DashboardStats configuraties={allConfiguraties} />}
           
-          <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
+          <Tabs defaultValue="overzicht" className="space-y-8" onValueChange={setActiveTab}>
             <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-9 w-full gap-2 h-auto p-2 bg-gray-100">
-                <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Te Verwerken ({teVerwerken.length})
+              <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full gap-2 h-auto p-2 bg-gray-100">
+                <TabsTrigger value="overzicht" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Overzicht ({overzicht.length})
                 </TabsTrigger>
-                <TabsTrigger value="wacht-op-reactie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Wacht op Reactie ({wachtOpReactie.length})
+                <TabsTrigger value="offertes" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Offertes ({offertesVerzonden.length})
                 </TabsTrigger>
-                <TabsTrigger value="interesse-bevestigd" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Interesse Bevestigd ({interesseBevestigd.length})
+                <TabsTrigger value="interesse" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                  Interesse ({interesseBevestigd.length})
                 </TabsTrigger>
                 <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Akkoord ({akkoord.length})
                 </TabsTrigger>
-                <TabsTrigger value="niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                <TabsTrigger value="nietakkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Niet Akkoord ({nietAkkoord.length})
                 </TabsTrigger>
-                <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                <TabsTrigger value="oplocatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Op Locatie ({opLocatie.length})
                 </TabsTrigger>
-                <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
+                <TabsTrigger value="inaanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   In Aanbouw ({inAanbouw.length})
                 </TabsTrigger>
                 <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
                   Afgerond ({afgerond.length})
                 </TabsTrigger>
-                <TabsTrigger value="conversie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  📊 Conversie Stats
-                </TabsTrigger>
               </TabsList>
             </div>
             
-            <TabsContent value="te-verwerken" className="space-y-6">
+            <TabsContent value="overzicht" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Te Verwerken {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvragen ({teVerwerken.length})</CardTitle>
+                  <CardTitle className="text-xl">Te Verwerken {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvragen ({overzicht.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -365,8 +363,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? teVerwerken as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? teVerwerken as RefurbishedZonnepaneel[] : undefined}
+                    configuraties={projectType === 'dakkapel' ? overzicht as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={projectType === 'zonnepanelen' ? overzicht as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -379,10 +377,10 @@ const UnifiedAdminDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="wacht-op-reactie" className="space-y-6">
+            <TabsContent value="offertes" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Wacht op Reactie {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({wachtOpReactie.length})</CardTitle>
+                  <CardTitle className="text-xl">Offertes Verzonden {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({offertesVerzonden.length})</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -392,8 +390,8 @@ const UnifiedAdminDashboard = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    configuraties={projectType === 'dakkapel' ? wachtOpReactie as DakkapelConfiguratie[] : undefined}
-                    zonnepanelen={projectType === 'zonnepanelen' ? wachtOpReactie as RefurbishedZonnepaneel[] : undefined}
+                    configuraties={projectType === 'dakkapel' ? offertesVerzonden as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={projectType === 'zonnepanelen' ? offertesVerzonden as RefurbishedZonnepaneel[] : undefined}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -404,7 +402,7 @@ const UnifiedAdminDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="interesse-bevestigd" className="space-y-6">
+            <TabsContent value="interesse" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
                   <CardTitle className="text-xl">Interesse Bevestigd {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({interesseBevestigd.length})</CardTitle>
@@ -454,7 +452,7 @@ const UnifiedAdminDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="niet-akkoord" className="space-y-6">
+            <TabsContent value="nietakkoord" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
                   <CardTitle className="text-xl">Niet Akkoord {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({nietAkkoord.length})</CardTitle>
@@ -479,11 +477,10 @@ const UnifiedAdminDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="op-locatie" className="space-y-6">
+            <TabsContent value="oplocatie" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
                   <CardTitle className="text-xl">Op Locatie {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({opLocatie.length})</CardTitle>
-                  <p className="text-sm text-gray-600">Projecten die klaar zijn voor locatiebezoek</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <AdminFilters 
@@ -492,53 +489,20 @@ const UnifiedAdminDashboard = () => {
                     showStatusFilter={false}
                   />
                   
-                  <div className="space-y-4">
-                    {opLocatie.map((item) => (
-                      <Card key={item.id} className="p-4 bg-blue-50 border-blue-200">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="font-semibold text-lg">{item.naam}</h3>
-                            <p className="text-gray-600">{item.email} • {item.telefoon}</p>
-                            <p className="text-gray-600">{item.adres}, {item.postcode} {item.plaats}</p>
-                            <p className="text-sm text-gray-500 mt-1">
-                              <strong>Project:</strong> {projectType === 'dakkapel' ? (item as DakkapelConfiguratie).model : `${(item as RefurbishedZonnepaneel).aantal_panelen} ${(item as RefurbishedZonnepaneel).type_paneel} panelen`} • <strong>Prijs:</strong> €{item.totaal_prijs}
-                            </p>
-                            {projectType === 'dakkapel' && (item as DakkapelConfiguratie).materiaal && (
-                              <p className="text-sm text-gray-500">
-                                <strong>Materiaal:</strong> {(item as DakkapelConfiguratie).materiaal}
-                              </p>
-                            )}
-                            {projectType === 'zonnepanelen' && (
-                              <p className="text-sm text-gray-500">
-                                <strong>Merk:</strong> {(item as RefurbishedZonnepaneel).merk} • <strong>Vermogen:</strong> {(item as RefurbishedZonnepaneel).vermogen}W
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => openDetails(item)}
-                              className="text-xs"
-                            >
-                              Details
-                            </Button>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                    
-                    {opLocatie.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        Geen {projectType} projecten op locatie gevonden
-                      </div>
-                    )}
-                  </div>
+                  <ConfiguratorRequestsTable 
+                    configuraties={projectType === 'dakkapel' ? opLocatie as DakkapelConfiguratie[] : undefined}
+                    zonnepanelen={projectType === 'zonnepanelen' ? opLocatie as RefurbishedZonnepaneel[] : undefined}
+                    onViewDetails={openDetails}
+                    onOpenQuoteDialog={openQuoteDialog}
+                    onDataChange={loadDashboardData}
+                    sendingQuote={sendingQuote}
+                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="in-aanbouw" className="space-y-6">
+            <TabsContent value="inaanbouw" className="space-y-6">
               <Card>
                 <CardHeader className="pb-6">
                   <CardTitle className="text-xl">In Aanbouw {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} ({inAanbouw.length})</CardTitle>
@@ -583,10 +547,6 @@ const UnifiedAdminDashboard = () => {
                   />
                 </CardContent>
               </Card>
-            </TabsContent>
-            
-            <TabsContent value="conversie" className="space-y-6">
-              <ConversieStats configuraties={allConfiguraties} type="dakkapel" />
             </TabsContent>
           </Tabs>
         </div>
