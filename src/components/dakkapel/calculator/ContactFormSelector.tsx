@@ -96,10 +96,8 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('✅ Saved to database with ID:', savedData.id);
 
-      // IMMEDIATE WEBHOOK CALL WITH FULL URL
-      console.log('🚀 CALLING WEBHOOK IMMEDIATELY WITH DIRECT HTTP CALL');
-      
-      const webhookUrl = `https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler`;
+      // IMMEDIATELY call webhook via supabase.functions.invoke
+      console.log('🚀 CALLING WEBHOOK VIA SUPABASE.FUNCTIONS.INVOKE');
       
       const webhookPayload = {
         event: 'ConfiguratorComplete',
@@ -115,51 +113,38 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         immediate: true
       };
 
-      console.log('📡 DIRECT HTTP CALL TO:', webhookUrl);
-      console.log('📡 Payload:', JSON.stringify(webhookPayload, null, 2));
+      console.log('📡 Webhook payload:', JSON.stringify(webhookPayload, null, 2));
 
       try {
-        const webhookResponse = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMDIxNTEsImV4cCI6MjA2MzU3ODE1MX0.vgmnDOcff2-I-ji4r51cKKCjl4w4FcMQHsoZJqlPxRA`,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMDIxNTEsImV4cCI6MjA2MzU3ODE1MX0.vgmnDOcff2-I-ji4r51cKKCjl4w4FcMQHsoZJqlPxRA'
-          },
-          body: JSON.stringify(webhookPayload)
+        console.log('📞 Invoking dakkapel-webhook-handler function...');
+        
+        const { data: webhookResult, error: webhookError } = await supabase.functions.invoke('dakkapel-webhook-handler', {
+          body: webhookPayload
         });
 
-        console.log('📡 Webhook HTTP status:', webhookResponse.status);
-        console.log('📡 Webhook HTTP status text:', webhookResponse.statusText);
+        console.log('📡 Webhook result:', webhookResult);
+        console.log('📡 Webhook error:', webhookError);
 
-        let webhookResult;
-        try {
-          const responseText = await webhookResponse.text();
-          console.log('📡 Raw webhook response:', responseText);
-          webhookResult = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error('❌ Failed to parse webhook response:', parseError);
-          webhookResult = { error: 'Failed to parse response' };
-        }
-
-        console.log('📡 Parsed webhook result:', webhookResult);
-
-        if (webhookResponse.ok && webhookResult?.success) {
+        if (webhookError) {
+          console.error('⚠️ Webhook error details:', webhookError);
+          // Show success anyway because data is saved
+          toast.success("Aanvraag verzonden! We verwerken uw offerte zo snel mogelijk.", {
+            duration: 5000,
+          });
+        } else if (webhookResult?.success) {
           console.log('✅ WEBHOOK SUCCESS - Email sent!');
           toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
             duration: 8000,
           });
         } else {
-          console.error('⚠️ Webhook failed:', {
-            status: webhookResponse.status,
-            result: webhookResult
-          });
-          toast.error("Er ging iets mis bij het verzenden van de offerte email. We hebben uw aanvraag wel ontvangen.", {
-            duration: 6000,
+          console.log('⚠️ Webhook completed but with warnings:', webhookResult);
+          toast.success("Aanvraag verzonden! We verwerken uw offerte zo snel mogelijk.", {
+            duration: 5000,
           });
         }
-      } catch (webhookError) {
-        console.error('❌ Webhook HTTP call failed:', webhookError);
+      } catch (functionError) {
+        console.error('❌ Function invocation failed:', functionError);
+        // Show success anyway because data is saved
         toast.success("Aanvraag verzonden! We verwerken uw offerte zo snel mogelijk.", {
           duration: 5000,
         });
