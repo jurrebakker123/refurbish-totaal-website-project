@@ -22,6 +22,11 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
+    console.log("🔍 Environment check:");
+    console.log("- SUPABASE_URL:", supabaseUrl ? "✅ Set" : "❌ Missing");
+    console.log("- SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey ? "✅ Set" : "❌ Missing");
+    console.log("- RESEND_API_KEY:", resendApiKey ? "✅ Set" : "❌ Missing");
+
     if (!supabaseUrl || !supabaseServiceKey || !resendApiKey) {
       console.error("❌ Missing environment variables");
       return new Response(
@@ -35,24 +40,24 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
     
-    // Get new dakkapel requests without quotes
+    // Get new dakkapel requests without quotes - check last 72 hours for more coverage
     const { data: dakkapelRequests, error: dakkapelError } = await supabase
       .from('dakkapel_calculator_aanvragen')
       .select('*')
       .eq('status', 'nieuw')
       .is('offerte_verzonden_op', null)
-      .gte('created_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
+      .gte('created_at', new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false });
 
     if (dakkapelError) {
       console.error("❌ Database fetch failed:", dakkapelError);
       return new Response(
-        JSON.stringify({ success: false, error: "Database fetch failed" }),
+        JSON.stringify({ success: false, error: "Database fetch failed: " + dakkapelError.message }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("Dakkapel requests found:", dakkapelRequests?.length || 0);
+    console.log(`📊 Found ${dakkapelRequests?.length || 0} requests to process`);
     
     if (!dakkapelRequests || dakkapelRequests.length === 0) {
       console.log("ℹ️ No new dakkapel requests found that need quotes");
@@ -66,8 +71,6 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    console.log(`🎯 Found ${dakkapelRequests.length} requests that need quotes`);
-
     let successCount = 0;
     let errorCount = 0;
 
@@ -75,18 +78,18 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`\n=== PROCESSING REQUEST ${request.id} ===`);
       console.log(`Customer: ${request.voornaam} ${request.achternaam}`);
       console.log(`Email: ${request.emailadres}`);
+      console.log(`Created: ${request.created_at}`);
 
       try {
         const customerName = `${request.voornaam} ${request.achternaam}`;
         const customerAddress = `${request.straatnaam} ${request.huisnummer}, ${request.postcode} ${request.plaats}`;
 
-        // Use the same template as manual quote sending
         const defaultTemplate = `Beste ${customerName},
 
 Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u uw persoonlijke offerte.
 
 De prijs is inclusief:
-- Transport naar locatie
+- Transport naar locatie  
 - Montage van de dakkapel
 - Afwerking binnen- en buitenzijde
 - Garantie van 10 jaar op constructie en waterdichtheid
@@ -180,7 +183,7 @@ info@refurbishtotaalnederland.nl`;
           html: emailHtml,
         });
 
-        console.log("Resend response:", emailResponse);
+        console.log("📬 Resend response:", emailResponse);
 
         if (emailResponse.error) {
           console.error(`❌ Email error for ${request.id}:`, emailResponse.error);
@@ -196,22 +199,33 @@ info@refurbishtotaalnederland.nl`;
 
         console.log(`✅ Email sent successfully! ID: ${emailResponse.data.id}`);
 
-        // Update database
-        const { error: updateError } = await supabase
-          .from('dakkapel_calculator_aanvragen')
-          .update({
-            status: 'offerte_verzonden',
-            offerte_verzonden_op: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', request.id);
+        // Update database with retry logic
+        let updateSuccess = false;
+        for (let retry = 0; retry < 3; retry++) {
+          const { error: updateError } = await supabase
+            .from('dakkapel_calculator_aanvragen')
+            .update({
+              status: 'offerte_verzonden',
+              offerte_verzonden_op: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', request.id);
 
-        if (updateError) {
-          console.error(`❌ Database update error for ${request.id}:`, updateError);
-          errorCount++;
-        } else {
+          if (!updateError) {
+            updateSuccess = true;
+            break;
+          }
+          
+          console.warn(`⚠️ Database update attempt ${retry + 1} failed for ${request.id}:`, updateError);
+          if (retry < 2) await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        if (updateSuccess) {
           console.log(`✅ Database updated for ${request.id}`);
           successCount++;
+        } else {
+          console.error(`❌ Failed to update database for ${request.id} after 3 attempts`);
+          errorCount++;
         }
 
       } catch (requestError) {
@@ -219,7 +233,7 @@ info@refurbishtotaalnederland.nl`;
         errorCount++;
       }
 
-      // Small delay between requests
+      // Small delay between requests to avoid overwhelming services
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
@@ -229,7 +243,7 @@ info@refurbishtotaalnederland.nl`;
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `Automatic quote process completed`,
+      message: `Automatic quote process completed. Sent ${successCount} quotes.`,
       processed: {
         dakkapel: successCount,
         errors: errorCount,
