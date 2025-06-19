@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,11 +48,11 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     setIsSubmitting(true);
     
     try {
-      console.log('=== DAKKAPEL SUBMISSION START ===');
+      console.log('=== DAKKAPEL WEBHOOK TRIGGERED ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Prepare request data
+      // Prepare complete request data
       const requestData = {
         voornaam: data.voornaam,
         achternaam: data.achternaam,
@@ -76,11 +77,13 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         woningzijde: configuration.woningZijde,
         rcwaarde: configuration.rcWaarde,
         opties: configuration.opties,
-        status: 'nieuw'
+        status: 'nieuw',
+        event_type: 'ConfiguratorComplete',
+        timestamp: new Date().toISOString()
       };
 
-      // Save to database
-      console.log('Saving to database...');
+      // Save to database first
+      console.log('💾 Saving to database...');
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -88,39 +91,43 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         .single();
 
       if (dbError) {
-        console.error('Database error:', dbError);
+        console.error('❌ Database error:', dbError);
         throw dbError;
       }
 
-      console.log('✅ Saved to database:', savedData);
+      console.log('✅ Saved to database with ID:', savedData.id);
 
-      // IMMEDIATELY send email via Resend edge function
-      console.log('🚀 Triggering automatic email via Resend...');
-      try {
-        const emailResponse = await supabase.functions.invoke('auto-send-quote-simple', {
-          body: { 
-            requestId: savedData.id,
-            immediate: true 
-          }
-        });
-
-        console.log('📧 Email function response:', emailResponse);
-
-        if (emailResponse.error) {
-          console.error('Email function error:', emailResponse.error);
-          toast.success("Aanvraag verzonden! We sturen u zo spoedig mogelijk een offerte.", {
-            duration: 5000,
-          });
-        } else {
-          console.log('✅ EMAIL SENT SUCCESSFULLY!');
-          toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
-            duration: 8000,
-          });
+      // IMMEDIATE WEBHOOK TRIGGER - Send HTTP request with all data
+      console.log('🚀 TRIGGERING WEBHOOK - Sending HTTP request...');
+      
+      const webhookResponse = await supabase.functions.invoke('dakkapel-webhook-handler', {
+        body: { 
+          event: 'ConfiguratorComplete',
+          requestId: savedData.id,
+          customerData: {
+            name: `${data.voornaam} ${data.achternaam}`,
+            email: data.emailadres,
+            phone: data.telefoon,
+            address: `${data.straatnaam} ${data.huisnummer}, ${data.postcode} ${data.plaats}`
+          },
+          configurationData: configuration,
+          timestamp: new Date().toISOString(),
+          immediate: true
         }
-      } catch (emailError) {
-        console.error('Email sending error:', emailError);
-        toast.success("Aanvraag verzonden! We nemen zo spoedig mogelijk contact met u op.", {
+      });
+
+      console.log('📡 Webhook response:', webhookResponse);
+
+      if (webhookResponse.error) {
+        console.error('⚠️ Webhook error:', webhookResponse.error);
+        // Continue anyway - data is saved
+        toast.success("Aanvraag verzonden! We verwerken uw offerte.", {
           duration: 5000,
+        });
+      } else {
+        console.log('✅ WEBHOOK SUCCESS - Email sent!');
+        toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
+          duration: 8000,
         });
       }
 
