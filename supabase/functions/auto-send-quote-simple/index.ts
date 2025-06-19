@@ -40,63 +40,72 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
     
-    console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
-    console.log("Current time:", new Date().toISOString());
-    
-    // Check for new dakkapel requests without quotes - check last 24 hours
-    const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    console.log("Looking for requests after:", cutoffTime);
-
-    const { data: dakkapelRequests, error: dakkapelError } = await supabase
-      .from('dakkapel_calculator_aanvragen')
-      .select('*')
-      .eq('status', 'nieuw')
-      .is('offerte_verzonden_op', null)
-      .gte('created_at', cutoffTime)
-      .order('created_at', { ascending: false });
-
-    if (dakkapelError) {
-      console.error("❌ Database fetch failed:", dakkapelError);
-      return new Response(
-        JSON.stringify({ success: false, error: "Database fetch failed: " + dakkapelError.message }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+    // Check if this is a direct request with specific requestId
+    let requestBody = null;
+    try {
+      requestBody = await req.json();
+      console.log("Request body:", requestBody);
+    } catch (e) {
+      console.log("No request body provided, checking for all new requests");
     }
 
-    console.log(`📊 Query result: Found ${dakkapelRequests?.length || 0} requests`);
+    let dakkapelRequests = [];
     
-    if (dakkapelRequests && dakkapelRequests.length > 0) {
+    if (requestBody?.requestId) {
+      // Direct request for specific ID
+      console.log("=== PROCESSING SPECIFIC REQUEST ===");
+      console.log("Request ID:", requestBody.requestId);
+      
+      const { data: specificRequest, error: specificError } = await supabase
+        .from('dakkapel_calculator_aanvragen')
+        .select('*')
+        .eq('id', requestBody.requestId)
+        .eq('status', 'nieuw')
+        .is('offerte_verzonden_op', null)
+        .single();
+
+      if (!specificError && specificRequest) {
+        dakkapelRequests = [specificRequest];
+        console.log("✅ Found specific request:", specificRequest.id);
+      } else {
+        console.log("❌ Specific request not found or already processed");
+      }
+    } else {
+      // Check for all new requests
+      console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
+      console.log("Current time:", new Date().toISOString());
+      
+      const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      console.log("Looking for requests after:", cutoffTime);
+
+      const { data: allRequests, error: dakkapelError } = await supabase
+        .from('dakkapel_calculator_aanvragen')
+        .select('*')
+        .eq('status', 'nieuw')
+        .is('offerte_verzonden_op', null)
+        .gte('created_at', cutoffTime)
+        .order('created_at', { ascending: false });
+
+      if (!dakkapelError && allRequests) {
+        dakkapelRequests = allRequests;
+      }
+    }
+
+    console.log(`📊 Found ${dakkapelRequests.length} requests to process`);
+    
+    if (dakkapelRequests.length > 0) {
       console.log("📋 Request details:");
       dakkapelRequests.forEach((req, index) => {
-        console.log(`  ${index + 1}. ID: ${req.id}, Email: ${req.emailadres}, Created: ${req.created_at}, Status: ${req.status}`);
+        console.log(`  ${index + 1}. ID: ${req.id}, Email: ${req.emailadres}, Created: ${req.created_at}`);
       });
     }
     
-    if (!dakkapelRequests || dakkapelRequests.length === 0) {
+    if (dakkapelRequests.length === 0) {
       console.log("ℹ️ No new dakkapel requests found that need quotes");
-      
-      // Let's also check what requests exist in total for debugging
-      const { data: allRequests, error: allError } = await supabase
-        .from('dakkapel_calculator_aanvragen')
-        .select('id, emailadres, status, offerte_verzonden_op, created_at')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (!allError && allRequests) {
-        console.log("📋 Last 10 requests in database:");
-        allRequests.forEach((req, index) => {
-          console.log(`  ${index + 1}. ID: ${req.id}, Email: ${req.emailadres}, Status: ${req.status}, Quote sent: ${req.offerte_verzonden_op || 'No'}, Created: ${req.created_at}`);
-        });
-      }
-      
       return new Response(JSON.stringify({ 
         success: true, 
         message: 'No new requests found that need quotes',
-        processed: { dakkapel: 0, total: 0 },
-        debug: {
-          totalRequestsChecked: allRequests?.length || 0,
-          cutoffTime
-        }
+        processed: { dakkapel: 0, total: 0 }
       }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders }
@@ -116,94 +125,111 @@ const handler = async (req: Request): Promise<Response> => {
         const customerName = `${request.voornaam} ${request.achternaam}`;
         const customerAddress = `${request.straatnaam} ${request.huisnummer}, ${request.postcode} ${request.plaats}`;
 
-        const defaultTemplate = `Beste ${customerName},
+        // Calculate total price based on configuration
+        let totalPrice = 15000; // Base price
+        
+        // Add pricing based on configuration
+        if (request.breedte > 300) totalPrice += 2000;
+        if (request.hoogte > 175) totalPrice += 1500;
+        if (request.materiaal === 'hout') totalPrice += 3000;
+        if (request.materiaal === 'aluminium') totalPrice += 4000;
+        if (request.aantalramen > 2) totalPrice += (request.aantalramen - 2) * 800;
+        
+        // Add options pricing
+        if (request.opties) {
+          if (request.opties.ventilatie) totalPrice += 500;
+          if (request.opties.zonwering) totalPrice += 1200;
+          if (request.opties.extra_isolatie) totalPrice += 800;
+          if (request.opties.horren) totalPrice += 400;
+        }
 
-Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u uw persoonlijke offerte.
+        const emailTemplate = `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+  <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
+    <h1 style="margin: 0; font-size: 24px;">Uw Dakkapel Offerte</h1>
+    <p style="margin: 10px 0 0 0; font-size: 16px;">Refurbish Totaal Nederland</p>
+  </div>
+  
+  <div style="padding: 30px;">
+    <p style="font-size: 18px; margin-bottom: 20px;">Beste ${customerName},</p>
+    
+    <p style="line-height: 1.6; margin-bottom: 20px;">
+      Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u uw persoonlijke offerte 
+      op basis van uw configuratie.
+    </p>
+    
+    <div style="background-color: #f0fdf4; border: 2px solid #059669; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+      <h2 style="color: #059669; margin: 0 0 10px 0;">Totaalprijs: €${totalPrice.toLocaleString('nl-NL')}</h2>
+      <p style="margin: 0; color: #065f46;">Inclusief BTW, transport en montage</p>
+    </div>
+    
+    <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="margin-top: 0; color: #374151;">Uw Dakkapel Configuratie:</h3>
+      <ul style="margin: 0; padding-left: 20px; color: #4b5563;">
+        <li><strong>Type:</strong> ${request.type}</li>
+        <li><strong>Afmetingen:</strong> ${request.breedte}cm x ${request.hoogte}cm</li>
+        <li><strong>Materiaal:</strong> ${request.materiaal}</li>
+        <li><strong>Aantal ramen:</strong> ${request.aantalramen}</li>
+        <li><strong>Kozijn hoogte:</strong> ${request.kozijnhoogte}</li>
+        <li><strong>Dakhelling:</strong> ${request.dakhelling}°</li>
+        <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen}</li>
+        <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten}</li>
+        <li><strong>RC-waarde:</strong> ${request.rcwaarde}</li>
+        <li><strong>Woning zijde:</strong> ${request.woningzijde}</li>
+      </ul>
+    </div>
 
-De prijs is inclusief:
-- Transport naar locatie  
-- Montage van de dakkapel
-- Afwerking binnen- en buitenzijde
-- Garantie van 10 jaar op constructie en waterdichtheid
-- 5 jaar garantie op de gebruikte materialen
+    <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="margin-top: 0; color: #059669;">Inbegrepen:</h3>
+      <ul style="margin: 0; padding-left: 20px; color: #065f46;">
+        <li>Transport naar locatie</li>
+        <li>Montage van de dakkapel</li>
+        <li>Afwerking binnen- en buitenzijde</li>
+        <li>10 jaar garantie op constructie en waterdichtheid</li>
+        <li>5 jaar garantie op de gebruikte materialen</li>
+      </ul>
+    </div>
 
-Wij hanteren een levertijd van 6-8 weken na definitieve opdracht.
-
-Voor vragen kunt u contact met ons opnemen.
-
-Met vriendelijke groet,
-Het team van Refurbish Totaal Nederland
-085-1301578
-info@refurbishtotaalnederland.nl`;
-
-        const priceInfo = request.totaal_prijs ? 
-          `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${request.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
-          '<p style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Prijs wordt binnenkort meegedeeld.</p>';
-
-        const productDetails = `
-          <h3>Uw Dakkapel Configuratie:</h3>
-          <ul>
-            <li><strong>Type:</strong> ${request.type}</li>
-            <li><strong>Afmetingen:</strong> ${request.breedte}cm x ${request.hoogte}cm</li>
-            <li><strong>Materiaal:</strong> ${request.materiaal}</li>
-            <li><strong>Aantal ramen:</strong> ${request.aantalramen}</li>
-            <li><strong>Kozijn hoogte:</strong> ${request.kozijnhoogte}</li>
-            <li><strong>Dakhelling:</strong> ${request.dakhelling}° (${request.dakhellingtype})</li>
-            <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen}</li>
-            <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten}</li>
-            <li><strong>Kleur draaikiepramen:</strong> ${request.kleurdraaikiepramen}</li>
-            <li><strong>RC-waarde:</strong> ${request.rcwaarde}</li>
-            <li><strong>Woning zijde:</strong> ${request.woningzijde}</li>
-          </ul>
-        `;
-
-        // Create interest response URLs
-        const yesUrl = `${supabaseUrl}/functions/v1/handle-interest-response?id=${request.id}&response=ja&type=dakkapel`;
-        const noUrl = `${supabaseUrl}/functions/v1/handle-interest-response?id=${request.id}&response=nee&type=dakkapel`;
-
-        const emailHtml = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-            <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
-              <h1 style="margin: 0; font-size: 24px;">Uw Offerte - Refurbish Totaal Nederland</h1>
-              <p style="margin: 10px 0 0 0; font-size: 16px;">Dakkapel</p>
-            </div>
-            
-            <div style="padding: 30px;">
-              <div style="white-space: pre-line; line-height: 1.6; margin-bottom: 30px;">${defaultTemplate.replace(/\n/g, '<br/>')}</div>
-              
-              ${priceInfo}
-              
-              <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 30px 0; text-align: center;">
-                <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u interesse om door te gaan?</h3>
-                <p style="color: #856404; margin: 15px 0;">Klik op één van onderstaande knoppen:</p>
-                <div style="margin: 25px 0;">
-                  <a href="${yesUrl}" style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✓ JA, IK HEB INTERESSE</a>
-                  <br><br>
-                  <a href="${noUrl}" style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">✗ NEE, GEEN INTERESSE</a>
-                </div>
-              </div>
-              
-              ${productDetails}
-              
-              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0;"><strong>Uw adresgegevens:</strong><br>
-                ${customerAddress}</p>
-              </div>
-              
-              <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <h3 style="margin-top: 0;">Contact:</h3>
-                <p style="margin-bottom: 0;">
-                  <strong>Refurbish Totaal Nederland</strong><br>
-                  E-mail: info@refurbishtotaalnederland.nl<br>
-                  Telefoon: 085-1301578
-                </p>
-              </div>
-            </div>
-            
-            <div style="background-color: #059669; color: white; padding: 20px; text-align: center; font-size: 14px;">
-              <p style="margin: 0;">© 2024 Refurbish Totaal Nederland</p>
-            </div>
-          </div>
+    <div style="background-color: #fff3cd; border: 2px solid #ffeaa7; padding: 25px; border-radius: 10px; margin: 30px 0; text-align: center;">
+      <h3 style="color: #856404; margin-top: 0; font-size: 18px;">Heeft u interesse om door te gaan?</h3>
+      <p style="color: #856404; margin: 15px 0;">Klik op één van onderstaande knoppen:</p>
+      <div style="margin: 25px 0;">
+        <a href="https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/handle-interest-response?id=${request.id}&response=ja&type=dakkapel" 
+           style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">
+          ✓ JA, IK HEB INTERESSE
+        </a>
+        <br><br>
+        <a href="https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/handle-interest-response?id=${request.id}&response=nee&type=dakkapel" 
+           style="display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px; font-weight: bold; font-size: 16px;">
+          ✗ NEE, GEEN INTERESSE
+        </a>
+      </div>
+    </div>
+    
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+      <p style="margin: 0;"><strong>Uw adresgegevens:</strong><br>
+      ${customerAddress}</p>
+    </div>
+    
+    <p style="line-height: 1.6; margin: 20px 0;">
+      <strong>Levertijd:</strong> 6-8 weken na definitieve opdracht<br>
+      <strong>Geldigheid offerte:</strong> 30 dagen
+    </p>
+    
+    <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 30px 0;">
+      <h3 style="margin-top: 0;">Contact:</h3>
+      <p style="margin-bottom: 0;">
+        <strong>Refurbish Totaal Nederland</strong><br>
+        E-mail: info@refurbishtotaalnederland.nl<br>
+        Telefoon: 085-1301578
+      </p>
+    </div>
+  </div>
+  
+  <div style="background-color: #059669; color: white; padding: 20px; text-align: center; font-size: 14px;">
+    <p style="margin: 0;">© 2024 Refurbish Totaal Nederland</p>
+  </div>
+</div>
         `;
 
         console.log(`📧 Sending email to: ${request.emailadres}`);
@@ -211,8 +237,8 @@ info@refurbishtotaalnederland.nl`;
         const emailResponse = await resend.emails.send({
           from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
           to: [request.emailadres],
-          subject: 'Dakkapel Offerte - Refurbish Totaal Nederland',
-          html: emailHtml,
+          subject: `Uw Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')}`,
+          html: emailTemplate,
         });
 
         console.log("📬 Resend response:", emailResponse);
@@ -223,41 +249,25 @@ info@refurbishtotaalnederland.nl`;
           continue;
         }
 
-        if (!emailResponse.data?.id) {
-          console.error(`❌ No email ID returned for ${request.id}`);
+        console.log(`✅ Email sent successfully! ID: ${emailResponse.data?.id}`);
+
+        // Update database
+        const { error: updateError } = await supabase
+          .from('dakkapel_calculator_aanvragen')
+          .update({
+            status: 'offerte_verzonden',
+            offerte_verzonden_op: new Date().toISOString(),
+            totaal_prijs: totalPrice,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', request.id);
+
+        if (updateError) {
+          console.error(`❌ Database update error for ${request.id}:`, updateError);
           errorCount++;
-          continue;
-        }
-
-        console.log(`✅ Email sent successfully! ID: ${emailResponse.data.id}`);
-
-        // Update database with retry logic
-        let updateSuccess = false;
-        for (let retry = 0; retry < 3; retry++) {
-          const { error: updateError } = await supabase
-            .from('dakkapel_calculator_aanvragen')
-            .update({
-              status: 'offerte_verzonden',
-              offerte_verzonden_op: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', request.id);
-
-          if (!updateError) {
-            updateSuccess = true;
-            break;
-          }
-          
-          console.warn(`⚠️ Database update attempt ${retry + 1} failed for ${request.id}:`, updateError);
-          if (retry < 2) await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        if (updateSuccess) {
+        } else {
           console.log(`✅ Database updated for ${request.id}`);
           successCount++;
-        } else {
-          console.error(`❌ Failed to update database for ${request.id} after 3 attempts`);
-          errorCount++;
         }
 
       } catch (requestError) {
@@ -265,7 +275,7 @@ info@refurbishtotaalnederland.nl`;
         errorCount++;
       }
 
-      // Small delay between requests to avoid overwhelming services
+      // Small delay between requests
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
