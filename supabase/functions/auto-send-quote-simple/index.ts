@@ -12,8 +12,6 @@ const corsHeaders = {
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW REQUEST RECEIVED ===");
-  console.log("Method:", req.method);
-  console.log("Headers:", Object.fromEntries(req.headers.entries()));
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -24,56 +22,16 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
-    console.log("=== ENVIRONMENT CHECK ===");
-    console.log("SUPABASE_URL:", !!supabaseUrl);
-    console.log("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseServiceKey);
-    console.log("RESEND_API_KEY:", !!resendApiKey);
-    console.log("RESEND_API_KEY first 10 chars:", resendApiKey ? resendApiKey.substring(0, 10) : 'null');
-
     if (!supabaseUrl || !supabaseServiceKey || !resendApiKey) {
       console.error("❌ Missing environment variables");
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Missing environment variables",
-          missing: {
-            supabaseUrl: !supabaseUrl,
-            supabaseServiceKey: !supabaseServiceKey,
-            resendApiKey: !resendApiKey
-          }
-        }),
+        JSON.stringify({ success: false, error: "Missing environment variables" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    console.log("✅ All environment variables are configured");
-    
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
-    
-    console.log("=== TESTING RESEND CONNECTION ===");
-    try {
-      // Test Resend connection with a simple API call
-      const testEmail = await resend.emails.send({
-        from: 'Test <info@refurbishtotaalnederland.nl>',
-        to: ['test@example.com'],
-        subject: 'Test Connection',
-        html: '<p>Test</p>',
-        // Use dry run mode to test without actually sending
-      });
-      console.log("✅ Resend connection test successful");
-    } catch (resendError: any) {
-      console.error("❌ Resend connection test failed:", resendError);
-      console.error("Resend error details:", resendError.message);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Resend API connection failed",
-          details: resendError.message
-        }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
     
     console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
     
@@ -89,19 +47,12 @@ const handler = async (req: Request): Promise<Response> => {
     if (dakkapelError) {
       console.error("❌ Database fetch failed:", dakkapelError);
       return new Response(
-        JSON.stringify({ success: false, error: "Database fetch failed", details: dakkapelError }),
+        JSON.stringify({ success: false, error: "Database fetch failed" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
     console.log("Dakkapel requests found:", dakkapelRequests?.length || 0);
-    console.log("Dakkapel requests details:", dakkapelRequests?.map(r => ({
-      id: r.id,
-      naam: `${r.voornaam} ${r.achternaam}`,
-      email: r.emailadres,
-      created_at: r.created_at,
-      status: r.status
-    })));
     
     if (!dakkapelRequests || dakkapelRequests.length === 0) {
       console.log("ℹ️ No new dakkapel requests found that need quotes");
@@ -124,16 +75,12 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`\n=== PROCESSING REQUEST ${request.id} ===`);
       console.log(`Customer: ${request.voornaam} ${request.achternaam}`);
       console.log(`Email: ${request.emailadres}`);
-      console.log(`Created: ${request.created_at}`);
 
       try {
         const customerName = `${request.voornaam} ${request.achternaam}`;
         const customerAddress = `${request.straatnaam} ${request.huisnummer}, ${request.postcode} ${request.plaats}`;
 
-        const priceInfo = request.totaal_prijs ? 
-          `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${request.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
-          '<p style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Prijs wordt binnenkort meegedeeld.</p>';
-
+        // Use the same template as manual quote sending
         const defaultTemplate = `Beste ${customerName},
 
 Hartelijk dank voor uw interesse in onze dakkapellen. Hierbij ontvangt u uw persoonlijke offerte.
@@ -153,6 +100,10 @@ Met vriendelijke groet,
 Het team van Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl`;
+
+        const priceInfo = request.totaal_prijs ? 
+          `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${request.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
+          '<p style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Prijs wordt binnenkort meegedeeld.</p>';
 
         const productDetails = `
           <h3>Uw Dakkapel Configuratie:</h3>
@@ -221,7 +172,6 @@ info@refurbishtotaalnederland.nl`;
         `;
 
         console.log(`📧 Sending email to: ${request.emailadres}`);
-        console.log(`Email subject: Dakkapel Offerte - Refurbish Totaal Nederland`);
 
         const emailResponse = await resend.emails.send({
           from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
@@ -276,20 +226,14 @@ info@refurbishtotaalnederland.nl`;
     console.log(`\n=== BATCH PROCESS COMPLETED ===`);
     console.log(`✅ Successful: ${successCount}`);
     console.log(`❌ Errors: ${errorCount}`);
-    console.log(`📊 Total processed: ${successCount + errorCount}`);
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `Batch auto-quote process completed`,
+      message: `Automatic quote process completed`,
       processed: {
         dakkapel: successCount,
         errors: errorCount,
         total: successCount + errorCount
-      },
-      details: {
-        totalRequests: dakkapelRequests.length,
-        successfulEmails: successCount,
-        failedEmails: errorCount
       }
     }), {
       status: 200,
@@ -298,13 +242,8 @@ info@refurbishtotaalnederland.nl`;
 
   } catch (error: any) {
     console.error("=== CRITICAL ERROR ===", error);
-    console.error("Error stack:", error.stack);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: `Critical error: ${error.message}`,
-        stack: error.stack
-      }),
+      JSON.stringify({ success: false, error: `Critical error: ${error.message}` }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
