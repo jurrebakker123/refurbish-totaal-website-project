@@ -1,6 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from "npm:resend@2.0.0";
 
 console.log("=== AUTO-SEND-QUOTE-BATCH FUNCTION STARTED ===");
@@ -19,7 +18,6 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Gebruik de JUISTE Supabase credentials voor jouw project
     const supabaseUrl = 'https://pluhasunoaevfrdugkzg.supabase.co';
     const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODAwMjE1MSwiZXhwIjoyMDYzNTc4MTUxfQ.dQw4w9WgXcQ_LCHpqxJLIEpTbgs2G1QiOiNGRlOCR8k';
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -40,27 +38,32 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("✅ All environment variables are configured");
     
     const resend = new Resend(resendApiKey);
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
     
     console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
     
-    // Get all dakkapel requests from last 48 hours
-    const { data: allRequests, error: fetchError } = await supabaseClient
-      .from('dakkapel_calculator_aanvragen')
-      .select('*')
-      .gte('created_at', new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
-      .order('created_at', { ascending: false });
+    // Direct HTTP call naar Supabase REST API
+    const response = await fetch(`${supabaseUrl}/rest/v1/dakkapel_calculator_aanvragen?created_at=gte.${new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()}&order=created_at.desc`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${supabaseServiceKey}`,
+        'apikey': supabaseServiceKey,
+        'Content-Type': 'application/json'
+      }
+    });
 
-    console.log("All dakkapel requests from last 48 hours:", allRequests?.length || 0);
-    
-    if (fetchError) {
-      console.error("❌ Database fetch error:", fetchError);
+    if (!response.ok) {
+      console.error("❌ Database fetch failed:", response.status, response.statusText);
+      const errorText = await response.text();
+      console.error("Error details:", errorText);
       return new Response(
-        JSON.stringify({ success: false, error: "Database fetch failed", details: fetchError }),
+        JSON.stringify({ success: false, error: "Database fetch failed", details: errorText }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
+    const allRequests = await response.json();
+    console.log("All dakkapel requests from last 48 hours:", allRequests?.length || 0);
+    
     if (!allRequests || allRequests.length === 0) {
       console.log("ℹ️ No dakkapel requests found in last 48 hours");
       return new Response(JSON.stringify({ 
@@ -74,7 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Filter for new requests without quotes
-    const newRequests = allRequests.filter(req => 
+    const newRequests = allRequests.filter((req: any) => 
       req.status === 'nieuw' && !req.offerte_verzonden_op
     );
 
@@ -82,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("- Total requests:", allRequests.length);
     console.log("- New requests without quotes:", newRequests.length);
     
-    allRequests.forEach(req => {
+    allRequests.forEach((req: any) => {
       console.log(`Request ${req.id}: status="${req.status}", offerte_verzonden_op="${req.offerte_verzonden_op}", email="${req.emailadres}"`);
     });
 
@@ -228,18 +231,23 @@ info@refurbishtotaalnederland.nl`;
 
         console.log(`✅ Email sent successfully! ID: ${emailResponse.data.id}`);
 
-        // Update database
-        const { error: updateError } = await supabaseClient
-          .from('dakkapel_calculator_aanvragen')
-          .update({
+        // Update database using direct HTTP call
+        const updateResponse = await fetch(`${supabaseUrl}/rest/v1/dakkapel_calculator_aanvragen?id=eq.${request.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+            'apikey': supabaseServiceKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
             status: 'offerte_verzonden',
             offerte_verzonden_op: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
-          .eq('id', request.id);
+        });
 
-        if (updateError) {
-          console.error(`❌ Database update error for ${request.id}:`, updateError);
+        if (!updateResponse.ok) {
+          console.error(`❌ Database update error for ${request.id}:`, updateResponse.status, updateResponse.statusText);
           errorCount++;
         } else {
           console.log(`✅ Database updated for ${request.id}`);
