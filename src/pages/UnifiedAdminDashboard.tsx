@@ -15,6 +15,7 @@ import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import ConversieStats from '@/components/admin/ConversieStats';
 import NotificationCenter from '@/components/admin/NotificationCenter';
+import AutoQuoteSystemTest from '@/components/admin/AutoQuoteSystemTest';
 import { toast } from 'sonner';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
@@ -264,6 +265,8 @@ const UnifiedAdminDashboard = () => {
               </button>
             </div>
           </div>
+          
+          <AutoQuoteSystemTest />
           
           {projectType === 'dakkapel' && <DashboardStats configuraties={allConfiguraties} />}
           
