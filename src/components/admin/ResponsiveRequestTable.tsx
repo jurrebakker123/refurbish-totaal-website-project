@@ -3,13 +3,14 @@ import React, { useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Mail, Trash2, Edit } from 'lucide-react';
+import { Eye, Mail } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatters';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AutoQuoteButton from './AutoQuoteButton';
 
 interface ResponsiveRequestTableProps {
-  configuraties: any[];
+  configuraties?: any[];
+  zonnepanelen?: any[];
   onViewDetails: (item: any) => void;
   onOpenQuoteDialog: (item: any) => void;
   onDataChange: () => void;
@@ -18,7 +19,8 @@ interface ResponsiveRequestTableProps {
 }
 
 const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
-  configuraties,
+  configuraties = [],
+  zonnepanelen = [],
   onViewDetails,
   onOpenQuoteDialog,
   onDataChange,
@@ -27,12 +29,15 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
+  // Use either configuraties or zonnepanelen data
+  const data = configuraties.length > 0 ? configuraties : zonnepanelen;
+
   const filteredConfigurations = useMemo(() => {
-    return configuraties.filter(config => {
+    return data.filter(config => {
       if (config.status === 'afgehandeld') return false;
       return true;
     });
-  }, [configuraties]);
+  }, [data]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
