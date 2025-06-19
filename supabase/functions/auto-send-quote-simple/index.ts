@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
     
-    // Get request body to check for specific requestId
+    // Get request body 
     let requestBody = null;
     try {
       requestBody = await req.json();
@@ -74,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
         });
       }
     } else {
-      // Check for all new requests
+      // Check for new requests in last 24 hours
       console.log("🔍 Checking for new dakkapel requests...");
       
       const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();

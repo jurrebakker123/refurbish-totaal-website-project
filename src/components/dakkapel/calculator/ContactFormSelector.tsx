@@ -15,7 +15,7 @@ const contactFormSchema = z.object({
   straatnaam: z.string().min(2, "Straatnaam is verplicht"),
   huisnummer: z.string().min(1, "Huisnummer is verplicht"),
   postcode: z.string().min(6, "Postcode is verplicht"),
-  plaats: z.string().min(2, "Plaats is verplicht"),
+  plaats: z.string().min(2, "Plaats is verplicht"),  
   bericht: z.string().optional(),
 });
 
@@ -42,94 +42,6 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
   });
-
-  const sendEmailDirectly = async (requestData: any) => {
-    console.log('=== SENDING EMAIL DIRECTLY ===');
-    
-    try {
-      // Calculate total price
-      let totalPrice = 15000; // Base price
-      
-      if (requestData.breedte > 300) totalPrice += 2000;
-      if (requestData.hoogte > 175) totalPrice += 1500;
-      if (requestData.materiaal === 'hout') totalPrice += 3000;
-      if (requestData.materiaal === 'aluminium') totalPrice += 4000;
-      if (requestData.aantalramen > 2) totalPrice += (requestData.aantalramen - 2) * 800;
-      
-      if (requestData.opties) {
-        if (requestData.opties.ventilatie) totalPrice += 500;
-        if (requestData.opties.zonwering) totalPrice += 1200;
-        if (requestData.opties.extra_isolatie) totalPrice += 800;
-        if (requestData.opties.horren) totalPrice += 400;
-      }
-
-      console.log('Calculated price:', totalPrice);
-      
-      const customerName = `${requestData.voornaam} ${requestData.achternaam}`;
-      const customerAddress = `${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}`;
-
-      // Use the emailjs configuration to send email directly
-      const emailParams = {
-        from_name: customerName,
-        from_email: requestData.emailadres,
-        to_name: "Refurbish Totaal Nederland",
-        to_email: "info@refurbishtotaalnederland.nl",
-        subject: `Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')} - ${customerName}`,
-        message: `
-NIEUWE DAKKAPEL AANVRAAG
-
-Klantgegevens:
-- Naam: ${customerName}
-- Email: ${requestData.emailadres}
-- Telefoon: ${requestData.telefoon}
-- Adres: ${customerAddress}
-
-Dakkapel Configuratie:
-- Type: ${requestData.type}
-- Afmetingen: ${requestData.breedte}cm x ${requestData.hoogte}cm
-- Materiaal: ${requestData.materiaal}
-- Aantal ramen: ${requestData.aantalramen}
-- Kozijn hoogte: ${requestData.kozijnhoogte}
-- Dakhelling: ${requestData.dakhelling}°
-- Kleur kozijnen: ${requestData.kleurkozijnen}
-- Kleur zijkanten: ${requestData.kleurzijkanten}
-- RC-waarde: ${requestData.rcwaarde}
-- Woning zijde: ${requestData.woningzijde}
-
-BEREKENDE PRIJS: €${totalPrice.toLocaleString('nl-NL')}
-
-${requestData.bericht ? `Bericht: ${requestData.bericht}` : ''}
-        `,
-        phone: requestData.telefoon,
-        dakkapel_type: requestData.type,
-        dakkapel_breedte: requestData.breedte,
-        dakkapel_hoogte: requestData.hoogte,
-        dakkapel_materiaal: requestData.materiaal,
-        dakkapel_prijs: totalPrice,
-        customer_address: customerAddress
-      };
-
-      console.log('Sending email with params:', emailParams);
-
-      // Import and use emailjs directly
-      const { sendEmail } = await import('@/config/email');
-      const emailResult = await sendEmail(emailParams);
-      
-      console.log('Email sending result:', emailResult);
-      
-      if (emailResult.success) {
-        console.log('✅ EMAIL SENT SUCCESSFULLY!');
-        return true;
-      } else {
-        console.error('❌ EMAIL FAILED:', emailResult.error);
-        return false;
-      }
-      
-    } catch (error) {
-      console.error('❌ EMAIL ERROR:', error);
-      return false;
-    }
-  };
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
@@ -182,20 +94,34 @@ ${requestData.bericht ? `Bericht: ${requestData.bericht}` : ''}
 
       console.log('✅ Saved to database:', savedData);
 
-      // Send email immediately using emailjs
-      console.log('Sending email immediately...');
-      const emailSent = await sendEmailDirectly(requestData);
-      
-      if (emailSent) {
-        toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
-          duration: 8000,
+      // IMMEDIATELY send email via Resend edge function
+      console.log('🚀 Triggering automatic email via Resend...');
+      try {
+        const emailResponse = await supabase.functions.invoke('auto-send-quote-simple', {
+          body: { 
+            requestId: savedData.id,
+            immediate: true 
+          }
         });
-        console.log('✅ EMAIL SENT TO CUSTOMER!');
-      } else {
+
+        console.log('📧 Email function response:', emailResponse);
+
+        if (emailResponse.error) {
+          console.error('Email function error:', emailResponse.error);
+          toast.success("Aanvraag verzonden! We sturen u zo spoedig mogelijk een offerte.", {
+            duration: 5000,
+          });
+        } else {
+          console.log('✅ EMAIL SENT SUCCESSFULLY!');
+          toast.success("Aanvraag verzonden! U ontvangt direct een offerte per email.", {
+            duration: 8000,
+          });
+        }
+      } catch (emailError) {
+        console.error('Email sending error:', emailError);
         toast.success("Aanvraag verzonden! We nemen zo spoedig mogelijk contact met u op.", {
           duration: 5000,
         });
-        console.log('⚠️ Email failed but request saved');
       }
 
       setSubmitSuccess(true);
