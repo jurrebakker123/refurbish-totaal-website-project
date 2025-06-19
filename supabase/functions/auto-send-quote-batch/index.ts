@@ -13,21 +13,20 @@ const corsHeaders = {
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW REQUEST RECEIVED ===");
   console.log("Method:", req.method);
-  console.log("Headers:", Object.fromEntries(req.headers));
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Environment check
+    // Gebruik de juiste Supabase credentials
     const supabaseUrl = 'https://pluhasunoaevfrdugkzg.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
+    const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MjA2MzU3ODE1MX0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
     console.log("=== ENVIRONMENT CHECK ===");
     console.log("SUPABASE_URL:", !!supabaseUrl);
-    console.log("SUPABASE_KEY:", !!supabaseKey);
+    console.log("SUPABASE_SERVICE_KEY:", !!supabaseServiceKey);
     console.log("RESEND_API_KEY:", !!resendApiKey);
 
     if (!resendApiKey) {
@@ -41,11 +40,11 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("✅ All environment variables are configured");
     
     const resend = new Resend(resendApiKey);
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
     
     console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
     
-    // Get all dakkapel requests from last 48 hours, regardless of status
+    // Get all dakkapel requests from last 48 hours
     const { data: allRequests, error: fetchError } = await supabaseClient
       .from('dakkapel_calculator_aanvragen')
       .select('*')
