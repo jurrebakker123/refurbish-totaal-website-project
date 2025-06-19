@@ -13,6 +13,7 @@ const corsHeaders = {
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW REQUEST RECEIVED ===");
   console.log("Method:", req.method);
+  console.log("Headers:", Object.fromEntries(req.headers.entries()));
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -27,11 +28,20 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("SUPABASE_URL:", !!supabaseUrl);
     console.log("SUPABASE_SERVICE_ROLE_KEY:", !!supabaseServiceKey);
     console.log("RESEND_API_KEY:", !!resendApiKey);
+    console.log("RESEND_API_KEY first 10 chars:", resendApiKey ? resendApiKey.substring(0, 10) : 'null');
 
     if (!supabaseUrl || !supabaseServiceKey || !resendApiKey) {
       console.error("❌ Missing environment variables");
       return new Response(
-        JSON.stringify({ success: false, error: "Missing environment variables" }),
+        JSON.stringify({ 
+          success: false, 
+          error: "Missing environment variables",
+          missing: {
+            supabaseUrl: !supabaseUrl,
+            supabaseServiceKey: !supabaseServiceKey,
+            resendApiKey: !resendApiKey
+          }
+        }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -40,6 +50,30 @@ const handler = async (req: Request): Promise<Response> => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
+    
+    console.log("=== TESTING RESEND CONNECTION ===");
+    try {
+      // Test Resend connection with a simple API call
+      const testEmail = await resend.emails.send({
+        from: 'Test <info@refurbishtotaalnederland.nl>',
+        to: ['test@example.com'],
+        subject: 'Test Connection',
+        html: '<p>Test</p>',
+        // Use dry run mode to test without actually sending
+      });
+      console.log("✅ Resend connection test successful");
+    } catch (resendError: any) {
+      console.error("❌ Resend connection test failed:", resendError);
+      console.error("Resend error details:", resendError.message);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Resend API connection failed",
+          details: resendError.message
+        }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
     
     console.log("=== CHECKING FOR NEW DAKKAPEL REQUESTS ===");
     
@@ -61,6 +95,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log("Dakkapel requests found:", dakkapelRequests?.length || 0);
+    console.log("Dakkapel requests details:", dakkapelRequests?.map(r => ({
+      id: r.id,
+      naam: `${r.voornaam} ${r.achternaam}`,
+      email: r.emailadres,
+      created_at: r.created_at,
+      status: r.status
+    })));
     
     if (!dakkapelRequests || dakkapelRequests.length === 0) {
       console.log("ℹ️ No new dakkapel requests found that need quotes");
@@ -90,7 +131,7 @@ const handler = async (req: Request): Promise<Response> => {
         const customerAddress = `${request.straatnaam} ${request.huisnummer}, ${request.postcode} ${request.plaats}`;
 
         const priceInfo = request.totaal_prijs ? 
-          `<p style="font-size: 20px; font-weight: bold; color: #059669; backgroun-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${request.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
+          `<p style="font-size: 20px; font-weight: bold; color: #059669; background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Totaalprijs: €${request.totaal_prijs.toLocaleString('nl-NL')}</p>` : 
           '<p style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; text-align: center;">Prijs wordt binnenkort meegedeeld.</p>';
 
         const defaultTemplate = `Beste ${customerName},
@@ -180,6 +221,7 @@ info@refurbishtotaalnederland.nl`;
         `;
 
         console.log(`📧 Sending email to: ${request.emailadres}`);
+        console.log(`Email subject: Dakkapel Offerte - Refurbish Totaal Nederland`);
 
         const emailResponse = await resend.emails.send({
           from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
