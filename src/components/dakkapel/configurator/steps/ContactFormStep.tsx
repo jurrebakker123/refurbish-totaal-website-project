@@ -109,19 +109,40 @@ export const ContactFormStep: React.FC<StepProps> = ({
 
       console.log('✅ Saved successfully with ID:', savedData.id);
       
-      // Submit the entire configuration if the function exists (for email)
+      // AUTOMATICALLY SEND QUOTE EMAIL - This is the key addition!
+      console.log('📧 Automatically sending quote email...');
+      
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('auto-send-quote', {
+        body: {
+          requestId: savedData.id,
+          type: 'dakkapel'
+        }
+      });
+
+      if (emailError) {
+        console.error('❌ Auto email failed:', emailError);
+        // Don't throw error - the data is saved, email failure shouldn't break the flow
+        toast.error("⚠️ Configuratie opgeslagen, maar email verzenden mislukt. We nemen handmatig contact op.");
+      } else if (emailData?.success) {
+        console.log('✅ Quote email sent successfully!');
+        toast.success("🎉 Perfect! Uw configuratie is opgeslagen en de offerte is automatisch verzonden!", {
+          description: "Controleer uw email (en spam folder) voor de offerte.",
+          duration: 8000,
+        });
+      } else {
+        console.error('❌ Auto email failed with response:', emailData);
+        toast.error("⚠️ Configuratie opgeslagen, maar email verzenden mislukt. We nemen handmatig contact op.");
+      }
+      
+      // Submit the entire configuration if the function exists (for backup)
       if (submitConfigurator) {
-        console.log('📧 Calling submitConfigurator for email...');
+        console.log('📧 Calling submitConfigurator for backup...');
         await submitConfigurator();
       }
       
       console.log('🎉 CONFIGURATOR SUBMISSION COMPLETED SUCCESSFULLY');
       
       setSubmitSuccess(true);
-      toast.success("🎉 Perfect! Uw dakkapel configuratie is verzonden!", {
-        description: "We nemen zo spoedig mogelijk contact met u op voor uw offerte.",
-        duration: 8000,
-      });
       
     } catch (error: any) {
       console.error("❌ CONFIGURATOR SUBMISSION ERROR:", error);
@@ -141,10 +162,10 @@ export const ContactFormStep: React.FC<StepProps> = ({
         <div className="bg-green-50 p-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-4 text-green-800">🎉 Configuratie succesvol verzonden!</h2>
           <p className="text-lg text-green-700 mb-4">
-            Bedankt voor uw dakkapel configuratie! We nemen zo spoedig mogelijk contact met u op.
+            Bedankt voor uw dakkapel configuratie! De offerte is automatisch naar uw email verzonden.
           </p>
           <p className="text-green-600">
-            💡 Tip: Controleer ook uw spam/junk folder voor onze emails.
+            💡 Tip: Controleer ook uw spam/junk folder voor de offerte email.
           </p>
         </div>
       </div>
