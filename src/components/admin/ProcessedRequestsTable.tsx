@@ -29,7 +29,7 @@ const ProcessedRequestsTable: React.FC<ProcessedRequestsTableProps> = ({
   onDataChange,
   type = 'dakkapel'
 }) => {
-  const tableName = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_configuraties';
+  const tableName = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
   
   const handleMoveBackToActive = async (id: string) => {
     const success = await updateRequestStatus(id, 'in_behandeling', tableName);

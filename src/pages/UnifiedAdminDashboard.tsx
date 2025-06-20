@@ -172,7 +172,7 @@ const UnifiedAdminDashboard = () => {
   const handleBulkAction = async (action: string, ids: string[]) => {
     setLoading(true);
     let successCount = 0;
-    const table = projectType === 'dakkapel' ? 'dakkapel_configuraties' : 'refurbished_zonnepanelen';
+    const table = projectType === 'dakkapel' ? 'dakkapel_calculator_aanvragen' : 'refurbished_zonnepanelen';
     
     for (const id of ids) {
       const success = await updateRequestStatus(id, action, table);

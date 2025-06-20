@@ -41,7 +41,7 @@ const ConfiguratorRequestsTable: React.FC<ConfiguratorRequestsTableProps> = ({
   type = 'dakkapel'
 }) => {
   const data = type === 'zonnepaneel' ? zonnepanelen : configuraties;
-  const tableName = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_configuraties';
+  const tableName = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
   
   const handleStatusChange = async (id: string, status: string) => {
     const success = await updateRequestStatus(id, status, tableName);

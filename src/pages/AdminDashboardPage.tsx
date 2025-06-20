@@ -209,7 +209,7 @@ const AdminDashboardPage = () => {
     let successCount = 0;
     
     for (const id of ids) {
-      const success = await updateRequestStatus(id, action, 'dakkapel_configuraties');
+      const success = await updateRequestStatus(id, action, 'dakkapel_calculator_aanvragen');
       if (success) successCount++;
     }
     
