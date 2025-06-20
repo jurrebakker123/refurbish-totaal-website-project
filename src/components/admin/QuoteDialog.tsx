@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -111,7 +110,7 @@ info@refurbishtotaalnederland.nl`;
       console.log('Verzenden offerte met bericht lengte:', messageToSend.length);
       console.log('PDF bijlage inbegrepen:', includePdfAttachment);
       
-      const success = await sendQuoteEmail(selectedItem, messageToSend, includePdfAttachment);
+      const success = await sendQuoteEmail(selectedItem, messageToSend);
       
       if (success) {
         toast.success(`Offerte succesvol verzonden naar ${selectedItem.email}!`);
