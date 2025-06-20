@@ -179,6 +179,41 @@ const handler = async (req: Request): Promise<Response> => {
         .eq('id', requestId);
     }
 
+    // Generate PDF attachments
+    console.log("Generating PDF attachments...");
+    
+    let pdfAttachment = null;
+    try {
+      const pdfResponse = await fetch(`${supabaseUrl}/functions/v1/generate-offerte-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`
+        },
+        body: JSON.stringify({
+          requestData,
+          type,
+          calculatedPrice: calculatedPrice || requestData.totaal_prijs
+        })
+      });
+
+      if (pdfResponse.ok) {
+        const pdfResult = await pdfResponse.json();
+        if (pdfResult.success) {
+          pdfAttachment = {
+            filename: `Offerte-${type}-${requestId}.pdf`,
+            content: pdfResult.pdfBase64,
+            type: 'application/pdf'
+          };
+          console.log("PDF attachment generated successfully");
+        }
+      } else {
+        console.log("PDF generation failed, continuing without attachment");
+      }
+    } catch (pdfError) {
+      console.log("PDF generation error:", pdfError, "continuing without attachment");
+    }
+
     // Prepare email content
     const customerName = type === 'dakkapel' ? `${requestData.voornaam} ${requestData.achternaam}`.trim() : requestData.naam;
     const customerEmail = type === 'dakkapel' ? requestData.emailadres : requestData.email;
@@ -278,6 +313,13 @@ const handler = async (req: Request): Promise<Response> => {
             <p style="color: #047857; margin: 0; font-size: 14px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
           </div>
 
+          ${pdfAttachment ? `
+          <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 25px 0; border: 2px solid #3b82f6;">
+            <h3 style="color: #1e40af; margin-top: 0;">📎 Bijlagen</h3>
+            <p style="color: #1e40af; margin: 0;">Deze email bevat een gedetailleerde PDF-offerte en onze algemene voorwaarden als bijlage.</p>
+          </div>
+          ` : ''}
+
           ${interestButtons}
 
           <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 25px 0;">
@@ -308,7 +350,8 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 8px; border: 2px solid #10b981;">
             <p style="margin: 0; font-size: 18px; color: #1f2937;"><strong>Met vriendelijke groet,</strong></p>
-            <p style="margin: 5px 0; font-size: 20px; color: #10b981; font-weight: bold;">Het team van Refurbish Totaal Nederland</p>
+            <p style="margin: 5px 0; font-size: 20px; color: #10b981; font-weight: bold;">Gerard Groeneveld</p>
+            <p style="margin: 5px 0; font-size: 16px; color: #4b5563;">Refurbish Totaal Nederland</p>
             <div style="margin-top: 15px;">
               <p style="margin: 5px 0; color: #4b5563;">📧 info@refurbishtotaalnederland.nl</p>
               <p style="margin: 5px 0; color: #4b5563;">📞 085-1301578</p>
@@ -340,6 +383,13 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           ` : ''}
 
+          ${pdfAttachment ? `
+          <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 25px 0; border: 2px solid #3b82f6;">
+            <h3 style="color: #1e40af; margin-top: 0;">📎 Bijlagen</h3>
+            <p style="color: #1e40af; margin: 0;">Deze email bevat een gedetailleerde PDF-offerte en onze algemene voorwaarden als bijlage.</p>
+          </div>
+          ` : ''}
+
           ${interestButtons}
 
           <div style="text-align: center; margin: 30px 0;">
@@ -349,7 +399,8 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="text-align: center; margin: 30px 0; padding: 20px; background: white; border-radius: 8px; border: 2px solid #f59e0b;">
             <p style="margin: 0; font-size: 18px; color: #1f2937;"><strong>Met vriendelijke groet,</strong></p>
-            <p style="margin: 5px 0; font-size: 20px; color: #f59e0b; font-weight: bold;">Het team van Refurbish Totaal Nederland</p>
+            <p style="margin: 5px 0; font-size: 20px; color: #f59e0b; font-weight: bold;">Gerard Groeneveld</p>
+            <p style="margin: 5px 0; font-size: 16px; color: #4b5563;">Refurbish Totaal Nederland</p>
             <div style="margin-top: 15px;">
               <p style="margin: 5px 0; color: #4b5563;">📧 info@refurbishtotaalnederland.nl</p>
               <p style="margin: 5px 0; color: #4b5563;">📞 085-1301578</p>
@@ -377,13 +428,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Using Resend API with key: ***configured***");
 
-    // Send the email using Resend
-    const emailResponse = await resend.emails.send({
+    // Prepare email options
+    const emailOptions: any = {
       from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
       to: [customerEmail],
       subject: emailSubject,
       html: emailHtml,
-    });
+    };
+
+    // Add PDF attachment if available
+    if (pdfAttachment) {
+      emailOptions.attachments = [pdfAttachment];
+      console.log("Adding PDF attachment to email");
+    }
+
+    // Send the email using Resend
+    const emailResponse = await resend.emails.send(emailOptions);
 
     console.log("✅ Resend API response:", emailResponse);
 
@@ -423,7 +483,8 @@ const handler = async (req: Request): Promise<Response> => {
       success: true, 
       message: "Auto-quote email sent successfully",
       emailId: emailResponse.data?.id,
-      calculatedPrice: finalPrice
+      calculatedPrice: finalPrice,
+      pdfGenerated: !!pdfAttachment
     }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders }

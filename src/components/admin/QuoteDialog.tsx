@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Check, X, AlertTriangle, ExternalLink } from 'lucide-react';
+import { Mail, Check, X, AlertTriangle, ExternalLink, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
 import { sendQuoteEmail } from '@/utils/adminUtils';
@@ -32,6 +32,7 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({
 }) => {
   const [quoteMessage, setQuoteMessage] = useState('');
   const [useDefaultTemplate, setUseDefaultTemplate] = useState(true);
+  const [includePdfAttachment, setIncludePdfAttachment] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -54,7 +55,8 @@ Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnem
 
 Met vriendelijke groet,
 
-Het team van Refurbish Totaal Nederland
+Gerard Groeneveld
+Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl` : `Beste klant,
 
@@ -73,7 +75,8 @@ Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnem
 
 Met vriendelijke groet,
 
-Het team van Refurbish Totaal Nederland
+Gerard Groeneveld
+Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl`;
 
@@ -106,8 +109,9 @@ info@refurbishtotaalnederland.nl`;
     
     try {
       console.log('Verzenden offerte met bericht lengte:', messageToSend.length);
+      console.log('PDF bijlage inbegrepen:', includePdfAttachment);
       
-      const success = await sendQuoteEmail(selectedItem, messageToSend);
+      const success = await sendQuoteEmail(selectedItem, messageToSend, includePdfAttachment);
       
       if (success) {
         toast.success(`Offerte succesvol verzonden naar ${selectedItem.email}!`);
@@ -130,6 +134,7 @@ info@refurbishtotaalnederland.nl`;
       setQuoteMessage(useDefaultTemplate ? defaultTemplate : '');
       setErrorMessage(null);
       setIsLoading(false);
+      setIncludePdfAttachment(true);
     }
   }, [isOpen, useDefaultTemplate, defaultTemplate]);
 
@@ -215,6 +220,18 @@ info@refurbishtotaalnederland.nl`;
             >
               <X className="h-4 w-4" />
               Leeg bericht
+            </Button>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Button 
+              type="button" 
+              variant={includePdfAttachment ? "default" : "outline"} 
+              onClick={() => setIncludePdfAttachment(!includePdfAttachment)}
+              className="flex items-center gap-2"
+            >
+              <FileText className="h-4 w-4" />
+              {includePdfAttachment ? 'PDF bijlage inbegrepen' : 'Geen PDF bijlage'}
             </Button>
           </div>
           
