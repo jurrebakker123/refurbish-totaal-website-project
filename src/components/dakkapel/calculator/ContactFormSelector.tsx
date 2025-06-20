@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,12 +45,20 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
   });
 
   const onSubmit = async (data: ContactFormValues) => {
+    if (isSubmitting) return; // Prevent double submission
+    
     setIsSubmitting(true);
     
     try {
       console.log('🚀 === STARTING AUTOMATIC DAKKAPEL SUBMISSION ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
+      
+      // Validation - only send if email is filled and has valid configuration
+      if (!data.emailadres || !configuration.type || !configuration.breedte) {
+        toast.error('Incomplete data - cannot send automatic quote');
+        return;
+      }
       
       // Save to database first - using correct table name
       const requestData = {
@@ -81,7 +90,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('💾 Saving to dakkapel_calculator_aanvragen...');
       
-      // Try saving to the correct table
+      // Save to database first
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -90,51 +99,51 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       if (dbError) {
         console.error('❌ Database save failed:', dbError);
-        console.log('🔄 Trying dakkapel_configuraties table instead...');
-        
-        // Try alternative table name
-        const altRequestData = {
-          naam: `${data.voornaam} ${data.achternaam}`,
-          email: data.emailadres,
-          telefoon: data.telefoon,
-          adres: `${data.straatnaam} ${data.huisnummer}`,
-          postcode: data.postcode,
-          plaats: data.plaats,
-          opmerkingen: data.bericht || '',
-          model: configuration.type,
-          breedte: configuration.breedte,
-          materiaal: configuration.materiaal,
-          dakhelling: configuration.dakHelling,
-          kleur_kozijn: configuration.kleurKozijnen,
-          kleur_zijkanten: configuration.kleurZijkanten,
-          kleur_draaikiepramen: configuration.kleurDraaikiepramen,
-          ventilationgrids: configuration.opties?.ventilatie || false,
-          sunshade: configuration.opties?.zonwering || false,
-          insectscreens: configuration.opties?.horren || false,
-          airco: configuration.opties?.airco || false,
-          status: 'nieuw'
-        };
+        throw new Error(`Database error: ${dbError.message}`);
+      }
 
-        const { data: altSavedData, error: altDbError } = await supabase
-          .from('dakkapel_configuraties')
-          .insert(altRequestData)
-          .select()
-          .single();
+      console.log('✅ Saved to database with ID:', savedData.id);
 
-        if (altDbError) {
-          console.error('❌ Alternative database save also failed:', altDbError);
-          throw new Error(`Database error: ${altDbError.message}`);
+      // Now trigger automatic quote sending using the existing auto-send-quote function
+      console.log('📧 TRIGGERING AUTOMATIC QUOTE SENDING...');
+      
+      const { data: quoteResult, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
+        body: {
+          requestId: savedData.id,
+          type: 'dakkapel'
         }
+      });
 
-        console.log('✅ Saved to dakkapel_configuraties with ID:', altSavedData.id);
+      if (quoteError) {
+        console.error('❌ Auto quote error:', quoteError);
+        // Still show success for database save, but mention email issue
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
+          description: "U ontvangt binnenkort een email met uw offerte.",
+          duration: 6000,
+        });
+      } else if (quoteResult?.success) {
+        console.log('🎉 AUTOMATIC QUOTE SENT SUCCESSFULLY!');
         
-        // Call webhook with the saved data
-        await callWebhookFunction(altSavedData.id, 'dakkapel_configuraties');
+        // Update database to mark as sent
+        await supabase
+          .from('dakkapel_calculator_aanvragen')
+          .update({
+            status: 'offerte_verzonden',
+            offerte_verzonden_op: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', savedData.id);
+
+        toast.success("🎉 Perfect! Uw dakkapel offerte is automatisch verzonden!", {
+          description: `Offerte voor €${quoteResult.price?.toLocaleString('nl-NL') || 'onbekend'} is naar uw email verzonden.`,
+          duration: 10000,
+        });
       } else {
-        console.log('✅ Saved to dakkapel_calculator_aanvragen with ID:', savedData.id);
-        
-        // Call webhook with the saved data
-        await callWebhookFunction(savedData.id, 'dakkapel_calculator_aanvragen');
+        console.log('⚠️ Quote sending had issues:', quoteResult?.error);
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+          description: "U ontvangt binnenkort een email met uw offerte.",
+          duration: 6000,
+        });
       }
 
       // Success
@@ -152,58 +161,6 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
       });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const callWebhookFunction = async (requestId: string, tableName: string) => {
-    try {
-      console.log('📧 CALLING WEBHOOK FUNCTION FOR AUTOMATIC EMAIL...');
-      
-      const webhookPayload = {
-        event: 'ConfiguratorComplete',
-        requestId: requestId,
-        tableName: tableName,
-        automatic: true,
-        timestamp: new Date().toISOString()
-      };
-
-      console.log('Webhook payload:', webhookPayload);
-
-      // Use supabase.functions.invoke for proper authentication
-      const { data: result, error: webhookError } = await supabase.functions.invoke('dakkapel-webhook-handler', {
-        body: webhookPayload
-      });
-
-      if (webhookError) {
-        console.error('⚠️ Webhook call failed:', webhookError);
-        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
-          description: "U ontvangt binnenkort een email met uw offerte.",
-          duration: 6000,
-        });
-        return;
-      }
-
-      console.log('📬 Webhook response:', result);
-
-      if (result?.success) {
-        console.log('🎉 EMAIL SENT AUTOMATICALLY!');
-        toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
-          description: `Offerte voor €${result.price?.toLocaleString('nl-NL') || 'onbekend'} is verzonden.`,
-          duration: 10000,
-        });
-      } else {
-        console.log('⚠️ Webhook had issues:', result?.error);
-        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
-          description: "U ontvangt binnenkort een email met uw offerte.",
-          duration: 6000,
-        });
-      }
-    } catch (webhookError: any) {
-      console.error('⚠️ Webhook call failed:', webhookError);
-      toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
-        description: "U ontvangt binnenkort een email met uw offerte.",
-        duration: 6000,
-      });
     }
   };
 
