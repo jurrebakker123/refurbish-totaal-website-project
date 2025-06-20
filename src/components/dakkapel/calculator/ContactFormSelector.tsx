@@ -47,11 +47,11 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     setIsSubmitting(true);
     
     try {
-      console.log('=== STARTING AUTOMATIC DAKKAPEL SUBMISSION ===');
+      console.log('🚀 === STARTING AUTOMATIC DAKKAPEL SUBMISSION ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Step 1: Save to database first
+      // Save to database first - using correct table name
       const requestData = {
         voornaam: data.voornaam,
         achternaam: data.achternaam,
@@ -76,12 +76,12 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         woningzijde: configuration.woningZijde,
         rcwaarde: configuration.rcWaarde,
         opties: configuration.opties,
-        status: 'nieuw',
-        event_type: 'ConfiguratorComplete',
-        timestamp: new Date().toISOString()
+        status: 'nieuw'
       };
 
-      console.log('💾 Saving to database...');
+      console.log('💾 Saving to dakkapel_calculator_aanvragen...');
+      
+      // Try saving to the correct table
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -90,66 +90,61 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       if (dbError) {
         console.error('❌ Database save failed:', dbError);
-        throw new Error(`Database error: ${dbError.message}`);
-      }
+        console.log('🔄 Trying dakkapel_configuraties table instead...');
+        
+        // Try alternative table name
+        const altRequestData = {
+          naam: `${data.voornaam} ${data.achternaam}`,
+          email: data.emailadres,
+          telefoon: data.telefoon,
+          adres: `${data.straatnaam} ${data.huisnummer}`,
+          postcode: data.postcode,
+          plaats: data.plaats,
+          opmerkingen: data.bericht || '',
+          model: configuration.type,
+          breedte: configuration.breedte,
+          materiaal: configuration.materiaal,
+          dakhelling: configuration.dakHelling,
+          kleur_kozijn: configuration.kleurKozijnen,
+          kleur_zijkanten: configuration.kleurZijkanten,
+          kleur_draaikiepramen: configuration.kleurDraaikiepramen,
+          ventilationgrids: configuration.opties?.ventilatie || false,
+          sunshade: configuration.opties?.zonwering || false,
+          insectscreens: configuration.opties?.horren || false,
+          airconditioning: configuration.opties?.airco || false,
+          status: 'nieuw'
+        };
 
-      console.log('✅ Saved to database with ID:', savedData.id);
+        const { data: altSavedData, error: altDbError } = await supabase
+          .from('dakkapel_configuraties')
+          .insert(altRequestData)
+          .select()
+          .single();
 
-      // Step 2: Immediately call webhook for automatic email
-      const webhookPayload = {
-        event: 'ConfiguratorComplete',
-        requestId: savedData.id,
-        automatic: true,
-        timestamp: new Date().toISOString()
-      };
-
-      console.log('📧 CALLING WEBHOOK AUTOMATICALLY...');
-      console.log('Webhook payload:', webhookPayload);
-
-      // Call the webhook function directly
-      const { data: webhookResult, error: webhookError } = await supabase.functions.invoke(
-        'dakkapel-webhook-handler',
-        {
-          body: webhookPayload,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+        if (altDbError) {
+          console.error('❌ Alternative database save also failed:', altDbError);
+          throw new Error(`Database error: ${altDbError.message}`);
         }
-      );
 
-      console.log('📬 Webhook response:', webhookResult);
-      console.log('📬 Webhook error (if any):', webhookError);
-
-      // Handle webhook results
-      if (webhookError) {
-        console.error('⚠️ Webhook error, but continuing:', webhookError);
-        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
-          description: "U ontvangt binnenkort een email met uw offerte.",
-          duration: 6000,
-        });
-      } else if (webhookResult && webhookResult.success) {
-        console.log('🎉 WEBHOOK SUCCESS - EMAIL SENT AUTOMATICALLY!');
-        toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
-          description: `Offerte voor €${webhookResult.price?.toLocaleString('nl-NL') || 'onbekend'} is verzonden.`,
-          duration: 10000,
-        });
+        console.log('✅ Saved to dakkapel_configuraties with ID:', altSavedData.id);
+        
+        // Call webhook with the saved data
+        await callWebhookDirectly(altSavedData.id, 'dakkapel_configuraties');
       } else {
-        console.log('⚠️ Webhook completed but with issues');
-        toast.success("✅ Aanvraag verzonden! Uw offerte wordt automatisch verwerkt.", {
-          description: "Controleer uw email binnen enkele minuten.",
-          duration: 6000,
-        });
+        console.log('✅ Saved to dakkapel_calculator_aanvragen with ID:', savedData.id);
+        
+        // Call webhook with the saved data
+        await callWebhookDirectly(savedData.id, 'dakkapel_calculator_aanvragen');
       }
 
-      // Success - continue to next step
-      console.log('✅ ALL STEPS COMPLETED SUCCESSFULLY');
+      // Success
+      console.log('🎉 ALL STEPS COMPLETED SUCCESSFULLY');
       setSubmitSuccess(true);
       onNext();
       
     } catch (error: any) {
       console.error("❌ SUBMISSION ERROR:", error);
       console.error("Error details:", error.message);
-      console.error("Error stack:", error.stack);
       
       toast.error("❌ Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
         description: "Neem contact op als het probleem aanhoudt.",
@@ -157,6 +152,57 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const callWebhookDirectly = async (requestId: string, tableName: string) => {
+    try {
+      console.log('📧 CALLING WEBHOOK DIRECTLY FOR AUTOMATIC EMAIL...');
+      
+      const webhookPayload = {
+        event: 'ConfiguratorComplete',
+        requestId: requestId,
+        tableName: tableName,
+        automatic: true,
+        timestamp: new Date().toISOString()
+      };
+
+      console.log('Webhook payload:', webhookPayload);
+
+      // Direct webhook call using the full URL
+      const webhookUrl = 'https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler';
+      
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabase.supabaseKey}`
+        },
+        body: JSON.stringify(webhookPayload)
+      });
+
+      const result = await response.json();
+      console.log('📬 Direct webhook response:', result);
+
+      if (result.success) {
+        console.log('🎉 EMAIL SENT AUTOMATICALLY!');
+        toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
+          description: `Offerte voor €${result.price?.toLocaleString('nl-NL') || 'onbekend'} is verzonden.`,
+          duration: 10000,
+        });
+      } else {
+        console.log('⚠️ Webhook had issues:', result.error);
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+          description: "U ontvangt binnenkort een email met uw offerte.",
+          duration: 6000,
+        });
+      }
+    } catch (webhookError: any) {
+      console.error('⚠️ Webhook call failed:', webhookError);
+      toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+        description: "U ontvangt binnenkort een email met uw offerte.",
+        duration: 6000,
+      });
     }
   };
 
@@ -357,7 +403,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
             className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300 disabled:opacity-50"
           >
             <span>
-              {isSubmitting ? '🔄 Bezig met automatisch verzenden...' : '🚀 Automatisch offerte aanvragen'}
+              {isSubmitting ? '🔄 Automatisch verzenden...' : '🚀 Automatisch offerte aanvragen'}
             </span>
             {!isSubmitting && <ArrowRight size={18} />}
           </button>

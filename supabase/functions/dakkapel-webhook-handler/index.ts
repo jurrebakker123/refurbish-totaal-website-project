@@ -13,7 +13,6 @@ const corsHeaders = {
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== AUTOMATIC WEBHOOK REQUEST RECEIVED ===");
   console.log("Request method:", req.method);
-  console.log("Request URL:", req.url);
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -49,7 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
     const payload = await req.json();
     console.log("📨 Received webhook payload:", JSON.stringify(payload, null, 2));
 
-    const { event, requestId, automatic } = payload;
+    const { event, requestId, tableName, automatic } = payload;
 
     // Validate event type
     if (event !== 'ConfiguratorComplete') {
@@ -76,17 +75,46 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`🎯 Processing AUTOMATIC ConfiguratorComplete for request: ${requestId}`);
+    console.log(`📋 Using table: ${tableName || 'dakkapel_calculator_aanvragen'}`);
 
+    // Determine which table to use
+    const tableToQuery = tableName || 'dakkapel_calculator_aanvragen';
+    
     // Fetch request data from database
-    console.log("📋 Fetching request data from database...");
+    console.log(`📋 Fetching request data from ${tableToQuery}...`);
     const { data: request, error: fetchError } = await supabase
-      .from('dakkapel_calculator_aanvragen')
+      .from(tableToQuery)
       .select('*')
       .eq('id', requestId)
       .single();
 
     if (fetchError) {
       console.error("❌ Database fetch error:", fetchError);
+      
+      // Try alternative table if first one fails
+      if (tableToQuery === 'dakkapel_calculator_aanvragen') {
+        console.log("🔄 Trying dakkapel_configuraties table...");
+        const { data: altRequest, error: altFetchError } = await supabase
+          .from('dakkapel_configuraties')
+          .select('*')
+          .eq('id', requestId)
+          .single();
+        
+        if (altFetchError) {
+          console.error("❌ Alternative database fetch also failed:", altFetchError);
+          return new Response(JSON.stringify({ 
+            success: false, 
+            error: `Database error: ${altFetchError.message}` 
+          }), {
+            status: 500,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+        
+        // Process with alternative table data
+        return await processRequest(altRequest, resend, supabase, 'dakkapel_configuraties');
+      }
+      
       return new Response(JSON.stringify({ 
         success: false, 
         error: `Database error: ${fetchError.message}` 
@@ -109,82 +137,98 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("✅ Found request data:", {
       id: request.id,
-      customer: `${request.voornaam} ${request.achternaam}`,
-      email: request.emailadres,
-      type: request.type,
+      customer: request.naam || `${request.voornaam} ${request.achternaam}`,
+      email: request.email || request.emailadres,
+      type: request.type || request.model,
       material: request.materiaal
     });
 
-    // Calculate total price with null checks
-    console.log("💰 Calculating price...");
-    let totalPrice = 15000; // Base price
-    
-    // Size adjustments
-    if (request.breedte && request.breedte > 300) {
-      totalPrice += 2000;
-      console.log(`+ €2000 for width > 300cm (${request.breedte}cm)`);
-    }
-    if (request.hoogte && request.hoogte > 175) {
-      totalPrice += 1500;
-      console.log(`+ €1500 for height > 175cm (${request.hoogte}cm)`);
-    }
-    
-    // Material adjustments
-    if (request.materiaal === 'hout') {
-      totalPrice += 3000;
-      console.log("+ €3000 for wood material");
-    } else if (request.materiaal === 'aluminium') {
-      totalPrice += 4000;
-      console.log("+ €4000 for aluminum material");
-    }
-    
-    // Window adjustments
-    if (request.aantalramen && request.aantalramen > 2) {
-      const extraWindows = request.aantalramen - 2;
-      const extraCost = extraWindows * 800;
-      totalPrice += extraCost;
-      console.log(`+ €${extraCost} for ${extraWindows} extra windows`);
-    }
-    
-    // Options adjustments
-    if (request.opties && typeof request.opties === 'object') {
-      if (request.opties.ventilatie) {
-        totalPrice += 500;
-        console.log("+ €500 for ventilation");
-      }
-      if (request.opties.zonwering) {
-        totalPrice += 1200;
-        console.log("+ €1200 for sun protection");
-      }
-      if (request.opties.extra_isolatie) {
-        totalPrice += 800;
-        console.log("+ €800 for extra insulation");
-      }
-      if (request.opties.horren) {
-        totalPrice += 400;
-        console.log("+ €400 for screens");
-      }
-      if (request.opties.kader_dakkapel) {
-        totalPrice += 1140;
-        console.log("+ €1140 for dormer frame");
-      }
-      if (request.opties.minirooftop) {
-        totalPrice += 3178;
-        console.log("+ €3178 for mini rooftop");
-      }
-      if (request.opties.dak_versteviging) {
-        totalPrice += 400;
-        console.log("+ €400 for roof reinforcement");
-      }
-    }
+    return await processRequest(request, resend, supabase, tableToQuery);
 
-    console.log(`💰 Final calculated price: €${totalPrice.toLocaleString('nl-NL')}`);
+  } catch (error: any) {
+    console.error("=== CRITICAL WEBHOOK ERROR ===", error);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: `Webhook failed: ${error.message}`,
+      automatic: true
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders }
+    });
+  }
+};
 
-    // Prepare email content
-    const customerName = `${request.voornaam || ''} ${request.achternaam || ''}`.trim();
-    const customerAddress = `${request.straatnaam || ''} ${request.huisnummer || ''}, ${request.postcode || ''} ${request.plaats || ''}`;
+async function processRequest(request: any, resend: any, supabase: any, tableName: string) {
+  // Calculate total price with null checks
+  console.log("💰 Calculating price...");
+  let totalPrice = 15000; // Base price
+  
+  // Size adjustments
+  const width = request.breedte || 0;
+  const height = request.hoogte || 0;
+  
+  if (width > 300) {
+    totalPrice += 2000;
+    console.log(`+ €2000 for width > 300cm (${width}cm)`);
+  }
+  if (height > 175) {
+    totalPrice += 1500;
+    console.log(`+ €1500 for height > 175cm (${height}cm)`);
+  }
+  
+  // Material adjustments
+  const material = request.materiaal || request.material || '';
+  if (material === 'hout' || material === 'wood') {
+    totalPrice += 3000;
+    console.log("+ €3000 for wood material");
+  } else if (material === 'aluminium' || material === 'aluminum') {
+    totalPrice += 4000;
+    console.log("+ €4000 for aluminum material");
+  }
+  
+  // Window adjustments
+  const windowCount = request.aantalramen || 2;
+  if (windowCount > 2) {
+    const extraWindows = windowCount - 2;
+    const extraCost = extraWindows * 800;
+    totalPrice += extraCost;
+    console.log(`+ €${extraCost} for ${extraWindows} extra windows`);
+  }
+  
+  // Options adjustments - handle both formats
+  const options = request.opties || {};
+  if (options.ventilatie || request.ventilationgrids) {
+    totalPrice += 500;
+    console.log("+ €500 for ventilation");
+  }
+  if (options.zonwering || request.sunshade) {
+    totalPrice += 1200;
+    console.log("+ €1200 for sun protection");
+  }
+  if (options.extra_isolatie) {
+    totalPrice += 800;
+    console.log("+ €800 for extra insulation");
+  }
+  if (options.horren || request.insectscreens) {
+    totalPrice += 400;
+    console.log("+ €400 for screens");
+  }
+  if (options.airco || request.airconditioning) {
+    totalPrice += 1500;
+    console.log("+ €1500 for air conditioning");
+  }
 
-    const emailHtml = `
+  console.log(`💰 Final calculated price: €${totalPrice.toLocaleString('nl-NL')}`);
+
+  // Prepare email content - handle both table formats
+  const customerName = request.naam || `${request.voornaam || ''} ${request.achternaam || ''}`.trim();
+  const customerEmail = request.email || request.emailadres;
+  const customerAddress = request.adres || `${request.straatnaam || ''} ${request.huisnummer || ''}, ${request.postcode || ''} ${request.plaats || ''}`;
+
+  const emailHtml = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
   <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
     <h1 style="margin: 0; font-size: 24px;">🎉 Uw Dakkapel Offerte</h1>
@@ -207,16 +251,13 @@ const handler = async (req: Request): Promise<Response> => {
     <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="margin-top: 0; color: #374151;">Uw Dakkapel Configuratie:</h3>
       <ul style="margin: 0; padding-left: 20px; color: #4b5563;">
-        <li><strong>Type:</strong> ${request.type || 'Niet opgegeven'}</li>
-        <li><strong>Afmetingen:</strong> ${request.breedte || 0}cm x ${request.hoogte || 0}cm</li>
-        <li><strong>Materiaal:</strong> ${request.materiaal || 'Niet opgegeven'}</li>
-        <li><strong>Aantal ramen:</strong> ${request.aantalramen || 1}</li>
-        <li><strong>Kozijn hoogte:</strong> ${request.kozijnhoogte || 'Standaard'}</li>
+        <li><strong>Type:</strong> ${request.type || request.model || 'Standaard'}</li>
+        <li><strong>Afmetingen:</strong> ${width}cm x ${height}cm</li>
+        <li><strong>Materiaal:</strong> ${material || 'Keralit'}</li>
+        <li><strong>Aantal ramen:</strong> ${windowCount}</li>
         <li><strong>Dakhelling:</strong> ${request.dakhelling || 45}°</li>
-        <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen || 'Wit'}</li>
-        <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten || 'Wit'}</li>
-        <li><strong>RC-waarde:</strong> ${request.rcwaarde || 'Standaard'}</li>
-        <li><strong>Woning zijde:</strong> ${request.woningzijde || 'Niet opgegeven'}</li>
+        <li><strong>Kleur kozijnen:</strong> ${request.kleurkozijnen || request.kleur_kozijn || 'Wit'}</li>
+        <li><strong>Kleur zijkanten:</strong> ${request.kleurzijkanten || request.kleur_zijkanten || 'Wit'}</li>
       </ul>
     </div>
 
@@ -259,76 +300,61 @@ const handler = async (req: Request): Promise<Response> => {
     <p style="margin: 0;">© 2024 Refurbish Totaal Nederland - Automatische Offerte Service</p>
   </div>
 </div>
-    `;
+  `;
 
-    // Send email automatically
-    console.log(`📧 SENDING AUTOMATIC EMAIL to: ${request.emailadres}`);
-    
-    const emailResponse = await resend.emails.send({
-      from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
-      to: [request.emailadres],
-      subject: `🎉 Uw Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')} (Automatisch)`,
-      html: emailHtml,
-    });
+  // Send email automatically
+  console.log(`📧 SENDING AUTOMATIC EMAIL to: ${customerEmail}`);
+  
+  const emailResponse = await resend.emails.send({
+    from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
+    to: [customerEmail],
+    subject: `🎉 Uw Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')} (Automatisch)`,
+    html: emailHtml,
+  });
 
-    console.log("📬 Email send response:", emailResponse);
+  console.log("📬 Email send response:", emailResponse);
 
-    if (emailResponse.error) {
-      console.error(`❌ Email sending failed:`, emailResponse.error);
-      throw new Error(`Email failed: ${emailResponse.error.message || 'Unknown error'}`);
-    }
-
-    const emailId = emailResponse.data?.id;
-    console.log(`✅ AUTOMATIC EMAIL SENT SUCCESSFULLY! Email ID: ${emailId}`);
-
-    // Update database with success status
-    console.log("💾 Updating database with sent status...");
-    const { error: updateError } = await supabase
-      .from('dakkapel_calculator_aanvragen')
-      .update({
-        status: 'offerte_verzonden',
-        offerte_verzonden_op: new Date().toISOString(),
-        totaal_prijs: totalPrice,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', request.id);
-
-    if (updateError) {
-      console.error(`❌ Database update failed:`, updateError);
-      // Don't throw here - email was sent successfully
-    } else {
-      console.log(`✅ Database updated successfully for request ${request.id}`);
-    }
-
-    // Return success response
-    console.log("🎉 AUTOMATIC WEBHOOK PROCESS COMPLETED SUCCESSFULLY!");
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: 'Automatic email sent successfully',
-      emailId: emailId,
-      price: totalPrice,
-      requestId: request.id,
-      automatic: true
-    }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders }
-    });
-
-  } catch (error: any) {
-    console.error("=== CRITICAL WEBHOOK ERROR ===", error);
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-    
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: `Webhook failed: ${error.message}`,
-      automatic: true
-    }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders }
-    });
+  if (emailResponse.error) {
+    console.error(`❌ Email sending failed:`, emailResponse.error);
+    throw new Error(`Email failed: ${emailResponse.error.message || 'Unknown error'}`);
   }
-};
+
+  const emailId = emailResponse.data?.id;
+  console.log(`✅ AUTOMATIC EMAIL SENT SUCCESSFULLY! Email ID: ${emailId}`);
+
+  // Update database with success status
+  console.log("💾 Updating database with sent status...");
+  const { error: updateError } = await supabase
+    .from(tableName)
+    .update({
+      status: 'offerte_verzonden',
+      offerte_verzonden_op: new Date().toISOString(),
+      totaal_prijs: totalPrice,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', request.id);
+
+  if (updateError) {
+    console.error(`❌ Database update failed:`, updateError);
+    // Don't throw here - email was sent successfully
+  } else {
+    console.log(`✅ Database updated successfully for request ${request.id}`);
+  }
+
+  // Return success response
+  console.log("🎉 AUTOMATIC WEBHOOK PROCESS COMPLETED SUCCESSFULLY!");
+  
+  return new Response(JSON.stringify({ 
+    success: true, 
+    message: 'Automatic email sent successfully',
+    emailId: emailId,
+    price: totalPrice,
+    requestId: request.id,
+    automatic: true
+  }), {
+    status: 200,
+    headers: { "Content-Type": "application/json", ...corsHeaders }
+  });
+}
 
 serve(handler);
