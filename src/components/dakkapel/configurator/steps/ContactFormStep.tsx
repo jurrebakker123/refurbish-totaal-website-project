@@ -63,7 +63,7 @@ export const ContactFormStep: React.FC<StepProps> = ({
     });
     
     try {
-      console.log('🚀 === STARTING DAKKAPEL CONFIGURATOR SUBMISSION ===');
+      console.log('Starting dakkapel configurator submission');
       console.log('Contact data:', data);
       console.log('Configuration:', configuration);
       console.log('Current price:', currentPrice);
@@ -93,10 +93,11 @@ export const ContactFormStep: React.FC<StepProps> = ({
         woningzijde: 'Voor',
         rcwaarde: 'Standaard',
         opties: configuration.extras ? Object.keys(configuration.extras).filter(key => configuration.extras?.[key]).join(', ') : 'Geen extra opties',
-        status: 'nieuw'
+        status: 'nieuw',
+        totaal_prijs: currentPrice
       };
 
-      console.log('💾 Saving to dakkapel_calculator_aanvragen...');
+      console.log('Saving to dakkapel_calculator_aanvragen...');
       console.log('Request data:', requestData);
       
       const { data: savedData, error: dbError } = await supabase
@@ -106,24 +107,24 @@ export const ContactFormStep: React.FC<StepProps> = ({
         .single();
 
       if (dbError) {
-        console.error('❌ Database save failed:', dbError);
+        console.error('Database save failed:', dbError);
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      console.log('✅ Saved successfully with ID:', savedData.id);
-      console.log('🎉 CONFIGURATOR SUBMISSION COMPLETED SUCCESSFULLY - DATABASE TRIGGER WILL HANDLE EMAIL');
+      console.log('Saved successfully with ID:', savedData.id);
+      console.log('Configurator submission completed successfully - database trigger will handle email');
       
       setSubmitSuccess(true);
       
-      toast.success("🎉 Perfect! Uw configuratie is opgeslagen!", {
+      toast.success("Perfect! Uw configuratie is opgeslagen!", {
         description: "De offerte wordt automatisch naar uw email verzonden via onze database trigger.",
         duration: 8000,
       });
       
     } catch (error: any) {
-      console.error("❌ CONFIGURATOR SUBMISSION ERROR:", error);
+      console.error("Configurator submission error:", error);
       
-      toast.error("❌ Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
+      toast.error("Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
         description: "Neem contact op als het probleem aanhoudt.",
         duration: 8000,
       });
@@ -136,12 +137,12 @@ export const ContactFormStep: React.FC<StepProps> = ({
     return (
       <div className="text-center space-y-6">
         <div className="bg-green-50 p-8 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4 text-green-800">🎉 Configuratie succesvol verzonden!</h2>
+          <h2 className="text-2xl font-bold mb-4 text-green-800">Configuratie succesvol verzonden!</h2>
           <p className="text-lg text-green-700 mb-4">
             Bedankt voor uw dakkapel configuratie! De offerte wordt automatisch naar uw email verzonden.
           </p>
           <p className="text-green-600">
-            💡 Tip: Controleer ook uw spam/junk folder voor de offerte email.
+            Tip: Controleer ook uw spam/junk folder voor de offerte email.
           </p>
         </div>
       </div>
@@ -150,7 +151,7 @@ export const ContactFormStep: React.FC<StepProps> = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-brand-darkGreen">📝 Laat uw gegevens achter</h2>
+      <h2 className="text-2xl font-bold mb-6 text-brand-darkGreen">Laat uw gegevens achter</h2>
       <p className="mb-6 text-lg">Vul uw contactgegevens in, zodat we u een passende offerte kunnen sturen.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -241,7 +242,7 @@ export const ContactFormStep: React.FC<StepProps> = ({
             disabled={isSubmitting}
             className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300 disabled:opacity-50"
           >
-            <span>{isSubmitting ? '🔄 Verzenden...' : '🚀 Vraag offerte aan'}</span>
+            <span>{isSubmitting ? 'Verzenden...' : 'Vraag offerte aan'}</span>
             {!isSubmitting && <ArrowRight size={18} />}
           </button>
         </div>

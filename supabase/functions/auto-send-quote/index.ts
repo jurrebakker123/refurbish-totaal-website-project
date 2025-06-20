@@ -15,6 +15,89 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Function to calculate total price from configuration
+const calculateTotalPrice = (config: any): number => {
+  console.log('Calculating price for config:', config);
+  
+  // Base prices per type
+  const basePrices: Record<string, number> = {
+    'typeA': 7060,
+    'typeB': 7290,
+    'typeC': 8200,
+    'typeD': 8780,
+    'typeE': 9330,
+    'Dakkapel plat dak': 7500,
+    'Dakkapel schuin dak': 8000,
+    'Dakkapel lessenaar': 8500
+  };
+
+  // Material multipliers
+  const materialMultipliers: Record<string, number> = {
+    'kunststof': 1.0,
+    'hout': 1.2,
+    'aluminium': 1.3,
+    'Keralit': 1.0,
+    'Hout': 1.2,
+    'Aluminium': 1.3
+  };
+
+  // Option costs
+  const optionCosts: Record<string, number> = {
+    'ventilationGrids': 450,
+    'sunShade': 850,
+    'insectScreens': 240,
+    'airConditioning': 650
+  };
+
+  // Get base price
+  const basePrice = basePrices[config.type] || basePrices['Dakkapel plat dak'] || 7500;
+  
+  // Get material multiplier
+  const materialMultiplier = materialMultipliers[config.materiaal] || materialMultipliers[config.material] || 1.0;
+  
+  // Calculate options total
+  let optionsTotal = 0;
+  if (config.opties) {
+    const opties = typeof config.opties === 'string' ? config.opties.split(',') : [];
+    opties.forEach((optie: string) => {
+      const optieKey = optie.trim();
+      if (optionCosts[optieKey]) {
+        optionsTotal += optionCosts[optieKey];
+      }
+    });
+  }
+  
+  // Calculate extras from configurator
+  if (config.extras) {
+    Object.keys(config.extras).forEach(key => {
+      if (config.extras[key] && optionCosts[key]) {
+        optionsTotal += optionCosts[key];
+      }
+    });
+  }
+  
+  // Width-based adjustments (for configurator)
+  let widthAdjustment = 0;
+  if (config.width) {
+    const widthValue = parseInt(config.width.split('-')[0]) || 240;
+    if (widthValue > 300) {
+      widthAdjustment = (widthValue - 300) * 5; // €5 per cm extra
+    }
+  }
+  
+  const totalPrice = (basePrice * materialMultiplier) + optionsTotal + widthAdjustment;
+  
+  console.log('Price calculation:', {
+    basePrice,
+    materialMultiplier,
+    optionsTotal,
+    widthAdjustment,
+    totalPrice
+  });
+  
+  return Math.round(totalPrice / 10) * 10; // Round to nearest 10
+};
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW AUTO-QUOTE REQUEST ===");
   console.log("Request method:", req.method);
@@ -80,8 +163,21 @@ const handler = async (req: Request): Promise<Response> => {
       naam: type === 'dakkapel' ? `${requestData.voornaam} ${requestData.achternaam}` : requestData.naam,
       email: type === 'dakkapel' ? requestData.emailadres : requestData.email,
       id: requestData.id,
-      totaal_prijs: requestData.totaal_prijs
+      existing_totaal_prijs: requestData.totaal_prijs
     });
+
+    // Calculate price if not already set
+    let calculatedPrice = requestData.totaal_prijs;
+    if (!calculatedPrice && type === 'dakkapel') {
+      calculatedPrice = calculateTotalPrice(requestData);
+      console.log("Calculated price:", calculatedPrice);
+      
+      // Update the record with calculated price
+      await supabase
+        .from(tableName)
+        .update({ totaal_prijs: calculatedPrice })
+        .eq('id', requestId);
+    }
 
     // Prepare email content
     const customerName = type === 'dakkapel' ? `${requestData.voornaam} ${requestData.achternaam}`.trim() : requestData.naam;
@@ -114,10 +210,13 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Format price display - make sure we have the calculated price
-    const priceDisplay = requestData.totaal_prijs ? 
-      `€${parseFloat(requestData.totaal_prijs).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 
+    // Format price display - use calculated or existing price
+    const finalPrice = calculatedPrice || requestData.totaal_prijs;
+    const priceDisplay = finalPrice ? 
+      `€${parseFloat(finalPrice.toString()).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 
       'Prijs op aanvraag';
+
+    console.log("Final price for email:", { finalPrice, priceDisplay });
 
     // Interest confirmation buttons
     const interestButtons = `
@@ -307,7 +406,8 @@ const handler = async (req: Request): Promise<Response> => {
       .from(tableName)
       .update({ 
         status: 'offerte_verzonden',
-        offerte_verzonden_op: new Date().toISOString()
+        offerte_verzonden_op: new Date().toISOString(),
+        ...(finalPrice && { totaal_prijs: finalPrice })
       })
       .eq('id', requestId);
 
@@ -322,7 +422,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(JSON.stringify({ 
       success: true, 
       message: "Auto-quote email sent successfully",
-      emailId: emailResponse.data?.id
+      emailId: emailResponse.data?.id,
+      calculatedPrice: finalPrice
     }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders }
