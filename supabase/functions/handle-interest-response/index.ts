@@ -91,8 +91,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Status successfully updated to: ${newStatus} for request: ${requestId}`);
 
-    // Redirect to the beautiful landing page instead of showing HTML
-    const redirectUrl = `https://refurbishtotaalnederland.nl/interesse-bevestiging?response=${response}&type=${type}&id=${requestId}`;
+    // Redirect based on response
+    let redirectUrl: string;
+    
+    if (response === 'ja') {
+      redirectUrl = 'https://refurbishtotaalnederland.nl/interesse-bevestiging';
+    } else {
+      redirectUrl = 'https://refurbishtotaalnederland.nl/';
+    }
     
     return new Response(null, {
       status: 302,
