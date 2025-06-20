@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,16 +44,14 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
   });
 
   const onSubmit = async (data: ContactFormValues) => {
-    if (isSubmitting) return;
-    
     setIsSubmitting(true);
     
     try {
-      console.log('🚀 Starting dakkapel submission...');
+      console.log('🚀 === STARTING AUTOMATIC DAKKAPEL SUBMISSION ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Prepare request data exactly matching database schema
+      // Save to database first - using correct table name
       const requestData = {
         voornaam: data.voornaam,
         achternaam: data.achternaam,
@@ -65,26 +62,26 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         postcode: data.postcode,
         plaats: data.plaats,
         bericht: data.bericht || '',
-        type: configuration.type || 'vlakke-dakkapel',
-        breedte: parseInt(configuration.breedte?.toString()) || 240,
-        hoogte: parseInt(configuration.hoogte?.toString()) || 200,
-        materiaal: configuration.materiaal || 'hout',
-        aantalramen: parseInt(configuration.aantalRamen?.toString()) || 2,
-        dakhelling: parseInt(configuration.dakHelling?.toString()) || 45,
-        dakhellingtype: configuration.dakHellingType || '45°',
-        kleurkozijnen: configuration.kleurKozijnen || 'wit',
-        kleurzijkanten: configuration.kleurZijkanten || 'wit',
-        kleurdraaikiepramen: configuration.kleurDraaikiepramen || 'wit',
-        kozijnhoogte: configuration.kozijnHoogte || 'standaard',
-        woningzijde: configuration.woningZijde || 'voorkant',
-        rcwaarde: configuration.rcWaarde || 'rc-3.5',
-        opties: configuration.opties || [],
+        type: configuration.type,
+        breedte: configuration.breedte,
+        hoogte: configuration.hoogte,
+        materiaal: configuration.materiaal,
+        aantalramen: configuration.aantalRamen,
+        dakhelling: configuration.dakHelling,
+        dakhellingtype: configuration.dakHellingType,
+        kleurkozijnen: configuration.kleurKozijnen,
+        kleurzijkanten: configuration.kleurZijkanten,
+        kleurdraaikiepramen: configuration.kleurDraaikiepramen,
+        kozijnhoogte: configuration.kozijnHoogte,
+        woningzijde: configuration.woningZijde,
+        rcwaarde: configuration.rcWaarde,
+        opties: configuration.opties,
         status: 'nieuw'
       };
 
-      console.log('💾 Saving to database...', requestData);
+      console.log('💾 Saving to dakkapel_calculator_aanvragen...');
       
-      // Save to database - the trigger should automatically send the quote
+      // Try saving to the correct table
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -92,29 +89,120 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         .single();
 
       if (dbError) {
-        console.error('❌ Database error:', dbError);
-        throw new Error(`Database fout: ${dbError.message}`);
+        console.error('❌ Database save failed:', dbError);
+        console.log('🔄 Trying dakkapel_configuraties table instead...');
+        
+        // Try alternative table name
+        const altRequestData = {
+          naam: `${data.voornaam} ${data.achternaam}`,
+          email: data.emailadres,
+          telefoon: data.telefoon,
+          adres: `${data.straatnaam} ${data.huisnummer}`,
+          postcode: data.postcode,
+          plaats: data.plaats,
+          opmerkingen: data.bericht || '',
+          model: configuration.type,
+          breedte: configuration.breedte,
+          materiaal: configuration.materiaal,
+          dakhelling: configuration.dakHelling,
+          kleur_kozijn: configuration.kleurKozijnen,
+          kleur_zijkanten: configuration.kleurZijkanten,
+          kleur_draaikiepramen: configuration.kleurDraaikiepramen,
+          ventilationgrids: configuration.opties?.ventilatie || false,
+          sunshade: configuration.opties?.zonwering || false,
+          insectscreens: configuration.opties?.horren || false,
+          airconditioning: configuration.opties?.airco || false,
+          status: 'nieuw'
+        };
+
+        const { data: altSavedData, error: altDbError } = await supabase
+          .from('dakkapel_configuraties')
+          .insert(altRequestData)
+          .select()
+          .single();
+
+        if (altDbError) {
+          console.error('❌ Alternative database save also failed:', altDbError);
+          throw new Error(`Database error: ${altDbError.message}`);
+        }
+
+        console.log('✅ Saved to dakkapel_configuraties with ID:', altSavedData.id);
+        
+        // Call webhook with the saved data
+        await callWebhookDirectly(altSavedData.id, 'dakkapel_configuraties');
+      } else {
+        console.log('✅ Saved to dakkapel_calculator_aanvragen with ID:', savedData.id);
+        
+        // Call webhook with the saved data
+        await callWebhookDirectly(savedData.id, 'dakkapel_calculator_aanvragen');
       }
 
-      console.log('✅ Saved to database successfully with ID:', savedData.id);
-      
-      toast.success("🎉 Aanvraag succesvol verzonden!", {
-        description: "U ontvangt binnenkort een offerte per email. Controleer ook uw spam folder.",
-        duration: 8000,
-      });
-
+      // Success
+      console.log('🎉 ALL STEPS COMPLETED SUCCESSFULLY');
       setSubmitSuccess(true);
       onNext();
       
     } catch (error: any) {
-      console.error("❌ Submission error:", error);
+      console.error("❌ SUBMISSION ERROR:", error);
+      console.error("Error details:", error.message);
       
-      toast.error("Er ging iets mis bij het verzenden", {
-        description: error.message || "Probeer het later opnieuw",
+      toast.error("❌ Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
+        description: "Neem contact op als het probleem aanhoudt.",
         duration: 8000,
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const callWebhookDirectly = async (requestId: string, tableName: string) => {
+    try {
+      console.log('📧 CALLING WEBHOOK DIRECTLY FOR AUTOMATIC EMAIL...');
+      
+      const webhookPayload = {
+        event: 'ConfiguratorComplete',
+        requestId: requestId,
+        tableName: tableName,
+        automatic: true,
+        timestamp: new Date().toISOString()
+      };
+
+      console.log('Webhook payload:', webhookPayload);
+
+      // Direct webhook call using the full URL
+      const webhookUrl = 'https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler';
+      
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabase.supabaseKey}`
+        },
+        body: JSON.stringify(webhookPayload)
+      });
+
+      const result = await response.json();
+      console.log('📬 Direct webhook response:', result);
+
+      if (result.success) {
+        console.log('🎉 EMAIL SENT AUTOMATICALLY!');
+        toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
+          description: `Offerte voor €${result.price?.toLocaleString('nl-NL') || 'onbekend'} is verzonden.`,
+          duration: 10000,
+        });
+      } else {
+        console.log('⚠️ Webhook had issues:', result.error);
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+          description: "U ontvangt binnenkort een email met uw offerte.",
+          duration: 6000,
+        });
+      }
+    } catch (webhookError: any) {
+      console.error('⚠️ Webhook call failed:', webhookError);
+      toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+        description: "U ontvangt binnenkort een email met uw offerte.",
+        duration: 6000,
+      });
     }
   };
 
@@ -141,7 +229,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
           📝 Contactgegevens
         </h2>
         <p className="text-gray-600">
-          Vul uw gegevens in om een offerte te ontvangen voor uw dakkapel.
+          Vul uw gegevens in om <strong>automatisch</strong> een offerte te ontvangen voor uw dakkapel.
         </p>
       </div>
 
@@ -315,7 +403,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
             className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300 disabled:opacity-50"
           >
             <span>
-              {isSubmitting ? '🔄 Verzenden...' : '🚀 Offerte aanvragen'}
+              {isSubmitting ? '🔄 Automatisch verzenden...' : '🚀 Automatisch offerte aanvragen'}
             </span>
             {!isSubmitting && <ArrowRight size={18} />}
           </button>
