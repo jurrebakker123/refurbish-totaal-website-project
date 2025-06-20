@@ -93,6 +93,26 @@ const handler = async (req: Request): Promise<Response> => {
       "🏠 Uw Dakkapel Offerte van Refurbish Totaal Nederland" : 
       "☀️ Uw Zonnepanelen Offerte van Refurbish Totaal Nederland";
 
+    // Parse opties voor dakkapel
+    let optiesHtml = '';
+    if (type === 'dakkapel' && requestData.opties) {
+      const opties = typeof requestData.opties === 'string' ? requestData.opties.split(',') : [];
+      if (opties.length > 0) {
+        optiesHtml = `
+          <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Extra opties:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+            ${opties.map(optie => {
+              switch(optie.trim()) {
+                case 'ventilationGrids': return '✅ Ventilatie roosters';
+                case 'sunShade': return '✅ Zonwering';
+                case 'insectScreens': return '✅ Horren';
+                case 'airConditioning': return '✅ Airconditioning voorbereiding';
+                default: return `✅ ${optie.trim()}`;
+              }
+            }).join('<br>')}
+          </td></tr>`;
+      }
+    }
+
     const emailHtml = type === 'dakkapel' ? `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
@@ -108,14 +128,24 @@ const handler = async (req: Request): Promise<Response> => {
           </p>
 
           <div style="background: white; padding: 25px; border-radius: 8px; border-left: 4px solid #10b981; margin: 25px 0;">
-            <h3 style="color: #1f2937; margin-top: 0;">📋 Uw Dakkapel Configuratie:</h3>
+            <h3 style="color: #1f2937; margin-top: 0;">📋 Uw Volledige Dakkapel Configuratie:</h3>
             <table style="width: 100%; border-collapse: collapse;">
               <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Type:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.type}</td></tr>
               <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Breedte:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.breedte} cm</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Hoogte:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.hoogte} cm</td></tr>
               <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Materiaal:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.materiaal}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Aantal ramen:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.aantalramen}</td></tr>
               <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Dakhelling:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.dakhellingtype}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kozijn hoogte:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kozijnhoogte}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Woningzijde:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.woningzijde}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">RC-waarde:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.rcwaarde}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kleur kozijnen:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kleurkozijnen}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kleur zijkanten:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kleurzijkanten}</td></tr>
+              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kleur draaikiepramen:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kleurdraaikiepramen}</td></tr>
+              ${optiesHtml}
               <tr><td style="padding: 8px 0; font-weight: bold;">Locatie:</td><td style="padding: 8px 0;">${requestData.plaats}, ${requestData.postcode}</td></tr>
             </table>
+            ${requestData.bericht ? `<div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 5px;"><strong>Uw bericht:</strong><br>${requestData.bericht}</div>` : ''}
           </div>
 
           <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 25px 0;">
