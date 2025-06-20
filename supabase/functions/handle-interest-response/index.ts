@@ -65,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Updating ${table} with ID ${requestId} to status: ${newStatus}`);
 
-    // Update the request status - removed the interest_response_at field that doesn't exist
+    // Update the request status
     const updateData: any = {
       status: newStatus,
       updated_at: new Date().toISOString()
@@ -86,11 +86,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Status successfully updated to: ${newStatus} for request: ${requestId}`);
 
-    // Redirect based on response
+    // Redirect based on response - FIXED URL
     let redirectUrl: string;
     
     if (response === 'ja') {
-      redirectUrl = 'https://refurbishtotaalnederland.nl/interesse-bevestiging';
+      redirectUrl = 'https://refurbishtotaalnederland.nl/interest-bevestiging';
     } else {
       redirectUrl = 'https://refurbishtotaalnederland.nl/';
     }
