@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,7 +54,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Prepare request data for database
+      // Prepare request data exactly matching database schema
       const requestData = {
         voornaam: data.voornaam,
         achternaam: data.achternaam,
@@ -64,26 +65,26 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         postcode: data.postcode,
         plaats: data.plaats,
         bericht: data.bericht || '',
-        type: configuration.type,
-        breedte: configuration.breedte,
-        hoogte: configuration.hoogte,
-        materiaal: configuration.materiaal,
-        aantalramen: configuration.aantalRamen,
-        dakhelling: configuration.dakHelling,
-        dakhellingtype: configuration.dakHellingType,
-        kleurkozijnen: configuration.kleurKozijnen,
-        kleurzijkanten: configuration.kleurZijkanten,
-        kleurdraaikiepramen: configuration.kleurDraaikiepramen,
-        kozijnhoogte: configuration.kozijnHoogte,
-        woningzijde: configuration.woningZijde,
-        rcwaarde: configuration.rcWaarde,
-        opties: configuration.opties,
+        type: configuration.type || 'vlakke-dakkapel',
+        breedte: parseInt(configuration.breedte?.toString()) || 240,
+        hoogte: parseInt(configuration.hoogte?.toString()) || 200,
+        materiaal: configuration.materiaal || 'hout',
+        aantalramen: parseInt(configuration.aantalRamen?.toString()) || 2,
+        dakhelling: parseInt(configuration.dakHelling?.toString()) || 45,
+        dakhellingtype: configuration.dakHellingType || '45°',
+        kleurkozijnen: configuration.kleurKozijnen || 'wit',
+        kleurzijkanten: configuration.kleurZijkanten || 'wit',
+        kleurdraaikiepramen: configuration.kleurDraaikiepramen || 'wit',
+        kozijnhoogte: configuration.kozijnHoogte || 'standaard',
+        woningzijde: configuration.woningZijde || 'voorkant',
+        rcwaarde: configuration.rcWaarde || 'rc-3.5',
+        opties: configuration.opties || [],
         status: 'nieuw'
       };
 
       console.log('💾 Saving to database...', requestData);
       
-      // Save to database - the trigger will automatically send the quote
+      // Save to database - the trigger should automatically send the quote
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -92,26 +93,24 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       if (dbError) {
         console.error('❌ Database error:', dbError);
-        throw new Error(`Database error: ${dbError.message}`);
+        throw new Error(`Database fout: ${dbError.message}`);
       }
 
-      console.log('✅ Saved to database with ID:', savedData.id);
-      console.log('🎯 Database trigger will automatically send quote');
-
-      toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden!", {
-        description: "U ontvangt automatisch een offerte per email. Controleer ook uw spam folder.",
+      console.log('✅ Saved to database successfully with ID:', savedData.id);
+      
+      toast.success("🎉 Aanvraag succesvol verzonden!", {
+        description: "U ontvangt binnenkort een offerte per email. Controleer ook uw spam folder.",
         duration: 8000,
       });
 
-      // Mark as successful
       setSubmitSuccess(true);
       onNext();
       
     } catch (error: any) {
       console.error("❌ Submission error:", error);
       
-      toast.error("❌ Er ging iets mis. Probeer het later opnieuw.", {
-        description: error.message || "Onbekende fout opgetreden",
+      toast.error("Er ging iets mis bij het verzenden", {
+        description: error.message || "Probeer het later opnieuw",
         duration: 8000,
       });
     } finally {
@@ -142,7 +141,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
           📝 Contactgegevens
         </h2>
         <p className="text-gray-600">
-          Vul uw gegevens in om <strong>automatisch</strong> een offerte te ontvangen voor uw dakkapel.
+          Vul uw gegevens in om een offerte te ontvangen voor uw dakkapel.
         </p>
       </div>
 
