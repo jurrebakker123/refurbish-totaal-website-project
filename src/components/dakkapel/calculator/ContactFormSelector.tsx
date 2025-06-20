@@ -47,11 +47,11 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     setIsSubmitting(true);
     
     try {
-      console.log('=== AUTOMATIC DAKKAPEL FORM SUBMISSION STARTED ===');
+      console.log('=== STARTING AUTOMATIC DAKKAPEL SUBMISSION ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Prepare complete request data
+      // Step 1: Save to database first
       const requestData = {
         voornaam: data.voornaam,
         achternaam: data.achternaam,
@@ -81,8 +81,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         timestamp: new Date().toISOString()
       };
 
-      // Step 1: Save to database first
-      console.log('💾 STEP 1: Saving to database...');
+      console.log('💾 Saving to database...');
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -94,76 +93,66 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      console.log('✅ STEP 1 SUCCESS: Saved to database with ID:', savedData.id);
+      console.log('✅ Saved to database with ID:', savedData.id);
 
-      // Step 2: Automatically trigger webhook for email
-      console.log('📧 STEP 2: AUTOMATICALLY SENDING EMAIL VIA WEBHOOK...');
-      
+      // Step 2: Immediately call webhook for automatic email
       const webhookPayload = {
         event: 'ConfiguratorComplete',
         requestId: savedData.id,
-        customerData: {
-          name: `${data.voornaam} ${data.achternaam}`,
-          email: data.emailadres,
-          phone: data.telefoon,
-          address: `${data.straatnaam} ${data.huisnummer}, ${data.postcode} ${data.plaats}`
-        },
-        configurationData: configuration,
-        timestamp: new Date().toISOString(),
-        immediate: true,
-        automatic: true
+        automatic: true,
+        timestamp: new Date().toISOString()
       };
 
-      console.log('📡 STEP 2: Calling webhook with payload:', JSON.stringify(webhookPayload, null, 2));
+      console.log('📧 CALLING WEBHOOK AUTOMATICALLY...');
+      console.log('Webhook payload:', webhookPayload);
 
-      // Direct webhook call - THIS IS THE AUTOMATIC PART!
-      const { data: webhookResult, error: webhookError } = await supabase.functions.invoke('dakkapel-webhook-handler', {
-        body: webhookPayload
-      });
+      // Call the webhook function directly
+      const { data: webhookResult, error: webhookError } = await supabase.functions.invoke(
+        'dakkapel-webhook-handler',
+        {
+          body: webhookPayload,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-      console.log('📬 STEP 2: Webhook response received');
-      console.log('📬 Webhook result:', webhookResult);
-      
+      console.log('📬 Webhook response:', webhookResult);
+      console.log('📬 Webhook error (if any):', webhookError);
+
+      // Handle webhook results
       if (webhookError) {
-        console.error('📬 Webhook error:', webhookError);
-      }
-
-      // Step 3: Handle response and show appropriate messages
-      if (webhookError) {
-        console.error('⚠️ STEP 2 WARNING: Webhook failed, but data is saved');
-        console.error('Webhook error details:', webhookError);
-        
-        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
+        console.error('⚠️ Webhook error, but continuing:', webhookError);
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+          description: "U ontvangt binnenkort een email met uw offerte.",
           duration: 6000,
         });
-      } else if (webhookResult?.success) {
-        console.log('🎉 STEP 2 SUCCESS: AUTOMATIC EMAIL SENT!');
-        console.log('Email ID:', webhookResult.emailId);
-        console.log('Calculated price:', webhookResult.price);
-        
+      } else if (webhookResult && webhookResult.success) {
+        console.log('🎉 WEBHOOK SUCCESS - EMAIL SENT AUTOMATICALLY!');
         toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
+          description: `Offerte voor €${webhookResult.price?.toLocaleString('nl-NL') || 'onbekend'} is verzonden.`,
           duration: 10000,
         });
       } else {
-        console.log('⚠️ STEP 2 PARTIAL: Webhook completed with mixed results');
-        console.log('Webhook result:', webhookResult);
-        
+        console.log('⚠️ Webhook completed but with issues');
         toast.success("✅ Aanvraag verzonden! Uw offerte wordt automatisch verwerkt.", {
+          description: "Controleer uw email binnen enkele minuten.",
           duration: 6000,
         });
       }
 
-      // Step 4: Success - move to next step
-      console.log('✅ COMPLETE: All steps finished successfully');
+      // Success - continue to next step
+      console.log('✅ ALL STEPS COMPLETED SUCCESSFULLY');
       setSubmitSuccess(true);
       onNext();
       
     } catch (error: any) {
-      console.error("❌ CRITICAL ERROR in submission process:", error);
-      console.error("Error message:", error.message);
+      console.error("❌ SUBMISSION ERROR:", error);
+      console.error("Error details:", error.message);
       console.error("Error stack:", error.stack);
       
       toast.error("❌ Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
+        description: "Neem contact op als het probleem aanhoudt.",
         duration: 8000,
       });
     } finally {
