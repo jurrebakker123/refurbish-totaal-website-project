@@ -169,14 +169,14 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('Webhook payload:', webhookPayload);
 
-      // Direct webhook call using the full URL
+      // Direct webhook call using the full URL with proper auth
       const webhookUrl = 'https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler';
       
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMDIxNTEsImV4cCI6MjA2MzU3ODE1MX0.vgmnDOcff2-I-ji4r51cKKCjl4w4FcMQHsoZJqlPxRA`
         },
         body: JSON.stringify(webhookPayload)
       });
