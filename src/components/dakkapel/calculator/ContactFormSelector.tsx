@@ -111,7 +111,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
           ventilationgrids: configuration.opties?.ventilatie || false,
           sunshade: configuration.opties?.zonwering || false,
           insectscreens: configuration.opties?.horren || false,
-          airconditioning: configuration.opties?.airco || false,
+          airconditioning: configuration.opties?.airconditioning || false,
           status: 'nieuw'
         };
 
@@ -129,12 +129,12 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         console.log('✅ Saved to dakkapel_configuraties with ID:', altSavedData.id);
         
         // Call webhook with the saved data
-        await callWebhookDirectly(altSavedData.id, 'dakkapel_configuraties');
+        await callWebhookFunction(altSavedData.id, 'dakkapel_configuraties');
       } else {
         console.log('✅ Saved to dakkapel_calculator_aanvragen with ID:', savedData.id);
         
         // Call webhook with the saved data
-        await callWebhookDirectly(savedData.id, 'dakkapel_calculator_aanvragen');
+        await callWebhookFunction(savedData.id, 'dakkapel_calculator_aanvragen');
       }
 
       // Success
@@ -155,9 +155,9 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     }
   };
 
-  const callWebhookDirectly = async (requestId: string, tableName: string) => {
+  const callWebhookFunction = async (requestId: string, tableName: string) => {
     try {
-      console.log('📧 CALLING WEBHOOK DIRECTLY FOR AUTOMATIC EMAIL...');
+      console.log('📧 CALLING WEBHOOK FUNCTION FOR AUTOMATIC EMAIL...');
       
       const webhookPayload = {
         event: 'ConfiguratorComplete',
@@ -169,29 +169,30 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
 
       console.log('Webhook payload:', webhookPayload);
 
-      // Direct webhook call using the full URL with proper auth
-      const webhookUrl = 'https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/dakkapel-webhook-handler';
-      
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsdWhhc3Vub2FldmZyZHVna3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMDIxNTEsImV4cCI6MjA2MzU3ODE1MX0.vgmnDOcff2-I-ji4r51cKKCjl4w4FcMQHsoZJqlPxRA`
-        },
-        body: JSON.stringify(webhookPayload)
+      // Use supabase.functions.invoke for proper authentication
+      const { data: result, error: webhookError } = await supabase.functions.invoke('dakkapel-webhook-handler', {
+        body: webhookPayload
       });
 
-      const result = await response.json();
-      console.log('📬 Direct webhook response:', result);
+      if (webhookError) {
+        console.error('⚠️ Webhook call failed:', webhookError);
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+          description: "U ontvangt binnenkort een email met uw offerte.",
+          duration: 6000,
+        });
+        return;
+      }
 
-      if (result.success) {
+      console.log('📬 Webhook response:', result);
+
+      if (result?.success) {
         console.log('🎉 EMAIL SENT AUTOMATICALLY!');
         toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
           description: `Offerte voor €${result.price?.toLocaleString('nl-NL') || 'onbekend'} is verzonden.`,
           duration: 10000,
         });
       } else {
-        console.log('⚠️ Webhook had issues:', result.error);
+        console.log('⚠️ Webhook had issues:', result?.error);
         toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
           description: "U ontvangt binnenkort een email met uw offerte.",
           duration: 6000,
