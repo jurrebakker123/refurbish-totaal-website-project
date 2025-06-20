@@ -65,16 +65,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Updating ${table} with ID ${requestId} to status: ${newStatus}`);
 
-    // Update the request status
+    // Update the request status - removed the interest_response_at field that doesn't exist
     const updateData: any = {
       status: newStatus,
       updated_at: new Date().toISOString()
     };
-
-    // Add timestamp for interest confirmation
-    if (newStatus === 'interesse_bevestigd') {
-      updateData.interest_response_at = new Date().toISOString();
-    }
 
     const { error: updateError } = await supabaseClient
       .from(table)

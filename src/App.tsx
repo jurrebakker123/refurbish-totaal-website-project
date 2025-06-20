@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -97,7 +98,7 @@ function App() {
           <Route path="/admin/dakkapel" element={<AdminDakkapelPage />} />
           <Route path="/admin/zonnepanelen" element={<AdminZonnepanelenPage />} />
           <Route path="/admin/zonnepanelen-dashboard" element={<AdminZonnepanelenDashboardPage />} />
-          <Route path="/admin/unified" element={<UnifiedAdminDashboard />} />
+          <Route path="/admin-dashboard" element={<UnifiedAdminDashboard />} />
           <Route path="/interest-bevestiging" element={<InterestConfirmationPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/voorwaarden" element={<VoorwaardenPage />} />

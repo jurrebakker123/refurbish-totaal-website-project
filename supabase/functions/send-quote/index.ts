@@ -100,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
     // Determine table based on type
-    const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_configuraties';
+    const table = type === 'zonnepaneel' ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen';
 
     // Fetch data
     console.log("Fetching data for ID:", requestId, "from table:", table);
@@ -153,44 +153,6 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
-
-    // Generate PDF quote
-    let pdfAttachment = null;
-    try {
-      console.log("Generating PDF quote...");
-      const pdfResponse = await fetch(`${supabaseUrl}/functions/v1/generate-offerte-pdf`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`
-        },
-        body: JSON.stringify({
-          requestData,
-          type,
-          calculatedPrice: requestData.totaal_prijs || 0
-        })
-      });
-
-      if (pdfResponse.ok) {
-        const pdfResult = await pdfResponse.json();
-        if (pdfResult.success && pdfResult.pdfBase64) {
-          pdfAttachment = {
-            filename: `Offerte_${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}_${requestId}.pdf`,
-            content: pdfResult.pdfBase64,
-            type: pdfResult.contentType || 'application/pdf'
-          };
-          console.log("PDF attachment generated successfully");
-        }
-      } else {
-        console.log("PDF generation failed, continuing without attachment");
-      }
-    } catch (pdfError) {
-      console.error("Error generating PDF:", pdfError);
-      console.log("Continuing without PDF attachment");
-    }
-
-    // Generate Terms & Conditions PDF
-    const termsAndConditionsPdf = generateTermsAndConditionsPDF();
 
     // Prepare email content
     const customerName = requestData.naam;
@@ -300,19 +262,26 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Attempting to send email to:", customerEmail);
 
-    // Prepare attachments
+    // Prepare attachments - Generate PDF quote and Terms & Conditions
     const attachments = [];
     
-    if (pdfAttachment) {
-      attachments.push(pdfAttachment);
-    }
-
-    // Add Terms & Conditions
+    // Generate Terms & Conditions PDF
+    const termsAndConditionsPdf = generateTermsAndConditionsPDF();
     attachments.push({
       filename: 'Algemene_Voorwaarden.pdf',
       content: termsAndConditionsPdf,
       type: 'application/pdf'
     });
+
+    // Generate simple quote PDF
+    const quotePdf = generateQuotePDF(requestData, type);
+    attachments.push({
+      filename: `Offerte_${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}_${requestId}.pdf`,
+      content: quotePdf,
+      type: 'application/pdf'
+    });
+
+    console.log("Generated attachments:", attachments.length);
 
     // Send email using verified domain
     const emailResponse = await resend.emails.send({
@@ -320,7 +289,7 @@ const handler = async (req: Request): Promise<Response> => {
       to: [customerEmail],
       subject: `Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - ${type === 'zonnepaneel' ? requestData.merk : requestData.model}`,
       html: emailHtml,
-      attachments: attachments.length > 0 ? attachments : undefined,
+      attachments: attachments,
     });
 
     console.log("Resend API response:", emailResponse);
@@ -387,6 +356,170 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+function generateQuotePDF(requestData: any, type: string): string {
+  const currentDate = new Date().toLocaleDateString('nl-NL');
+  
+  const quoteHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          margin: 0;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 2px solid #10b981;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        .company-name {
+          font-size: 24px;
+          font-weight: bold;
+          color: #10b981;
+          margin-bottom: 10px;
+        }
+        .quote-details {
+          background-color: #f8f9fa;
+          padding: 20px;
+          border-radius: 8px;
+          margin: 20px 0;
+        }
+        .price-box {
+          background-color: #e3f2fd;
+          padding: 20px;
+          border-radius: 8px;
+          text-align: center;
+          margin: 20px 0;
+        }
+        .total-price {
+          font-size: 24px;
+          font-weight: bold;
+          color: #1976d2;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+        }
+        th, td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+        }
+        th {
+          background-color: #f5f5f5;
+          font-weight: bold;
+        }
+        .contact-info {
+          background-color: #f0f9ff;
+          padding: 15px;
+          border-radius: 8px;
+          margin-top: 30px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="company-name">Refurbish Totaal Nederland</div>
+        <p>Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}</p>
+        <p>Datum: ${currentDate}</p>
+      </div>
+
+      <div class="quote-details">
+        <h2>Klantgegevens</h2>
+        <p><strong>Naam:</strong> ${requestData.naam}</p>
+        <p><strong>Email:</strong> ${requestData.email}</p>
+        <p><strong>Adres:</strong> ${requestData.adres}, ${requestData.postcode} ${requestData.plaats}</p>
+        <p><strong>Telefoon:</strong> ${requestData.telefoon}</p>
+      </div>
+
+      ${type === 'zonnepaneel' ? `
+        <div class="quote-details">
+          <h2>Zonnepanelen Specificaties</h2>
+          <table>
+            <tr><th>Specificatie</th><th>Waarde</th></tr>
+            <tr><td>Aantal panelen</td><td>${requestData.aantal_panelen}</td></tr>
+            <tr><td>Vermogen</td><td>${requestData.vermogen}W</td></tr>
+            <tr><td>Type paneel</td><td>${requestData.type_paneel}</td></tr>
+            <tr><td>Merk</td><td>${requestData.merk}</td></tr>
+            <tr><td>Conditie</td><td>${requestData.conditie}</td></tr>
+            <tr><td>Dak type</td><td>${requestData.dak_type}</td></tr>
+            ${requestData.dak_materiaal ? `<tr><td>Dak materiaal</td><td>${requestData.dak_materiaal}</td></tr>` : ''}
+            ${requestData.schaduw_situatie ? `<tr><td>Schaduw situatie</td><td>${requestData.schaduw_situatie}</td></tr>` : ''}
+          </table>
+        </div>
+      ` : `
+        <div class="quote-details">
+          <h2>Dakkapel Specificaties</h2>
+          <table>
+            <tr><th>Specificatie</th><th>Waarde</th></tr>
+            <tr><td>Model</td><td>${requestData.model}</td></tr>
+            <tr><td>Breedte</td><td>${requestData.breedte}cm</td></tr>
+            <tr><td>Materiaal</td><td>${requestData.materiaal}</td></tr>
+            <tr><td>Kleur kozijn</td><td>${requestData.kleur_kozijn}</td></tr>
+            <tr><td>Kleur zijkanten</td><td>${requestData.kleur_zijkanten}</td></tr>
+            <tr><td>Kleur draaikiepramen</td><td>${requestData.kleur_draaikiepramen}</td></tr>
+            ${requestData.dakhelling ? `<tr><td>Dakhelling</td><td>${requestData.dakhelling}° (${requestData.dakhelling_type})</td></tr>` : ''}
+            ${requestData.levertijd ? `<tr><td>Levertijd</td><td>${requestData.levertijd}</td></tr>` : ''}
+          </table>
+          
+          <h3>Extra Opties</h3>
+          <table>
+            <tr><th>Optie</th><th>Inbegrepen</th></tr>
+            <tr><td>Ventilatierooster</td><td>${requestData.ventilationgrids ? 'Ja' : 'Nee'}</td></tr>
+            <tr><td>Zonwering</td><td>${requestData.sunshade ? 'Ja' : 'Nee'}</td></tr>
+            <tr><td>Insectenhorren</td><td>${requestData.insectscreens ? 'Ja' : 'Nee'}</td></tr>
+            <tr><td>Airconditioning</td><td>${requestData.airconditioning ? 'Ja' : 'Nee'}</td></tr>
+          </table>
+        </div>
+      `}
+
+      ${requestData.totaal_prijs ? `
+        <div class="price-box">
+          <h2>Totaalprijs</h2>
+          <div class="total-price">€${requestData.totaal_prijs.toLocaleString('nl-NL')}</div>
+          <p>Inclusief BTW en montage</p>
+        </div>
+      ` : `
+        <div class="price-box">
+          <h2>Prijs</h2>
+          <p>Prijs wordt na inspectie meegedeeld</p>
+        </div>
+      `}
+
+      <div class="quote-details">
+        <h2>Voorwaarden</h2>
+        <ul>
+          <li>Deze offerte is 30 dagen geldig</li>
+          <li>Prijzen zijn inclusief BTW</li>
+          <li>Montage is inbegrepen in de prijs</li>
+          <li>Garantie: ${type === 'zonnepaneel' ? '5 jaar op panelen, 2 jaar op montage' : '10 jaar op constructie en waterdichtheid'}</li>
+        </ul>
+      </div>
+
+      <div class="contact-info">
+        <h2>Contact</h2>
+        <p><strong>Refurbish Totaal Nederland</strong></p>
+        <p>Telefoon: 085 4444 255</p>
+        <p>E-mail: info@refurbishtotaalnederland.nl</p>
+        <p>Website: www.refurbishtotaalnederland.nl</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Convert HTML to base64 for PDF attachment
+  const encoder = new TextEncoder();
+  const htmlBytes = encoder.encode(quoteHtml);
+  return btoa(String.fromCharCode(...htmlBytes));
+}
 
 function generateTermsAndConditionsPDF(): string {
   const currentDate = new Date().toLocaleDateString('nl-NL');
