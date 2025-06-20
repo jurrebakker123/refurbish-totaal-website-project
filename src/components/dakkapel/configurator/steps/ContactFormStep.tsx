@@ -68,37 +68,40 @@ export const ContactFormStep: React.FC<StepProps> = ({
       console.log('Configuration:', configuration);
       console.log('Current price:', currentPrice);
       
-      // Save to dakkapel_configuraties table
-      const configData = {
-        naam: data.name,
-        email: data.email,
+      // Save to the correct dakkapel_calculator_aanvragen table (not dakkapel_configuraties)
+      const requestData = {
+        voornaam: data.name.split(' ')[0] || data.name,
+        achternaam: data.name.split(' ').slice(1).join(' ') || '',
+        emailadres: data.email,
         telefoon: data.phone,
-        adres: data.address,
+        straatnaam: data.address,
+        huisnummer: '1', // Default since we don't collect separately
         postcode: data.postalCode,
         plaats: data.city,
-        opmerkingen: data.comments || '',
-        model: configuration.model,
+        bericht: data.comments || '',
+        type: configuration.model || 'Dakkapel plat dak',
         breedte: parseInt(configuration.width?.split('-')[0]) || 240,
-        materiaal: configuration.material,
-        kleur_kozijn: configuration.colors?.frames || 'wit',
-        kleur_zijkanten: configuration.colors?.sides || 'wit',
-        kleur_draaikiepramen: configuration.colors?.movingParts || 'wit',
+        hoogte: 200, // Default height
+        materiaal: configuration.material || 'Keralit',
+        aantalramen: 2, // Default
         dakhelling: parseInt(configuration.roofAngle?.split('-')[0]) || 45,
-        dakhelling_type: `${configuration.roofAngle}°`,
-        levertijd: configuration.deliveryTime,
-        ventilationgrids: configuration.extras?.ventilationGrids || false,
-        sunshade: configuration.extras?.sunShade || false,
-        insectscreens: configuration.extras?.insectScreens || false,
-        airconditioning: configuration.extras?.airConditioning || false,
-        totaal_prijs: currentPrice,
+        dakhellingtype: `${configuration.roofAngle || '45-60'}°`,
+        kleurkozijnen: configuration.colors?.frames || 'wit',
+        kleurzijkanten: configuration.colors?.sides || 'wit',
+        kleurdraaikiepramen: configuration.colors?.movingParts || 'wit',
+        kozijnhoogte: 'Standaard',
+        woningzijde: 'Voor',
+        rcwaarde: 'Standaard',
+        opties: configuration.extras ? Object.keys(configuration.extras).filter(key => configuration.extras?.[key]).join(', ') : 'Geen extra opties',
         status: 'nieuw'
       };
 
-      console.log('💾 Saving to dakkapel_configuraties...');
+      console.log('💾 Saving to dakkapel_calculator_aanvragen...');
+      console.log('Request data:', requestData);
       
       const { data: savedData, error: dbError } = await supabase
-        .from('dakkapel_configuraties')
-        .insert(configData)
+        .from('dakkapel_calculator_aanvragen')
+        .insert(requestData)
         .select()
         .single();
 
@@ -108,41 +111,14 @@ export const ContactFormStep: React.FC<StepProps> = ({
       }
 
       console.log('✅ Saved successfully with ID:', savedData.id);
-      
-      // AUTOMATICALLY SEND QUOTE EMAIL - This is the key addition!
-      console.log('📧 Automatically sending quote email...');
-      
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('auto-send-quote', {
-        body: {
-          requestId: savedData.id,
-          type: 'dakkapel'
-        }
-      });
-
-      if (emailError) {
-        console.error('❌ Auto email failed:', emailError);
-        // Don't throw error - the data is saved, email failure shouldn't break the flow
-        toast.error("⚠️ Configuratie opgeslagen, maar email verzenden mislukt. We nemen handmatig contact op.");
-      } else if (emailData?.success) {
-        console.log('✅ Quote email sent successfully!');
-        toast.success("🎉 Perfect! Uw configuratie is opgeslagen en de offerte is automatisch verzonden!", {
-          description: "Controleer uw email (en spam folder) voor de offerte.",
-          duration: 8000,
-        });
-      } else {
-        console.error('❌ Auto email failed with response:', emailData);
-        toast.error("⚠️ Configuratie opgeslagen, maar email verzenden mislukt. We nemen handmatig contact op.");
-      }
-      
-      // Submit the entire configuration if the function exists (for backup)
-      if (submitConfigurator) {
-        console.log('📧 Calling submitConfigurator for backup...');
-        await submitConfigurator();
-      }
-      
-      console.log('🎉 CONFIGURATOR SUBMISSION COMPLETED SUCCESSFULLY');
+      console.log('🎉 CONFIGURATOR SUBMISSION COMPLETED SUCCESSFULLY - DATABASE TRIGGER WILL HANDLE EMAIL');
       
       setSubmitSuccess(true);
+      
+      toast.success("🎉 Perfect! Uw configuratie is opgeslagen!", {
+        description: "De offerte wordt automatisch naar uw email verzonden via onze database trigger.",
+        duration: 8000,
+      });
       
     } catch (error: any) {
       console.error("❌ CONFIGURATOR SUBMISSION ERROR:", error);
@@ -162,7 +138,7 @@ export const ContactFormStep: React.FC<StepProps> = ({
         <div className="bg-green-50 p-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-4 text-green-800">🎉 Configuratie succesvol verzonden!</h2>
           <p className="text-lg text-green-700 mb-4">
-            Bedankt voor uw dakkapel configuratie! De offerte is automatisch naar uw email verzonden.
+            Bedankt voor uw dakkapel configuratie! De offerte wordt automatisch naar uw email verzonden.
           </p>
           <p className="text-green-600">
             💡 Tip: Controleer ook uw spam/junk folder voor de offerte email.
