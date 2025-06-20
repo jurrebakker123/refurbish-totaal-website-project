@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,13 +53,6 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Basic validation
-      if (!data.emailadres || !configuration.type || !configuration.breedte) {
-        toast.error('Incomplete data - cannot submit request');
-        setIsSubmitting(false);
-        return;
-      }
-      
       // Prepare request data for database
       const requestData = {
         voornaam: data.voornaam,
@@ -89,9 +81,9 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         status: 'nieuw'
       };
 
-      console.log('💾 Saving to database...');
+      console.log('💾 Saving to database...', requestData);
       
-      // Save to database
+      // Save to database - the trigger will automatically send the quote
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -104,55 +96,12 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
       }
 
       console.log('✅ Saved to database with ID:', savedData.id);
+      console.log('🎯 Database trigger will automatically send quote');
 
-      // Try to send automatic quote
-      console.log('📧 Attempting to send automatic quote...');
-      
-      try {
-        const { data: quoteResult, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
-          body: {
-            requestId: savedData.id,
-            type: 'dakkapel'
-          }
-        });
-
-        if (quoteError) {
-          console.error('❌ Auto quote error:', quoteError);
-          toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
-            description: "U ontvangt binnenkort een email met uw offerte.",
-            duration: 6000,
-          });
-        } else if (quoteResult?.success) {
-          console.log('🎉 Automatic quote sent successfully!');
-          
-          // Update database status
-          await supabase
-            .from('dakkapel_calculator_aanvragen')
-            .update({
-              status: 'offerte_verzonden',
-              offerte_verzonden_op: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', savedData.id);
-
-          toast.success("🎉 Perfect! Uw dakkapel offerte is automatisch verzonden!", {
-            description: `Controleer uw email voor de offerte.`,
-            duration: 10000,
-          });
-        } else {
-          console.log('⚠️ Quote sending had issues:', quoteResult);
-          toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
-            description: "U ontvangt binnenkort een email met uw offerte.",
-            duration: 6000,
-          });
-        }
-      } catch (quoteError) {
-        console.error('❌ Quote sending failed:', quoteError);
-        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
-          description: "U ontvangt binnenkort een email met uw offerte.",
-          duration: 6000,
-        });
-      }
+      toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden!", {
+        description: "U ontvangt automatisch een offerte per email. Controleer ook uw spam folder.",
+        duration: 8000,
+      });
 
       // Mark as successful
       setSubmitSuccess(true);
