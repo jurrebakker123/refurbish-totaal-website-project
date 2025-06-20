@@ -11,7 +11,7 @@ const corsHeaders = {
 };
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("=== WEBHOOK REQUEST RECEIVED ===");
+  console.log("=== AUTOMATIC WEBHOOK REQUEST RECEIVED ===");
   console.log("Request method:", req.method);
   console.log("Request URL:", req.url);
   
@@ -20,65 +20,84 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Environment setup
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const resendApiKey = Deno.env.get('RESEND_API_KEY') || "re_Z8QG3U8T_LDwuuUYmbCvL2WTixAVzewhG";
 
-    console.log("🔍 Environment check:");
-    console.log("- SUPABASE_URL:", supabaseUrl ? "✅ Set" : "❌ Missing");
-    console.log("- SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey ? "✅ Set" : "❌ Missing");
-    console.log("- RESEND_API_KEY:", resendApiKey ? "✅ Set" : "❌ Missing");
+    console.log("🔍 Environment variables check:");
+    console.log("- SUPABASE_URL:", supabaseUrl ? "✅ Available" : "❌ Missing");
+    console.log("- SUPABASE_SERVICE_ROLE_KEY:", supabaseServiceKey ? "✅ Available" : "❌ Missing");
+    console.log("- RESEND_API_KEY:", resendApiKey ? "✅ Available" : "❌ Missing");
 
-    if (!supabaseUrl || !supabaseServiceKey || !resendApiKey) {
-      console.error("❌ Missing environment variables");
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing environment variables" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+    if (!supabaseUrl || !supabaseServiceKey) {
+      const errorMsg = "Missing critical environment variables";
+      console.error("❌", errorMsg);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: errorMsg 
+      }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
     
-    // Get webhook payload
+    // Parse payload
     const payload = await req.json();
-    console.log("📨 Webhook payload:", JSON.stringify(payload, null, 2));
+    console.log("📨 Received webhook payload:", JSON.stringify(payload, null, 2));
 
-    const { event, requestId, customerData, configurationData, immediate } = payload;
+    const { event, requestId, automatic } = payload;
 
+    // Validate event type
     if (event !== 'ConfiguratorComplete') {
-      console.log("ℹ️ Not a ConfiguratorComplete event, skipping");
+      console.log("ℹ️ Not a ConfiguratorComplete event, ignoring");
       return new Response(JSON.stringify({ 
         success: true, 
-        message: 'Event ignored' 
+        message: 'Event type not handled' 
       }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders }
       });
     }
 
+    // Validate request ID
     if (!requestId) {
-      console.error("❌ No requestId provided");
+      console.error("❌ No requestId provided in payload");
       return new Response(JSON.stringify({ 
         success: false, 
-        error: 'Request ID is required' 
+        error: 'Missing requestId' 
       }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders }
       });
     }
 
-    console.log("🎯 Processing ConfiguratorComplete event for request:", requestId);
+    console.log(`🎯 Processing AUTOMATIC ConfiguratorComplete for request: ${requestId}`);
 
-    // Get full request data from database
+    // Fetch request data from database
+    console.log("📋 Fetching request data from database...");
     const { data: request, error: fetchError } = await supabase
       .from('dakkapel_calculator_aanvragen')
       .select('*')
       .eq('id', requestId)
       .single();
 
-    if (fetchError || !request) {
-      console.error("❌ Failed to fetch request:", fetchError);
+    if (fetchError) {
+      console.error("❌ Database fetch error:", fetchError);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: `Database error: ${fetchError.message}` 
+      }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    if (!request) {
+      console.error("❌ Request not found in database");
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Request not found' 
@@ -88,42 +107,84 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    console.log("✅ Found request data:", request.id);
-    console.log("📋 Request details:", {
-      voornaam: request.voornaam,
-      achternaam: request.achternaam,
-      emailadres: request.emailadres,
+    console.log("✅ Found request data:", {
+      id: request.id,
+      customer: `${request.voornaam} ${request.achternaam}`,
+      email: request.emailadres,
       type: request.type,
-      materiaal: request.materiaal
+      material: request.materiaal
     });
 
-    // Calculate price with proper null checks
+    // Calculate total price with null checks
+    console.log("💰 Calculating price...");
     let totalPrice = 15000; // Base price
     
-    if (request.breedte && request.breedte > 300) totalPrice += 2000;
-    if (request.hoogte && request.hoogte > 175) totalPrice += 1500;
-    if (request.materiaal === 'hout') totalPrice += 3000;
-    if (request.materiaal === 'aluminium') totalPrice += 4000;
-    if (request.aantalramen && request.aantalramen > 2) totalPrice += (request.aantalramen - 2) * 800;
+    // Size adjustments
+    if (request.breedte && request.breedte > 300) {
+      totalPrice += 2000;
+      console.log(`+ €2000 for width > 300cm (${request.breedte}cm)`);
+    }
+    if (request.hoogte && request.hoogte > 175) {
+      totalPrice += 1500;
+      console.log(`+ €1500 for height > 175cm (${request.hoogte}cm)`);
+    }
     
-    // Add options pricing with null check
-    if (request.opties) {
-      if (request.opties.ventilatie) totalPrice += 500;
-      if (request.opties.zonwering) totalPrice += 1200;
-      if (request.opties.extra_isolatie) totalPrice += 800;
-      if (request.opties.horren) totalPrice += 400;
-      if (request.opties.kader_dakkapel) totalPrice += 1140;
-      if (request.opties.minirooftop) totalPrice += 3178;
-      if (request.opties.dak_versteviging) totalPrice += 400;
+    // Material adjustments
+    if (request.materiaal === 'hout') {
+      totalPrice += 3000;
+      console.log("+ €3000 for wood material");
+    } else if (request.materiaal === 'aluminium') {
+      totalPrice += 4000;
+      console.log("+ €4000 for aluminum material");
+    }
+    
+    // Window adjustments
+    if (request.aantalramen && request.aantalramen > 2) {
+      const extraWindows = request.aantalramen - 2;
+      const extraCost = extraWindows * 800;
+      totalPrice += extraCost;
+      console.log(`+ €${extraCost} for ${extraWindows} extra windows`);
+    }
+    
+    // Options adjustments
+    if (request.opties && typeof request.opties === 'object') {
+      if (request.opties.ventilatie) {
+        totalPrice += 500;
+        console.log("+ €500 for ventilation");
+      }
+      if (request.opties.zonwering) {
+        totalPrice += 1200;
+        console.log("+ €1200 for sun protection");
+      }
+      if (request.opties.extra_isolatie) {
+        totalPrice += 800;
+        console.log("+ €800 for extra insulation");
+      }
+      if (request.opties.horren) {
+        totalPrice += 400;
+        console.log("+ €400 for screens");
+      }
+      if (request.opties.kader_dakkapel) {
+        totalPrice += 1140;
+        console.log("+ €1140 for dormer frame");
+      }
+      if (request.opties.minirooftop) {
+        totalPrice += 3178;
+        console.log("+ €3178 for mini rooftop");
+      }
+      if (request.opties.dak_versteviging) {
+        totalPrice += 400;
+        console.log("+ €400 for roof reinforcement");
+      }
     }
 
-    console.log(`💰 Calculated price: €${totalPrice.toLocaleString('nl-NL')}`);
+    console.log(`💰 Final calculated price: €${totalPrice.toLocaleString('nl-NL')}`);
 
-    // Generate email content
-    const customerName = `${request.voornaam} ${request.achternaam}`;
-    const customerAddress = `${request.straatnaam} ${request.huisnummer}, ${request.postcode} ${request.plaats}`;
+    // Prepare email content
+    const customerName = `${request.voornaam || ''} ${request.achternaam || ''}`.trim();
+    const customerAddress = `${request.straatnaam || ''} ${request.huisnummer || ''}, ${request.postcode || ''} ${request.plaats || ''}`;
 
-    const emailTemplate = `
+    const emailHtml = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
   <div style="background-color: #059669; color: white; padding: 30px; text-align: center;">
     <h1 style="margin: 0; font-size: 24px;">🎉 Uw Dakkapel Offerte</h1>
@@ -200,26 +261,28 @@ const handler = async (req: Request): Promise<Response> => {
 </div>
     `;
 
-    // Send email via Resend
-    console.log(`📧 Sending webhook-triggered email to: ${request.emailadres}`);
-
+    // Send email automatically
+    console.log(`📧 SENDING AUTOMATIC EMAIL to: ${request.emailadres}`);
+    
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [request.emailadres],
       subject: `🎉 Uw Dakkapel Offerte - €${totalPrice.toLocaleString('nl-NL')} (Automatisch)`,
-      html: emailTemplate,
+      html: emailHtml,
     });
 
-    console.log("📬 Resend email response:", emailResponse);
+    console.log("📬 Email send response:", emailResponse);
 
     if (emailResponse.error) {
-      console.error(`❌ Email error:`, emailResponse.error);
-      throw emailResponse.error;
+      console.error(`❌ Email sending failed:`, emailResponse.error);
+      throw new Error(`Email failed: ${emailResponse.error.message || 'Unknown error'}`);
     }
 
-    console.log(`✅ WEBHOOK EMAIL SENT SUCCESSFULLY! ID: ${emailResponse.data?.id}`);
+    const emailId = emailResponse.data?.id;
+    console.log(`✅ AUTOMATIC EMAIL SENT SUCCESSFULLY! Email ID: ${emailId}`);
 
-    // Update database with sent status
+    // Update database with success status
+    console.log("💾 Updating database with sent status...");
     const { error: updateError } = await supabase
       .from('dakkapel_calculator_aanvragen')
       .update({
@@ -231,29 +294,40 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('id', request.id);
 
     if (updateError) {
-      console.error(`❌ Database update error:`, updateError);
+      console.error(`❌ Database update failed:`, updateError);
+      // Don't throw here - email was sent successfully
     } else {
-      console.log(`✅ Database updated for request ${request.id}`);
+      console.log(`✅ Database updated successfully for request ${request.id}`);
     }
 
+    // Return success response
+    console.log("🎉 AUTOMATIC WEBHOOK PROCESS COMPLETED SUCCESSFULLY!");
+    
     return new Response(JSON.stringify({ 
       success: true, 
-      message: 'Webhook processed successfully',
-      emailId: emailResponse.data?.id,
+      message: 'Automatic email sent successfully',
+      emailId: emailId,
       price: totalPrice,
-      requestId: request.id
+      requestId: request.id,
+      automatic: true
     }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders }
     });
 
   } catch (error: any) {
-    console.error("=== WEBHOOK ERROR ===", error);
+    console.error("=== CRITICAL WEBHOOK ERROR ===", error);
+    console.error("Error message:", error.message);
     console.error("Error stack:", error.stack);
-    return new Response(
-      JSON.stringify({ success: false, error: `Webhook error: ${error.message}` }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: `Webhook failed: ${error.message}`,
+      automatic: true
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders }
+    });
   }
 };
 

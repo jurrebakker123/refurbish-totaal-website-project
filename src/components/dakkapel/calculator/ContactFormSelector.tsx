@@ -47,7 +47,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     setIsSubmitting(true);
     
     try {
-      console.log('=== DAKKAPEL FORM SUBMISSION STARTED ===');
+      console.log('=== AUTOMATIC DAKKAPEL FORM SUBMISSION STARTED ===');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
@@ -81,8 +81,8 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         timestamp: new Date().toISOString()
       };
 
-      // Save to database first
-      console.log('💾 Saving to database...');
+      // Step 1: Save to database first
+      console.log('💾 STEP 1: Saving to database...');
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -90,14 +90,14 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         .single();
 
       if (dbError) {
-        console.error('❌ Database error:', dbError);
-        throw dbError;
+        console.error('❌ Database save failed:', dbError);
+        throw new Error(`Database error: ${dbError.message}`);
       }
 
-      console.log('✅ Saved to database with ID:', savedData.id);
+      console.log('✅ STEP 1 SUCCESS: Saved to database with ID:', savedData.id);
 
-      // DIRECT AUTOMATIC WEBHOOK CALL - No button needed!
-      console.log('🚀 AUTOMATICALLY CALLING WEBHOOK FOR EMAIL');
+      // Step 2: Automatically trigger webhook for email
+      console.log('📧 STEP 2: AUTOMATICALLY SENDING EMAIL VIA WEBHOOK...');
       
       const webhookPayload = {
         event: 'ConfiguratorComplete',
@@ -110,43 +110,61 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         },
         configurationData: configuration,
         timestamp: new Date().toISOString(),
-        immediate: true
+        immediate: true,
+        automatic: true
       };
 
-      console.log('📡 Calling webhook with payload:', webhookPayload);
+      console.log('📡 STEP 2: Calling webhook with payload:', JSON.stringify(webhookPayload, null, 2));
 
-      // Call webhook function directly and automatically
+      // Direct webhook call - THIS IS THE AUTOMATIC PART!
       const { data: webhookResult, error: webhookError } = await supabase.functions.invoke('dakkapel-webhook-handler', {
         body: webhookPayload
       });
 
-      console.log('📬 Webhook response:', webhookResult);
-      console.log('📬 Webhook error:', webhookError);
-
+      console.log('📬 STEP 2: Webhook response received');
+      console.log('📬 Webhook result:', webhookResult);
+      
       if (webhookError) {
-        console.error('⚠️ Webhook failed, but data is saved:', webhookError);
-        toast.success("Aanvraag opgeslagen! We sturen u zo snel mogelijk een offerte.", {
-          duration: 5000,
+        console.error('📬 Webhook error:', webhookError);
+      }
+
+      // Step 3: Handle response and show appropriate messages
+      if (webhookError) {
+        console.error('⚠️ STEP 2 WARNING: Webhook failed, but data is saved');
+        console.error('Webhook error details:', webhookError);
+        
+        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
+          duration: 6000,
         });
       } else if (webhookResult?.success) {
-        console.log('✅ AUTOMATIC EMAIL SENT SUCCESSFULLY!');
-        toast.success("Perfect! Uw aanvraag is verzonden en u ontvangt direct een offerte per email.", {
-          duration: 8000,
+        console.log('🎉 STEP 2 SUCCESS: AUTOMATIC EMAIL SENT!');
+        console.log('Email ID:', webhookResult.emailId);
+        console.log('Calculated price:', webhookResult.price);
+        
+        toast.success("🎉 Perfect! Uw dakkapel aanvraag is verzonden en u ontvangt automatisch een offerte per email!", {
+          duration: 10000,
         });
       } else {
-        console.log('⚠️ Webhook completed with warnings:', webhookResult);
-        toast.success("Aanvraag verzonden! We verwerken uw offerte automatisch.", {
-          duration: 5000,
+        console.log('⚠️ STEP 2 PARTIAL: Webhook completed with mixed results');
+        console.log('Webhook result:', webhookResult);
+        
+        toast.success("✅ Aanvraag verzonden! Uw offerte wordt automatisch verwerkt.", {
+          duration: 6000,
         });
       }
 
+      // Step 4: Success - move to next step
+      console.log('✅ COMPLETE: All steps finished successfully');
       setSubmitSuccess(true);
       onNext();
       
-    } catch (error) {
-      console.error("❌ SUBMISSION ERROR:", error);
-      toast.error("Er is een fout opgetreden bij het verzenden van uw aanvraag. Probeer het later nog eens.", {
-        duration: 5000,
+    } catch (error: any) {
+      console.error("❌ CRITICAL ERROR in submission process:", error);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+      
+      toast.error("❌ Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
+        duration: 8000,
       });
     } finally {
       setIsSubmitting(false);
@@ -157,12 +175,12 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     return (
       <div className="text-center space-y-6">
         <div className="bg-green-50 p-8 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4 text-green-800">Aanvraag succesvol verzonden!</h2>
+          <h2 className="text-2xl font-bold mb-4 text-green-800">🎉 Aanvraag succesvol verzonden!</h2>
           <p className="text-lg text-green-700 mb-4">
-            Bedankt voor uw aanvraag. U ontvangt automatisch een offerte per email.
+            Bedankt voor uw aanvraag! U ontvangt automatisch een offerte per email.
           </p>
           <p className="text-green-600">
-            Controleer ook uw spam/junk folder voor de offerte email.
+            💡 Tip: Controleer ook uw spam/junk folder voor de offerte email.
           </p>
         </div>
       </div>
@@ -173,10 +191,10 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
     <div className="space-y-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-4 text-brand-darkGreen">
-          Contactgegevens
+          📝 Contactgegevens
         </h2>
         <p className="text-gray-600">
-          Vul uw gegevens in om automatisch een offerte te ontvangen voor uw dakkapel.
+          Vul uw gegevens in om <strong>automatisch</strong> een offerte te ontvangen voor uw dakkapel.
         </p>
       </div>
 
@@ -349,7 +367,9 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
             disabled={isSubmitting}
             className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300 disabled:opacity-50"
           >
-            <span>{isSubmitting ? 'Bezig met automatisch verzenden...' : 'Automatisch offerte aanvragen'}</span>
+            <span>
+              {isSubmitting ? '🔄 Bezig met automatisch verzenden...' : '🚀 Automatisch offerte aanvragen'}
+            </span>
             {!isSubmitting && <ArrowRight size={18} />}
           </button>
         </div>
