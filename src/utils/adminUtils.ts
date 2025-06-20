@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
@@ -16,20 +15,51 @@ export const loadAdminData = async (): Promise<{
   };
   
   try {
-    // Load configurator data
-    console.log('Loading configurator data...');
+    // Load from dakkapel_calculator_aanvragen instead of dakkapel_configuraties
+    console.log('Loading dakkapel calculator aanvragen data...');
     const { data: configData, error: configError } = await supabase
-      .from('dakkapel_configuraties')
+      .from('dakkapel_calculator_aanvragen')
       .select('*')
       .order('created_at', { ascending: false });
 
-    console.log('Configurator data:', configData, 'Error:', configError);
+    console.log('Dakkapel aanvragen data:', configData, 'Error:', configError);
     if (configError) {
       console.error('Config error:', configError);
-      toast.error("Fout bij laden configuraties: " + configError.message);
+      toast.error("Fout bij laden dakkapel aanvragen: " + configError.message);
     } else {
-      result.configuraties = configData || [];
-      console.log(`Loaded ${configData?.length || 0} configurations`);
+      // Map the data structure to match the expected interface
+      result.configuraties = (configData || []).map(item => ({
+        id: item.id,
+        created_at: item.created_at,
+        naam: `${item.voornaam} ${item.achternaam}`.trim(),
+        email: item.emailadres,
+        telefoon: item.telefoon,
+        adres: `${item.straatnaam} ${item.huisnummer}`,
+        postcode: item.postcode,
+        plaats: item.plaats,
+        opmerkingen: item.bericht || '',
+        model: item.type,
+        breedte: item.breedte,
+        materiaal: item.materiaal,
+        kleur_kozijn: item.kleurkozijnen,
+        kleur_zijkanten: item.kleurzijkanten,
+        kleur_draaikiepramen: item.kleurdraaikiepramen,
+        dakhelling: item.dakhelling,
+        dakhelling_type: item.dakhellingtype,
+        levertijd: 'Standaard',
+        ventilationgrids: false,
+        sunshade: false,
+        insectscreens: false,
+        airconditioning: false,
+        status: item.status,
+        offerte_verzonden_op: item.offerte_verzonden_op,
+        op_locatie_op: null,
+        in_aanbouw_op: null,
+        afgehandeld_op: item.afgehandeld_op,
+        notities: item.notities,
+        totaal_prijs: item.totaal_prijs
+      }));
+      console.log(`Loaded ${configData?.length || 0} dakkapel aanvragen`);
     }
 
     // Load solar panel data
@@ -61,7 +91,7 @@ export const loadAdminData = async (): Promise<{
 export const updateRequestStatus = async (
   id: string, 
   status: string,
-  table: 'dakkapel_configuraties' | 'refurbished_zonnepanelen' = 'dakkapel_configuraties'
+  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' = 'dakkapel_calculator_aanvragen'
 ): Promise<boolean> => {
   console.log(`Updating status for ${table} ${id} to ${status}`);
   
@@ -73,17 +103,8 @@ export const updateRequestStatus = async (
   if (status === 'offerte_verzonden') {
     updateData.offerte_verzonden_op = new Date().toISOString();
   }
-  if (status === 'op_locatie') {
-    updateData.op_locatie_op = new Date().toISOString();
-  }
-  if (status === 'in_aanbouw') {
-    updateData.in_aanbouw_op = new Date().toISOString();
-  }
   if (status === 'afgehandeld') {
     updateData.afgehandeld_op = new Date().toISOString();
-  }
-  if (status === 'interesse_bevestigd') {
-    updateData.interest_response_at = new Date().toISOString();
   }
 
   const { error } = await supabase
@@ -105,7 +126,7 @@ export const updateRequestDetails = async (
   item: DakkapelConfiguratie | RefurbishedZonnepaneel,
   notes: string,
   price: string,
-  table: 'dakkapel_configuraties' | 'refurbished_zonnepanelen' = 'dakkapel_configuraties'
+  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' = 'dakkapel_calculator_aanvragen'
 ): Promise<boolean> => {
   const updateData: any = {};
   
@@ -156,7 +177,7 @@ export const sendQuoteEmail = async (
     
     const body = {
       requestId: item.id,
-      type: isZonnepaneel ? 'zonnepaneel' : 'configurator',
+      type: isZonnepaneel ? 'zonnepaneel' : 'dakkapel',
       customMessage: customMessage
     };
     
