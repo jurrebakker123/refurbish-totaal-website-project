@@ -113,6 +113,11 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
+    // Format price display
+    const priceDisplay = requestData.totaal_prijs ? 
+      `€${parseFloat(requestData.totaal_prijs).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 
+      'Prijs op aanvraag';
+
     const emailHtml = type === 'dakkapel' ? `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
@@ -146,6 +151,12 @@ const handler = async (req: Request): Promise<Response> => {
               <tr><td style="padding: 8px 0; font-weight: bold;">Locatie:</td><td style="padding: 8px 0;">${requestData.plaats}, ${requestData.postcode}</td></tr>
             </table>
             ${requestData.bericht ? `<div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 5px;"><strong>Uw bericht:</strong><br>${requestData.bericht}</div>` : ''}
+          </div>
+
+          <div style="background: #ecfdf5; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; border: 2px solid #10b981;">
+            <h3 style="color: #065f46; margin-top: 0; font-size: 24px;">💰 Prijsindicatie inclusief BTW</h3>
+            <div style="font-size: 36px; font-weight: bold; color: #10b981; margin: 15px 0;">${priceDisplay}</div>
+            <p style="color: #047857; margin: 0; font-size: 14px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
           </div>
 
           <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 25px 0;">
@@ -198,6 +209,14 @@ const handler = async (req: Request): Promise<Response> => {
           <p style="color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
             Hartelijk dank voor uw interesse in onze refurbished zonnepanelen! Wij hebben uw aanvraag ontvangen.
           </p>
+
+          ${requestData.totaal_prijs ? `
+          <div style="background: #fef3c7; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; border: 2px solid #f59e0b;">
+            <h3 style="color: #92400e; margin-top: 0; font-size: 24px;">💰 Prijsindicatie inclusief BTW</h3>
+            <div style="font-size: 36px; font-weight: bold; color: #f59e0b; margin: 15px 0;">${priceDisplay}</div>
+            <p style="color: #b45309; margin: 0; font-size: 14px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
+          </div>
+          ` : ''}
 
           <div style="text-align: center; margin: 30px 0;">
             <p style="font-size: 16px; color: #4b5563; margin-bottom: 15px;">📞 <strong>Bel direct voor een persoonlijk gesprek:</strong></p>
