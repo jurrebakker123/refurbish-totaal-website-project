@@ -92,7 +92,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         console.error('❌ Database save failed:', dbError);
         console.log('🔄 Trying dakkapel_configuraties table instead...');
         
-        // Try alternative table name
+        // Try alternative table name with correct property mapping
         const altRequestData = {
           naam: `${data.voornaam} ${data.achternaam}`,
           email: data.emailadres,
@@ -111,7 +111,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
           ventilationgrids: configuration.opties?.ventilatie || false,
           sunshade: configuration.opties?.zonwering || false,
           insectscreens: configuration.opties?.horren || false,
-          airconditioning: configuration.opties?.airco || false,
+          airconditioning: configuration.opties?.elektrisch_rolluik || false, // Map to available property
           status: 'nieuw'
         };
 
