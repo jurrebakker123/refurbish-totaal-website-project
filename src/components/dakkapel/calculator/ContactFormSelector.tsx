@@ -45,22 +45,23 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
   });
 
   const onSubmit = async (data: ContactFormValues) => {
-    if (isSubmitting) return; // Prevent double submission
+    if (isSubmitting) return;
     
     setIsSubmitting(true);
     
     try {
-      console.log('🚀 === STARTING AUTOMATIC DAKKAPEL SUBMISSION ===');
+      console.log('🚀 Starting dakkapel submission...');
       console.log('Form data:', data);
       console.log('Configuration:', configuration);
       
-      // Validation - only send if email is filled and has valid configuration
+      // Basic validation
       if (!data.emailadres || !configuration.type || !configuration.breedte) {
-        toast.error('Incomplete data - cannot send automatic quote');
+        toast.error('Incomplete data - cannot submit request');
+        setIsSubmitting(false);
         return;
       }
       
-      // Save to database first - using correct table name
+      // Prepare request data for database
       const requestData = {
         voornaam: data.voornaam,
         achternaam: data.achternaam,
@@ -88,9 +89,9 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         status: 'nieuw'
       };
 
-      console.log('💾 Saving to dakkapel_calculator_aanvragen...');
+      console.log('💾 Saving to database...');
       
-      // Save to database first
+      // Save to database
       const { data: savedData, error: dbError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .insert(requestData)
@@ -98,65 +99,70 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
         .single();
 
       if (dbError) {
-        console.error('❌ Database save failed:', dbError);
+        console.error('❌ Database error:', dbError);
         throw new Error(`Database error: ${dbError.message}`);
       }
 
       console.log('✅ Saved to database with ID:', savedData.id);
 
-      // Now trigger automatic quote sending using the existing auto-send-quote function
-      console.log('📧 TRIGGERING AUTOMATIC QUOTE SENDING...');
+      // Try to send automatic quote
+      console.log('📧 Attempting to send automatic quote...');
       
-      const { data: quoteResult, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
-        body: {
-          requestId: savedData.id,
-          type: 'dakkapel'
+      try {
+        const { data: quoteResult, error: quoteError } = await supabase.functions.invoke('auto-send-quote', {
+          body: {
+            requestId: savedData.id,
+            type: 'dakkapel'
+          }
+        });
+
+        if (quoteError) {
+          console.error('❌ Auto quote error:', quoteError);
+          toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
+            description: "U ontvangt binnenkort een email met uw offerte.",
+            duration: 6000,
+          });
+        } else if (quoteResult?.success) {
+          console.log('🎉 Automatic quote sent successfully!');
+          
+          // Update database status
+          await supabase
+            .from('dakkapel_calculator_aanvragen')
+            .update({
+              status: 'offerte_verzonden',
+              offerte_verzonden_op: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', savedData.id);
+
+          toast.success("🎉 Perfect! Uw dakkapel offerte is automatisch verzonden!", {
+            description: `Controleer uw email voor de offerte.`,
+            duration: 10000,
+          });
+        } else {
+          console.log('⚠️ Quote sending had issues:', quoteResult);
+          toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
+            description: "U ontvangt binnenkort een email met uw offerte.",
+            duration: 6000,
+          });
         }
-      });
-
-      if (quoteError) {
-        console.error('❌ Auto quote error:', quoteError);
-        // Still show success for database save, but mention email issue
+      } catch (quoteError) {
+        console.error('❌ Quote sending failed:', quoteError);
         toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte handmatig.", {
-          description: "U ontvangt binnenkort een email met uw offerte.",
-          duration: 6000,
-        });
-      } else if (quoteResult?.success) {
-        console.log('🎉 AUTOMATIC QUOTE SENT SUCCESSFULLY!');
-        
-        // Update database to mark as sent
-        await supabase
-          .from('dakkapel_calculator_aanvragen')
-          .update({
-            status: 'offerte_verzonden',
-            offerte_verzonden_op: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', savedData.id);
-
-        toast.success("🎉 Perfect! Uw dakkapel offerte is automatisch verzonden!", {
-          description: `Offerte voor €${quoteResult.price?.toLocaleString('nl-NL') || 'onbekend'} is naar uw email verzonden.`,
-          duration: 10000,
-        });
-      } else {
-        console.log('⚠️ Quote sending had issues:', quoteResult?.error);
-        toast.success("✅ Aanvraag opgeslagen! We verwerken uw offerte.", {
           description: "U ontvangt binnenkort een email met uw offerte.",
           duration: 6000,
         });
       }
 
-      // Success
-      console.log('🎉 ALL STEPS COMPLETED SUCCESSFULLY');
+      // Mark as successful
       setSubmitSuccess(true);
       onNext();
       
     } catch (error: any) {
-      console.error("❌ SUBMISSION ERROR:", error);
-      console.error("Error details:", error.message);
+      console.error("❌ Submission error:", error);
       
-      toast.error("❌ Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
-        description: "Neem contact op als het probleem aanhoudt.",
+      toast.error("❌ Er ging iets mis. Probeer het later opnieuw.", {
+        description: error.message || "Onbekende fout opgetreden",
         duration: 8000,
       });
     } finally {
@@ -361,7 +367,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
             className="bg-brand-lightGreen hover:bg-brand-darkGreen text-white px-6 py-3 rounded-md flex items-center space-x-2 font-medium transition-colors duration-300 disabled:opacity-50"
           >
             <span>
-              {isSubmitting ? '🔄 Automatisch verzenden...' : '🚀 Automatisch offerte aanvragen'}
+              {isSubmitting ? '🔄 Verzenden...' : '🚀 Offerte aanvragen'}
             </span>
             {!isSubmitting && <ArrowRight size={18} />}
           </button>
