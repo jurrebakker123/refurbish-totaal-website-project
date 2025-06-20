@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { LogOut, ChevronRight } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -5,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import NurtureFlowButton from './NurtureFlowButton';
 
 type AdminHeaderProps = {
-  onLogout: () => void;
   showMobileMenu: boolean;
   setShowMobileMenu: (show: boolean) => void;
   activeView: string;
@@ -34,15 +34,6 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
         
         <div className="flex items-center space-x-2">
           <NurtureFlowButton />
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={onLogout}
-            className="flex items-center gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Uitloggen</span>
-          </Button>
         </div>
       </div>
     </div>
