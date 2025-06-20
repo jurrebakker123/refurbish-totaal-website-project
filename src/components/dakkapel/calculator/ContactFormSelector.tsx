@@ -111,7 +111,7 @@ export const ContactFormSelector: React.FC<ContactFormSelectorProps> = ({
           ventilationgrids: configuration.opties?.ventilatie || false,
           sunshade: configuration.opties?.zonwering || false,
           insectscreens: configuration.opties?.horren || false,
-          airconditioning: configuration.opties?.airconditioning || false,
+          airco: configuration.opties?.airco || false,
           status: 'nieuw'
         };
 
