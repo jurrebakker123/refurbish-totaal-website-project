@@ -79,7 +79,8 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Request data found for:", { 
       naam: type === 'dakkapel' ? `${requestData.voornaam} ${requestData.achternaam}` : requestData.naam,
       email: type === 'dakkapel' ? requestData.emailadres : requestData.email,
-      id: requestData.id
+      id: requestData.id,
+      totaal_prijs: requestData.totaal_prijs
     });
 
     // Prepare email content
@@ -113,10 +114,28 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Format price display
+    // Format price display - make sure we have the calculated price
     const priceDisplay = requestData.totaal_prijs ? 
       `€${parseFloat(requestData.totaal_prijs).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 
       'Prijs op aanvraag';
+
+    // Interest confirmation buttons
+    const interestButtons = `
+      <div style="background: #f9fafb; padding: 30px; border-radius: 8px; margin: 30px 0; text-align: center; border: 2px solid #e5e7eb;">
+        <h3 style="color: #1f2937; margin-top: 0; font-size: 20px;">📋 Heeft u daadwerkelijk interesse?</h3>
+        <p style="color: #6b7280; margin-bottom: 25px;">Laat ons weten of u interesse heeft in deze offerte:</p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/handle-interest-response?id=${requestId}&response=ja&type=${type}" 
+             style="display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 16px; margin: 5px;">
+            ✅ Ja, ik heb interesse
+          </a>
+          <a href="https://pluhasunoaevfrdugkzg.supabase.co/functions/v1/handle-interest-response?id=${requestId}&response=nee&type=${type}" 
+             style="display: inline-block; background: #6b7280; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 16px; margin: 5px;">
+            ❌ Nee, geen interesse
+          </a>
+        </div>
+      </div>
+    `;
 
     const emailHtml = type === 'dakkapel' ? `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -154,10 +173,13 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="background: #ecfdf5; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; border: 2px solid #10b981;">
-            <h3 style="color: #065f46; margin-top: 0; font-size: 24px;">💰 Prijsindicatie inclusief BTW</h3>
+            <h3 style="color: #065f46; margin-top: 0; font-size: 24px;">💰 Totaalprijs</h3>
+            <p style="color: #047857; margin: 5px 0; font-size: 14px;">Prijsindicatie inclusief BTW</p>
             <div style="font-size: 36px; font-weight: bold; color: #10b981; margin: 15px 0;">${priceDisplay}</div>
             <p style="color: #047857; margin: 0; font-size: 14px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
           </div>
+
+          ${interestButtons}
 
           <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 25px 0;">
             <h3 style="color: #065f46; margin-top: 0;">✅ Inbegrepen in de prijs:</h3>
@@ -212,11 +234,14 @@ const handler = async (req: Request): Promise<Response> => {
 
           ${requestData.totaal_prijs ? `
           <div style="background: #fef3c7; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; border: 2px solid #f59e0b;">
-            <h3 style="color: #92400e; margin-top: 0; font-size: 24px;">💰 Prijsindicatie inclusief BTW</h3>
+            <h3 style="color: #92400e; margin-top: 0; font-size: 24px;">💰 Totaalprijs</h3>
+            <p style="color: #b45309; margin: 5px 0; font-size: 14px;">Prijsindicatie inclusief BTW</p>
             <div style="font-size: 36px; font-weight: bold; color: #f59e0b; margin: 15px 0;">${priceDisplay}</div>
             <p style="color: #b45309; margin: 0; font-size: 14px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
           </div>
           ` : ''}
+
+          ${interestButtons}
 
           <div style="text-align: center; margin: 30px 0;">
             <p style="font-size: 16px; color: #4b5563; margin-bottom: 15px;">📞 <strong>Bel direct voor een persoonlijk gesprek:</strong></p>

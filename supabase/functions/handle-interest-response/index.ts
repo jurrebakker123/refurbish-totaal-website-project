@@ -17,7 +17,7 @@ const handler = async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
     const requestId = url.searchParams.get('id');
     const response = url.searchParams.get('response');
-    const type = url.searchParams.get('type') || 'configurator';
+    const type = url.searchParams.get('type') || 'dakkapel';
 
     console.log('Interest response received:', { requestId, response, type });
 
@@ -49,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (type === 'zonnepaneel') {
       table = 'refurbished_zonnepanelen';
     } else {
-      table = 'dakkapel_configuraties';
+      table = 'dakkapel_calculator_aanvragen';
     }
 
     if (response === 'ja') {
