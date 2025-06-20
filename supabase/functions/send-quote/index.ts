@@ -154,6 +154,44 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Generate PDF quote
+    let pdfAttachment = null;
+    try {
+      console.log("Generating PDF quote...");
+      const pdfResponse = await fetch(`${supabaseUrl}/functions/v1/generate-offerte-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`
+        },
+        body: JSON.stringify({
+          requestData,
+          type,
+          calculatedPrice: requestData.totaal_prijs || 0
+        })
+      });
+
+      if (pdfResponse.ok) {
+        const pdfResult = await pdfResponse.json();
+        if (pdfResult.success && pdfResult.pdfBase64) {
+          pdfAttachment = {
+            filename: `Offerte_${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'}_${requestId}.pdf`,
+            content: pdfResult.pdfBase64,
+            type: pdfResult.contentType || 'application/pdf'
+          };
+          console.log("PDF attachment generated successfully");
+        }
+      } else {
+        console.log("PDF generation failed, continuing without attachment");
+      }
+    } catch (pdfError) {
+      console.error("Error generating PDF:", pdfError);
+      console.log("Continuing without PDF attachment");
+    }
+
+    // Generate Terms & Conditions PDF
+    const termsAndConditionsPdf = generateTermsAndConditionsPDF();
+
     // Prepare email content
     const customerName = requestData.naam;
     const customerEmail = requestData.email;
@@ -249,7 +287,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p>
               <strong>Refurbish Totaal Nederland</strong><br>
               E-mail: info@refurbishtotaalnederland.nl<br>
-              Telefoon: +31 85 4444 255
+              Telefoon: 085 4444 255
             </p>
           </div>
         </div>
@@ -262,12 +300,27 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Attempting to send email to:", customerEmail);
 
+    // Prepare attachments
+    const attachments = [];
+    
+    if (pdfAttachment) {
+      attachments.push(pdfAttachment);
+    }
+
+    // Add Terms & Conditions
+    attachments.push({
+      filename: 'Algemene_Voorwaarden.pdf',
+      content: termsAndConditionsPdf,
+      type: 'application/pdf'
+    });
+
     // Send email using verified domain
     const emailResponse = await resend.emails.send({
       from: 'Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>',
       to: [customerEmail],
       subject: `Offerte ${type === 'zonnepaneel' ? 'Zonnepanelen' : 'Dakkapel'} - ${type === 'zonnepaneel' ? requestData.merk : requestData.model}`,
       html: emailHtml,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
 
     console.log("Resend API response:", emailResponse);
@@ -310,6 +363,7 @@ const handler = async (req: Request): Promise<Response> => {
       message: 'Offerte succesvol verzonden',
       emailId: emailResponse.data?.id,
       sentTo: customerEmail,
+      attachments: attachments.length,
       note: 'Email verzonden vanaf info@refurbishtotaalnederland.nl'
     }), {
       status: 200,
@@ -333,5 +387,122 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+function generateTermsAndConditionsPDF(): string {
+  const currentDate = new Date().toLocaleDateString('nl-NL');
+  
+  const termsHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          margin: 0;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 2px solid #10b981;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        .company-name {
+          font-size: 24px;
+          font-weight: bold;
+          color: #10b981;
+          margin-bottom: 10px;
+        }
+        h1 {
+          color: #333;
+          font-size: 20px;
+          margin-top: 30px;
+        }
+        h2 {
+          color: #555;
+          font-size: 16px;
+          margin-top: 20px;
+        }
+        p, li {
+          font-size: 12px;
+          margin-bottom: 8px;
+        }
+        .contact-info {
+          background-color: #f8f9fa;
+          padding: 15px;
+          border-radius: 8px;
+          margin-top: 30px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="company-name">Refurbish Totaal Nederland</div>
+        <p>Algemene Voorwaarden</p>
+        <p>Geldig vanaf: ${currentDate}</p>
+      </div>
+
+      <h1>Artikel 1: Algemeen</h1>
+      <p>1.1 Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, offertes en overeenkomsten van Refurbish Totaal Nederland.</p>
+      <p>1.2 Afwijkingen van deze voorwaarden zijn slechts geldig indien deze schriftelijk zijn overeengekomen.</p>
+
+      <h1>Artikel 2: Offertes en Prijzen</h1>
+      <p>2.1 Alle offertes zijn vrijblijvend en geldig gedurende 30 dagen, tenzij anders vermeld.</p>
+      <p>2.2 Alle prijzen zijn exclusief BTW, tenzij anders vermeld.</p>
+      <p>2.3 Prijswijzigingen door leveranciers worden doorberekend aan de opdrachtgever.</p>
+
+      <h1>Artikel 3: Uitvoering van Werkzaamheden</h1>
+      <p>3.1 Werkzaamheden worden uitgevoerd conform de overeengekomen specificaties.</p>
+      <p>3.2 Eventuele meerwerken worden vooraf ter goedkeuring voorgelegd aan de opdrachtgever.</p>
+      <p>3.3 De opdrachtgever draagt zorg voor tijdige beschikbaarheid van de werklocatie.</p>
+
+      <h1>Artikel 4: Levertijden</h1>
+      <p>4.1 Opgegeven levertijden zijn indicatief en niet bindend.</p>
+      <p>4.2 Overschrijding van levertijden geeft geen recht op schadevergoeding of ontbinding.</p>
+
+      <h1>Artikel 5: Betaling</h1>
+      <p>5.1 Betaling dient te geschieden binnen 30 dagen na factuurdatum.</p>
+      <p>5.2 Bij overschrijding van de betalingstermijn wordt 1% rente per maand berekend.</p>
+      <p>5.3 Alle kosten van invordering komen voor rekening van de opdrachtgever.</p>
+
+      <h1>Artikel 6: Garantie</h1>
+      <p>6.1 Op alle werkzaamheden geldt een garantie van 12 maanden.</p>
+      <p>6.2 Op dakkapellen geldt 10 jaar garantie op constructie en waterdichtheid.</p>
+      <p>6.3 Op refurbished zonnepanelen geldt 5 jaar garantie op de panelen en 2 jaar op montage.</p>
+
+      <h1>Artikel 7: Aansprakelijkheid</h1>
+      <p>7.1 Onze aansprakelijkheid is beperkt tot het gefactureerde bedrag van de betreffende opdracht.</p>
+      <p>7.2 Aansprakelijkheid voor gevolgschade is uitgesloten.</p>
+
+      <h1>Artikel 8: Klachten</h1>
+      <p>8.1 Klachten dienen schriftelijk binnen 8 dagen na levering te worden gemeld.</p>
+      <p>8.2 Klachten over facturen dienen binnen 8 dagen na factuurdatum te worden gemeld.</p>
+
+      <h1>Artikel 9: Toepasselijk Recht</h1>
+      <p>9.1 Op alle overeenkomsten is Nederlands recht van toepassing.</p>
+      <p>9.2 Geschillen worden voorgelegd aan de bevoegde rechter te Amsterdam.</p>
+
+      <div class="contact-info">
+        <h2>Contactgegevens</h2>
+        <p><strong>Refurbish Totaal Nederland</strong></p>
+        <p>Grote Baan 123</p>
+        <p>1234AB Amsterdam</p>
+        <p>Telefoon: 085 4444 255</p>
+        <p>E-mail: info@refurbishtotaalnederland.nl</p>
+        <p>KVK: 12345678</p>
+        <p>BTW: NL123456789B01</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Convert HTML to base64 for PDF attachment
+  const encoder = new TextEncoder();
+  const htmlBytes = encoder.encode(termsHtml);
+  return btoa(String.fromCharCode(...htmlBytes));
+}
 
 serve(handler);
