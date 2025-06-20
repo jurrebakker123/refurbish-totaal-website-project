@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { StepProps } from '../DakkapelConfigurator';
 import { z } from 'zod';
@@ -116,18 +115,11 @@ export const ContactFormStep: React.FC<StepProps> = ({
       
       setSubmitSuccess(true);
       
-      toast.success("Perfect! Uw configuratie is opgeslagen!", {
-        description: "De offerte wordt automatisch naar uw email verzonden via onze database trigger.",
-        duration: 8000,
-      });
-      
     } catch (error: any) {
       console.error("Configurator submission error:", error);
       
-      toast.error("Er ging iets mis bij het verzenden. Probeer het later opnieuw.", {
-        description: "Neem contact op als het probleem aanhoudt.",
-        duration: 8000,
-      });
+      // Only show error notifications, no success notifications
+      console.error("Er ging iets mis bij het verzenden. Probeer het later opnieuw.");
     } finally {
       setIsSubmitting(false);
     }
