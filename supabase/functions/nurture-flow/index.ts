@@ -223,7 +223,7 @@ async function sendFirstReminder(request: any, type: 'dakkapel' | 'zonnepaneel')
         <p>Met vriendelijke groet,</p>
         <p><strong>Gerard Groeneveld</strong><br>
         Refurbish Totaal Nederland<br>
-        085-1301578 | info@refurbishtotaalnederland.nl</p>
+        085 4444 255 | info@refurbishtotaalnederland.nl</p>
       </div>
     </div>
   `;
@@ -252,7 +252,7 @@ async function sendSecondReminder(request: any, type: 'dakkapel' | 'zonnepaneel'
     request.email;
 
   const projectType = type === 'dakkapel' ? 'dakkapel' : 'zonnepanelen';
-  const phoneNumber = "+31648200064";
+  const phoneNumber = "085 4444 255";
 
   const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -305,7 +305,7 @@ async function sendSecondReminder(request: any, type: 'dakkapel' | 'zonnepaneel'
         <p>Met vriendelijke groet,</p>
         <p><strong>Gerard Groeneveld</strong><br>
         Refurbish Totaal Nederland<br>
-        085-1301578 | info@refurbishtotaalnederland.nl</p>
+        085 4444 255 | info@refurbishtotaalnederland.nl</p>
       </div>
     </div>
   `;
@@ -372,9 +372,9 @@ async function sendThirdReminder(request: any, type: 'dakkapel' | 'zonnepaneel')
         </div>
         
         <div style="text-align: center; margin: 20px 0;">
-          <a href="tel:+31648200064" 
+          <a href="tel:085 4444 255" 
              style="background: #f59e0b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 0 10px;">
-            📞 Snel bellen
+            📞 Snel bellen: 085 4444 255
           </a>
           <a href="https://refurbishtotaalnederland.nl/contact" 
              style="background: #6b7280; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 0 10px;">
@@ -392,7 +392,7 @@ async function sendThirdReminder(request: any, type: 'dakkapel' | 'zonnepaneel')
         <p>Met vriendelijke groet,</p>
         <p><strong>Gerard Groeneveld</strong><br>
         Refurbish Totaal Nederland<br>
-        085-1301578 | info@refurbishtotaalnederland.nl</p>
+        085 4444 255 | info@refurbishtotaalnederland.nl</p>
       </div>
     </div>
   `;
