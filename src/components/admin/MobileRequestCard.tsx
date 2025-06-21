@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,8 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, Send, Clock, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import WhatsAppQuoteButton from './WhatsAppQuoteButton';
-import CombinedQuoteButton from './CombinedQuoteButton';
 
 interface MobileRequestCardProps {
   item: any;
@@ -49,7 +48,7 @@ const MobileRequestCard: React.FC<MobileRequestCardProps> = ({
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1 min-w-0">
             <h3 className="font-medium text-sm text-gray-900 truncate">
-              {item.contactInfo?.name || item.name || 'Onbekende naam'}
+              {item.contactInfo?.name || item.naam || 'Onbekende naam'}
             </h3>
             <p className="text-xs text-gray-500 truncate">
               {item.contactInfo?.email || item.email || 'Geen email'}
@@ -115,33 +114,6 @@ const MobileRequestCard: React.FC<MobileRequestCardProps> = ({
                 </>
               )}
             </Button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap gap-2 mt-4">
-          {/* WhatsApp Quote Button */}
-          {item.telefoon && (
-            <WhatsAppQuoteButton
-              requestId={item.id}
-              type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
-              customerPhone={item.telefoon}
-              customerName={item.naam}
-              onSuccess={onDataChange}
-              disabled={sendingQuote === item.id}
-            />
-          )}
-          
-          {/* Combined Quote Button */}
-          {(item.email || item.telefoon) && (
-            <CombinedQuoteButton
-              requestId={item.id}
-              type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
-              customerEmail={item.email}
-              customerPhone={item.telefoon}
-              customerName={item.naam}
-              onSuccess={onDataChange}
-              disabled={sendingQuote === item.id}
-            />
           )}
         </div>
       </CardContent>

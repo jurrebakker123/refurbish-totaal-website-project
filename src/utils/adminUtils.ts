@@ -217,3 +217,21 @@ export const sendQuoteEmail = async (
     return false;
   }
 };
+
+export const deleteQuote = async (id: string, table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' = 'dakkapel_calculator_aanvragen'): Promise<boolean> => {
+  console.log(`Deleting from ${table} with id ${id}`);
+  
+  const { error } = await supabase
+    .from(table)
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Delete error:', error);
+    toast.error("Fout bij het verwijderen: " + error.message);
+    return false;
+  }
+
+  toast.success("Item succesvol verwijderd");
+  return true;
+};

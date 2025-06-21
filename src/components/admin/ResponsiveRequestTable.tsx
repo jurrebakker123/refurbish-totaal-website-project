@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Table,
@@ -32,7 +33,7 @@ import MobileRequestCard from './MobileRequestCard';
 import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
 import { deleteQuote } from '@/utils/adminUtils';
 import { toast } from 'sonner';
-import { AutoQuoteButton } from './AutoQuoteButton';
+import AutoQuoteButton from './AutoQuoteButton';
 import WhatsAppQuoteButton from './WhatsAppQuoteButton';
 import CombinedQuoteButton from './CombinedQuoteButton';
 
@@ -69,9 +70,9 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
     const confirmDelete = window.confirm("Weet je zeker dat je deze aanvraag wilt verwijderen?");
     if (confirmDelete) {
       try {
-        await deleteQuote(id);
-        toast.success("Aanvraag succesvol verwijderd!");
-        onDataChange(); // Refresh data
+        const isZonnepaneel = items.length > 0 && 'isZonnepaneel' in items[0];
+        await deleteQuote(id, isZonnepaneel ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen');
+        onDataChange();
       } catch (error) {
         toast.error("Er is een fout opgetreden bij het verwijderen van de aanvraag.");
       }
@@ -111,14 +112,10 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
           <MobileRequestCard
             key={item.id}
             item={item}
-            formatDate={formatDate}
-            getStatusColor={getStatusColor}
-            onEdit={() => onEdit(item.id)}
-            onDelete={() => handleDelete(item.id)}
-            onDataChange={onDataChange}
+            onViewDetails={() => onEdit(item.id)}
+            onOpenQuoteDialog={() => onEdit(item.id)}
+            type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
             sendingQuote={sendingQuote}
-            setSendingQuote={setSendingQuote}
-            isZonnepaneel={isZonnepaneel}
           />
         ))}
       </div>
