@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, Send, Clock, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
+import WhatsAppQuoteButton from './WhatsAppQuoteButton';
+import CombinedQuoteButton from './CombinedQuoteButton';
 
 interface MobileRequestCardProps {
   item: any;
@@ -15,7 +16,7 @@ interface MobileRequestCardProps {
   sendingQuote?: string | null;
 }
 
-const MobileRequestCard = ({ 
+const MobileRequestCard: React.FC<MobileRequestCardProps> = ({
   item, 
   onViewDetails, 
   onOpenQuoteDialog, 
@@ -43,7 +44,7 @@ const MobileRequestCard = ({
   };
 
   return (
-    <Card className="mb-3">
+    <Card className="p-4">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1 min-w-0">
@@ -114,6 +115,33 @@ const MobileRequestCard = ({
                 </>
               )}
             </Button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-2 mt-4">
+          {/* WhatsApp Quote Button */}
+          {item.telefoon && (
+            <WhatsAppQuoteButton
+              requestId={item.id}
+              type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
+              customerPhone={item.telefoon}
+              customerName={item.naam}
+              onSuccess={onDataChange}
+              disabled={sendingQuote === item.id}
+            />
+          )}
+          
+          {/* Combined Quote Button */}
+          {(item.email || item.telefoon) && (
+            <CombinedQuoteButton
+              requestId={item.id}
+              type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
+              customerEmail={item.email}
+              customerPhone={item.telefoon}
+              customerName={item.naam}
+              onSuccess={onDataChange}
+              disabled={sendingQuote === item.id}
+            />
           )}
         </div>
       </CardContent>
