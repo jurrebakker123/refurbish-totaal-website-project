@@ -122,12 +122,13 @@ const AdminDakkapelPage = () => {
                   )}
                   
                   <ResponsiveRequestTable 
-                    configuraties={allConfiguraties}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
+                    items={allConfiguraties}
+                    searchTerm={filters.search}
+                    selectedStatus={filters.status}
+                    onEdit={openDetails}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="dakkapel"
+                    setSendingQuote={setSendingQuote}
                   />
                 </CardContent>
               </Card>

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -117,12 +118,13 @@ const AdminZonnepanelenDashboardPage = () => {
                   )}
                   
                   <ResponsiveRequestTable 
-                    zonnepanelen={allZonnepanelen}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
+                    items={allZonnepanelen}
+                    searchTerm={filters.search}
+                    selectedStatus={filters.status}
+                    onEdit={openDetails}
                     onDataChange={loadDashboardData}
                     sendingQuote={sendingQuote}
-                    type="zonnepaneel"
+                    setSendingQuote={setSendingQuote}
                   />
                 </CardContent>
               </Card>
