@@ -336,25 +336,25 @@ const handler = async (req: Request): Promise<Response> => {
           
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <tr style="border-bottom: 1px solid #e5e7eb;">
-              <td style="padding: 12px 0; font-weight: bold; color: #374151; width: 40%;">Breedte:</td>
+              <td style="padding: 12px 0; font-weight: bold; color: #374151; width: 40%;">Stap 1 - Breedte:</td>
               <td style="padding: 12px 0; color: #1f2937;">${getWidthDisplayName(requestData.breedte.toString())}</td>
             </tr>
             <tr style="border-bottom: 1px solid #e5e7eb;">
-              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Dakhelling:</td>
+              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Stap 2 - Dakhelling:</td>
               <td style="padding: 12px 0; color: #1f2937;">${getRoofAngleDisplayName(requestData.dakhellingtype)}</td>
             </tr>
             <tr style="border-bottom: 1px solid #e5e7eb;">
-              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Model:</td>
+              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Stap 3 - Model:</td>
               <td style="padding: 12px 0; color: #1f2937;">${getModelDisplayName(requestData.type)}</td>
             </tr>
             <tr style="border-bottom: 1px solid #e5e7eb;">
-              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Materiaal:</td>
+              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Stap 4 - Materiaal:</td>
               <td style="padding: 12px 0; color: #1f2937;">${getMaterialDisplayName(requestData.materiaal)}</td>
             </tr>
           </table>
 
           <div style="margin-bottom: 20px;">
-            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Kleuren:</h4>
+            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Stap 5 - Kleuren:</h4>
             <div style="background: white; padding: 15px; border-radius: 6px;">
               <div style="margin-bottom: 8px;"><strong>Boeien:</strong> ${getColorDisplayName(requestData.kleurkozijnen)}</div>
               <div style="margin-bottom: 8px;"><strong>Zijwanden:</strong> ${getColorDisplayName(requestData.kleurzijkanten)}</div>
@@ -364,21 +364,21 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="margin-bottom: 20px;">
-            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Extra opties:</h4>
+            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Stap 6 - Extra opties:</h4>
             <div style="background: white; padding: 15px; border-radius: 6px;">
               ${extraOptionsText}
             </div>
           </div>
 
           <div style="margin-bottom: 20px;">
-            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Levertijd:</h4>
+            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Stap 7 - Levertijd:</h4>
             <div style="background: white; padding: 15px; border-radius: 6px;">
               ${getDeliveryTimeDisplayName(requestData.levertijd || 'asap')}
             </div>
           </div>
           
           <div style="padding-top: 15px; border-top: 1px solid #e5e7eb;">
-            <p style="margin: 0; color: #6b7280;"><strong>Locatie:</strong> ${requestData.plaats}, ${requestData.postcode}</p>
+            <p style="margin: 0; color: #6b7280;"><strong>Stap 8 - Locatie:</strong> ${requestData.plaats}, ${requestData.postcode}</p>
           </div>
         </div>
       `;
