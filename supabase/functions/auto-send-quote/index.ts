@@ -220,30 +220,174 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log("Preparing email content for:", customerEmail);
 
+    // Helper functions for configurator display values
+    const getWidthDisplayName = (width: string) => {
+      const widthValue = parseInt(width) || 240;
+      if (widthValue <= 180) return '0 - 180 cm';
+      if (widthValue <= 240) return '180 - 240 cm';
+      if (widthValue <= 300) return '240 - 300 cm';
+      if (widthValue <= 360) return '300 - 360 cm';
+      if (widthValue <= 420) return '360 - 420 cm';
+      if (widthValue <= 480) return '420 - 480 cm';
+      if (widthValue <= 540) return '480 - 540 cm';
+      return 'Groter dan 540 cm';
+    };
+
+    const getRoofAngleDisplayName = (angle: string) => {
+      switch(angle) {
+        case '45-60': return '45° - 60° (Meest gekozen)';
+        case '35-45': return '35° - 45° (Gemiddelde helling)';
+        case '25-35': return '25° - 35° (Lage helling)';
+        case 'unknown': return 'Weet ik niet (Wij meten dit gratis voor u in)';
+        default: return angle;
+      }
+    };
+
+    const getModelDisplayName = (model: string) => {
+      switch(model) {
+        case 'flat': return 'Dakkapel plat dak (Meest gekozen model)';
+        case 'sloped': return 'Dakkapel schuin dak (Past bij traditionele woningen)';
+        case 'double-ridge': return 'Dubbele nokverhoging (Voor maximale ruimte)';
+        case 'single-ridge': return 'Eenzijdige nokverhoging (Voor extra hoogte)';
+        default: return model;
+      }
+    };
+
+    const getMaterialDisplayName = (material: string) => {
+      switch(material) {
+        case 'keralit': return 'Keralit (Onderhoudsarm en duurzaam)';
+        case 'wood': return 'Hout (Natuurlijke uitstraling)';
+        case 'zinc': return 'Zink (Stijlvol en modern)';
+        default: return material;
+      }
+    };
+
+    const getColorDisplayName = (color: string) => {
+      switch(color) {
+        case 'wit': return 'Wit';
+        case 'creme': return 'Crème';
+        case 'blauw': return 'Blauw';
+        case 'groen': return 'Groen';
+        case 'antraciet': return 'Antraciet';
+        case 'kwartsgrijs': return 'Kwartsgrijs';
+        case 'anders': return 'Anders';
+        default: return color;
+      }
+    };
+
+    const getDeliveryTimeDisplayName = (deliveryTime: string) => {
+      switch(deliveryTime) {
+        case 'asap': return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+        case '3-6': return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
+        case '6-9': return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
+        case '9+': return '9 maanden of later (Ver vooruit plannen)';
+        default: return 'Zo snel mogelijk';
+      }
+    };
+
+    // Create product details based on type
+    let productDetails = '';
+    
+    if (type === 'zonnepaneel') {
+      productDetails = `
+        <h3>Uw Zonnepanelen Configuratie:</h3>
+        <ul>
+          <li><strong>Aantal panelen:</strong> ${requestData.aantal_panelen}</li>
+          <li><strong>Vermogen:</strong> ${requestData.vermogen}W</li>
+          <li><strong>Type paneel:</strong> ${requestData.type_paneel}</li>
+          <li><strong>Merk:</strong> ${requestData.merk}</li>
+          <li><strong>Conditie:</strong> ${requestData.conditie}</li>
+          <li><strong>Dak type:</strong> ${requestData.dak_type}</li>
+          ${requestData.dak_materiaal ? `<li><strong>Dak materiaal:</strong> ${requestData.dak_materiaal}</li>` : ''}
+          ${requestData.schaduw_situatie ? `<li><strong>Schaduw situatie:</strong> ${requestData.schaduw_situatie}</li>` : ''}
+        </ul>
+      `;
+    } else {
+      // Parse extra options from opties field
+      let extraOptions = [];
+      if (requestData.opties) {
+        const opties = typeof requestData.opties === 'string' ? requestData.opties.split(',') : [];
+        opties.forEach((optie: string) => {
+          const trimmedOptie = optie.trim();
+          switch(trimmedOptie) {
+            case 'ventilationGrids':
+              extraOptions.push('✅ Ventilatieroosters (+€350,-)');
+              break;
+            case 'sunShade':
+              extraOptions.push('✅ Zonwering (Somfy-Ilmo motor) (+€850,-)');
+              break;
+            case 'insectScreens':
+              extraOptions.push('✅ Horren (+€250,-)');
+              break;
+            case 'airConditioning':
+              extraOptions.push('✅ Airco (+€1.500,-)');
+              break;
+          }
+        });
+      }
+
+      const extraOptionsText = extraOptions.length > 0 ? 
+        `<div style="margin-top: 15px;">${extraOptions.join('<br>')}</div>` : 
+        '<div style="margin-top: 15px;">Geen extra opties</div>';
+
+      productDetails = `
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
+          <h3 style="color: #065f46; margin-top: 0; margin-bottom: 20px;">📋 Overzicht van uw samenstelling</h3>
+          
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 12px 0; font-weight: bold; color: #374151; width: 40%;">Breedte:</td>
+              <td style="padding: 12px 0; color: #1f2937;">${getWidthDisplayName(requestData.breedte.toString())}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Dakhelling:</td>
+              <td style="padding: 12px 0; color: #1f2937;">${getRoofAngleDisplayName(requestData.dakhellingtype)}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Model:</td>
+              <td style="padding: 12px 0; color: #1f2937;">${getModelDisplayName(requestData.type)}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 12px 0; font-weight: bold; color: #374151;">Materiaal:</td>
+              <td style="padding: 12px 0; color: #1f2937;">${getMaterialDisplayName(requestData.materiaal)}</td>
+            </tr>
+          </table>
+
+          <div style="margin-bottom: 20px;">
+            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Kleuren:</h4>
+            <div style="background: white; padding: 15px; border-radius: 6px;">
+              <div style="margin-bottom: 8px;"><strong>Boeien:</strong> ${getColorDisplayName(requestData.kleurkozijnen)}</div>
+              <div style="margin-bottom: 8px;"><strong>Zijwanden:</strong> ${getColorDisplayName(requestData.kleurzijkanten)}</div>
+              <div style="margin-bottom: 8px;"><strong>Kozijnen:</strong> ${getColorDisplayName(requestData.kleurkozijnen)}</div>
+              <div><strong>Draaiende delen:</strong> ${getColorDisplayName(requestData.kleurdraaikiepramen)}</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Extra opties:</h4>
+            <div style="background: white; padding: 15px; border-radius: 6px;">
+              ${extraOptionsText}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Levertijd:</h4>
+            <div style="background: white; padding: 15px; border-radius: 6px;">
+              ${getDeliveryTimeDisplayName(requestData.levertijd || 'asap')}
+            </div>
+          </div>
+          
+          <div style="padding-top: 15px; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 0; color: #6b7280;"><strong>Locatie:</strong> ${requestData.plaats}, ${requestData.postcode}</p>
+          </div>
+        </div>
+      `;
+    }
+
     // Create comprehensive email content
     const emailSubject = type === 'dakkapel' ? 
       "🏠 Uw Dakkapel Offerte van Refurbish Totaal Nederland" : 
       "☀️ Uw Zonnepanelen Offerte van Refurbish Totaal Nederland";
-
-    // Parse opties voor dakkapel
-    let optiesHtml = '';
-    if (type === 'dakkapel' && requestData.opties) {
-      const opties = typeof requestData.opties === 'string' ? requestData.opties.split(',') : [];
-      if (opties.length > 0) {
-        optiesHtml = `
-          <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Extra opties:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-            ${opties.map(optie => {
-              switch(optie.trim()) {
-                case 'ventilationGrids': return '✅ Ventilatie roosters';
-                case 'sunShade': return '✅ Zonwering';
-                case 'insectScreens': return '✅ Horren';
-                case 'airConditioning': return '✅ Airconditioning voorbereiding';
-                default: return `✅ ${optie.trim()}`;
-              }
-            }).join('<br>')}
-          </td></tr>`;
-      }
-    }
 
     // Format price display - use calculated or existing price
     const finalPrice = calculatedPrice || requestData.totaal_prijs;
@@ -285,32 +429,13 @@ const handler = async (req: Request): Promise<Response> => {
             Hartelijk dank voor uw interesse in onze dakkapellen! Wij hebben uw configuratie ontvangen en zijn verheugd u hierbij een offerte te kunnen aanbieden.
           </p>
 
-          <div style="background: white; padding: 25px; border-radius: 8px; border-left: 4px solid #10b981; margin: 25px 0;">
-            <h3 style="color: #1f2937; margin-top: 0;">📋 Uw Volledige Dakkapel Configuratie:</h3>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Type:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.type}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Breedte:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.breedte} cm</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Hoogte:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.hoogte} cm</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Materiaal:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.materiaal}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Aantal ramen:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.aantalramen}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Dakhelling:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.dakhellingtype}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kozijn hoogte:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kozijnhoogte}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Woningzijde:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.woningzijde}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">RC-waarde:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.rcwaarde}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kleur kozijnen:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kleurkozijnen}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kleur zijkanten:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kleurzijkanten}</td></tr>
-              <tr><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Kleur draaikiepramen:</td><td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${requestData.kleurdraaikiepramen}</td></tr>
-              ${optiesHtml}
-              <tr><td style="padding: 8px 0; font-weight: bold;">Locatie:</td><td style="padding: 8px 0;">${requestData.plaats}, ${requestData.postcode}</td></tr>
-            </table>
-            ${requestData.bericht ? `<div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 5px;"><strong>Uw bericht:</strong><br>${requestData.bericht}</div>` : ''}
-          </div>
-
+          ${productDetails}
+          
           <div style="background: #ecfdf5; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; border: 2px solid #10b981;">
-            <h3 style="color: #065f46; margin-top: 0; font-size: 24px;">💰 Totaalprijs</h3>
-            <p style="color: #047857; margin: 5px 0; font-size: 14px;">Prijsindicatie inclusief BTW</p>
+            <h3 style="color: #065f46; margin-top: 0; font-size: 24px;">💰 Totaalprijs:</h3>
             <div style="font-size: 36px; font-weight: bold; color: #10b981; margin: 15px 0;">${priceDisplay}</div>
-            <p style="color: #047857; margin: 0; font-size: 14px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
+            <p style="color: #047857; margin: 0; font-size: 14px;">Prijsindicatie inclusief BTW</p>
+            <p style="color: #047857; margin: 5px 0 0 0; font-size: 12px;">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</p>
           </div>
 
           ${pdfAttachment ? `
@@ -322,11 +447,13 @@ const handler = async (req: Request): Promise<Response> => {
 
           ${interestButtons}
 
+          ${requestData.bericht ? `<div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;"><strong>Uw bericht:</strong><br>${requestData.bericht}</div>` : ''}
+          
           <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 25px 0;">
             <h3 style="color: #065f46; margin-top: 0;">✅ Inbegrepen in de prijs:</h3>
             <ul style="color: #047857; line-height: 1.8; margin: 0; padding-left: 20px;">
               <li>Complete levering en montage van de dakkapel</li>
-              <li>Hoogwaardige materialen (${requestData.materiaal})</li>
+              <li>Hoogwaardige materialen (${getMaterialDisplayName(requestData.materiaal)})</li>
               <li>Professionele afwerking binnen- en buitenzijde</li>
               <li>10 jaar garantie op constructie en waterdichtheid</li>
               <li>5 jaar garantie op gebruikte materialen</li>
@@ -340,7 +467,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 25px 0;">
-            <p style="color: #92400e; margin: 0; font-weight: bold;">⏰ Levertijd: 6-8 weken na definitieve opdracht</p>
+            <p style="color: #92400e; margin: 0; font-weight: bold;">⏰ Levertijd: ${getDeliveryTimeDisplayName(requestData.levertijd || 'asap')}</p>
           </div>
 
           <p style="color: #4b5563; line-height: 1.6; margin: 20px 0;">
