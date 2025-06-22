@@ -64,6 +64,14 @@ const AdminDakkapelPage = () => {
     setIsQuoteDialogOpen(true);
   };
 
+  // Convert DakkapelConfiguratie to QuoteItem for ResponsiveRequestTable
+  const convertToQuoteItems = (configuraties: DakkapelConfiguratie[]): QuoteItem[] => {
+    return configuraties.map(config => ({
+      ...config,
+      isCalculator: false
+    }));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -122,7 +130,7 @@ const AdminDakkapelPage = () => {
                   )}
                   
                   <ResponsiveRequestTable 
-                    items={allConfiguraties}
+                    items={convertToQuoteItems(allConfiguraties)}
                     searchTerm={filters.search}
                     selectedStatus={filters.status}
                     onEdit={openDetails}

@@ -62,6 +62,14 @@ const AdminZonnepanelenDashboardPage = () => {
     setIsQuoteDialogOpen(true);
   };
 
+  // Convert RefurbishedZonnepaneel to ZonnepaneelQuoteItem for ResponsiveRequestTable
+  const convertToQuoteItems = (zonnepanelen: RefurbishedZonnepaneel[]): ZonnepaneelQuoteItem[] => {
+    return zonnepanelen.map(paneel => ({
+      ...paneel,
+      isZonnepaneel: true
+    }));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -118,7 +126,7 @@ const AdminZonnepanelenDashboardPage = () => {
                   )}
                   
                   <ResponsiveRequestTable 
-                    items={allZonnepanelen}
+                    items={convertToQuoteItems(allZonnepanelen)}
                     searchTerm={filters.search}
                     selectedStatus={filters.status}
                     onEdit={openDetails}
