@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Resend } from 'npm:resend@2.0.0';
@@ -281,7 +280,7 @@ const handler = async (req: Request): Promise<Response> => {
         case '3-6': return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
         case '6-9': return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
         case '9+': return '9 maanden of later (Ver vooruit plannen)';
-        default: return 'Zo snel mogelijk';
+        default: return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
       }
     };
 
