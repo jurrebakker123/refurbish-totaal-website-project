@@ -277,20 +277,29 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     const getDeliveryTimeDisplayName = (deliveryTime: string) => {
+      console.log('Delivery time from database:', deliveryTime);
+      
+      // Handle all possible variations
       switch(deliveryTime) {
-        case 'asap': 
         case 'zo-snel-mogelijk':
+        case 'asap':
+        case '1':
           return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
-        case '3-6': 
         case 'binnen-3-6-maanden':
+        case '3-6':
+        case '2':
           return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
-        case '6-9': 
         case 'binnen-6-9-maanden':
+        case '6-9':
+        case '3':
           return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
-        case '9+': 
         case '9-maanden-of-later':
+        case '9+':
+        case '4':
           return '9 maanden of later (Ver vooruit plannen)';
-        default: return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+        default: 
+          console.log('Unknown delivery time, using default:', deliveryTime);
+          return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
       }
     };
 
