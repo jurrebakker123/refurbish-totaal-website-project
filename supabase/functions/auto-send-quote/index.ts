@@ -237,7 +237,9 @@ const handler = async (req: Request): Promise<Response> => {
         case '45-60': return '45° - 60° (Meest gekozen)';
         case '35-45': return '35° - 45° (Gemiddelde helling)';
         case '25-35': return '25° - 35° (Lage helling)';
-        case 'unknown': return 'Weet ik niet (Wij meten dit gratis voor u in)';
+        case 'unknown': 
+        case 'unknown°':
+          return 'Weet ik niet (Wij meten dit gratis voor u in)';
         default: return angle;
       }
     };
@@ -276,10 +278,18 @@ const handler = async (req: Request): Promise<Response> => {
 
     const getDeliveryTimeDisplayName = (deliveryTime: string) => {
       switch(deliveryTime) {
-        case 'asap': return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
-        case '3-6': return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
-        case '6-9': return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
-        case '9+': return '9 maanden of later (Ver vooruit plannen)';
+        case 'asap': 
+        case 'zo-snel-mogelijk':
+          return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+        case '3-6': 
+        case 'binnen-3-6-maanden':
+          return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
+        case '6-9': 
+        case 'binnen-6-9-maanden':
+          return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
+        case '9+': 
+        case '9-maanden-of-later':
+          return '9 maanden of later (Ver vooruit plannen)';
         default: return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
       }
     };
