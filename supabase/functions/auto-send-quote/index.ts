@@ -98,53 +98,62 @@ const calculateTotalPrice = (config: any): number => {
 };
 
 const getDeliveryTimeDisplayName = (deliveryTime: string) => {
-  console.log('=== DELIVERY TIME DEBUG ===');
-  console.log('Raw delivery time value:', deliveryTime);
-  console.log('Type of delivery time:', typeof deliveryTime);
-  console.log('Delivery time length:', deliveryTime?.length);
-  console.log('Delivery time JSON:', JSON.stringify(deliveryTime));
+  console.log('=== FINAL DELIVERY TIME MAPPING DEBUG ===');
+  console.log('Raw delivery time value:', JSON.stringify(deliveryTime));
+  console.log('Type:', typeof deliveryTime);
+  console.log('Length:', deliveryTime?.length);
   
   if (!deliveryTime) {
-    console.log('No delivery time provided, using default');
+    console.log('❌ No delivery time provided, using default');
     return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
   }
   
-  // Normalize the input - trim whitespace and convert to lowercase for comparison
-  const normalizedTime = deliveryTime.toString().trim();
-  console.log('Normalized delivery time:', normalizedTime);
+  // Convert to string and normalize - handle all possible formats
+  const normalizedTime = String(deliveryTime).trim().toLowerCase();
+  console.log('✅ Normalized delivery time for matching:', normalizedTime);
   
-  // Handle all possible variations
-  switch(normalizedTime) {
-    case 'Zo snel mogelijk':
-    case 'zo snel mogelijk':
-    case 'zo-snel-mogelijk':
-    case 'asap':
-      console.log('Matched: Zo snel mogelijk');
-      return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
-    case 'Binnen 3 - 6 maanden':
-    case 'binnen 3 - 6 maanden':
-    case 'binnen-3-6-maanden':
-    case '3-6':
-      console.log('Matched: Binnen 3 - 6 maanden');
-      return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
-    case 'Binnen 6 - 9 maanden':
-    case 'binnen 6 - 9 maanden':
-    case 'binnen-6-9-maanden':
-    case '6-9':
-      console.log('Matched: Binnen 6 - 9 maanden');
-      return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
-    case '9 maanden of later':
-    case '9 maanden of later':
-    case '9-maanden-of-later':
-    case '9+':
-      console.log('Matched: 9 maanden of later');
-      return '9 maanden of later (Ver vooruit plannen)';
-    default: 
-      console.log('=== NO MATCH FOUND ===');
-      console.log('Unknown delivery time, using default:', normalizedTime);
-      console.log('Available options should be: Zo snel mogelijk, Binnen 3 - 6 maanden, Binnen 6 - 9 maanden, 9 maanden of later');
-      return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+  // BULLETPROOF MAPPING - Check every possible variation
+  // Zo snel mogelijk variations
+  if (normalizedTime.includes('zo snel mogelijk') || 
+      normalizedTime === 'asap' || 
+      normalizedTime === 'zo-snel-mogelijk' ||
+      normalizedTime === 'spoedig' ||
+      normalizedTime === '1') {
+    console.log('🎯 MATCHED: Zo snel mogelijk');
+    return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
   }
+  
+  // Binnen 3-6 maanden variations  
+  if (normalizedTime.includes('3') && normalizedTime.includes('6') ||
+      normalizedTime.includes('binnen 3 - 6') ||
+      normalizedTime.includes('3-6') ||
+      normalizedTime === '2') {
+    console.log('🎯 MATCHED: Binnen 3 - 6 maanden');
+    return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
+  }
+  
+  // Binnen 6-9 maanden variations
+  if (normalizedTime.includes('6') && normalizedTime.includes('9') ||
+      normalizedTime.includes('binnen 6 - 9') ||
+      normalizedTime.includes('6-9') ||
+      normalizedTime === '3') {
+    console.log('🎯 MATCHED: Binnen 6 - 9 maanden');
+    return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
+  }
+  
+  // 9+ maanden variations
+  if (normalizedTime.includes('9') && (normalizedTime.includes('later') || normalizedTime.includes('+')) ||
+      normalizedTime.includes('9 maanden of later') ||
+      normalizedTime.includes('9+') ||
+      normalizedTime === '4') {
+    console.log('🎯 MATCHED: 9 maanden of later');
+    return '9 maanden of later (Ver vooruit plannen)';
+  }
+  
+  // FALLBACK - log what we couldn't match and use default
+  console.log('❌ NO MATCH FOUND FOR:', normalizedTime);
+  console.log('🔧 Using default delivery time');
+  return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
 };
 
 const handler = async (req: Request): Promise<Response> => {
@@ -212,7 +221,8 @@ const handler = async (req: Request): Promise<Response> => {
       naam: type === 'dakkapel' ? `${requestData.voornaam} ${requestData.achternaam}` : requestData.naam,
       email: type === 'dakkapel' ? requestData.emailadres : requestData.email,
       id: requestData.id,
-      existing_totaal_prijs: requestData.totaal_prijs
+      existing_totaal_prijs: requestData.totaal_prijs,
+      levertijd: requestData.levertijd
     });
 
     // Calculate price if not already set
@@ -371,19 +381,12 @@ const handler = async (req: Request): Promise<Response> => {
         `<div style="margin-top: 15px;">${extraOptions.join('<br>')}</div>` : 
         '<div style="margin-top: 15px;">Geen extra opties</div>';
 
-      // Add debugging for the delivery time field
-      console.log('=== REQUEST DATA DEBUGGING ===');
-      console.log('Full requestData keys:', Object.keys(requestData));
-      console.log('requestData.levertijd:', requestData.levertijd);
-      console.log('Type of requestData.levertijd:', typeof requestData.levertijd);
+      // CRITICAL: Get the delivery time from requestData and process it bulletproof
+      console.log('🚨 PROCESSING LEVERTIJD FOR EMAIL DISPLAY 🚨');
+      console.log('requestData.levertijd raw value:', JSON.stringify(requestData.levertijd));
       
-      // Check different possible field names
-      const possibleDeliveryFields = ['levertijd', 'delivery_time', 'deliveryTime', 'levering'];
-      possibleDeliveryFields.forEach(field => {
-        if (requestData[field] !== undefined) {
-          console.log(`Found delivery field ${field}:`, requestData[field]);
-        }
-      });
+      const deliveryTimeForEmail = getDeliveryTimeDisplayName(requestData.levertijd);
+      console.log('✅ Final delivery time for email:', deliveryTimeForEmail);
 
       productDetails = `
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
@@ -427,8 +430,8 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="margin-bottom: 20px;">
             <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Stap 7 - Levertijd:</h4>
-            <div style="background: white; padding: 15px; border-radius: 6px;">
-              ${getDeliveryTimeDisplayName(requestData.levertijd || 'Zo snel mogelijk')}
+            <div style="background: white; padding: 15px; border-radius: 6px; border-left: 4px solid #10b981;">
+              <strong style="color: #10b981;">${deliveryTimeForEmail}</strong>
             </div>
           </div>
           
@@ -522,7 +525,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 25px 0;">
-            <p style="color: #92400e; margin: 0; font-weight: bold;">⏰ Levertijd: ${getDeliveryTimeDisplayName(requestData.levertijd || 'asap')}</p>
+            <p style="color: #92400e; margin: 0; font-weight: bold;">⏰ Levertijd: ${getDeliveryTimeDisplayName(requestData.levertijd || 'Zo snel mogelijk')}</p>
           </div>
 
           <p style="color: #4b5563; line-height: 1.6; margin: 20px 0;">
