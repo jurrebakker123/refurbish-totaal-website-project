@@ -97,6 +97,56 @@ const calculateTotalPrice = (config: any): number => {
   return Math.round(totalPrice / 10) * 10; // Round to nearest 10
 };
 
+const getDeliveryTimeDisplayName = (deliveryTime: string) => {
+  console.log('=== DELIVERY TIME DEBUG ===');
+  console.log('Raw delivery time value:', deliveryTime);
+  console.log('Type of delivery time:', typeof deliveryTime);
+  console.log('Delivery time length:', deliveryTime?.length);
+  console.log('Delivery time JSON:', JSON.stringify(deliveryTime));
+  
+  if (!deliveryTime) {
+    console.log('No delivery time provided, using default');
+    return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+  }
+  
+  // Normalize the input - trim whitespace and convert to lowercase for comparison
+  const normalizedTime = deliveryTime.toString().trim();
+  console.log('Normalized delivery time:', normalizedTime);
+  
+  // Handle all possible variations
+  switch(normalizedTime) {
+    case 'Zo snel mogelijk':
+    case 'zo snel mogelijk':
+    case 'zo-snel-mogelijk':
+    case 'asap':
+      console.log('Matched: Zo snel mogelijk');
+      return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+    case 'Binnen 3 - 6 maanden':
+    case 'binnen 3 - 6 maanden':
+    case 'binnen-3-6-maanden':
+    case '3-6':
+      console.log('Matched: Binnen 3 - 6 maanden');
+      return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
+    case 'Binnen 6 - 9 maanden':
+    case 'binnen 6 - 9 maanden':
+    case 'binnen-6-9-maanden':
+    case '6-9':
+      console.log('Matched: Binnen 6 - 9 maanden');
+      return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
+    case '9 maanden of later':
+    case '9 maanden of later':
+    case '9-maanden-of-later':
+    case '9+':
+      console.log('Matched: 9 maanden of later');
+      return '9 maanden of later (Ver vooruit plannen)';
+    default: 
+      console.log('=== NO MATCH FOUND ===');
+      console.log('Unknown delivery time, using default:', normalizedTime);
+      console.log('Available options should be: Zo snel mogelijk, Binnen 3 - 6 maanden, Binnen 6 - 9 maanden, 9 maanden of later');
+      return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
+  }
+};
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== NEW AUTO-QUOTE REQUEST ===");
   console.log("Request method:", req.method);
@@ -276,33 +326,6 @@ const handler = async (req: Request): Promise<Response> => {
       }
     };
 
-    const getDeliveryTimeDisplayName = (deliveryTime: string) => {
-      console.log('Delivery time from database:', deliveryTime);
-      
-      // Handle all possible variations
-      switch(deliveryTime) {
-        case 'Zo snel mogelijk':
-        case 'zo-snel-mogelijk':
-        case 'asap':
-          return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
-        case 'Binnen 3 - 6 maanden':
-        case 'binnen-3-6-maanden':
-        case '3-6':
-          return 'Binnen 3 - 6 maanden (Flexibele planning op middellange termijn)';
-        case 'Binnen 6 - 9 maanden':
-        case 'binnen-6-9-maanden':
-        case '6-9':
-          return 'Binnen 6 - 9 maanden (Planning op langere termijn)';
-        case '9 maanden of later':
-        case '9-maanden-of-later':
-        case '9+':
-          return '9 maanden of later (Ver vooruit plannen)';
-        default: 
-          console.log('Unknown delivery time, using default:', deliveryTime);
-          return 'Zo snel mogelijk (Wij plannen dit zo spoedig mogelijk in)';
-      }
-    };
-
     // Create product details based on type
     let productDetails = '';
     
@@ -348,6 +371,20 @@ const handler = async (req: Request): Promise<Response> => {
         `<div style="margin-top: 15px;">${extraOptions.join('<br>')}</div>` : 
         '<div style="margin-top: 15px;">Geen extra opties</div>';
 
+      // Add debugging for the delivery time field
+      console.log('=== REQUEST DATA DEBUGGING ===');
+      console.log('Full requestData keys:', Object.keys(requestData));
+      console.log('requestData.levertijd:', requestData.levertijd);
+      console.log('Type of requestData.levertijd:', typeof requestData.levertijd);
+      
+      // Check different possible field names
+      const possibleDeliveryFields = ['levertijd', 'delivery_time', 'deliveryTime', 'levering'];
+      possibleDeliveryFields.forEach(field => {
+        if (requestData[field] !== undefined) {
+          console.log(`Found delivery field ${field}:`, requestData[field]);
+        }
+      });
+
       productDetails = `
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
           <h3 style="color: #065f46; margin-top: 0; margin-bottom: 20px;">📋 Overzicht van uw samenstelling</h3>
@@ -391,7 +428,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="margin-bottom: 20px;">
             <h4 style="color: #374151; margin-bottom: 10px; font-size: 16px;">Stap 7 - Levertijd:</h4>
             <div style="background: white; padding: 15px; border-radius: 6px;">
-              ${getDeliveryTimeDisplayName(requestData.levertijd || 'asap')}
+              ${getDeliveryTimeDisplayName(requestData.levertijd || 'Zo snel mogelijk')}
             </div>
           </div>
           
