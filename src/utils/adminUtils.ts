@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
@@ -28,7 +27,7 @@ export const loadAdminData = async (): Promise<{
       console.error('Config error:', configError);
       toast.error("Fout bij laden dakkapel aanvragen: " + configError.message);
     } else {
-      // Map the data structure to match the expected interface
+      // Map the data structure to match the expected interface using actual configurator fields
       result.configuraties = (configData || []).map(item => ({
         id: item.id,
         created_at: item.created_at,
@@ -39,9 +38,9 @@ export const loadAdminData = async (): Promise<{
         postcode: item.postcode,
         plaats: item.plaats,
         opmerkingen: item.bericht || '',
-        model: item.type,
+        model: item.type, // This comes from the configurator model selection
         breedte: item.breedte,
-        materiaal: item.materiaal,
+        materiaal: item.materiaal, // This comes from the configurator material selection
         kleur_kozijn: item.kleurkozijnen,
         kleur_zijkanten: item.kleurzijkanten,
         kleur_draaikiepramen: item.kleurdraaikiepramen,

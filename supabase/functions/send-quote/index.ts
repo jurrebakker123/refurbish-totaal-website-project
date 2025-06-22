@@ -153,13 +153,18 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Helper functions for mapping configurator data
-    const getMaterialDisplayName = (material: string) => {
-      switch(material) {
-        case 'keralit': return 'Keralit';
-        case 'wood': return 'Hout';
-        case 'zinc': return 'Zink';
-        default: return material;
+    // Helper functions for mapping actual configurator data
+    const getWidthDisplayName = (width: string) => {
+      return `${width} cm`;
+    };
+
+    const getRoofAngleDisplayName = (angle: string) => {
+      switch(angle) {
+        case '45-60': return '45° - 60° (Meest gekozen)';
+        case '35-45': return '35° - 45° (Gemiddelde helling)';
+        case '25-35': return '25° - 35° (Lage helling)';
+        case 'unknown': return 'Weet ik niet (Wij meten dit gratis voor u in)';
+        default: return angle;
       }
     };
 
@@ -173,6 +178,15 @@ const handler = async (req: Request): Promise<Response> => {
       }
     };
 
+    const getMaterialDisplayName = (material: string) => {
+      switch(material) {
+        case 'keralit': return 'Keralit';
+        case 'wood': return 'Hout';
+        case 'zinc': return 'Zink';
+        default: return material;
+      }
+    };
+
     const getColorDisplayName = (color: string) => {
       switch(color) {
         case 'wit': return 'Wit';
@@ -183,26 +197,6 @@ const handler = async (req: Request): Promise<Response> => {
         case 'kwartsgrijs': return 'Kwartsgrijs';
         case 'anders': return 'Anders';
         default: return color;
-      }
-    };
-
-    const getRoofAngleDisplayName = (angle: string) => {
-      switch(angle) {
-        case '45-60': return '45° - 60° (Meest gekozen)';
-        case '35-45': return '35° - 45° (Gemiddelde helling)';
-        case '25-35': return '25° - 35° (Lage helling)';
-        case 'unknown': return 'Weet ik niet (Wij meten dit gratis voor u in)';
-        default: return angle;
-      }
-    };
-
-    const getDeliveryTimeDisplayName = (time: string) => {
-      switch(time) {
-        case 'asap': return 'Zo snel mogelijk';
-        case '3-6': return 'Binnen 3 - 6 maanden';
-        case '6-9': return 'Binnen 6 - 9 maanden';
-        case '9+': return '9 maanden of later';
-        default: return time;
       }
     };
 
@@ -241,17 +235,12 @@ const handler = async (req: Request): Promise<Response> => {
         console.log('Could not parse options:', e);
       }
 
-      // Create extra options list
+      // Create extra options list based on actual configurator options
       const extraOptions = [];
-      if (options.ventilatie || options.ventilatieroosters) extraOptions.push('✅ Ventilatie roosters');
-      if (options.zonwering) extraOptions.push('✅ Zonwering (Somfy-Ilmo motor)');
-      if (options.horren) extraOptions.push('✅ Horren');
-      if (options.airconditioning || options.minirooftop) extraOptions.push('✅ Airconditioning voorbereiding');
-      if (options.extra_isolatie) extraOptions.push('✅ Extra isolatie');
-      if (options.gootafwerking) extraOptions.push('✅ Gootafwerking');
-      if (options.elektrisch_rolluik) extraOptions.push('✅ Elektrisch rolluik');
-      if (options.verwijderen_bestaande) extraOptions.push('✅ Verwijderen bestaande dakkapel');
-      if (options.afvoeren_bouwafval) extraOptions.push('✅ Afvoeren bouwafval');
+      if (options.ventilationGrids) extraOptions.push('✅ Ventilatie roosters');
+      if (options.sunShade) extraOptions.push('✅ Zonwering');
+      if (options.insectScreens) extraOptions.push('✅ Horren');
+      if (options.airConditioning) extraOptions.push('✅ Airconditioning voorbereiding');
 
       const extraOptionsText = extraOptions.length > 0 ? extraOptions.join('<br>') : 'Geen extra opties';
 
@@ -259,8 +248,8 @@ const handler = async (req: Request): Promise<Response> => {
         <h3>Uw Volledige Dakkapel Configuratie:</h3>
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
           <table style="width: 100%; border: none;">
-            <tr><td style="border: none; padding: 8px 0;"><strong>Breedte:</strong></td><td style="border: none; padding: 8px 0;">${requestData.breedte} cm</td></tr>
-            <tr><td style="border: none; padding: 8px 0;"><strong>Dakhelling:</strong></td><td style="border: none; padding: 8px 0;">${getRoofAngleDisplayName(requestData.dakhellingtype)} (${requestData.dakhelling}°)</td></tr>
+            <tr><td style="border: none; padding: 8px 0;"><strong>Breedte:</strong></td><td style="border: none; padding: 8px 0;">${getWidthDisplayName(requestData.breedte)}</td></tr>
+            <tr><td style="border: none; padding: 8px 0;"><strong>Dakhelling:</strong></td><td style="border: none; padding: 8px 0;">${getRoofAngleDisplayName(requestData.dakhellingtype)}</td></tr>
             <tr><td style="border: none; padding: 8px 0;"><strong>Model:</strong></td><td style="border: none; padding: 8px 0;">${getModelDisplayName(requestData.type)}</td></tr>
             <tr><td style="border: none; padding: 8px 0;"><strong>Afwerkmateriaal:</strong></td><td style="border: none; padding: 8px 0;">${getMaterialDisplayName(requestData.materiaal)}</td></tr>
           </table>
@@ -278,13 +267,9 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="line-height: 1.6;">${extraOptionsText}</div>
           ` : ''}
           
-          <h4 style="margin-top: 20px; margin-bottom: 10px;">Overige details:</h4>
-          <table style="width: 100%; border: none;">
-            <tr><td style="border: none; padding: 4px 0;"><strong>Aantal ramen:</strong></td><td style="border: none; padding: 4px 0;">${requestData.aantalramen}</td></tr>
-            <tr><td style="border: none; padding: 4px 0;"><strong>Kozijn hoogte:</strong></td><td style="border: none; padding: 4px 0;">${requestData.kozijnhoogte}</td></tr>
-            <tr><td style="border: none; padding: 4px 0;"><strong>Woningzijde:</strong></td><td style="border: none; padding: 4px 0;">${requestData.woningzijde}</td></tr>
-            <tr><td style="border: none; padding: 4px 0;"><strong>RC-waarde:</strong></td><td style="border: none; padding: 4px 0;">${requestData.rcwaarde}</td></tr>
-          </table>
+          <div style="margin-top: 20px;">
+            <p><strong>Locatie:</strong> ${requestData.plaats}, ${requestData.postcode}</p>
+          </div>
         </div>
       `;
     }
@@ -585,11 +570,7 @@ function generateQuotePDF(requestData: any, type: string): string {
             <tr><td>Breedte</td><td>${requestData.breedte} cm</td></tr>
             <tr><td>Model</td><td>${getModelDisplayName(requestData.type)}</td></tr>
             <tr><td>Afwerkmateriaal</td><td>${getMaterialDisplayName(requestData.materiaal)}</td></tr>
-            <tr><td>Dakhelling</td><td>${requestData.dakhelling}° (${requestData.dakhellingtype})</td></tr>
-            <tr><td>Aantal ramen</td><td>${requestData.aantalramen}</td></tr>
-            <tr><td>Kozijn hoogte</td><td>${requestData.kozijnhoogte}</td></tr>
-            <tr><td>Woningzijde</td><td>${requestData.woningzijde}</td></tr>
-            <tr><td>RC-waarde</td><td>${requestData.rcwaarde}</td></tr>
+            <tr><td>Dakhelling</td><td>${requestData.dakhellingtype}</td></tr>
           </table>
           
           <h3>Kleuren</h3>
