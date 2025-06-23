@@ -524,8 +524,8 @@ const handler = async (req: Request): Promise<Response> => {
             <a href="tel:0851301578" style="display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 18px;">085-1301578</a>
           </div>
 
-          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 25px 0;">
-            <p style="color: #92400e; margin: 0; font-weight: bold;">⏰ Levertijd: ${getDeliveryTimeDisplayName(requestData.levertijd || 'Zo snel mogelijk')}</p>
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; margin: 25px 0;">
+            <p style="color: #10b981; margin: 0; font-weight: bold;">⏰ Levertijd: ${getDeliveryTimeDisplayName(requestData.levertijd || 'Zo snel mogelijk')}</p>
           </div>
 
           <p style="color: #4b5563; line-height: 1.6; margin: 20px 0;">
@@ -613,8 +613,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Using Resend API with key: ***configured***");
 
-    // Prepare email options
-    const emailOptions: any = {
+    // Prepare email options for customer
+    const customerEmailOptions: any = {
       from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
       to: [customerEmail],
       subject: emailSubject,
@@ -623,27 +623,86 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Add PDF attachment if available
     if (pdfAttachment) {
-      emailOptions.attachments = [pdfAttachment];
-      console.log("Adding PDF attachment to email");
+      customerEmailOptions.attachments = [pdfAttachment];
+      console.log("Adding PDF attachment to customer email");
     }
 
-    // Send the email using Resend
-    const emailResponse = await resend.emails.send(emailOptions);
+    // Send the customer email using Resend
+    const customerEmailResponse = await resend.emails.send(customerEmailOptions);
 
-    console.log("✅ Resend API response:", emailResponse);
+    console.log("✅ Resend API response for customer:", customerEmailResponse);
 
-    if (emailResponse.error) {
-      console.error("❌ Resend API error:", emailResponse.error);
+    if (customerEmailResponse.error) {
+      console.error("❌ Customer email sending failed:", customerEmailResponse.error);
       return new Response(JSON.stringify({ 
         success: false, 
-        error: `Email sending failed: ${emailResponse.error.message}` 
+        error: `Customer email sending failed: ${customerEmailResponse.error.message}` 
       }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders }
       });
     }
 
-    console.log("✅ Email sent successfully! Email ID:", emailResponse.data?.id);
+    console.log("✅ Customer email sent successfully! Email ID:", customerEmailResponse.data?.id);
+
+    // NEW: Send internal notification email to company
+    console.log("Sending internal notification email...");
+    
+    const internalNotificationSubject = `🔔 Nieuwe ${type === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvraag - ${customerName}`;
+    
+    const internalNotificationHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">🔔 Nieuwe Aanvraag</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">${type === 'dakkapel' ? 'Dakkapel Configurator' : 'Zonnepanelen'}</p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+          <h2 style="color: #1f2937; margin-top: 0;">Klantgegevens:</h2>
+          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <p><strong>Naam:</strong> ${customerName}</p>
+            <p><strong>E-mail:</strong> ${customerEmail}</p>
+            <p><strong>Telefoon:</strong> ${type === 'dakkapel' ? requestData.telefoon : requestData.telefoon || 'Niet opgegeven'}</p>
+            <p><strong>Adres:</strong> ${type === 'dakkapel' ? `${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}` : requestData.adres || 'Niet opgegeven'}</p>
+            ${requestData.bericht ? `<p><strong>Bericht:</strong> ${requestData.bericht}</p>` : ''}
+          </div>
+
+          <h2 style="color: #1f2937;">Configuratie Details:</h2>
+          ${productDetails}
+
+          <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 2px solid #10b981;">
+            <h3 style="color: #065f46; margin-top: 0;">💰 Berekende Prijs:</h3>
+            <div style="font-size: 24px; font-weight: bold; color: #10b981;">${priceDisplay}</div>
+          </div>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="font-size: 16px; color: #4b5563; margin-bottom: 15px;">📋 <strong>Aanvraag ID:</strong> ${requestId}</p>
+            <p style="font-size: 14px; color: #6b7280;">Ontvangen op: ${new Date().toLocaleString('nl-NL')}</p>
+          </div>
+
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <p style="color: #92400e; margin: 0; font-weight: bold;">⚡ Actie vereist: Neem contact op met de klant voor verdere afhandeling</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Send internal notification email
+    const internalEmailResponse = await resend.emails.send({
+      from: "Dakkapel Configurator <info@refurbishtotaalnederland.nl>",
+      to: ["info@refurbishtotaalnederland.nl"],
+      subject: internalNotificationSubject,
+      html: internalNotificationHtml,
+    });
+
+    console.log("✅ Internal notification email response:", internalEmailResponse);
+
+    if (internalEmailResponse.error) {
+      console.error("❌ Internal notification email failed:", internalEmailResponse.error);
+      // Continue processing even if internal email fails
+    } else {
+      console.log("✅ Internal notification email sent successfully! Email ID:", internalEmailResponse.data?.id);
+    }
 
     // Update the database to mark the quote as sent
     console.log("Updating database status...");
@@ -667,7 +726,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(JSON.stringify({ 
       success: true, 
       message: "Auto-quote email sent successfully",
-      emailId: emailResponse.data?.id,
+      emailId: customerEmailResponse.data?.id,
+      internalEmailId: internalEmailResponse.data?.id || null,
       calculatedPrice: finalPrice,
       pdfGenerated: !!pdfAttachment
     }), {
