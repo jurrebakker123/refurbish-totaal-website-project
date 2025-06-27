@@ -667,6 +667,99 @@ export type Database = {
           },
         ]
       }
+      schilder_aanvragen: {
+        Row: {
+          aantal_kamers: number | null
+          achternaam: string
+          afgehandeld_op: string | null
+          bericht: string | null
+          created_at: string
+          emailadres: string
+          gewenste_kleur: string | null
+          huidige_kleur: string | null
+          huisnummer: string
+          id: string
+          in_aanbouw_op: string | null
+          kozijnen_meeverven: boolean | null
+          notities: string | null
+          offerte_verzonden_op: string | null
+          op_locatie_op: string | null
+          oppervlakte: number
+          plaats: string
+          plafond_meeverven: boolean | null
+          postcode: string
+          project_type: string
+          status: string | null
+          straatnaam: string
+          telefoon: string
+          totaal_prijs: number | null
+          updated_at: string
+          verf_type: string
+          voorbewerking_nodig: boolean | null
+          voornaam: string
+        }
+        Insert: {
+          aantal_kamers?: number | null
+          achternaam: string
+          afgehandeld_op?: string | null
+          bericht?: string | null
+          created_at?: string
+          emailadres: string
+          gewenste_kleur?: string | null
+          huidige_kleur?: string | null
+          huisnummer: string
+          id?: string
+          in_aanbouw_op?: string | null
+          kozijnen_meeverven?: boolean | null
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
+          oppervlakte: number
+          plaats: string
+          plafond_meeverven?: boolean | null
+          postcode: string
+          project_type: string
+          status?: string | null
+          straatnaam: string
+          telefoon: string
+          totaal_prijs?: number | null
+          updated_at?: string
+          verf_type: string
+          voorbewerking_nodig?: boolean | null
+          voornaam: string
+        }
+        Update: {
+          aantal_kamers?: number | null
+          achternaam?: string
+          afgehandeld_op?: string | null
+          bericht?: string | null
+          created_at?: string
+          emailadres?: string
+          gewenste_kleur?: string | null
+          huidige_kleur?: string | null
+          huisnummer?: string
+          id?: string
+          in_aanbouw_op?: string | null
+          kozijnen_meeverven?: boolean | null
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
+          oppervlakte?: number
+          plaats?: string
+          plafond_meeverven?: boolean | null
+          postcode?: string
+          project_type?: string
+          status?: string | null
+          straatnaam?: string
+          telefoon?: string
+          totaal_prijs?: number | null
+          updated_at?: string
+          verf_type?: string
+          voorbewerking_nodig?: boolean | null
+          voornaam?: string
+        }
+        Relationships: []
+      }
       service_categories: {
         Row: {
           beschrijving: string | null
@@ -743,6 +836,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stukadoor_aanvragen: {
+        Row: {
+          aantal_kamers: number | null
+          achternaam: string
+          afgehandeld_op: string | null
+          afwerking: string
+          bericht: string | null
+          created_at: string
+          emailadres: string
+          huidige_staat: string | null
+          huisnummer: string
+          id: string
+          in_aanbouw_op: string | null
+          isolatie_gewenst: boolean | null
+          notities: string | null
+          offerte_verzonden_op: string | null
+          op_locatie_op: string | null
+          oppervlakte: number
+          plaats: string
+          postcode: string
+          status: string | null
+          straatnaam: string
+          telefoon: string
+          totaal_prijs: number | null
+          updated_at: string
+          voorbewerking: string | null
+          voornaam: string
+          werk_type: string
+        }
+        Insert: {
+          aantal_kamers?: number | null
+          achternaam: string
+          afgehandeld_op?: string | null
+          afwerking: string
+          bericht?: string | null
+          created_at?: string
+          emailadres: string
+          huidige_staat?: string | null
+          huisnummer: string
+          id?: string
+          in_aanbouw_op?: string | null
+          isolatie_gewenst?: boolean | null
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
+          oppervlakte: number
+          plaats: string
+          postcode: string
+          status?: string | null
+          straatnaam: string
+          telefoon: string
+          totaal_prijs?: number | null
+          updated_at?: string
+          voorbewerking?: string | null
+          voornaam: string
+          werk_type: string
+        }
+        Update: {
+          aantal_kamers?: number | null
+          achternaam?: string
+          afgehandeld_op?: string | null
+          afwerking?: string
+          bericht?: string | null
+          created_at?: string
+          emailadres?: string
+          huidige_staat?: string | null
+          huisnummer?: string
+          id?: string
+          in_aanbouw_op?: string | null
+          isolatie_gewenst?: boolean | null
+          notities?: string | null
+          offerte_verzonden_op?: string | null
+          op_locatie_op?: string | null
+          oppervlakte?: number
+          plaats?: string
+          postcode?: string
+          status?: string | null
+          straatnaam?: string
+          telefoon?: string
+          totaal_prijs?: number | null
+          updated_at?: string
+          voorbewerking?: string | null
+          voornaam?: string
+          werk_type?: string
+        }
+        Relationships: []
       }
       vacatures: {
         Row: {

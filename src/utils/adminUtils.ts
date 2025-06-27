@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
@@ -91,7 +92,7 @@ export const loadAdminData = async (): Promise<{
 export const updateRequestStatus = async (
   id: string, 
   status: string,
-  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' = 'dakkapel_calculator_aanvragen'
+  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen'
 ): Promise<boolean> => {
   console.log(`Updating status for ${table} ${id} to ${status}`);
   
@@ -102,6 +103,12 @@ export const updateRequestStatus = async (
   
   if (status === 'offerte_verzonden') {
     updateData.offerte_verzonden_op = new Date().toISOString();
+  }
+  if (status === 'op_locatie') {
+    updateData.op_locatie_op = new Date().toISOString();
+  }
+  if (status === 'in_aanbouw') {
+    updateData.in_aanbouw_op = new Date().toISOString();
   }
   if (status === 'afgehandeld') {
     updateData.afgehandeld_op = new Date().toISOString();
@@ -123,10 +130,10 @@ export const updateRequestStatus = async (
 };
 
 export const updateRequestDetails = async (
-  item: DakkapelConfiguratie | RefurbishedZonnepaneel,
+  item: DakkapelConfiguratie | RefurbishedZonnepaneel | any,
   notes: string,
   price: string,
-  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' = 'dakkapel_calculator_aanvragen'
+  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen'
 ): Promise<boolean> => {
   const updateData: any = {};
   
@@ -218,7 +225,10 @@ export const sendQuoteEmail = async (
   }
 };
 
-export const deleteQuote = async (id: string, table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' = 'dakkapel_calculator_aanvragen'): Promise<boolean> => {
+export const deleteQuote = async (
+  id: string, 
+  table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen'
+): Promise<boolean> => {
   console.log(`Deleting from ${table} with id ${id}`);
   
   const { error } = await supabase
