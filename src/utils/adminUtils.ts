@@ -1,7 +1,6 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
+import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem, GenericQuoteItem } from '@/types/admin';
 
 export const loadAdminData = async (): Promise<{ 
   configuraties: DakkapelConfiguratie[],
@@ -130,7 +129,7 @@ export const updateRequestStatus = async (
 };
 
 export const updateRequestDetails = async (
-  item: DakkapelConfiguratie | RefurbishedZonnepaneel | any,
+  item: DakkapelConfiguratie | RefurbishedZonnepaneel | GenericQuoteItem | any,
   notes: string,
   price: string,
   table: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen'
@@ -168,7 +167,7 @@ export const updateRequestDetails = async (
 };
 
 export const sendQuoteEmail = async (
-  item: QuoteItem | ZonnepaneelQuoteItem, 
+  item: QuoteItem | ZonnepaneelQuoteItem | GenericQuoteItem | any, 
   customMessage?: string
 ): Promise<boolean> => {
   try {

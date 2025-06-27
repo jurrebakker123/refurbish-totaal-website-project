@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -11,23 +12,33 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Check, X, AlertTriangle, ExternalLink, FileText } from 'lucide-react';
 import { toast } from 'sonner';
-import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
+import { QuoteItem, ZonnepaneelQuoteItem, GenericQuoteItem } from '@/types/admin';
 import { sendQuoteEmail } from '@/utils/adminUtils';
 
 interface QuoteDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedItem: QuoteItem | ZonnepaneelQuoteItem | null;
-  onDataChange: () => void;
-  setSendingQuote: (id: string | null) => void;
+  selectedItem?: QuoteItem | ZonnepaneelQuoteItem | null;
+  request?: GenericQuoteItem | null;
+  onDataChange?: () => void;
+  setSendingQuote?: (id: string | null) => void;
+  onSendQuote?: (customMessage?: string) => Promise<void>;
+  onUpdateDetails?: (notes: string, price: string) => Promise<void>;
+  onStatusUpdate?: (status: string) => Promise<void>;
+  onDelete?: () => Promise<void>;
 }
 
 const QuoteDialog: React.FC<QuoteDialogProps> = ({
   isOpen,
   onClose,
   selectedItem,
+  request,
   onDataChange,
-  setSendingQuote
+  setSendingQuote,
+  onSendQuote,
+  onUpdateDetails,
+  onStatusUpdate,
+  onDelete
 }) => {
   const [quoteMessage, setQuoteMessage] = useState('');
   const [useDefaultTemplate, setUseDefaultTemplate] = useState(true);
@@ -35,6 +46,7 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
+  const item = selectedItem || request;
   const isZonnepaneel = selectedItem && 'isZonnepaneel' in selectedItem;
   
   const defaultTemplate = isZonnepaneel ? `Beste klant,
@@ -59,16 +71,16 @@ Refurbish Totaal Nederland
 085-1301578
 info@refurbishtotaalnederland.nl` : `Beste klant,
 
-Hartelijk dank voor uw interesse in onze dakkapellen. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden voor het leveren en monteren van een dakkapel volgens uw specificaties.
+Hartelijk dank voor uw interesse in onze diensten. Wij zijn verheugd u hierbij een offerte te kunnen aanbieden volgens uw specificaties.
 
 De prijs is inclusief:
 - Transport naar locatie
-- Montage van de dakkapel
-- Afwerking binnen- en buitenzijde
-- Garantie van 10 jaar op constructie en waterdichtheid
-- 5 jaar garantie op de gebruikte materialen
+- Uitvoering van de werkzaamheden
+- Afwerking volgens afspraak
+- Garantie op uitgevoerde werkzaamheden
+- Opruimen na voltooiing
 
-Wij hanteren een levertijd van 6-8 weken na definitieve opdracht.
+Wij hanteren een levertijd van 2-4 weken na definitieve opdracht.
 
 Voor vragen of aanpassingen aan deze offerte kunt u altijd contact met ons opnemen.
 
@@ -80,29 +92,35 @@ Refurbish Totaal Nederland
 info@refurbishtotaalnederland.nl`;
 
   const handleSendQuote = async () => {
-    if (!selectedItem) {
+    if (!item) {
       toast.error("Geen item geselecteerd");
       return;
     }
     
-    if (!selectedItem.email) {
+    if (!item.email) {
       toast.error("Geen email adres gevonden voor deze klant");
       return;
     }
     
-    console.log('Starten met verzenden offerte naar:', selectedItem.email);
-    console.log('Voor aanvraag:', selectedItem.id);
+    if (onSendQuote) {
+      const messageToSend = useDefaultTemplate ? quoteMessage || defaultTemplate : quoteMessage;
+      await onSendQuote(messageToSend);
+      return;
+    }
+    
+    console.log('Starten met verzenden offerte naar:', item.email);
+    console.log('Voor aanvraag:', item.id);
     
     setErrorMessage(null);
     setIsLoading(true);
-    setSendingQuote(selectedItem.id);
+    if (setSendingQuote) setSendingQuote(item.id);
     
     const messageToSend = useDefaultTemplate ? quoteMessage || defaultTemplate : quoteMessage;
     
     if (!messageToSend.trim()) {
       setErrorMessage("Voeg eerst een bericht toe voordat u de offerte verstuurt.");
       setIsLoading(false);
-      setSendingQuote(null);
+      if (setSendingQuote) setSendingQuote(null);
       return;
     }
     
@@ -110,11 +128,11 @@ info@refurbishtotaalnederland.nl`;
       console.log('Verzenden offerte met bericht lengte:', messageToSend.length);
       console.log('PDF bijlage inbegrepen:', includePdfAttachment);
       
-      const success = await sendQuoteEmail(selectedItem, messageToSend);
+      const success = await sendQuoteEmail(item as any, messageToSend);
       
       if (success) {
-        toast.success(`Offerte succesvol verzonden naar ${selectedItem.email}!`);
-        onDataChange();
+        toast.success(`Offerte succesvol verzonden naar ${item.email}!`);
+        if (onDataChange) onDataChange();
         onClose();
       } else {
         setErrorMessage("Er is een fout opgetreden bij het verzenden van de offerte. Controleer de edge function logs voor meer details.");
@@ -124,7 +142,7 @@ info@refurbishtotaalnederland.nl`;
       setErrorMessage(`Er is een onverwachte fout opgetreden: ${error instanceof Error ? error.message : 'Onbekende fout'}`);
     } finally {
       setIsLoading(false);
-      setSendingQuote(null);
+      if (setSendingQuote) setSendingQuote(null);
     }
   };
 
@@ -138,22 +156,22 @@ info@refurbishtotaalnederland.nl`;
   }, [isOpen, useDefaultTemplate, defaultTemplate]);
 
   const getCustomerName = () => {
-    if (!selectedItem) return '';
-    return selectedItem.naam;
+    if (!item) return '';
+    return item.naam;
   };
 
   const getCustomerEmail = () => {
-    if (!selectedItem) return '';
-    return selectedItem.email;
+    if (!item) return '';
+    return item.email;
   };
 
-  if (!selectedItem) return null;
+  if (!item) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Offerte Verzenden - {isZonnepaneel ? 'Zonnepanelen' : 'Dakkapel'}</DialogTitle>
+          <DialogTitle>Offerte Verzenden</DialogTitle>
           <DialogDescription>
             Verstuur een automatische offerte naar {getCustomerName()} ({getCustomerEmail()})
           </DialogDescription>
@@ -164,11 +182,14 @@ info@refurbishtotaalnederland.nl`;
             <h4 className="font-medium mb-2">Klantgegevens:</h4>
             <p><strong>Naam:</strong> {getCustomerName()}</p>
             <p><strong>Email:</strong> {getCustomerEmail()}</p>
-            <p><strong>Prijs:</strong> {selectedItem.totaal_prijs ? 
-              `€${selectedItem.totaal_prijs}` : 
+            <p><strong>Prijs:</strong> {item.totaal_prijs ? 
+              `€${item.totaal_prijs}` : 
               'Nog niet ingesteld'}</p>
-            {isZonnepaneel && 'aantal_panelen' in selectedItem && (
-              <p><strong>Aantal panelen:</strong> {selectedItem.aantal_panelen}</p>
+            {'projectDetails' in item && (
+              <p><strong>Project:</strong> {item.projectDetails}</p>
+            )}
+            {isZonnepaneel && 'aantal_panelen' in item && (
+              <p><strong>Aantal panelen:</strong> {item.aantal_panelen}</p>
             )}
           </div>
           

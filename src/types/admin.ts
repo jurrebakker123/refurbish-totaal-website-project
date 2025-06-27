@@ -60,6 +60,20 @@ export interface RefurbishedZonnepaneel {
   notities?: string;
 }
 
+// Generic quote item interface for painting and plastering
+export interface GenericQuoteItem {
+  id: string;
+  naam: string;
+  email: string;
+  telefoon: string;
+  adres: string;
+  postcode: string;
+  plaats: string;
+  projectDetails: string;
+  totaal_prijs?: number;
+  opmerkingen?: string;
+}
+
 // Vereenvoudigde QuoteItem interface
 export interface QuoteItem extends DakkapelConfiguratie {
   isCalculator: boolean;
@@ -67,4 +81,26 @@ export interface QuoteItem extends DakkapelConfiguratie {
 
 export interface ZonnepaneelQuoteItem extends RefurbishedZonnepaneel {
   isZonnepaneel: boolean;
+}
+
+// Detail dialog interfaces
+export interface RequestDetailItem {
+  id: string;
+  naam: string;
+  email: string;
+  telefoon: string;
+  adres: string;
+  postcode: string;
+  plaats: string;
+  projectDetails: string;
+  extraDetails?: string[];
+  totaal_prijs?: number;
+  opmerkingen?: string;
+  notities?: string;
+  status: string;
+  created_at: string;
+  offerte_verzonden_op?: string;
+  op_locatie_op?: string;
+  in_aanbouw_op?: string;
+  afgehandeld_op?: string;
 }

@@ -14,45 +14,49 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DakkapelConfiguratie } from '@/types/admin';
+import { DakkapelConfiguratie, RequestDetailItem } from '@/types/admin';
 import { updateRequestDetails, updateRequestStatus } from '@/utils/adminUtils';
 
 interface RequestDetailDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  item: DakkapelConfiguratie | null;
-  onDataChange: () => void;
+  item?: DakkapelConfiguratie | null;
+  request?: RequestDetailItem | null;
+  onDataChange?: () => void;
 }
 
 const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
   isOpen,
   onClose,
   item,
+  request,
   onDataChange
 }) => {
   const [notes, setNotes] = useState('');
   const [price, setPrice] = useState('');
 
-  React.useEffect(() => {
-    if (item) {
-      setNotes(item.notities || '');
-      setPrice(item.totaal_prijs ? item.totaal_prijs.toString() : '');
-    }
-  }, [item]);
+  const currentItem = item || request;
 
-  if (!item) return null;
+  React.useEffect(() => {
+    if (currentItem) {
+      setNotes(currentItem.notities || '');
+      setPrice(currentItem.totaal_prijs ? currentItem.totaal_prijs.toString() : '');
+    }
+  }, [currentItem]);
+
+  if (!currentItem) return null;
   
   const handleUpdateDetails = async () => {
-    const success = await updateRequestDetails(item, notes, price);
-    if (success) {
+    const success = await updateRequestDetails(currentItem, notes, price);
+    if (success && onDataChange) {
       onDataChange();
       onClose();
     }
   };
 
   const handleStatusChange = async (status: string) => {
-    const success = await updateRequestStatus(item.id, status);
-    if (success) {
+    const success = await updateRequestStatus(currentItem.id, status);
+    if (success && onDataChange) {
       onDataChange();
       onClose();
     }
@@ -60,27 +64,49 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
 
   const contactInfo = (
     <div>
-      <p><strong>Naam:</strong> {item.naam}</p>
-      <p><strong>Email:</strong> {item.email}</p>
-      <p><strong>Telefoon:</strong> {item.telefoon}</p>
-      <p><strong>Adres:</strong> {item.adres}, {item.postcode} {item.plaats}</p>
+      <p><strong>Naam:</strong> {currentItem.naam}</p>
+      <p><strong>Email:</strong> {currentItem.email}</p>
+      <p><strong>Telefoon:</strong> {currentItem.telefoon}</p>
+      <p><strong>Adres:</strong> {currentItem.adres}, {currentItem.postcode} {currentItem.plaats}</p>
     </div>
   );
   
   const productInfo = (
     <div>
-      <p><strong>Model:</strong> {item.model}</p>
-      <p><strong>Breedte:</strong> {item.breedte}cm</p>
-      <p><strong>Materiaal:</strong> {item.materiaal}</p>
-      <p><strong>Dakhelling:</strong> {item.dakhelling ? `${item.dakhelling}° (${item.dakhelling_type})` : 'Niet opgegeven'}</p>
-      <p><strong>Kleuren:</strong> Kozijn: {item.kleur_kozijn}, Zijkanten: {item.kleur_zijkanten}, Draaikiepramen: {item.kleur_draaikiepramen}</p>
-      <p><strong>Opties:</strong></p>
-      <ul>
-        <li>Ventilatierooster: {item.ventilationgrids ? 'Ja' : 'Nee'}</li>
-        <li>Zonwering: {item.sunshade ? 'Ja' : 'Nee'}</li>
-        <li>Insectenhorren: {item.insectscreens ? 'Ja' : 'Nee'}</li>
-        <li>Airconditioning: {item.airconditioning ? 'Ja' : 'Nee'}</li>
-      </ul>
+      {'projectDetails' in currentItem ? (
+        <p><strong>Project:</strong> {currentItem.projectDetails}</p>
+      ) : (
+        <>
+          <p><strong>Model:</strong> {(currentItem as any).model}</p>
+          <p><strong>Breedte:</strong> {(currentItem as any).breedte}cm</p>
+          <p><strong>Materiaal:</strong> {(currentItem as any).materiaal}</p>
+        </>
+      )}
+      
+      {request?.extraDetails && (
+        <div>
+          <p><strong>Extra details:</strong></p>
+          <ul className="list-disc ml-4">
+            {request.extraDetails.map((detail, index) => (
+              <li key={index}>{detail}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {item && (
+        <>
+          <p><strong>Dakhelling:</strong> {item.dakhelling ? `${item.dakhelling}° (${item.dakhelling_type})` : 'Niet opgegeven'}</p>
+          <p><strong>Kleuren:</strong> Kozijn: {item.kleur_kozijn}, Zijkanten: {item.kleur_zijkanten}, Draaikiepramen: {item.kleur_draaikiepramen}</p>
+          <p><strong>Opties:</strong></p>
+          <ul>
+            <li>Ventilatierooster: {item.ventilationgrids ? 'Ja' : 'Nee'}</li>
+            <li>Zonwering: {item.sunshade ? 'Ja' : 'Nee'}</li>
+            <li>Insectenhorren: {item.insectscreens ? 'Ja' : 'Nee'}</li>
+            <li>Airconditioning: {item.airconditioning ? 'Ja' : 'Nee'}</li>
+          </ul>
+        </>
+      )}
     </div>
   );
 
@@ -106,7 +132,7 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
           
           <Card>
             <CardHeader>
-              <CardTitle>Product Details</CardTitle>
+              <CardTitle>Project Details</CardTitle>
             </CardHeader>
             <CardContent>
               {productInfo}
@@ -119,7 +145,7 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
             <CardTitle>Opmerkingen</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{item.opmerkingen || 'Geen opmerkingen'}</p>
+            <p>{currentItem.opmerkingen || 'Geen opmerkingen'}</p>
           </CardContent>
         </Card>
         
@@ -147,12 +173,12 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
             
             <div className="flex justify-between">
               <div>
-                <p className="text-sm"><strong>Status:</strong> {item.status}</p>
-                {item.offerte_verzonden_op && (
-                  <p className="text-sm"><strong>Offerte verzonden:</strong> {format(new Date(item.offerte_verzonden_op), 'dd MMM yyyy')}</p>
+                <p className="text-sm"><strong>Status:</strong> {currentItem.status}</p>
+                {currentItem.offerte_verzonden_op && (
+                  <p className="text-sm"><strong>Offerte verzonden:</strong> {format(new Date(currentItem.offerte_verzonden_op), 'dd MMM yyyy')}</p>
                 )}
-                {item.afgehandeld_op && (
-                  <p className="text-sm"><strong>Afgehandeld op:</strong> {format(new Date(item.afgehandeld_op), 'dd MMM yyyy')}</p>
+                {currentItem.afgehandeld_op && (
+                  <p className="text-sm"><strong>Afgehandeld op:</strong> {format(new Date(currentItem.afgehandeld_op), 'dd MMM yyyy')}</p>
                 )}
               </div>
               

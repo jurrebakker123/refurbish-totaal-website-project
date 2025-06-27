@@ -143,10 +143,18 @@ const SchilderDashboard = () => {
       plaats: request.plaats,
       projectDetails: `${request.project_type} - ${request.oppervlakte}m² - ${request.verf_type}`,
       totaal_prijs: request.totaal_prijs,
-      opmerkingen: request.bericht
+      opmerkingen: request.bericht,
+      created_at: request.created_at,
+      updated_at: request.updated_at || request.created_at,
+      status: request.status,
+      offerte_verzonden_op: request.offerte_verzonden_op,
+      op_locatie_op: request.op_locatie_op,
+      in_aanbouw_op: request.in_aanbouw_op,
+      afgehandeld_op: request.afgehandeld_op,
+      notities: request.notities
     };
 
-    const success = await sendQuoteEmail(quoteItem, customMessage);
+    const success = await sendQuoteEmail(quoteItem as any, customMessage);
     if (success) {
       await handleStatusUpdate(request.id, 'offerte_verzonden');
     }
@@ -625,6 +633,7 @@ const SchilderDashboard = () => {
               in_aanbouw_op: selectedRequest.in_aanbouw_op,
               afgehandeld_op: selectedRequest.afgehandeld_op
             }}
+            onDataChange={loadRequests}
           />
         </>
       )}
