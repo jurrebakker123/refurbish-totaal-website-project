@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,7 @@ import RequestDetailDialog from './RequestDetailDialog';
 interface SchilderRequest {
   id: string;
   created_at: string;
+  updated_at?: string;
   voornaam: string;
   achternaam: string;
   emailadres: string;
