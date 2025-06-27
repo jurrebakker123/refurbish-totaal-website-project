@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -54,6 +53,11 @@ import VakmanDashboardPage from "./pages/VakmanDashboardPage";
 import VakmanOffertePage from "./pages/VakmanOffertePage";
 import VakmanProfielPage from "./pages/VakmanProfielPage";
 import VakmanWerkgebiedPage from "./pages/VakmanWerkgebiedPage";
+
+import SchilderConfiguratorPage from "./pages/SchilderConfiguratorPage";
+import StukadoorConfiguratorPage from "./pages/StukadoorConfiguratorPage";
+import AdminSchilderPage from "./pages/AdminSchilderPage";
+import AdminStukadoorPage from "./pages/AdminStukadoorPage";
 
 import "./App.css";
 
@@ -115,6 +119,12 @@ function App() {
           <Route path="/vakman-dashboard/offerteaanvragen" element={<VakmanOffertePage />} />
           <Route path="/vakman-dashboard/bedrijfsprofiel" element={<VakmanProfielPage />} />
           <Route path="/vakman-dashboard/werkgebied" element={<VakmanWerkgebiedPage />} />
+          
+          {/* New Schilder and Stukadoor Routes */}
+          <Route path="/schilderwerk-configurator" element={<SchilderConfiguratorPage />} />
+          <Route path="/stucwerk-configurator" element={<StukadoorConfiguratorPage />} />
+          <Route path="/admin/schilderwerk" element={<AdminSchilderPage />} />
+          <Route path="/admin/stucwerk" element={<AdminStukadoorPage />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
