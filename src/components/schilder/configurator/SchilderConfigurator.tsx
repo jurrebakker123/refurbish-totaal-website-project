@@ -2,376 +2,381 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Paintbrush, Home, Palette, Clock, Euro, CheckCircle } from 'lucide-react';
-
-interface SchilderConfig {
-  projectType: string;
-  surfaceArea: number;
-  rooms: string[];
-  paintType: string;
-  colors: string[];
-  finishType: string;
-  preparation: string[];
-  timeline: string;
-  extras: string[];
-}
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Checkbox } from '@/components/ui/checkbox';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
 
 const SchilderConfigurator = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [config, setConfig] = useState<SchilderConfig>({
-    projectType: '',
-    surfaceArea: 0,
-    rooms: [],
-    paintType: '',
-    colors: [],
-    finishType: '',
-    preparation: [],
-    timeline: '',
-    extras: []
+  const [formData, setFormData] = useState({
+    voornaam: '',
+    achternaam: '',
+    emailadres: '',
+    telefoon: '',
+    straatnaam: '',
+    huisnummer: '',
+    postcode: '',
+    plaats: '',
+    project_type: '',
+    oppervlakte: [40],
+    verf_type: '',
+    aantal_kamers: 1,
+    huidige_kleur: '',
+    gewenste_kleur: '',
+    voorbewerking_nodig: false,
+    plafond_meeverven: false,
+    kozijnen_meeverven: false,
+    bericht: '',
+    whatsapp_optin: false
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const projectTypes = [
-    { id: 'binnen', name: 'Binnenschilderwerk', description: 'Wanden, plafonds, kozijnen binnen' },
-    { id: 'buiten', name: 'Buitenschilderwerk', description: 'Gevels, kozijnen, deuren buiten' },
-    { id: 'compleet', name: 'Binnen + Buiten', description: 'Complete schilderbeurt' }
+    'Binnenschilderwerk',
+    'Buitenschilderwerk',
+    'Binnen + buiten',
+    'Alleen kozijnen',
+    'Complete renovatie'
   ];
 
-  const paintTypes = [
-    { id: 'latex', name: 'Latex verf', description: 'Standaard wandverf, geschikt voor de meeste ruimtes' },
-    { id: 'alkyd', name: 'Alkydverf', description: 'Duurzame verf voor hout en metaal' },
-    { id: 'acryl', name: 'Acrylverf', description: 'Watergedragen verf voor binnen en buiten' },
-    { id: 'kalkverf', name: 'Kalkverf', description: 'Natuurlijke, ademende verf' }
-  ];
-
-  const finishTypes = [
-    { id: 'mat', name: 'Mat', description: 'Matte afwerking zonder glans' },
-    { id: 'zijdemat', name: 'Zijdemat', description: 'Subtiele glans, goed afwasbaar' },
-    { id: 'zijdeglans', name: 'Zijdeglans', description: 'Meer glans, zeer goed afwasbaar' }
-  ];
-
-  const preparationOptions = [
-    { id: 'schuren', name: 'Schuren', price: 5 },
-    { id: 'plamuren', name: 'Plamuurwerk', price: 8 },
-    { id: 'primer', name: 'Primer aanbrengen', price: 3 },
-    { id: 'behang_verwijderen', name: 'Behang verwijderen', price: 12 }
-  ];
-
-  const extraOptions = [
-    { id: 'plafond', name: 'Plafond meeschilderen', price: 15 },
-    { id: 'kozijnen', name: 'Kozijnen behandelen', price: 25 },
-    { id: 'deuren', name: 'Deuren schilderen', price: 35 },
-    { id: 'radiatoren', name: 'Radiatoren schilderen', price: 20 }
+  const verfTypes = [
+    'Latex muurverf',
+    'Alkydverf',
+    'Krijtverf',  
+    'Primer + 2 deklagen',
+    'Overschilderbaar behang'
   ];
 
   const calculatePrice = () => {
-    let basePrice = 0;
+    const basePrice = formData.oppervlakte[0] * (formData.project_type === 'Buitenschilderwerk' ? 35 : 25);
+    const voorbewerking = formData.voorbewerking_nodig ? formData.oppervlakte[0] * 8 : 0;
+    const plafond = formData.plafond_meeverven ? formData.oppervlakte[0] * 12 : 0;
+    const kozijnen = formData.kozijnen_meeverven ? 250 * formData.aantal_kamers : 0;
     
-    // Base price per m²
-    if (config.projectType === 'binnen') basePrice = 25;
-    else if (config.projectType === 'buiten') basePrice = 35;
-    else if (config.projectType === 'compleet') basePrice = 50;
-
-    let totalPrice = basePrice * config.surfaceArea;
-
-    // Paint type multiplier
-    if (config.paintType === 'alkyd') totalPrice *= 1.2;
-    else if (config.paintType === 'kalkverf') totalPrice *= 1.3;
-
-    // Preparation costs
-    config.preparation.forEach(prepId => {
-      const prep = preparationOptions.find(p => p.id === prepId);
-      if (prep) totalPrice += prep.price * config.surfaceArea;
-    });
-
-    // Extra options
-    config.extras.forEach(extraId => {
-      const extra = extraOptions.find(e => e.id === extraId);
-      if (extra) totalPrice += extra.price * config.surfaceArea;
-    });
-
-    return Math.round(totalPrice);
+    return Math.round(basePrice + voorbewerking + plafond + kozijnen);
   };
 
-  const nextStep = () => setCurrentStep(prev => prev + 1);
-  const prevStep = () => setCurrentStep(prev => prev - 1);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.whatsapp_optin) {
+      toast.error('WhatsApp toestemming is verplicht voor deze service');
+      return;
+    }
+    
+    setIsSubmitting(true);
 
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Wat voor schilderwerk wilt u laten uitvoeren?</h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              {projectTypes.map(type => (
-                <Card 
-                  key={type.id}
-                  className={`cursor-pointer transition-all ${config.projectType === type.id ? 'ring-2 ring-brand-lightGreen' : ''}`}
-                  onClick={() => setConfig({...config, projectType: type.id})}
-                >
-                  <CardContent className="p-4 text-center">
-                    <Home className="h-8 w-8 mx-auto mb-2 text-brand-lightGreen" />
-                    <h4 className="font-medium">{type.name}</h4>
-                    <p className="text-sm text-gray-600">{type.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
+    try {
+      const totalPrice = calculatePrice();
+      
+      // Save to database
+      const { data: savedData, error } = await supabase
+        .from('schilder_aanvragen')
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          emailadres: formData.emailadres,
+          telefoon: formData.telefoon,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          project_type: formData.project_type,
+          oppervlakte: formData.oppervlakte[0],
+          verf_type: formData.verf_type,
+          aantal_kamers: formData.aantal_kamers,
+          huidige_kleur: formData.huidige_kleur,
+          gewenste_kleur: formData.gewenste_kleur,
+          voorbewerking_nodig: formData.voorbewerking_nodig,
+          plafond_meeverven: formData.plafond_meeverven,
+          kozijnen_meeverven: formData.kozijnen_meeverven,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw'
+        })
+        .select()
+        .single();
 
-      case 2:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Hoeveel vierkante meter moet geschilderd worden?</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Oppervlakte in m²</label>
-                <input
-                  type="number"
-                  className="w-full p-3 border rounded-lg"
-                  placeholder="Bijv. 50"
-                  value={config.surfaceArea || ''}
-                  onChange={(e) => setConfig({...config, surfaceArea: parseInt(e.target.value) || 0})}
-                />
-              </div>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Tip:</strong> Reken ongeveer 2,5m² per m² vloeroppervlak voor wanden en plafond.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
+      if (error) throw error;
 
-      case 3:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Welk type verf heeft uw voorkeur?</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {paintTypes.map(paint => (
-                <Card 
-                  key={paint.id}
-                  className={`cursor-pointer transition-all ${config.paintType === paint.id ? 'ring-2 ring-brand-lightGreen' : ''}`}
-                  onClick={() => setConfig({...config, paintType: paint.id})}
-                >
-                  <CardContent className="p-4">
-                    <Palette className="h-6 w-6 mb-2 text-brand-lightGreen" />
-                    <h4 className="font-medium">{paint.name}</h4>
-                    <p className="text-sm text-gray-600">{paint.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
+      // Trigger WhatsApp lead nurturing
+      if (formData.whatsapp_optin && savedData) {
+        const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
+        const formattedPhone = phoneNumber.startsWith('06') ? '31' + phoneNumber.substring(1) : 
+                              phoneNumber.startsWith('6') ? '31' + phoneNumber : phoneNumber;
 
-      case 4:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Welke afwerking wenst u?</h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              {finishTypes.map(finish => (
-                <Card 
-                  key={finish.id}
-                  className={`cursor-pointer transition-all ${config.finishType === finish.id ? 'ring-2 ring-brand-lightGreen' : ''}`}
-                  onClick={() => setConfig({...config, finishType: finish.id})}
-                >
-                  <CardContent className="p-4 text-center">
-                    <div className="h-8 w-8 mx-auto mb-2 bg-brand-lightGreen rounded-full"></div>
-                    <h4 className="font-medium">{finish.name}</h4>
-                    <p className="text-sm text-gray-600">{finish.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
+        await supabase.functions.invoke('whatsapp-lead-nurturing', {
+          body: {
+            leadId: savedData.id,
+            phoneNumber: formattedPhone,
+            customerName: `${formData.voornaam} ${formData.achternaam}`,
+            step: 'initial'
+          }
+        });
+      }
 
-      case 5:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Welke voorbereidende werkzaamheden zijn nodig?</h3>
-            <p className="text-gray-600 mb-4">Selecteer alle opties die van toepassing zijn</p>
-            <div className="space-y-3">
-              {preparationOptions.map(prep => (
-                <div key={prep.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={config.preparation.includes(prep.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setConfig({...config, preparation: [...config.preparation, prep.id]});
-                        } else {
-                          setConfig({...config, preparation: config.preparation.filter(p => p !== prep.id)});
-                        }
-                      }}
-                      className="rounded"
-                    />
-                    <span className="font-medium">{prep.name}</span>
-                  </div>
-                  <Badge variant="outline">+€{prep.price}/m²</Badge>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht.');
+      
+      // Reset form
+      setFormData({
+        voornaam: '',
+        achternaam: '',
+        emailadres: '',
+        telefoon: '',
+        straatnaam: '',
+        huisnummer: '',
+        postcode: '',
+        plaats: '',
+        project_type: '',
+        oppervlakte: [40],
+        verf_type: '',
+        aantal_kamers: 1,
+        huidige_kleur: '',
+        gewenste_kleur: '',
+        voorbewerking_nodig: false,
+        plafond_meeverven: false,
+        kozijnen_meeverven: false,
+        bericht: '',
+        whatsapp_optin: false
+      });
 
-      case 6:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Extra werkzaamheden</h3>
-            <p className="text-gray-600 mb-4">Selecteer eventuele extra's</p>
-            <div className="space-y-3">
-              {extraOptions.map(extra => (
-                <div key={extra.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={config.extras.includes(extra.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setConfig({...config, extras: [...config.extras, extra.id]});
-                        } else {
-                          setConfig({...config, extras: config.extras.filter(e => e !== extra.id)});
-                        }
-                      }}
-                      className="rounded"
-                    />
-                    <span className="font-medium">{extra.name}</span>
-                  </div>
-                  <Badge variant="outline">+€{extra.price}/m²</Badge>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 7:
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Wanneer wilt u het laten uitvoeren?</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {[
-                { id: 'asap', name: 'Zo snel mogelijk', description: 'Binnen 2-4 weken' },
-                { id: '1-2months', name: '1-2 maanden', description: 'Flexibele planning' },
-                { id: '3-6months', name: '3-6 maanden', description: 'Voor komend seizoen' },
-                { id: 'later', name: 'Later dit jaar', description: 'Geen haast' }
-              ].map(time => (
-                <Card 
-                  key={time.id}
-                  className={`cursor-pointer transition-all ${config.timeline === time.id ? 'ring-2 ring-brand-lightGreen' : ''}`}
-                  onClick={() => setConfig({...config, timeline: time.id})}
-                >
-                  <CardContent className="p-4">
-                    <Clock className="h-6 w-6 mb-2 text-brand-lightGreen" />
-                    <h4 className="font-medium">{time.name}</h4>
-                    <p className="text-sm text-gray-600">{time.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 8:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-semibold mb-2">Uw configuratie is compleet!</h3>
-              <p className="text-gray-600">Bekijk hieronder uw schilderwerk overzicht</p>
-            </div>
-
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-xl font-semibold text-green-800">Geschatte prijs</h4>
-                  <div className="text-3xl font-bold text-green-600">
-                    €{calculatePrice().toLocaleString()}
-                  </div>
-                </div>
-                <p className="text-sm text-green-700">Inclusief materiaal en arbeid</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Configuratie overzicht</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div><strong>Project:</strong> {projectTypes.find(p => p.id === config.projectType)?.name}</div>
-                <div><strong>Oppervlakte:</strong> {config.surfaceArea} m²</div>
-                <div><strong>Verftype:</strong> {paintTypes.find(p => p.id === config.paintType)?.name}</div>
-                <div><strong>Afwerking:</strong> {finishTypes.find(f => f.id === config.finishType)?.name}</div>
-                {config.preparation.length > 0 && (
-                  <div><strong>Voorbereiding:</strong> {config.preparation.map(p => preparationOptions.find(prep => prep.id === p)?.name).join(', ')}</div>
-                )}
-                {config.extras.length > 0 && (
-                  <div><strong>Extra's:</strong> {config.extras.map(e => extraOptions.find(extra => extra.id === e)?.name).join(', ')}</div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Button className="w-full bg-brand-lightGreen hover:bg-brand-darkGreen text-white py-3">
-              Offerte Aanvragen
-            </Button>
-          </div>
-        );
-
-      default:
-        return null;
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Er ging iets mis bij het verzenden van je aanvraag');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-8">
-        <div className="flex items-center space-x-2 mb-4">
-          <Paintbrush className="h-8 w-8 text-brand-lightGreen" />
-          <h1 className="text-3xl font-bold">Schilderwerk Configurator</h1>
-        </div>
-        
-        {/* Progress bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-brand-lightGreen h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 8) * 100}%` }}
-          ></div>
-        </div>
-        <p className="text-sm text-gray-600 mt-2">Stap {currentStep} van 8</p>
-      </div>
-
       <Card>
-        <CardContent className="p-8">
-          {renderStep()}
-          
-          <div className="flex justify-between mt-8">
-            <Button 
-              variant="outline" 
-              onClick={prevStep} 
-              disabled={currentStep === 1}
-            >
-              Vorige
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Schilderwerk Configurator</CardTitle>
+          <p className="text-center text-gray-600">
+            Configureer je schilderproject en ontvang direct een prijsindicatie
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="voornaam">Voornaam</Label>
+                <Input
+                  id="voornaam"
+                  value={formData.voornaam}
+                  onChange={(e) => setFormData({...formData, voornaam: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="achternaam">Achternaam</Label>
+                <Input
+                  id="achternaam"
+                  value={formData.achternaam}
+                  onChange={(e) => setFormData({...formData, achternaam: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="emailadres">E-mailadres</Label>
+                <Input
+                  id="emailadres"
+                  type="email"
+                  value={formData.emailadres}
+                  onChange={(e) => setFormData({...formData, emailadres: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="telefoon">Telefoonnummer</Label>
+                <Input
+                  id="telefoon"
+                  value={formData.telefoon}
+                  onChange={(e) => setFormData({...formData, telefoon: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <Label htmlFor="straatnaam">Straatnaam</Label>
+                <Input
+                  id="straatnaam"
+                  value={formData.straatnaam}
+                  onChange={(e) => setFormData({...formData, straatnaam: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="huisnummer">Huisnummer</Label>
+                <Input
+                  id="huisnummer"
+                  value={formData.huisnummer}
+                  onChange={(e) => setFormData({...formData, huisnummer: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="postcode">Postcode</Label>
+                <Input
+                  id="postcode"
+                  value={formData.postcode}
+                  onChange={(e) => setFormData({...formData, postcode: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="plaats">Plaats</Label>
+                <Input
+                  id="plaats"
+                  value={formData.plaats}
+                  onChange={(e) => setFormData({...formData, plaats: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Project Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Type schilderwerk</Label>
+                <Select onValueChange={(value) => setFormData({...formData, project_type: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecteer type schilderwerk" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projectTypes.map(type => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Type verf</Label>
+                <Select onValueChange={(value) => setFormData({...formData, verf_type: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecteer verf type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {verfTypes.map(type => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Surface Area */}
+            <div>
+              <Label>Oppervlakte: {formData.oppervlakte[0]} m²</Label>
+              <Slider
+                value={formData.oppervlakte}
+                onValueChange={(value) => setFormData({...formData, oppervlakte: value})}
+                min={10}
+                max={300}
+                step={5}
+                className="mt-2"
+              />
+            </div>
+
+            {/* Colors */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="huidige_kleur">Huidige kleur</Label>
+                <Input
+                  id="huidige_kleur"
+                  value={formData.huidige_kleur}
+                  onChange={(e) => setFormData({...formData, huidige_kleur: e.target.value})}
+                  placeholder="bijv. wit, crème, geel"
+                />
+              </div>
+              <div>
+                <Label htmlFor="gewenste_kleur">Gewenste kleur</Label>
+                <Input
+                  id="gewenste_kleur"
+                  value={formData.gewenste_kleur}
+                  onChange={(e) => setFormData({...formData, gewenste_kleur: e.target.value})}
+                  placeholder="bijv. wit, grijs, blauw"
+                />
+              </div>
+            </div>
+
+            {/* Additional Options */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="voorbewerking"
+                  checked={formData.voorbewerking_nodig}
+                  onCheckedChange={(checked) => setFormData({...formData, voorbewerking_nodig: checked as boolean})}
+                />
+                <Label htmlFor="voorbewerking">Voorbewerking nodig (schuren, plamuren) (+€8/m²)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="plafond"
+                  checked={formData.plafond_meeverven}
+                  onCheckedChange={(checked) => setFormData({...formData, plafond_meeverven: checked as boolean})}
+                />
+                <Label htmlFor="plafond">Plafond meeverven (+€12/m²)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="kozijnen"
+                  checked={formData.kozijnen_meeverven}
+                  onCheckedChange={(checked) => setFormData({...formData, kozijnen_meeverven: checked as boolean})}
+                />
+                <Label htmlFor="kozijnen">Kozijnen meeverven (+€250/kamer)</Label>
+              </div>
+            </div>
+
+            {/* Message */}
+            <div>
+              <Label htmlFor="bericht">Aanvullende opmerkingen</Label>
+              <Textarea
+                id="bericht"
+                value={formData.bericht}
+                onChange={(e) => setFormData({...formData, bericht: e.target.value})}
+                placeholder="Beschrijf je schilderproject..."
+              />
+            </div>
+
+            {/* WhatsApp Opt-in */}
+            <WhatsAppOptInCheckbox
+              checked={formData.whatsapp_optin}
+              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
+            />
+
+            {/* Price Display */}
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs</h3>
+                  <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
+                  <p className="text-sm text-blue-700">Inclusief materiaal en arbeid</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Bezig met verzenden...' : 'Aanvraag Versturen'}
             </Button>
-            
-            {currentStep < 8 && (
-              <Button 
-                onClick={nextStep}
-                className="bg-brand-lightGreen hover:bg-brand-darkGreen"
-                disabled={
-                  (currentStep === 1 && !config.projectType) ||
-                  (currentStep === 2 && !config.surfaceArea) ||
-                  (currentStep === 3 && !config.paintType) ||
-                  (currentStep === 4 && !config.finishType) ||
-                  (currentStep === 7 && !config.timeline)
-                }
-              >
-                Volgende
-              </Button>
-            )}
-          </div>
+          </form>
         </CardContent>
       </Card>
     </div>
