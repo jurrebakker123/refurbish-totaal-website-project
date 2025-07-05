@@ -1,6 +1,87 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem, GenericQuoteItem } from '@/types/admin';
+
+// Legacy function for backward compatibility
+export const loadAdminData = async (): Promise<{ 
+  configuraties: DakkapelConfiguratie[],
+  zonnepanelen: RefurbishedZonnepaneel[],
+  success: boolean 
+}> => {
+  console.log('Loading legacy admin data...');
+  const result = {
+    configuraties: [] as DakkapelConfiguratie[],
+    zonnepanelen: [] as RefurbishedZonnepaneel[],
+    success: false
+  };
+  
+  try {
+    // Load dakkapel data
+    const { data: configData, error: configError } = await supabase
+      .from('dakkapel_calculator_aanvragen')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (configError) {
+      console.error('Config error:', configError);
+      toast.error("Fout bij laden dakkapel aanvragen: " + configError.message);
+    } else {
+      result.configuraties = (configData || []).map(item => ({
+        id: item.id,
+        created_at: item.created_at,
+        naam: `${item.voornaam} ${item.achternaam}`.trim(),
+        email: item.emailadres,
+        telefoon: item.telefoon,
+        adres: `${item.straatnaam} ${item.huisnummer}`,
+        postcode: item.postcode,
+        plaats: item.plaats,
+        opmerkingen: item.bericht || '',
+        model: item.type,
+        breedte: item.breedte,
+        materiaal: item.materiaal,
+        kleur_kozijn: item.kleurkozijnen,
+        kleur_zijkanten: item.kleurzijkanten,
+        kleur_draaikiepramen: item.kleurdraaikiepramen,
+        dakhelling: item.dakhelling,
+        dakhelling_type: item.dakhellingtype,
+        levertijd: 'Standaard',
+        ventilationgrids: false,
+        sunshade: false,
+        insectscreens: false,
+        airconditioning: false,
+        status: item.status,
+        offerte_verzonden_op: item.offerte_verzonden_op,
+        op_locatie_op: null,
+        in_aanbouw_op: null,
+        afgehandeld_op: item.afgehandeld_op,
+        notities: item.notities,
+        totaal_prijs: item.totaal_prijs
+      }));
+    }
+
+    // Load zonnepanelen data
+    const { data: zonnepanelenData, error: zonnepanelenError } = await supabase
+      .from('refurbished_zonnepanelen')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (zonnepanelenError) {
+      console.error('Zonnepanelen error:', zonnepanelenError);
+      toast.error("Fout bij laden zonnepanelen: " + zonnepanelenError.message);
+    } else {
+      result.zonnepanelen = zonnepanelenData || [];
+    }
+
+    result.success = true;
+    toast.success(`Legacy data geladen! ${configData?.length || 0} dakkapel en ${zonnepanelenData?.length || 0} zonnepanelen aanvragen gevonden`);
+  } catch (error) {
+    console.error('Error loading legacy data:', error);
+    toast.error("Onverwachte fout bij het laden van gegevens");
+  }
+  
+  return result;
+};
 
 export const loadUnifiedAdminData = async (): Promise<{ 
   configuraties: DakkapelConfiguratie[],

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -81,6 +80,26 @@ interface StukadoorAanvraag {
   afgehandeld_op?: string;
 }
 
+// Unified interface for project data to handle type compatibility
+interface UnifiedProjectData {
+  id: string;
+  created_at: string;
+  naam: string;
+  email: string;
+  telefoon: string;
+  adres: string;
+  postcode: string;
+  plaats: string;
+  status: string;
+  totaal_prijs?: number;
+  opmerkingen?: string;
+  notities?: string;
+  offerte_verzonden_op?: string;
+  op_locatie_op?: string;
+  in_aanbouw_op?: string;
+  afgehandeld_op?: string;
+}
+
 const UnifiedAdminDashboard = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
   const [allSchilderAanvragen, setAllSchilderAanvragen] = useState<SchilderAanvraag[]>([]);
@@ -124,25 +143,64 @@ const UnifiedAdminDashboard = () => {
   };
 
   // Get current project data based on selected project type
-  const getCurrentProjectData = () => {
+  const getCurrentProjectData = (): UnifiedProjectData[] => {
     switch (projectType) {
       case 'dakkapel':
-        return allConfiguraties;
+        return allConfiguraties.map(item => ({
+          id: item.id,
+          created_at: item.created_at,
+          naam: item.naam,
+          email: item.email,
+          telefoon: item.telefoon,
+          adres: item.adres,
+          postcode: item.postcode,
+          plaats: item.plaats,
+          status: item.status,
+          totaal_prijs: item.totaal_prijs,
+          opmerkingen: item.opmerkingen,
+          notities: item.notities,
+          offerte_verzonden_op: item.offerte_verzonden_op,
+          op_locatie_op: item.op_locatie_op,
+          in_aanbouw_op: item.in_aanbouw_op,
+          afgehandeld_op: item.afgehandeld_op
+        }));
       case 'schilder':
         return allSchilderAanvragen.map(item => ({
-          ...item,
+          id: item.id,
+          created_at: item.created_at,
           naam: `${item.voornaam} ${item.achternaam}`,
           email: item.emailadres,
+          telefoon: item.telefoon,
           adres: `${item.straatnaam} ${item.huisnummer}`,
-          opmerkingen: item.bericht || ''
+          postcode: item.postcode,
+          plaats: item.plaats,
+          status: item.status,
+          totaal_prijs: item.totaal_prijs,
+          opmerkingen: item.bericht || '',
+          notities: item.notities,
+          offerte_verzonden_op: item.offerte_verzonden_op,
+          op_locatie_op: item.op_locatie_op,
+          in_aanbouw_op: item.in_aanbouw_op,
+          afgehandeld_op: item.afgehandeld_op
         }));
       case 'stukadoor':
         return allStukadoorAanvragen.map(item => ({
-          ...item,
+          id: item.id,
+          created_at: item.created_at,
           naam: `${item.voornaam} ${item.achternaam}`,
           email: item.emailadres,
+          telefoon: item.telefoon,
           adres: `${item.straatnaam} ${item.huisnummer}`,
-          opmerkingen: item.bericht || ''
+          postcode: item.postcode,
+          plaats: item.plaats,
+          status: item.status,
+          totaal_prijs: item.totaal_prijs,
+          opmerkingen: item.bericht || '',
+          notities: item.notities,
+          offerte_verzonden_op: item.offerte_verzonden_op,
+          op_locatie_op: item.op_locatie_op,
+          in_aanbouw_op: item.in_aanbouw_op,
+          afgehandeld_op: item.afgehandeld_op
         }));
       default:
         return [];
@@ -467,13 +525,13 @@ const UnifiedAdminDashboard = () => {
                     onSelectItem={handleSelectItem}
                     onBulkAction={handleBulkAction}
                     allIds={currentTabData.map(item => item.id)}
-                    configurations={currentTabData}
+                    configurations={currentTabData as any}
                     type={projectType as any}
                   />
                   
                   {activeTab === 'afgehandeld' ? (
                     <ProcessedRequestsTable 
-                      configuraties={currentTabData as DakkapelConfiguratie[]}
+                      configuraties={currentTabData as any}
                       onViewDetails={openDetails}
                       onDataChange={loadDashboardData}
                       type={projectType as any}
