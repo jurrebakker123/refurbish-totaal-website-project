@@ -2,32 +2,32 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem, GenericQuoteItem } from '@/types/admin';
 
-export const loadAdminData = async (): Promise<{ 
+export const loadUnifiedAdminData = async (): Promise<{ 
   configuraties: DakkapelConfiguratie[],
-  zonnepanelen: RefurbishedZonnepaneel[],
+  schilderAanvragen: any[],
+  stukadoorAanvragen: any[],
   success: boolean 
 }> => {
-  console.log('Starting to load admin dashboard data...');
+  console.log('Starting to load unified admin dashboard data...');
   const result = {
     configuraties: [] as DakkapelConfiguratie[],
-    zonnepanelen: [] as RefurbishedZonnepaneel[],
+    schilderAanvragen: [] as any[],
+    stukadoorAanvragen: [] as any[],
     success: false
   };
   
   try {
-    // Load from dakkapel_calculator_aanvragen instead of dakkapel_configuraties
+    // Load dakkapel data
     console.log('Loading dakkapel calculator aanvragen data...');
     const { data: configData, error: configError } = await supabase
       .from('dakkapel_calculator_aanvragen')
       .select('*')
       .order('created_at', { ascending: false });
 
-    console.log('Dakkapel aanvragen data:', configData, 'Error:', configError);
     if (configError) {
       console.error('Config error:', configError);
       toast.error("Fout bij laden dakkapel aanvragen: " + configError.message);
     } else {
-      // Map the data structure to match the expected interface using actual configurator fields
       result.configuraties = (configData || []).map(item => ({
         id: item.id,
         created_at: item.created_at,
@@ -38,9 +38,9 @@ export const loadAdminData = async (): Promise<{
         postcode: item.postcode,
         plaats: item.plaats,
         opmerkingen: item.bericht || '',
-        model: item.type, // This comes from the configurator model selection
+        model: item.type,
         breedte: item.breedte,
-        materiaal: item.materiaal, // This comes from the configurator material selection
+        materiaal: item.materiaal,
         kleur_kozijn: item.kleurkozijnen,
         kleur_zijkanten: item.kleurzijkanten,
         kleur_draaikiepramen: item.kleurdraaikiepramen,
@@ -62,26 +62,40 @@ export const loadAdminData = async (): Promise<{
       console.log(`Loaded ${configData?.length || 0} dakkapel aanvragen`);
     }
 
-    // Load solar panel data
-    console.log('Loading solar panel data...');
-    const { data: solarData, error: solarError } = await supabase
-      .from('refurbished_zonnepanelen')
+    // Load schilder data
+    console.log('Loading schilder aanvragen data...');
+    const { data: schilderData, error: schilderError } = await supabase
+      .from('schilder_aanvragen')
       .select('*')
       .order('created_at', { ascending: false });
 
-    console.log('Solar data:', solarData, 'Error:', solarError);
-    if (solarError) {
-      console.error('Solar error:', solarError);
-      toast.error("Fout bij laden zonnepanelen: " + solarError.message);
+    if (schilderError) {
+      console.error('Schilder error:', schilderError);
+      toast.error("Fout bij laden schilder aanvragen: " + schilderError.message);
     } else {
-      result.zonnepanelen = solarData || [];
-      console.log(`Loaded ${solarData?.length || 0} solar panels`);
+      result.schilderAanvragen = schilderData || [];
+      console.log(`Loaded ${schilderData?.length || 0} schilder aanvragen`);
+    }
+
+    // Load stukadoor data
+    console.log('Loading stukadoor aanvragen data...');
+    const { data: stukadoorData, error: stukadoorError } = await supabase
+      .from('stukadoor_aanvragen')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (stukadoorError) {
+      console.error('Stukadoor error:', stukadoorError);
+      toast.error("Fout bij laden stukadoor aanvragen: " + stukadoorError.message);
+    } else {
+      result.stukadoorAanvragen = stukadoorData || [];
+      console.log(`Loaded ${stukadoorData?.length || 0} stukadoor aanvragen`);
     }
 
     result.success = true;
-    toast.success(`Dashboard geladen! ${configData?.length || 0} dakkapel aanvragen en ${solarData?.length || 0} zonnepaneel aanvragen gevonden`);
+    toast.success(`Dashboard geladen! ${configData?.length || 0} dakkapel, ${schilderData?.length || 0} schilder en ${stukadoorData?.length || 0} stukadoor aanvragen gevonden`);
   } catch (error) {
-    console.error('Error loading data:', error);
+    console.error('Error loading unified data:', error);
     toast.error("Onverwachte fout bij het laden van gegevens");
   }
   

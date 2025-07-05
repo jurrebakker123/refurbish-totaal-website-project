@@ -1,4 +1,3 @@
-
 export interface DakkapelConfiguratie {
   id: string;
   created_at: string;
@@ -103,4 +102,74 @@ export interface RequestDetailItem {
   op_locatie_op?: string;
   in_aanbouw_op?: string;
   afgehandeld_op?: string;
+}
+
+// Nieuwe interfaces voor Schilder en Stukadoor
+export interface SchilderAanvraag {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  voornaam: string;
+  achternaam: string;
+  emailadres: string;
+  telefoon: string;
+  straatnaam: string;
+  huisnummer: string;
+  postcode: string;
+  plaats: string;
+  project_type: string;
+  oppervlakte: number;
+  verf_type: string;
+  aantal_kamers?: number;
+  voorbewerking_nodig: boolean;
+  plafond_meeverven: boolean;
+  kozijnen_meeverven: boolean;
+  huidige_kleur?: string;
+  gewenste_kleur?: string;
+  bericht?: string;
+  status: string;
+  totaal_prijs?: number;
+  notities?: string;
+  offerte_verzonden_op?: string;
+  op_locatie_op?: string;
+  in_aanbouw_op?: string;
+  afgehandeld_op?: string;
+}
+
+export interface StukadoorAanvraag {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  voornaam: string;
+  achternaam: string;
+  emailadres: string;
+  telefoon: string;
+  straatnaam: string;
+  huisnummer: string;
+  postcode: string;
+  plaats: string;
+  werk_type: string;
+  oppervlakte: number;
+  afwerking: string;
+  aantal_kamers?: number;
+  huidige_staat?: string;
+  voorbewerking?: string;
+  isolatie_gewenst: boolean;
+  bericht?: string;
+  status: string;
+  totaal_prijs?: number;
+  notities?: string;
+  offerte_verzonden_op?: string;
+  op_locatie_op?: string;
+  in_aanbouw_op?: string;
+  afgehandeld_op?: string;
+}
+
+// Uitgebreide quote item interfaces
+export interface SchilderQuoteItem extends SchilderAanvraag {
+  isSchilder: boolean;
+}
+
+export interface StukadoorQuoteItem extends StukadoorAanvraag {
+  isStukadoor: boolean;
 }

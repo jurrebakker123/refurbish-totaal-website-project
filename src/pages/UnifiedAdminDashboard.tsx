@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw } from 'lucide-react';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import { DakkapelConfiguratie, QuoteItem, RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
-import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
+import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
+import { loadUnifiedAdminData, updateRequestStatus } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
@@ -21,9 +21,70 @@ import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import { usePWA } from '@/hooks/usePWA';
 
+interface SchilderAanvraag {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  voornaam: string;
+  achternaam: string;
+  emailadres: string;
+  telefoon: string;
+  straatnaam: string;
+  huisnummer: string;
+  postcode: string;
+  plaats: string;
+  project_type: string;
+  oppervlakte: number;
+  verf_type: string;
+  aantal_kamers?: number;
+  voorbewerking_nodig: boolean;
+  plafond_meeverven: boolean;
+  kozijnen_meeverven: boolean;
+  huidige_kleur?: string;
+  gewenste_kleur?: string;
+  bericht?: string;
+  status: string;
+  totaal_prijs?: number;
+  notities?: string;
+  offerte_verzonden_op?: string;
+  op_locatie_op?: string;
+  in_aanbouw_op?: string;
+  afgehandeld_op?: string;
+}
+
+interface StukadoorAanvraag {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  voornaam: string;
+  achternaam: string;
+  emailadres: string;
+  telefoon: string;
+  straatnaam: string;
+  huisnummer: string;
+  postcode: string;
+  plaats: string;
+  werk_type: string;
+  oppervlakte: number;
+  afwerking: string;
+  aantal_kamers?: number;
+  huidige_staat?: string;
+  voorbewerking?: string;
+  isolatie_gewenst: boolean;
+  bericht?: string;
+  status: string;
+  totaal_prijs?: number;
+  notities?: string;
+  offerte_verzonden_op?: string;
+  op_locatie_op?: string;
+  in_aanbouw_op?: string;
+  afgehandeld_op?: string;
+}
+
 const UnifiedAdminDashboard = () => {
   const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
-  const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
+  const [allSchilderAanvragen, setAllSchilderAanvragen] = useState<SchilderAanvraag[]>([]);
+  const [allStukadoorAanvragen, setAllStukadoorAanvragen] = useState<StukadoorAanvraag[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectType, setProjectType] = useState('dakkapel');
   const [activeTab, setActiveTab] = useState('nieuw');
@@ -31,7 +92,7 @@ const UnifiedAdminDashboard = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState<string | null>(null);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
-  const [selectedQuoteItem, setSelectedQuoteItem] = useState<QuoteItem | ZonnepaneelQuoteItem | null>(null);
+  const [selectedQuoteItem, setSelectedQuoteItem] = useState<QuoteItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
   const [filters, setFilters] = useState<FilterState>({
@@ -51,18 +112,44 @@ const UnifiedAdminDashboard = () => {
 
   const loadDashboardData = async () => {
     setLoading(true);
-    const { configuraties: configData, zonnepanelen: solarData, success } = await loadAdminData();
+    const { configuraties, schilderAanvragen, stukadoorAanvragen, success } = await loadUnifiedAdminData();
     
     if (success) {
-      setAllConfiguraties(configData);
-      setAllZonnepanelen(solarData);
+      setAllConfiguraties(configuraties);
+      setAllSchilderAanvragen(schilderAanvragen);
+      setAllStukadoorAanvragen(stukadoorAanvragen);
     }
     
     setLoading(false);
   };
 
   // Get current project data based on selected project type
-  const currentProjectData = projectType === 'dakkapel' ? allConfiguraties : allZonnepanelen;
+  const getCurrentProjectData = () => {
+    switch (projectType) {
+      case 'dakkapel':
+        return allConfiguraties;
+      case 'schilder':
+        return allSchilderAanvragen.map(item => ({
+          ...item,
+          naam: `${item.voornaam} ${item.achternaam}`,
+          email: item.emailadres,
+          adres: `${item.straatnaam} ${item.huisnummer}`,
+          opmerkingen: item.bericht || ''
+        }));
+      case 'stukadoor':
+        return allStukadoorAanvragen.map(item => ({
+          ...item,
+          naam: `${item.voornaam} ${item.achternaam}`,
+          email: item.emailadres,
+          adres: `${item.straatnaam} ${item.huisnummer}`,
+          opmerkingen: item.bericht || ''
+        }));
+      default:
+        return [];
+    }
+  };
+
+  const currentProjectData = getCurrentProjectData();
 
   const filteredData = useMemo(() => {
     let filtered = [...currentProjectData];
@@ -161,21 +248,30 @@ const UnifiedAdminDashboard = () => {
   };
 
   const openQuoteDialog = (item: any) => {
-    if (projectType === 'dakkapel') {
-      setSelectedQuoteItem({ ...item, isCalculator: false });
-    } else {
-      setSelectedQuoteItem({ ...item, isZonnepaneel: true });
-    }
+    setSelectedQuoteItem({ ...item, isCalculator: false });
     setIsQuoteDialogOpen(true);
+  };
+
+  const getTableName = () => {
+    switch (projectType) {
+      case 'dakkapel':
+        return 'dakkapel_calculator_aanvragen';
+      case 'schilder':
+        return 'schilder_aanvragen';
+      case 'stukadoor':
+        return 'stukadoor_aanvragen';
+      default:
+        return 'dakkapel_calculator_aanvragen';
+    }
   };
 
   const handleBulkAction = async (action: string, ids: string[]) => {
     setLoading(true);
     let successCount = 0;
-    const table = projectType === 'dakkapel' ? 'dakkapel_calculator_aanvragen' : 'refurbished_zonnepanelen';
+    const table = getTableName();
     
     for (const id of ids) {
-      const success = await updateRequestStatus(id, action, table);
+      const success = await updateRequestStatus(id, action, table as any);
       if (success) successCount++;
     }
     
@@ -201,6 +297,32 @@ const UnifiedAdminDashboard = () => {
       setSelectedIds(prev => [...prev, id]);
     } else {
       setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+    }
+  };
+
+  const getProjectTypeName = () => {
+    switch (projectType) {
+      case 'dakkapel':
+        return 'Dakkapel';
+      case 'schilder':
+        return 'Schilderwerk';
+      case 'stukadoor':
+        return 'Stucwerk';
+      default:
+        return 'Project';
+    }
+  };
+
+  const getTotalCount = () => {
+    switch (projectType) {
+      case 'dakkapel':
+        return allConfiguraties.length;
+      case 'schilder':
+        return allSchilderAanvragen.length;
+      case 'stukadoor':
+        return allStukadoorAanvragen.length;
+      default:
+        return 0;
     }
   };
 
@@ -241,6 +363,7 @@ const UnifiedAdminDashboard = () => {
                 onClick={() => {
                   setProjectType('dakkapel');
                   setSelectedIds([]);
+                  setActiveTab('nieuw');
                 }}
                 className={`px-4 py-2 rounded-md font-medium transition-colors ${
                   projectType === 'dakkapel'
@@ -252,16 +375,31 @@ const UnifiedAdminDashboard = () => {
               </button>
               <button
                 onClick={() => {
-                  setProjectType('zonnepanelen');
+                  setProjectType('schilder');
                   setSelectedIds([]);
+                  setActiveTab('nieuw');
                 }}
                 className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  projectType === 'zonnepanelen'
+                  projectType === 'schilder'
                     ? 'bg-white text-brand-darkGreen shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                Zonnepanelen ({allZonnepanelen.length})
+                Schilderwerk ({allSchilderAanvragen.length})
+              </button>
+              <button
+                onClick={() => {
+                  setProjectType('stukadoor');
+                  setSelectedIds([]);
+                  setActiveTab('nieuw');
+                }}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  projectType === 'stukadoor'
+                    ? 'bg-white text-brand-darkGreen shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Stucwerk ({allStukadoorAanvragen.length})
               </button>
             </div>
           </div>
@@ -313,7 +451,7 @@ const UnifiedAdminDashboard = () => {
                      activeTab === 'akkoord' ? 'Akkoord' :
                      activeTab === 'niet_akkoord' ? 'Niet Akkoord' :
                      activeTab === 'op_locatie' ? 'Op Locatie' :
-                     activeTab === 'afgehandeld' ? 'Afgehandelde' : ''} {projectType === 'dakkapel' ? 'Dakkapel' : 'Zonnepanelen'} Aanvragen ({currentTabData.length})
+                     activeTab === 'afgehandeld' ? 'Afgehandelde' : ''} {getProjectTypeName()} Aanvragen ({currentTabData.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -330,27 +468,32 @@ const UnifiedAdminDashboard = () => {
                     onBulkAction={handleBulkAction}
                     allIds={currentTabData.map(item => item.id)}
                     configurations={currentTabData}
-                    type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
+                    type={projectType as any}
                   />
                   
                   {activeTab === 'afgehandeld' ? (
                     <ProcessedRequestsTable 
-                      configuraties={projectType === 'dakkapel' ? currentTabData as DakkapelConfiguratie[] : currentTabData as any[]}
+                      configuraties={currentTabData as DakkapelConfiguratie[]}
                       onViewDetails={openDetails}
                       onDataChange={loadDashboardData}
-                      type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
+                      type={projectType as any}
                     />
                   ) : (
                     <ConfiguratorRequestsTable 
                       configuraties={projectType === 'dakkapel' ? currentTabData as DakkapelConfiguratie[] : undefined}
-                      zonnepanelen={projectType === 'zonnepanelen' ? currentTabData as RefurbishedZonnepaneel[] : undefined}
+                      schilderAanvragen={projectType === 'schilder' ? allSchilderAanvragen.filter(item => 
+                        activeTab === 'all' || item.status === activeTab
+                      ) : undefined}
+                      stukadoorAanvragen={projectType === 'stukadoor' ? allStukadoorAanvragen.filter(item => 
+                        activeTab === 'all' || item.status === activeTab
+                      ) : undefined}
                       onViewDetails={openDetails}
                       onOpenQuoteDialog={openQuoteDialog}
                       onDataChange={loadDashboardData}
                       sendingQuote={sendingQuote}
                       selectedIds={selectedIds}
                       onSelectItem={handleSelectItem}
-                      type={projectType === 'dakkapel' ? 'dakkapel' : 'zonnepaneel'}
+                      type={projectType as any}
                     />
                   )}
                 </CardContent>
