@@ -29,10 +29,13 @@ const StukadoorConfigurator = () => {
     huidige_staat: '',
     voorbewerking: '',
     isolatie_gewenst: false,
+    uitvoertermijn: '',
+    reden_aanvraag: '',
     bericht: '',
     whatsapp_optin: false
   });
 
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const werkTypes = [
@@ -52,12 +55,33 @@ const StukadoorConfigurator = () => {
   ];
 
   const calculatePrice = () => {
-    const basePrice = formData.oppervlakte[0] * 35; // €35 per m²
+    // Base price per m² (will be configurable in admin later)
+    const basePricePerM2 = 35;
+    const basePrice = formData.oppervlakte[0] * basePricePerM2;
+    
     const afwerkingMultiplier = formData.afwerking === 'Extra fijn glad' ? 1.2 : 
                                formData.afwerking === 'Decoratief stucwerk' ? 1.5 : 1;
     const isolatieExtra = formData.isolatie_gewenst ? 15 * formData.oppervlakte[0] : 0;
     
-    return Math.round(basePrice * afwerkingMultiplier + isolatieExtra);
+    const subtotal = (basePrice * afwerkingMultiplier) + isolatieExtra;
+    
+    // Add 15% margin as requested
+    const withMargin = subtotal * 1.15;
+    
+    return Math.round(withMargin);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
+        return;
+      }
+      setUploadedFile(file);
+      toast.success('Bestand succesvol geüpload');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,6 +116,8 @@ const StukadoorConfigurator = () => {
           huidige_staat: formData.huidige_staat,
           voorbewerking: formData.voorbewerking,
           isolatie_gewenst: formData.isolatie_gewenst,
+          uitvoertermijn: formData.uitvoertermijn,
+          reden_aanvraag: formData.reden_aanvraag,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw'
@@ -136,9 +162,12 @@ const StukadoorConfigurator = () => {
         huidige_staat: '',
         voorbewerking: '',
         isolatie_gewenst: false,
+        uitvoertermijn: '',
+        reden_aanvraag: '',
         bericht: '',
         whatsapp_optin: false
       });
+      setUploadedFile(null);
 
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -147,6 +176,10 @@ const StukadoorConfigurator = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Determine if this is renovation or new construction based on work type
+  const isRenovation = formData.werk_type !== 'Complete renovatie';
+  const btw = isRenovation ? 9 : 21;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -289,6 +322,49 @@ const StukadoorConfigurator = () => {
               />
             </div>
 
+            {/* New Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="uitvoertermijn">Gewenste uitvoertermijn</Label>
+                <Input
+                  id="uitvoertermijn"
+                  value={formData.uitvoertermijn}
+                  onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
+                  placeholder="bijv. binnen 3 weken, flexibel"
+                />
+              </div>
+              <div>
+                <Label htmlFor="reden_aanvraag">Reden aanvraag</Label>
+                <Input
+                  id="reden_aanvraag"
+                  value={formData.reden_aanvraag}
+                  onChange={(e) => setFormData({...formData, reden_aanvraag: e.target.value})}
+                  placeholder="bijv. schade herstel, vernieuwing"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="huidige_staat">Huidige staat</Label>
+                <Input
+                  id="huidige_staat"
+                  value={formData.huidige_staat}
+                  onChange={(e) => setFormData({...formData, huidige_staat: e.target.value})}
+                  placeholder="bijv. goed, slecht, beschadigd"
+                />
+              </div>
+              <div>
+                <Label htmlFor="voorbewerking">Voorbewerking nodig</Label>
+                <Input
+                  id="voorbewerking"
+                  value={formData.voorbewerking}
+                  onChange={(e) => setFormData({...formData, voorbewerking: e.target.value})}
+                  placeholder="bijv. schuren, oude laag verwijderen"
+                />
+              </div>
+            </div>
+
             {/* Additional Options */}
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -297,6 +373,26 @@ const StukadoorConfigurator = () => {
                 onCheckedChange={(checked) => setFormData({...formData, isolatie_gewenst: checked as boolean})}
               />
               <Label htmlFor="isolatie">Isolatie gewenst (+€15/m²)</Label>
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <Label htmlFor="file-upload">Bijlage uploaden (optioneel)</Label>
+              <Input
+                id="file-upload"
+                type="file"
+                onChange={handleFileUpload}
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                className="mt-2"
+              />
+              {uploadedFile && (
+                <p className="text-sm text-green-600 mt-1">
+                  Bestand geüpload: {uploadedFile.name}
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                Ondersteunde formaten: PDF, JPG, PNG, DOC, DOCX (max 10MB)
+              </p>
             </div>
 
             {/* Message */}
@@ -320,9 +416,14 @@ const StukadoorConfigurator = () => {
             <Card className="bg-green-50 border-green-200">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs</h3>
+                  <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs (Indicatief)</h3>
                   <p className="text-3xl font-bold text-green-600">€{calculatePrice().toLocaleString()}</p>
-                  <p className="text-sm text-green-700">Inclusief materiaal en arbeid</p>
+                  <p className="text-sm text-green-700">
+                    Inclusief materiaal, arbeid en 15% marge
+                  </p>
+                  <p className="text-xs text-green-600 mt-2">
+                    {isRenovation ? 'Renovatie' : 'Nieuwbouw'} - {btw}% BTW
+                  </p>
                 </div>
               </CardContent>
             </Card>
