@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
@@ -19,6 +20,8 @@ const SchilderConfigurator = () => {
     huisnummer: '',
     postcode: '',
     plaats: '',
+    project_type: 'binnen', // binnen of buiten
+    bouw_type: 'renovatie', // nieuwbouw of renovatie
     oppervlakte: '',
     uitvoertermijn: '',
     reden_aanvraag: '',
@@ -35,10 +38,7 @@ const SchilderConfigurator = () => {
     const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
     const basePrice = oppervlakteNum * basePricePerM2;
     
-    // 15% marge toevoegen
-    const withMargin = basePrice * 1.15;
-    
-    return Math.round(withMargin);
+    return Math.round(basePrice);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +79,7 @@ const SchilderConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          project_type: 'Configurator aanvraag',
+          project_type: `${formData.project_type} - ${formData.bouw_type}`,
           verf_type: 'Te bepalen',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
           uitvoertermijn: formData.uitvoertermijn,
@@ -121,6 +121,8 @@ const SchilderConfigurator = () => {
         huisnummer: '',
         postcode: '',
         plaats: '',
+        project_type: 'binnen',
+        bouw_type: 'renovatie',
         oppervlakte: '',
         uitvoertermijn: '',
         reden_aanvraag: '',
@@ -137,9 +139,8 @@ const SchilderConfigurator = () => {
     }
   };
 
-  // Bepaal BTW percentage (renovatie = 9%, nieuwbouw = 21%)
-  const isRenovation = true; // Voor nu altijd renovatie, later configureerbaar
-  const btw = isRenovation ? 9 : 21;
+  // Bepaal BTW percentage
+  const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -239,7 +240,45 @@ const SchilderConfigurator = () => {
               </div>
             </div>
 
-            {/* Project Details - Nieuwe vereenvoudigde velden */}
+            {/* Project Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Binnen of buiten schilderwerk?</Label>
+              <RadioGroup
+                value={formData.project_type}
+                onValueChange={(value) => setFormData({...formData, project_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="binnen" id="binnen" />
+                  <Label htmlFor="binnen">Binnen schilderwerk</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="buiten" id="buiten" />
+                  <Label htmlFor="buiten">Buiten schilderwerk</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Build Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
+              <RadioGroup
+                value={formData.bouw_type}
+                onValueChange={(value) => setFormData({...formData, bouw_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="renovatie" id="renovatie" />
+                  <Label htmlFor="renovatie">Renovatie (9% BTW)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="nieuwbouw" id="nieuwbouw" />
+                  <Label htmlFor="nieuwbouw">Nieuwbouw (21% BTW)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Project Details */}
             <div>
               <Label htmlFor="oppervlakte">Oppervlakte (m²)</Label>
               <Input
@@ -319,10 +358,10 @@ const SchilderConfigurator = () => {
                     <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
                     <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
                     <p className="text-sm text-blue-700">
-                      Inclusief materiaal, arbeid en 15% marge
+                      Inclusief materiaal en arbeid
                     </p>
                     <p className="text-xs text-blue-600 mt-2">
-                      {isRenovation ? 'Renovatie' : 'Nieuwbouw'} - {btw}% BTW
+                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
                     </p>
                   </div>
                 </CardContent>

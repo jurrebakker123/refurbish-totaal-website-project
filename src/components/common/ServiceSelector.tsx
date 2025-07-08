@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { PaintBucket, Hammer } from 'lucide-react';
+import { PaintBucket, Building } from 'lucide-react';
 
 const ServiceSelector = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const ServiceSelector = () => {
             <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-green-300" 
                   onClick={() => handleServiceSelect('stucwerk')}>
               <CardContent className="p-8 text-center">
-                <Hammer className="w-20 h-20 mx-auto mb-4 text-green-600" />
+                <Building className="w-20 h-20 mx-auto mb-4 text-green-600" />
                 <h3 className="text-2xl font-semibold mb-3">Stukadoorswerk</h3>
                 <p className="text-gray-600 mb-6">
                   Stucwerk, spachtelputz, decoratief stucwerk en meer

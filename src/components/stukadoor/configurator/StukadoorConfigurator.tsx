@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
@@ -19,6 +20,8 @@ const StukadoorConfigurator = () => {
     huisnummer: '',
     postcode: '',
     plaats: '',
+    werk_type: 'binnen', // binnen of buiten
+    bouw_type: 'renovatie', // nieuwbouw of renovatie
     oppervlakte: '',
     uitvoertermijn: '',
     reden_aanvraag: '',
@@ -35,10 +38,7 @@ const StukadoorConfigurator = () => {
     const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
     const basePrice = oppervlakteNum * basePricePerM2;
     
-    // 15% marge toevoegen
-    const withMargin = basePrice * 1.15;
-    
-    return Math.round(withMargin);
+    return Math.round(basePrice);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +79,7 @@ const StukadoorConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          werk_type: 'Configurator aanvraag',
+          werk_type: `${formData.werk_type} - ${formData.bouw_type}`,
           afwerking: 'Te bepalen',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
           uitvoertermijn: formData.uitvoertermijn,
@@ -121,6 +121,8 @@ const StukadoorConfigurator = () => {
         huisnummer: '',
         postcode: '',
         plaats: '',
+        werk_type: 'binnen',
+        bouw_type: 'renovatie',
         oppervlakte: '',
         uitvoertermijn: '',
         reden_aanvraag: '',
@@ -137,9 +139,8 @@ const StukadoorConfigurator = () => {
     }
   };
 
-  // Bepaal BTW percentage (renovatie = 9%, nieuwbouw = 21%)
-  const isRenovation = true; // Voor nu altijd renovatie, later configureerbaar
-  const btw = isRenovation ? 9 : 21;
+  // Bepaal BTW percentage
+  const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -239,7 +240,45 @@ const StukadoorConfigurator = () => {
               </div>
             </div>
 
-            {/* Project Details - Nieuwe vereenvoudigde velden */}
+            {/* Work Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Binnen of buiten stukadoorswerk?</Label>
+              <RadioGroup
+                value={formData.werk_type}
+                onValueChange={(value) => setFormData({...formData, werk_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="binnen" id="binnen-stuc" />
+                  <Label htmlFor="binnen-stuc">Binnen stukadoorswerk</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="buiten" id="buiten-stuc" />
+                  <Label htmlFor="buiten-stuc">Buiten stukadoorswerk</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Build Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
+              <RadioGroup
+                value={formData.bouw_type}
+                onValueChange={(value) => setFormData({...formData, bouw_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="renovatie" id="renovatie-stuc" />
+                  <Label htmlFor="renovatie-stuc">Renovatie (9% BTW)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="nieuwbouw" id="nieuwbouw-stuc" />
+                  <Label htmlFor="nieuwbouw-stuc">Nieuwbouw (21% BTW)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Project Details */}
             <div>
               <Label htmlFor="oppervlakte">Oppervlakte (m²)</Label>
               <Input
@@ -319,10 +358,10 @@ const StukadoorConfigurator = () => {
                     <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs (Indicatief)</h3>
                     <p className="text-3xl font-bold text-green-600">€{calculatePrice().toLocaleString()}</p>
                     <p className="text-sm text-green-700">
-                      Inclusief materiaal, arbeid en 15% marge
+                      Inclusief materiaal en arbeid
                     </p>
                     <p className="text-xs text-green-600 mt-2">
-                      {isRenovation ? 'Renovatie' : 'Nieuwbouw'} - {btw}% BTW
+                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
                     </p>
                   </div>
                 </CardContent>
