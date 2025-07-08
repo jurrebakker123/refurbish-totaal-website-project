@@ -1,582 +1,187 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw } from 'lucide-react';
-import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
-import { DakkapelConfiguratie, QuoteItem } from '@/types/admin';
-import { loadUnifiedAdminData, updateRequestStatus } from '@/utils/adminUtils';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, RefreshCw, PaintBucket, Building, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { loadUnifiedAdminData } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
-import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
+import AdminHeader from '@/components/admin/AdminHeader';
 import DashboardStats from '@/components/admin/DashboardStats';
-import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
-import BulkActions from '@/components/admin/BulkActions';
-import ConversieStats from '@/components/admin/ConversieStats';
-import NotificationCenter from '@/components/admin/NotificationCenter';
-import { toast } from 'sonner';
-import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
-import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
-import { usePWA } from '@/hooks/usePWA';
-
-interface SchilderAanvraag {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  voornaam: string;
-  achternaam: string;
-  emailadres: string;
-  telefoon: string;
-  straatnaam: string;
-  huisnummer: string;
-  postcode: string;
-  plaats: string;
-  project_type: string;
-  oppervlakte: number;
-  verf_type: string;
-  aantal_kamers?: number;
-  voorbewerking_nodig: boolean;
-  plafond_meeverven: boolean;
-  kozijnen_meeverven: boolean;
-  huidige_kleur?: string;
-  gewenste_kleur?: string;
-  bericht?: string;
-  status: string;
-  totaal_prijs?: number;
-  notities?: string;
-  offerte_verzonden_op?: string;
-  op_locatie_op?: string;
-  in_aanbouw_op?: string;
-  afgehandeld_op?: string;
-}
-
-interface StukadoorAanvraag {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  voornaam: string;
-  achternaam: string;
-  emailadres: string;
-  telefoon: string;
-  straatnaam: string;
-  huisnummer: string;
-  postcode: string;
-  plaats: string;
-  werk_type: string;
-  oppervlakte: number;
-  afwerking: string;
-  aantal_kamers?: number;
-  huidige_staat?: string;
-  voorbewerking?: string;
-  isolatie_gewenst: boolean;
-  bericht?: string;
-  status: string;
-  totaal_prijs?: number;
-  notities?: string;
-  offerte_verzonden_op?: string;
-  op_locatie_op?: string;
-  in_aanbouw_op?: string;
-  afgehandeld_op?: string;
-}
-
-// Unified interface for project data to handle type compatibility
-interface UnifiedProjectData {
-  id: string;
-  created_at: string;
-  naam: string;
-  email: string;
-  telefoon: string;
-  adres: string;
-  postcode: string;
-  plaats: string;
-  status: string;
-  totaal_prijs?: number;
-  opmerkingen?: string;
-  notities?: string;
-  offerte_verzonden_op?: string;
-  op_locatie_op?: string;
-  in_aanbouw_op?: string;
-  afgehandeld_op?: string;
-}
 
 const UnifiedAdminDashboard = () => {
-  const [allConfiguraties, setAllConfiguraties] = useState<DakkapelConfiguratie[]>([]);
-  const [allSchilderAanvragen, setAllSchilderAanvragen] = useState<SchilderAanvraag[]>([]);
-  const [allStukadoorAanvragen, setAllStukadoorAanvragen] = useState<StukadoorAanvraag[]>([]);
+  const [configuraties, setConfiguraties] = useState([]);
+  const [schilderAanvragen, setSchilderAanvragen] = useState([]);
+  const [stukadoorAanvragen, setStukadoorAanvragen] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [projectType, setProjectType] = useState('dakkapel');
-  const [activeTab, setActiveTab] = useState('nieuw');
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [sendingQuote, setSendingQuote] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
-  const [selectedQuoteItem, setSelectedQuoteItem] = useState<QuoteItem | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    status: 'all',
-    dateFilter: 'all',
-    sortBy: 'created_at',
-    sortOrder: 'desc'
-  });
+  const [sendingQuote, setSendingQuote] = useState(null);
 
-  const { requestNotificationPermission } = usePWA();
+  const loadData = async () => {
+    console.log('Loading unified dashboard data...');
+    setLoading(true);
+    
+    try {
+      const result = await loadUnifiedAdminData();
+      
+      if (result.success) {
+        setConfiguraties(result.configuraties);
+        setSchilderAanvragen(result.schilderAanvragen);
+        setStukadoorAanvragen(result.stukadoorAanvragen);
+        console.log('Data loaded successfully:', {
+          dakkapel: result.configuraties.length,
+          schilder: result.schilderAanvragen.length,
+          stukadoor: result.stukadoorAanvragen.length
+        });
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      toast.error('Fout bij het laden van gegevens');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    loadDashboardData();
-    requestNotificationPermission();
+    loadData();
   }, []);
 
-  const loadDashboardData = async () => {
-    setLoading(true);
-    const { configuraties, schilderAanvragen, stukadoorAanvragen, success } = await loadUnifiedAdminData();
-    
-    if (success) {
-      setAllConfiguraties(configuraties);
-      setAllSchilderAanvragen(schilderAanvragen);
-      setAllStukadoorAanvragen(stukadoorAanvragen);
-    }
-    
-    setLoading(false);
-  };
-
-  // Get current project data based on selected project type
-  const getCurrentProjectData = (): UnifiedProjectData[] => {
-    switch (projectType) {
-      case 'dakkapel':
-        return allConfiguraties.map(item => ({
-          id: item.id,
-          created_at: item.created_at,
-          naam: item.naam,
-          email: item.email,
-          telefoon: item.telefoon,
-          adres: item.adres,
-          postcode: item.postcode,
-          plaats: item.plaats,
-          status: item.status,
-          totaal_prijs: item.totaal_prijs,
-          opmerkingen: item.opmerkingen,
-          notities: item.notities,
-          offerte_verzonden_op: item.offerte_verzonden_op,
-          op_locatie_op: item.op_locatie_op,
-          in_aanbouw_op: item.in_aanbouw_op,
-          afgehandeld_op: item.afgehandeld_op
-        }));
-      case 'schilder':
-        return allSchilderAanvragen.map(item => ({
-          id: item.id,
-          created_at: item.created_at,
-          naam: `${item.voornaam} ${item.achternaam}`,
-          email: item.emailadres,
-          telefoon: item.telefoon,
-          adres: `${item.straatnaam} ${item.huisnummer}`,
-          postcode: item.postcode,
-          plaats: item.plaats,
-          status: item.status,
-          totaal_prijs: item.totaal_prijs,
-          opmerkingen: item.bericht || '',
-          notities: item.notities,
-          offerte_verzonden_op: item.offerte_verzonden_op,
-          op_locatie_op: item.op_locatie_op,
-          in_aanbouw_op: item.in_aanbouw_op,
-          afgehandeld_op: item.afgehandeld_op
-        }));
-      case 'stukadoor':
-        return allStukadoorAanvragen.map(item => ({
-          id: item.id,
-          created_at: item.created_at,
-          naam: `${item.voornaam} ${item.achternaam}`,
-          email: item.emailadres,
-          telefoon: item.telefoon,
-          adres: `${item.straatnaam} ${item.huisnummer}`,
-          postcode: item.postcode,
-          plaats: item.plaats,
-          status: item.status,
-          totaal_prijs: item.totaal_prijs,
-          opmerkingen: item.bericht || '',
-          notities: item.notities,
-          offerte_verzonden_op: item.offerte_verzonden_op,
-          op_locatie_op: item.op_locatie_op,
-          in_aanbouw_op: item.in_aanbouw_op,
-          afgehandeld_op: item.afgehandeld_op
-        }));
-      default:
-        return [];
-    }
-  };
-
-  const currentProjectData = getCurrentProjectData();
-
-  const filteredData = useMemo(() => {
-    let filtered = [...currentProjectData];
-
-    // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.naam.toLowerCase().includes(searchLower) ||
-        item.email.toLowerCase().includes(searchLower) ||
-        item.plaats.toLowerCase().includes(searchLower) ||
-        item.telefoon.includes(filters.search)
-      );
-    }
-
-    // Status filter
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(item => item.status === filters.status);
-    }
-
-    // Date filter
-    if (filters.dateFilter !== 'all') {
-      const now = new Date();
-      const filterDate = new Date();
-      
-      switch (filters.dateFilter) {
-        case 'today':
-          filterDate.setHours(0, 0, 0, 0);
-          break;
-        case 'week':
-          filterDate.setDate(now.getDate() - 7);
-          break;
-        case 'month':
-          filterDate.setMonth(now.getMonth() - 1);
-          break;
-      }
-      
-      if (filters.dateFilter !== 'all') {
-        filtered = filtered.filter(item => 
-          new Date(item.created_at) >= filterDate
-        );
-      }
-    }
-
-    // Sort
-    filtered.sort((a, b) => {
-      let aValue, bValue;
-      
-      switch (filters.sortBy) {
-        case 'naam':
-          aValue = a.naam.toLowerCase();
-          bValue = b.naam.toLowerCase();
-          break;
-        case 'totaal_prijs':
-          aValue = a.totaal_prijs || 0;
-          bValue = b.totaal_prijs || 0;
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        default:
-          aValue = new Date(a.created_at).getTime();
-          bValue = new Date(b.created_at).getTime();
-      }
-      
-      if (filters.sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    return filtered;
-  }, [currentProjectData, filters]);
-
-  // Split data by status for tabs
-  const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    filteredData.forEach(item => {
-      counts[item.status] = (counts[item.status] || 0) + 1;
-    });
-    return counts;
-  }, [filteredData]);
-
-  const getCurrentTabData = () => {
-    if (activeTab === 'all') return filteredData;
-    return filteredData.filter(item => item.status === activeTab);
-  };
-
-  const currentTabData = getCurrentTabData();
-
-  const openDetails = (item: any) => {
+  const handleViewDetails = (item) => {
     setSelectedItem(item);
-    setIsDetailOpen(true);
+    setIsDetailDialogOpen(true);
   };
 
-  const openQuoteDialog = (item: any) => {
-    setSelectedQuoteItem({ ...item, isCalculator: false });
+  const handleOpenQuoteDialog = (item) => {
+    setSelectedItem(item);
     setIsQuoteDialogOpen(true);
   };
 
-  const getTableName = () => {
-    switch (projectType) {
-      case 'dakkapel':
-        return 'dakkapel_calculator_aanvragen';
-      case 'schilder':
-        return 'schilder_aanvragen';
-      case 'stukadoor':
-        return 'stukadoor_aanvragen';
-      default:
-        return 'dakkapel_calculator_aanvragen';
-    }
-  };
-
-  const handleBulkAction = async (action: string, ids: string[]) => {
-    setLoading(true);
-    let successCount = 0;
-    const table = getTableName();
-    
-    for (const id of ids) {
-      const success = await updateRequestStatus(id, action, table as any);
-      if (success) successCount++;
-    }
-    
-    if (successCount > 0) {
-      toast.success(`${successCount} ${projectType} project(s) bijgewerkt naar "${action}"`);
-      loadDashboardData();
-      setSelectedIds([]);
-    }
-    
-    setLoading(false);
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(currentTabData.map(item => item.id));
-    } else {
-      setSelectedIds([]);
-    }
-  };
-
-  const handleSelectItem = (id: string, checked: boolean) => {
-    if (checked) {
-      setSelectedIds(prev => [...prev, id]);
-    } else {
-      setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-    }
-  };
-
-  const getProjectTypeName = () => {
-    switch (projectType) {
-      case 'dakkapel':
-        return 'Dakkapel';
-      case 'schilder':
-        return 'Schilderwerk';
-      case 'stukadoor':
-        return 'Stucwerk';
-      default:
-        return 'Project';
-    }
-  };
-
   const getTotalCount = () => {
-    switch (projectType) {
-      case 'dakkapel':
-        return allConfiguraties.length;
-      case 'schilder':
-        return allSchilderAanvragen.length;
-      case 'stukadoor':
-        return allStukadoorAanvragen.length;
-      default:
-        return 0;
-    }
+    return configuraties.length + schilderAanvragen.length + stukadoorAanvragen.length;
+  };
+
+  const getNewCount = () => {
+    const dakkapelNew = configuraties.filter(item => item.status === 'nieuw').length;
+    const schilderNew = schilderAanvragen.filter(item => item.status === 'nieuw').length;
+    const stukadoorNew = stukadoorAanvragen.filter(item => item.status === 'nieuw').length;
+    return dakkapelNew + schilderNew + stukadoorNew;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Gegevens worden geladen...</p>
+      <div className="min-h-screen bg-gray-50">
+        <AdminHeader />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p>Dashboard laden...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-brand-darkGreen">Refurbish Admin Dashboard</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <NotificationCenter configuraties={allConfiguraties} />
-          <EmailMarketingDialog onCampaignSent={loadDashboardData} />
-          <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
+    <div className="min-h-screen bg-gray-50">
+      <AdminHeader />
+      
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-600">Overzicht van alle aanvragen</p>
+          </div>
+          <Button onClick={loadData} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Vernieuwen
           </Button>
         </div>
-      </header>
 
-      <div className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Project Type Selector */}
-          <div className="flex items-center gap-4 mb-6">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => {
-                  setProjectType('dakkapel');
-                  setSelectedIds([]);
-                  setActiveTab('nieuw');
-                }}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  projectType === 'dakkapel'
-                    ? 'bg-white text-brand-darkGreen shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Dakkapel ({allConfiguraties.length})
-              </button>
-              <button
-                onClick={() => {
-                  setProjectType('schilder');
-                  setSelectedIds([]);
-                  setActiveTab('nieuw');
-                }}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  projectType === 'schilder'
-                    ? 'bg-white text-brand-darkGreen shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Schilderwerk ({allSchilderAanvragen.length})
-              </button>
-              <button
-                onClick={() => {
-                  setProjectType('stukadoor');
-                  setSelectedIds([]);
-                  setActiveTab('nieuw');
-                }}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  projectType === 'stukadoor'
-                    ? 'bg-white text-brand-darkGreen shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Stucwerk ({allStukadoorAanvragen.length})
-              </button>
-            </div>
-          </div>
-          
-          {projectType === 'dakkapel' && <DashboardStats configuraties={allConfiguraties} />}
-          
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-9 w-full gap-2 h-auto p-2 bg-gray-100">
-                <TabsTrigger value="all" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Alle ({filteredData.length})
+        <DashboardStats 
+          totalRequests={getTotalCount()}
+          newRequests={getNewCount()}
+          completedRequests={configuraties.filter(c => c.status === 'afgehandeld').length + 
+                           schilderAanvragen.filter(s => s.status === 'afgehandeld').length + 
+                           stukadoorAanvragen.filter(s => s.status === 'afgehandeld').length}
+        />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Aanvragen Overzicht</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="dakkapel" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="dakkapel" className="flex items-center gap-2">
+                  <Home className="h-4 w-4" />
+                  Dakkapel ({configuraties.length})
                 </TabsTrigger>
-                <TabsTrigger value="nieuw" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Nieuw ({statusCounts['nieuw'] || 0})
+                <TabsTrigger value="schilder" className="flex items-center gap-2">
+                  <PaintBucket className="h-4 w-4" />
+                  Schilderwerk ({schilderAanvragen.length})
                 </TabsTrigger>
-                <TabsTrigger value="in_behandeling" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  In Behandeling ({statusCounts['in_behandeling'] || 0})
-                </TabsTrigger>
-                <TabsTrigger value="offerte_verzonden" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Offerte Verzonden ({statusCounts['offerte_verzonden'] || 0})
-                </TabsTrigger>
-                <TabsTrigger value="interesse_bevestigd" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Interesse Bevestigd ({statusCounts['interesse_bevestigd'] || 0})
-                </TabsTrigger>
-                <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Akkoord ({statusCounts['akkoord'] || 0})
-                </TabsTrigger>
-                <TabsTrigger value="niet_akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Niet Akkoord ({statusCounts['niet_akkoord'] || 0})
-                </TabsTrigger>
-                <TabsTrigger value="op_locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie ({statusCounts['op_locatie'] || 0})
-                </TabsTrigger>
-                <TabsTrigger value="afgehandeld" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Afgehandeld ({statusCounts['afgehandeld'] || 0})
+                <TabsTrigger value="stukadoor" className="flex items-center gap-2">
+                  <Building className="h-4 w-4" />
+                  Stukadoorswerk ({stukadoorAanvragen.length})
                 </TabsTrigger>
               </TabsList>
-            </div>
-            
-            <TabsContent value={activeTab} className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">
-                    {activeTab === 'all' ? 'Alle' : 
-                     activeTab === 'nieuw' ? 'Nieuwe' :
-                     activeTab === 'in_behandeling' ? 'In Behandeling' :
-                     activeTab === 'offerte_verzonden' ? 'Offerte Verzonden' :
-                     activeTab === 'interesse_bevestigd' ? 'Interesse Bevestigd' :
-                     activeTab === 'akkoord' ? 'Akkoord' :
-                     activeTab === 'niet_akkoord' ? 'Niet Akkoord' :
-                     activeTab === 'op_locatie' ? 'Op Locatie' :
-                     activeTab === 'afgehandeld' ? 'Afgehandelde' : ''} {getProjectTypeName()} Aanvragen ({currentTabData.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={true}
-                  />
-                  
-                  <BulkActions
-                    selectedIds={selectedIds}
-                    onSelectAll={handleSelectAll}
-                    onSelectItem={handleSelectItem}
-                    onBulkAction={handleBulkAction}
-                    allIds={currentTabData.map(item => item.id)}
-                    configurations={currentTabData as any}
-                    type={projectType as any}
-                  />
-                  
-                  {activeTab === 'afgehandeld' ? (
-                    <ProcessedRequestsTable 
-                      configuraties={currentTabData as any}
-                      onViewDetails={openDetails}
-                      onDataChange={loadDashboardData}
-                      type={projectType as any}
-                    />
-                  ) : (
-                    <ConfiguratorRequestsTable 
-                      configuraties={projectType === 'dakkapel' ? currentTabData as DakkapelConfiguratie[] : undefined}
-                      schilderAanvragen={projectType === 'schilder' ? allSchilderAanvragen.filter(item => 
-                        activeTab === 'all' || item.status === activeTab
-                      ) : undefined}
-                      stukadoorAanvragen={projectType === 'stukadoor' ? allStukadoorAanvragen.filter(item => 
-                        activeTab === 'all' || item.status === activeTab
-                      ) : undefined}
-                      onViewDetails={openDetails}
-                      onOpenQuoteDialog={openQuoteDialog}
-                      onDataChange={loadDashboardData}
-                      sendingQuote={sendingQuote}
-                      selectedIds={selectedIds}
-                      onSelectItem={handleSelectItem}
-                      type={projectType as any}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+
+              <TabsContent value="dakkapel">
+                <ConfiguratorRequestsTable
+                  configuraties={configuraties}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type="dakkapel"
+                />
+              </TabsContent>
+
+              <TabsContent value="schilder">
+                <ConfiguratorRequestsTable
+                  schilderAanvragen={schilderAanvragen}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type="schilder"
+                />
+              </TabsContent>
+
+              <TabsContent value="stukadoor">
+                <ConfiguratorRequestsTable
+                  stukadoorAanvragen={stukadoorAanvragen}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type="stukadoor"
+                />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       </div>
-      
+
       <RequestDetailDialog
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
         item={selectedItem}
-        onDataChange={loadDashboardData}
+        open={isDetailDialogOpen}
+        onOpenChange={setIsDetailDialogOpen}
       />
-      
+
       <QuoteDialog
-        isOpen={isQuoteDialogOpen}
-        onClose={() => setIsQuoteDialogOpen(false)}
-        selectedItem={selectedQuoteItem}
-        onDataChange={loadDashboardData}
+        item={selectedItem}
+        open={isQuoteDialogOpen}
+        onOpenChange={setIsQuoteDialogOpen}
+        onQuoteSent={loadData}
         setSendingQuote={setSendingQuote}
       />
-      
-      <PWAInstallPrompt />
     </div>
   );
 };
