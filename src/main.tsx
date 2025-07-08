@@ -1,7 +1,7 @@
+
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import GoogleTagManager from './components/GoogleTagManager';
 import GoogleAnalytics from './components/GoogleAnalytics';
 import DakkapelLandingPage from './pages/DakkapelLandingPage.tsx';
@@ -18,6 +18,7 @@ import BouwhulpPage from './pages/BouwhulpPage.tsx';
 import ContactPage from './pages/ContactPage.tsx';
 import OffertePage from './pages/OffertePage.tsx';
 import DienstDetailPage from './pages/DienstDetailPage.tsx';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // TypeScript interface for window
 declare global {
@@ -47,149 +48,119 @@ const renderBasedOnDomain = () => {
   if (hostname === 'refurbishdakkapel.nl' || hostname === 'www.refurbishdakkapel.nl') {
     console.log('Rendering DakkapelLandingPage');
     return (
-      <BrowserRouter>
+      <SidebarProvider defaultCollapsed={true}>
         <GoogleAnalytics />
-        <SidebarProvider defaultCollapsed={true}>
-          <Routes>
-            <Route path="/" element={<DakkapelLandingPage />} />
-            <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/login" element={<AdminLogin />} />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin-zonnepanelen" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
-            <Route path="/offerte" element={<OffertePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </SidebarProvider>
-      </BrowserRouter>
+        <Routes>
+          <Route path="/" element={<DakkapelLandingPage />} />
+          <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/admin" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/admin-zonnepanelen" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+          <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
+          <Route path="/offerte" element={<OffertePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Routes>
+      </SidebarProvider>
     );
   } 
   // Check for zonnepanelen domain
   else if (hostname === 'refurbishzonnepanelen.nl' || hostname === 'www.refurbishzonnepanelen.nl') {
     console.log('Rendering ZonnepanelenPage with product routes');
     return (
-      <BrowserRouter>
+      <SidebarProvider defaultCollapsed={true}>
         <GoogleAnalytics />
-        <SidebarProvider defaultCollapsed={true}>
-          <Routes>
-            <Route path="/" element={<ZonnepanelenPage />} />
-            <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin-zonnepanelen" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
-            <Route path="/offerte" element={<OffertePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </SidebarProvider>
-      </BrowserRouter>
+        <Routes>
+          <Route path="/" element={<ZonnepanelenPage />} />
+          <Route path="/product/:productId" element={<SolarProductDetailPage />} />
+          <Route path="/admin" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/admin-zonnepanelen" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+          <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
+          <Route path="/offerte" element={<OffertePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Routes>
+      </SidebarProvider>
     );
   }
   // Check for bouwhulp domain
   else if (hostname === 'refurbishbouwhulp.nl' || hostname === 'www.refurbishbouwhulp.nl') {
     console.log('Rendering BouwhulpPage');
     return (
-      <BrowserRouter>
+      <SidebarProvider defaultCollapsed={true}>
         <GoogleAnalytics />
-        <SidebarProvider defaultCollapsed={true}>
-          <Routes>
-            <Route path="/" element={<BouwhulpPage />} />
-            <Route path="/login" element={<AdminLogin />} />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin-zonnepanelen" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/offerte" element={<OffertePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
-          </Routes>
-        </SidebarProvider>
-      </BrowserRouter>
+        <Routes>
+          <Route path="/" element={<BouwhulpPage />} />
+          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/admin" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/admin-zonnepanelen" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/offerte" element={<OffertePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/diensten/:serviceId" element={<DienstDetailPage />} />
+        </Routes>
+      </SidebarProvider>
     );
   }
   // Check for isolatie domain
   else if (hostname === 'isolatieselectie.nl' || hostname === 'www.isolatieselectie.nl') {
     console.log('Rendering IsolatieSelectiePage');
     return (
-      <BrowserRouter>
+      <SidebarProvider defaultCollapsed={true}>
         <GoogleAnalytics />
-        <SidebarProvider defaultCollapsed={true}>
-          <Routes>
-            <Route path="/" element={<IsolatieSelectiePage />} />
-            <Route path="/login" element={<AdminLogin />} />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin-zonnepanelen" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
-            <Route path="/offerte" element={<OffertePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </SidebarProvider>
-      </BrowserRouter>
+        <Routes>
+          <Route path="/" element={<IsolatieSelectiePage />} />
+          <Route path="/login" element={<AdminLogin />} />
+          <Route path="/admin" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/admin-zonnepanelen" element={
+            <ProtectedAdminRoute>
+              <UnifiedAdminDashboard />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
+          <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
+          <Route path="/offerte" element={<OffertePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Routes>
+      </SidebarProvider>
     );
   }
   // Default case for development and other domains
   else {
     console.log('Rendering default App with routing');
     return (
-      <BrowserRouter>
+      <SidebarProvider defaultCollapsed={true}>
         <GoogleTagManager />
         <GoogleAnalytics />
-        <SidebarProvider defaultCollapsed={true}>
-          <Routes>
-            <Route path="/*" element={<App />} />
-            <Route path="/refurbishdakkapel" element={<DakkapelLandingPage />} />
-            <Route path="/refurbishzonnepanelen" element={<ZonnepanelenPage />} />
-            <Route path="/refurbishbouwhulp" element={<BouwhulpPage />} />
-            <Route path="/isolatie-selectie" element={<IsolatieSelectiePage />} />
-            <Route path="/product/:productId" element={<SolarProductDetailPage />} />
-            <Route path="/login" element={<AdminLogin />} />
-            <Route path="/admin" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/admin-zonnepanelen" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
-            <Route path="/dakkapel-calculator" element={<DakkapelCalculatorConceptPage />} />
-            <Route path="/dakkapel-calculator-concept" element={<DakkapelCalculatorPage />} />
-          </Routes>
-        </SidebarProvider>
-      </BrowserRouter>
+        <App />
+      </SidebarProvider>
     );
   }
 };
@@ -197,5 +168,9 @@ const renderBasedOnDomain = () => {
 // Render the appropriate component
 const rootElement = document.getElementById("root");
 if (rootElement) {
-  createRoot(rootElement).render(renderBasedOnDomain());
+  createRoot(rootElement).render(
+    <Router>
+      {renderBasedOnDomain()}
+    </Router>
+  );
 }
