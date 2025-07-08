@@ -65,6 +65,9 @@ const Footer = () => {
               <li>
                 <Link to="/dakkapel-calculator" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakkapel Calculator</Link>
               </li>
+              <li>
+                <Link to="/service-selector" className="hover:text-brand-lightGreen transition-colors hover-underline">Schilder & Stucwerk</Link>
+              </li>
             </ul>
           </div>
 
@@ -147,8 +150,7 @@ const Footer = () => {
           <div className="mt-2 md:mt-0">
             <Link to="/privacy" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Privacybeleid</Link>
             <Link to="/voorwaarden" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Algemene Voorwaarden</Link>
-            <Link to="/certificaat" className="hover:text-brand-lightGreen transition-colors hover-underline mr-4">Certificering</Link>
-            <Link to="/admin-login" className="hover:text-brand-lightGreen transition-colors hover-underline">Admin Login</Link>
+            <Link to="/certificaat" className="hover:text-brand-lightGreen transition-colors hover-underline">Certificering</Link>
           </div>
         </div>
       </div>
