@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,8 +19,8 @@ const StukadoorConfigurator = () => {
     huisnummer: '',
     postcode: '',
     plaats: '',
-    werk_type: 'binnen', // binnen of buiten
-    bouw_type: 'renovatie', // nieuwbouw of renovatie
+    werk_type: 'binnen',
+    bouw_type: 'renovatie',
     oppervlakte: '',
     uitvoertermijn: '',
     reden_aanvraag: '',
@@ -33,12 +32,16 @@ const StukadoorConfigurator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculatePrice = () => {
-    // Basis prijs per m² voor stucwerk (instelbaar via admin later)
-    const basePricePerM2 = 35;
     const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
+    
+    // Basis prijs voor sausklaar stucwerk per m² (wand)
+    const basePricePerM2 = 17.25;
     const basePrice = oppervlakteNum * basePricePerM2;
     
-    return Math.round(basePrice);
+    // BTW percentage bepalen
+    const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
+    
+    return Math.round(basePrice * btwPercentage);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,25 +243,6 @@ const StukadoorConfigurator = () => {
               </div>
             </div>
 
-            {/* Work Type Selection */}
-            <div>
-              <Label className="text-base font-medium">Binnen of buiten stukadoorswerk?</Label>
-              <RadioGroup
-                value={formData.werk_type}
-                onValueChange={(value) => setFormData({...formData, werk_type: value})}
-                className="flex flex-col space-y-2 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="binnen" id="binnen-stuc" />
-                  <Label htmlFor="binnen-stuc">Binnen stukadoorswerk</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="buiten" id="buiten-stuc" />
-                  <Label htmlFor="buiten-stuc">Buiten stukadoorswerk</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
             {/* Build Type Selection */}
             <div>
               <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
@@ -274,6 +258,25 @@ const StukadoorConfigurator = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="nieuwbouw" id="nieuwbouw-stuc" />
                   <Label htmlFor="nieuwbouw-stuc">Nieuwbouw (21% BTW)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Work Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Binnen of buiten stukadoorswerk?</Label>
+              <RadioGroup
+                value={formData.werk_type}
+                onValueChange={(value) => setFormData({...formData, werk_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="binnen" id="binnen-stuc" />
+                  <Label htmlFor="binnen-stuc">Binnen stukadoorswerk</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="buiten" id="buiten-stuc" />
+                  <Label htmlFor="buiten-stuc">Buiten stukadoorswerk</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -362,6 +365,9 @@ const StukadoorConfigurator = () => {
                     </p>
                     <p className="text-xs text-green-600 mt-2">
                       {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
+                    </p>
+                    <p className="text-xs text-green-500 mt-1">
+                      Basis: sausklaar stucwerk wand (€17,25/m² excl. BTW)
                     </p>
                   </div>
                 </CardContent>
