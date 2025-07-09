@@ -10,8 +10,7 @@ import { loadUnifiedAdminData } from '@/utils/adminUtils';
 import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
-import AdminHeader from '@/components/admin/AdminHeader';
-import DashboardStats from '@/components/admin/DashboardStats';
+import MobileAdminHeader from '@/components/admin/MobileAdminHeader';
 
 const UnifiedAdminDashboard = () => {
   const [configuraties, setConfiguraties] = useState([]);
@@ -73,10 +72,20 @@ const UnifiedAdminDashboard = () => {
     return dakkapelNew + schilderNew + stukadoorNew;
   };
 
+  const getCompletedCount = () => {
+    return configuraties.filter(c => c.status === 'afgehandeld').length + 
+           schilderAanvragen.filter(s => s.status === 'afgehandeld').length + 
+           stukadoorAanvragen.filter(s => s.status === 'afgehandeld').length;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <AdminHeader />
+        <MobileAdminHeader 
+          title="Admin Dashboard"
+          onRefresh={loadData}
+          onDataChange={loadData}
+        />
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
@@ -89,7 +98,11 @@ const UnifiedAdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminHeader />
+      <MobileAdminHeader 
+        title="Admin Dashboard"
+        onRefresh={loadData}
+        onDataChange={loadData}
+      />
       
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
@@ -103,13 +116,35 @@ const UnifiedAdminDashboard = () => {
           </Button>
         </div>
 
-        <DashboardStats 
-          totalRequests={getTotalCount()}
-          newRequests={getNewCount()}
-          completedRequests={configuraties.filter(c => c.status === 'afgehandeld').length + 
-                           schilderAanvragen.filter(s => s.status === 'afgehandeld').length + 
-                           stukadoorAanvragen.filter(s => s.status === 'afgehandeld').length}
-        />
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Totaal Aanvragen</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getTotalCount()}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Nieuwe Aanvragen</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getNewCount()}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Afgehandeld</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getCompletedCount()}</div>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card>
           <CardHeader>
@@ -171,14 +206,14 @@ const UnifiedAdminDashboard = () => {
 
       <RequestDetailDialog
         item={selectedItem}
-        open={isDetailDialogOpen}
-        onOpenChange={setIsDetailDialogOpen}
+        isOpen={isDetailDialogOpen}
+        onClose={() => setIsDetailDialogOpen(false)}
       />
 
       <QuoteDialog
-        item={selectedItem}
-        open={isQuoteDialogOpen}
-        onOpenChange={setIsQuoteDialogOpen}
+        selectedItem={selectedItem}
+        isOpen={isQuoteDialogOpen}
+        onClose={() => setIsQuoteDialogOpen(false)}
         onQuoteSent={loadData}
         setSendingQuote={setSendingQuote}
       />
