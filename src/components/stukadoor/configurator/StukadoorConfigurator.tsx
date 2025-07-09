@@ -39,7 +39,7 @@ const StukadoorConfigurator = () => {
     const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
     const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
     
-    // Prijzen per stuc type (excl. BTW)
+    // CORRECTE PRIJZEN PER STUC TYPE (excl. BTW)
     let wandPrijs = 0;
     let plafondPrijs = 0;
     
@@ -63,7 +63,7 @@ const StukadoorConfigurator = () => {
     const plafondKosten = plafondOppervlakte * plafondPrijs;
     const totaalExclBtw = wandKosten + plafondKosten;
     
-    // BTW percentage bepalen
+    // BTW percentage bepalen (9% voor renovatie, 21% voor nieuwbouw)
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
     return Math.round(totaalExclBtw * btwPercentage);
@@ -73,7 +73,7 @@ const StukadoorConfigurator = () => {
     const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
     const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
     
-    // Prijzen per stuc type (excl. BTW)
+    // CORRECTE PRIJZEN PER STUC TYPE (excl. BTW)
     let wandPrijs = 0;
     let plafondPrijs = 0;
     let stucTypeNaam = '';

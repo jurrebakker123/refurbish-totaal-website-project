@@ -44,7 +44,7 @@ const SchilderConfigurator = () => {
     const aantalRamen = parseInt(formData.aantal_ramen) || 0;
     const meerderKleuren = formData.meerdere_kleuren;
     
-    // Prijzen per onderdeel (excl. BTW)
+    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
     const wandPrijs = meerderKleuren ? 19.55 : 17.25;
     const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
     const deurPrijs = meerderKleuren ? 345.00 : 287.50;
@@ -58,7 +58,7 @@ const SchilderConfigurator = () => {
     
     const totaalExclBtw = wandKosten + plafondKosten + deurKosten + raamKosten;
     
-    // BTW percentage bepalen
+    // BTW percentage bepalen (9% voor renovatie, 21% voor nieuwbouw)
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
     return Math.round(totaalExclBtw * btwPercentage);
@@ -71,7 +71,7 @@ const SchilderConfigurator = () => {
     const aantalRamen = parseInt(formData.aantal_ramen) || 0;
     const meerderKleuren = formData.meerdere_kleuren;
     
-    // Prijzen per onderdeel (excl. BTW)
+    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
     const wandPrijs = meerderKleuren ? 19.55 : 17.25;
     const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
     const deurPrijs = meerderKleuren ? 345.00 : 287.50;
