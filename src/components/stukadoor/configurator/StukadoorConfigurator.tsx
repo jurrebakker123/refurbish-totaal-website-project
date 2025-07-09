@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
@@ -21,7 +23,9 @@ const StukadoorConfigurator = () => {
     plaats: '',
     werk_type: 'binnen',
     bouw_type: 'renovatie',
-    oppervlakte: '',
+    stuc_type: 'sausklaar',
+    oppervlakte_wanden: '',
+    oppervlakte_plafonds: '',
     uitvoertermijn: '',
     reden_aanvraag: '',
     bericht: '',
@@ -32,16 +36,76 @@ const StukadoorConfigurator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculatePrice = () => {
-    const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
+    const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
+    const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
     
-    // Basis prijs voor sausklaar stucwerk per m² (wand)
-    const basePricePerM2 = 17.25;
-    const basePrice = oppervlakteNum * basePricePerM2;
+    // Prijzen per stuc type (excl. BTW)
+    let wandPrijs = 0;
+    let plafondPrijs = 0;
+    
+    switch (formData.stuc_type) {
+      case 'sausklaar':
+        wandPrijs = 17.25;
+        plafondPrijs = 18.40;
+        break;
+      case 'sierpleister':
+        wandPrijs = 20.70;
+        plafondPrijs = 23.00;
+        break;
+      case 'beton_cire':
+        wandPrijs = 103.50;
+        plafondPrijs = 138.00;
+        break;
+    }
+    
+    // Bereken totaal excl. BTW
+    const wandKosten = wandOppervlakte * wandPrijs;
+    const plafondKosten = plafondOppervlakte * plafondPrijs;
+    const totaalExclBtw = wandKosten + plafondKosten;
     
     // BTW percentage bepalen
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
-    return Math.round(basePrice * btwPercentage);
+    return Math.round(totaalExclBtw * btwPercentage);
+  };
+
+  const getPriceBreakdown = () => {
+    const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
+    const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
+    
+    // Prijzen per stuc type (excl. BTW)
+    let wandPrijs = 0;
+    let plafondPrijs = 0;
+    let stucTypeNaam = '';
+    
+    switch (formData.stuc_type) {
+      case 'sausklaar':
+        wandPrijs = 17.25;
+        plafondPrijs = 18.40;
+        stucTypeNaam = 'Sausklaar stucwerk';
+        break;
+      case 'sierpleister':
+        wandPrijs = 20.70;
+        plafondPrijs = 23.00;
+        stucTypeNaam = 'Sierpleister (spachtel)';
+        break;
+      case 'beton_cire':
+        wandPrijs = 103.50;
+        plafondPrijs = 138.00;
+        stucTypeNaam = 'Beton ciré';
+        break;
+    }
+    
+    const breakdown = [];
+    
+    if (wandOppervlakte > 0) {
+      breakdown.push(`${stucTypeNaam} - Wanden: ${wandOppervlakte}m² × €${wandPrijs} = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
+    }
+    if (plafondOppervlakte > 0) {
+      breakdown.push(`${stucTypeNaam} - Plafonds: ${plafondOppervlakte}m² × €${plafondPrijs} = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
+    }
+    
+    return breakdown;
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +133,7 @@ const StukadoorConfigurator = () => {
 
     try {
       const totalPrice = calculatePrice();
+      const totalOppervlakte = (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0);
       
       // Save to database
       const { data: savedData, error } = await supabase
@@ -83,8 +148,9 @@ const StukadoorConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           werk_type: `${formData.werk_type} - ${formData.bouw_type}`,
-          afwerking: 'Te bepalen',
-          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          afwerking: formData.stuc_type === 'sausklaar' ? 'Sausklaar stucwerk' : 
+                    formData.stuc_type === 'sierpleister' ? 'Sierpleister (spachtel)' : 'Beton ciré',
+          oppervlakte: Math.round(totalOppervlakte),
           uitvoertermijn: formData.uitvoertermijn,
           reden_aanvraag: formData.reden_aanvraag,
           bericht: formData.bericht,
@@ -126,7 +192,9 @@ const StukadoorConfigurator = () => {
         plaats: '',
         werk_type: 'binnen',
         bouw_type: 'renovatie',
-        oppervlakte: '',
+        stuc_type: 'sausklaar',
+        oppervlakte_wanden: '',
+        oppervlakte_plafonds: '',
         uitvoertermijn: '',
         reden_aanvraag: '',
         bericht: '',
@@ -144,6 +212,7 @@ const StukadoorConfigurator = () => {
 
   // Bepaal BTW percentage
   const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
+  const hasAnyInput = parseFloat(formData.oppervlakte_wanden) > 0 || parseFloat(formData.oppervlakte_plafonds) > 0;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -281,17 +350,43 @@ const StukadoorConfigurator = () => {
               </RadioGroup>
             </div>
 
-            {/* Project Details */}
+            {/* Stuc Type Selection */}
             <div>
-              <Label htmlFor="oppervlakte">Oppervlakte (m²)</Label>
-              <Input
-                id="oppervlakte"
-                type="number"
-                value={formData.oppervlakte}
-                onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
-                placeholder="Bijvoorbeeld: 30"
-                required
-              />
+              <Label htmlFor="stuc_type" className="text-base font-medium">Type stucwerk</Label>
+              <Select value={formData.stuc_type} onValueChange={(value) => setFormData({...formData, stuc_type: value})}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Selecteer type stucwerk" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sausklaar">Sausklaar stucwerk</SelectItem>
+                  <SelectItem value="sierpleister">Sierpleister (spachtel)</SelectItem>
+                  <SelectItem value="beton_cire">Beton ciré</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Project Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="oppervlakte_wanden">Wand oppervlakte (m²)</Label>
+                <Input
+                  id="oppervlakte_wanden"
+                  type="number"
+                  value={formData.oppervlakte_wanden}
+                  onChange={(e) => setFormData({...formData, oppervlakte_wanden: e.target.value})}
+                  placeholder="Bijvoorbeeld: 30"
+                />
+              </div>
+              <div>
+                <Label htmlFor="oppervlakte_plafonds">Plafond oppervlakte (m²)</Label>
+                <Input
+                  id="oppervlakte_plafonds"
+                  type="number"
+                  value={formData.oppervlakte_plafonds}
+                  onChange={(e) => setFormData({...formData, oppervlakte_plafonds: e.target.value})}
+                  placeholder="Bijvoorbeeld: 20"
+                />
+              </div>
             </div>
 
             <div>
@@ -354,21 +449,24 @@ const StukadoorConfigurator = () => {
             />
 
             {/* Price Display */}
-            {formData.oppervlakte && parseFloat(formData.oppervlakte) > 0 && (
+            {hasAnyInput && (
               <Card className="bg-green-50 border-green-200">
                 <CardContent className="p-4">
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs (Indicatief)</h3>
                     <p className="text-3xl font-bold text-green-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-green-700">
+                    <p className="text-sm text-green-700 mb-2">
                       Inclusief materiaal en arbeid
                     </p>
-                    <p className="text-xs text-green-600 mt-2">
+                    <p className="text-xs text-green-600 mb-2">
                       {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
                     </p>
-                    <p className="text-xs text-green-500 mt-1">
-                      Basis: sausklaar stucwerk wand (€17,25/m² excl. BTW)
-                    </p>
+                    <div className="text-xs text-green-500 text-left">
+                      <p className="font-semibold mb-1">Prijsopbouw:</p>
+                      {getPriceBreakdown().map((item, index) => (
+                        <p key={index}>{item}</p>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
