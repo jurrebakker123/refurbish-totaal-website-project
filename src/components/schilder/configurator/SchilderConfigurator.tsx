@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
@@ -22,6 +24,10 @@ const SchilderConfigurator = () => {
     project_type: 'binnen',
     bouw_type: 'renovatie',
     oppervlakte: '',
+    plafond_oppervlakte: '',
+    aantal_deuren: '',
+    aantal_ramen: '',
+    meerdere_kleuren: false,
     uitvoertermijn: '',
     reden_aanvraag: '',
     bericht: '',
@@ -32,16 +38,61 @@ const SchilderConfigurator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculatePrice = () => {
-    const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
+    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
+    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
+    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
+    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
+    const meerderKleuren = formData.meerdere_kleuren;
     
-    // Basis prijs voor binnenschilderwerk per m² (wanden, één kleur)
-    const basePricePerM2 = 17.25;
-    const basePrice = oppervlakteNum * basePricePerM2;
+    // Prijzen per onderdeel (excl. BTW)
+    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
+    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
+    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
+    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
+    
+    // Bereken totaal excl. BTW
+    const wandKosten = wandOppervlakte * wandPrijs;
+    const plafondKosten = plafondOppervlakte * plafondPrijs;
+    const deurKosten = aantalDeuren * deurPrijs;
+    const raamKosten = aantalRamen * raamPrijs;
+    
+    const totaalExclBtw = wandKosten + plafondKosten + deurKosten + raamKosten;
     
     // BTW percentage bepalen
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
-    return Math.round(basePrice * btwPercentage);
+    return Math.round(totaalExclBtw * btwPercentage);
+  };
+
+  const getPriceBreakdown = () => {
+    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
+    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
+    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
+    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
+    const meerderKleuren = formData.meerdere_kleuren;
+    
+    // Prijzen per onderdeel (excl. BTW)
+    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
+    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
+    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
+    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
+    
+    const breakdown = [];
+    
+    if (wandOppervlakte > 0) {
+      breakdown.push(`Wanden: ${wandOppervlakte}m² × €${wandPrijs} = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
+    }
+    if (plafondOppervlakte > 0) {
+      breakdown.push(`Plafonds: ${plafondOppervlakte}m² × €${plafondPrijs} = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
+    }
+    if (aantalDeuren > 0) {
+      breakdown.push(`Deuren: ${aantalDeuren} × €${deurPrijs} = €${(aantalDeuren * deurPrijs).toFixed(2)}`);
+    }
+    if (aantalRamen > 0) {
+      breakdown.push(`Ramen: ${aantalRamen} × €${raamPrijs} = €${(aantalRamen * raamPrijs).toFixed(2)}`);
+    }
+    
+    return breakdown;
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,13 +134,15 @@ const SchilderConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           project_type: `${formData.project_type} - ${formData.bouw_type}`,
-          verf_type: 'Te bepalen',
+          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
           uitvoertermijn: formData.uitvoertermijn,
           reden_aanvraag: formData.reden_aanvraag,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
-          status: 'nieuw'
+          status: 'nieuw',
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
         })
         .select()
         .single();
@@ -127,6 +180,10 @@ const SchilderConfigurator = () => {
         project_type: 'binnen',
         bouw_type: 'renovatie',
         oppervlakte: '',
+        plafond_oppervlakte: '',
+        aantal_deuren: '',
+        aantal_ramen: '',
+        meerdere_kleuren: false,
         uitvoertermijn: '',
         reden_aanvraag: '',
         bericht: '',
@@ -144,6 +201,7 @@ const SchilderConfigurator = () => {
 
   // Bepaal BTW percentage
   const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
+  const hasAnyInput = parseFloat(formData.oppervlakte) > 0 || parseFloat(formData.plafond_oppervlakte) > 0 || parseInt(formData.aantal_deuren) > 0 || parseInt(formData.aantal_ramen) > 0;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -281,17 +339,64 @@ const SchilderConfigurator = () => {
               </RadioGroup>
             </div>
 
-            {/* Project Details */}
+            {/* Color Selection */}
             <div>
-              <Label htmlFor="oppervlakte">Oppervlakte (m²)</Label>
-              <Input
-                id="oppervlakte"
-                type="number"
-                value={formData.oppervlakte}
-                onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
-                placeholder="Bijvoorbeeld: 50"
-                required
-              />
+              <Label className="text-base font-medium">Kleuroptie</Label>
+              <div className="flex items-center space-x-2 mt-2">
+                <Checkbox
+                  id="meerdere_kleuren"
+                  checked={formData.meerdere_kleuren}
+                  onCheckedChange={(checked) => setFormData({...formData, meerdere_kleuren: checked as boolean})}
+                />
+                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken (hogere prijs)</Label>
+              </div>
+            </div>
+
+            {/* Project Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="oppervlakte">Wand oppervlakte (m²)</Label>
+                <Input
+                  id="oppervlakte"
+                  type="number"
+                  value={formData.oppervlakte}
+                  onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
+                  placeholder="Bijvoorbeeld: 50"
+                />
+              </div>
+              <div>
+                <Label htmlFor="plafond_oppervlakte">Plafond oppervlakte (m²)</Label>
+                <Input
+                  id="plafond_oppervlakte"
+                  type="number"
+                  value={formData.plafond_oppervlakte}
+                  onChange={(e) => setFormData({...formData, plafond_oppervlakte: e.target.value})}
+                  placeholder="Bijvoorbeeld: 25"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="aantal_deuren">Aantal deuren (incl. kozijn)</Label>
+                <Input
+                  id="aantal_deuren"
+                  type="number"
+                  value={formData.aantal_deuren}
+                  onChange={(e) => setFormData({...formData, aantal_deuren: e.target.value})}
+                  placeholder="Bijvoorbeeld: 3"
+                />
+              </div>
+              <div>
+                <Label htmlFor="aantal_ramen">Aantal ramen (incl. kozijn)</Label>
+                <Input
+                  id="aantal_ramen"
+                  type="number"
+                  value={formData.aantal_ramen}
+                  onChange={(e) => setFormData({...formData, aantal_ramen: e.target.value})}
+                  placeholder="Bijvoorbeeld: 5"
+                />
+              </div>
             </div>
 
             <div>
@@ -354,21 +459,27 @@ const SchilderConfigurator = () => {
             />
 
             {/* Price Display */}
-            {formData.oppervlakte && parseFloat(formData.oppervlakte) > 0 && (
+            {hasAnyInput && (
               <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="p-4">
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
                     <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-blue-700">
+                    <p className="text-sm text-blue-700 mb-2">
                       Inclusief materiaal en arbeid
                     </p>
-                    <p className="text-xs text-blue-600 mt-2">
+                    <p className="text-xs text-blue-600 mb-2">
                       {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
                     </p>
-                    <p className="text-xs text-blue-500 mt-1">
-                      Basis: wanden schilderen, één kleur (€17,25/m² excl. BTW)
+                    <p className="text-xs text-blue-600 mb-2">
+                      {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
                     </p>
+                    <div className="text-xs text-blue-500 text-left">
+                      <p className="font-semibold mb-1">Prijsopbouw:</p>
+                      {getPriceBreakdown().map((item, index) => (
+                        <p key={index}>{item}</p>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
