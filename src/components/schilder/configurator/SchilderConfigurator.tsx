@@ -9,7 +9,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
 import { sendEmail } from '@/config/email';
 
 const SchilderConfigurator = () => {
@@ -31,8 +30,7 @@ const SchilderConfigurator = () => {
     meerdere_kleuren: false,
     uitvoertermijn: '',
     reden_aanvraag: '',
-    bericht: '',
-    whatsapp_optin: false
+    bericht: ''
   });
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -70,27 +68,20 @@ const SchilderConfigurator = () => {
     const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
     const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
     const aantalRamen = parseInt(formData.aantal_ramen) || 0;
-    const meerderKleuren = formData.meerdere_kleuren;
-    
-    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
-    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
-    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
-    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
-    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
     
     const breakdown = [];
     
     if (wandOppervlakte > 0) {
-      breakdown.push(`Wanden: ${wandOppervlakte}m² = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
+      breakdown.push(`Wanden: ${wandOppervlakte}m²`);
     }
     if (plafondOppervlakte > 0) {
-      breakdown.push(`Plafonds: ${plafondOppervlakte}m² = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
+      breakdown.push(`Plafonds: ${plafondOppervlakte}m²`);
     }
     if (aantalDeuren > 0) {
-      breakdown.push(`Deuren: ${aantalDeuren} stuks = €${(aantalDeuren * deurPrijs).toFixed(2)}`);
+      breakdown.push(`Deuren: ${aantalDeuren} stuks`);
     }
     if (aantalRamen > 0) {
-      breakdown.push(`Ramen: ${aantalRamen} stuks = €${(aantalRamen * raamPrijs).toFixed(2)}`);
+      breakdown.push(`Ramen: ${aantalRamen} stuks`);
     }
     
     return breakdown;
@@ -111,12 +102,6 @@ const SchilderConfigurator = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.whatsapp_optin) {
-      toast.error('WhatsApp toestemming is verplicht voor deze service');
-      return;
-    }
-    
     setIsSubmitting(true);
 
     try {
@@ -150,7 +135,7 @@ const SchilderConfigurator = () => {
 
       if (error) throw error;
 
-      // Send confirmation email to customer
+      // Send notification email to main admin address
       await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: formData.voornaam + ' ' + formData.achternaam,
@@ -193,29 +178,43 @@ const SchilderConfigurator = () => {
         from_name: 'System',
         from_email: 'info@refurbishtotaalnederland.nl',  
         to_name: 'Admin',
-        to_email: 'admin@refurbishtotaalnederland.nl',
+        to_email: 'mazenaddas95@gmail.com',
         subject: 'Nieuwe Schilderwerk Aanvraag',
         message: `Nieuwe schilderwerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      // Trigger WhatsApp lead nurturing
-      if (formData.whatsapp_optin && savedData) {
-        const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
-        const formattedPhone = phoneNumber.startsWith('06') ? '31' + phoneNumber.substring(1) : 
-                              phoneNumber.startsWith('6') ? '31' + phoneNumber : phoneNumber;
+      // Send confirmation email to customer
+      await sendEmail({
+        templateId: 'template_ix4mdjh',
+        from_name: 'Refurbish Totaal Nederland',
+        from_email: 'info@refurbishtotaalnederland.nl',
+        to_name: `${formData.voornaam} ${formData.achternaam}`,
+        to_email: formData.emailadres,
+        subject: 'Bevestiging Schilderwerk Aanvraag',
+        message: `
+          Beste ${formData.voornaam},
+          
+          Bedankt voor uw aanvraag voor schilderwerk. Wij hebben uw aanvraag in goede orde ontvangen.
+          
+          Uw projectdetails:
+          - Project: ${formData.project_type} - ${formData.bouw_type}
+          - Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
+          - Geschatte prijs: €${totalPrice.toLocaleString()}
+          - Gewenste uitvoertermijn: ${formData.uitvoertermijn}
+          
+          Wij nemen binnen 24 uur contact met u op voor een afspraak.
+          
+          Met vriendelijke groet,
+          Refurbish Totaal Nederland
+          
+          Tel: 06-12345678
+          Email: info@refurbishtotaalnederland.nl
+        `,
+        reply_to: 'info@refurbishtotaalnederland.nl'
+      });
 
-        await supabase.functions.invoke('whatsapp-lead-nurturing', {
-          body: {
-            leadId: savedData.id,
-            phoneNumber: formattedPhone,
-            customerName: `${formData.voornaam} ${formData.achternaam}`,
-            step: 'initial'
-          }
-        });
-      }
-
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht en een bevestigingsmail.');
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
       
       // Reset form
       setFormData({
@@ -236,8 +235,7 @@ const SchilderConfigurator = () => {
         meerdere_kleuren: false,
         uitvoertermijn: '',
         reden_aanvraag: '',
-        bericht: '',
-        whatsapp_optin: false
+        bericht: ''
       });
       setUploadedFile(null);
 
@@ -531,12 +529,6 @@ const SchilderConfigurator = () => {
                 </div>
               </div>
             </div>
-
-            {/* WhatsApp Opt-in */}
-            <WhatsAppOptInCheckbox
-              checked={formData.whatsapp_optin}
-              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
-            />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Bezig met verzenden...' : 'Aanvraag Versturen'}

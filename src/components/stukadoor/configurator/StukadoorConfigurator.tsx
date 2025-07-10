@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { sendEmail } from '@/config/email';
@@ -21,13 +21,13 @@ const StukadoorConfigurator = () => {
     huisnummer: '',
     postcode: '',
     plaats: '',
-    werk_type: 'binnen',
-    bouw_type: 'renovatie',
-    stuc_type: 'sausklaar',
-    oppervlakte_wanden: '',
-    oppervlakte_plafonds: '',
-    uitvoertermijn: '',
-    reden_aanvraag: '',
+    werk_type: 'binnen_stucwerk',
+    afwerking: 'glad_stucwerk',
+    oppervlakte: '',
+    aantal_kamers: '',
+    isolatie_gewenst: false,
+    huidige_staat: '',
+    voorbewerking: '',
     bericht: ''
   });
 
@@ -35,43 +35,57 @@ const StukadoorConfigurator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculatePrice = () => {
-    const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
-    const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
+    const oppervlakte = parseFloat(formData.oppervlakte) || 0;
+    const aantalKamers = parseInt(formData.aantal_kamers) || 0;
+    const isolatieGewenst = formData.isolatie_gewenst;
     
-    // CORRECTE PRIJZEN PER STUC TYPE (excl. BTW)
-    let wandPrijs = 0;
-    let plafondPrijs = 0;
-    
-    switch (formData.stuc_type) {
-      case 'sausklaar':
-        wandPrijs = 17.25;
-        plafondPrijs = 18.40;
+    // Basisprijs per m² op basis van afwerking
+    let basisPrijs = 0;
+    switch (formData.afwerking) {
+      case 'glad_stucwerk':
+        basisPrijs = isolatieGewenst ? 45 : 35;
         break;
-      case 'sierpleister':
-        wandPrijs = 20.70;
-        plafondPrijs = 23.00;
+      case 'spachtelputz':
+        basisPrijs = isolatieGewenst ? 55 : 45;
         break;
-      case 'beton_cire':
-        wandPrijs = 103.50;
-        plafondPrijs = 138.00;
+      case 'decoratief_stucwerk':
+        basisPrijs = isolatieGewenst ? 75 : 65;
         break;
+      default:
+        basisPrijs = 35;
     }
     
-    // Bereken totaal excl. BTW
-    const wandKosten = wandOppervlakte * wandPrijs;
-    const plafondKosten = plafondOppervlakte * plafondPrijs;
-    const totaalExclBtw = wandKosten + plafondKosten;
+    // Extra kosten voor aantal kamers (voorbereidingswerk)
+    const kamerToeslag = aantalKamers * 150;
     
-    // BTW percentage bepalen (9% voor renovatie, 21% voor nieuwbouw)
-    const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
+    const totaalPrijs = (oppervlakte * basisPrijs) + kamerToeslag;
     
-    return Math.round(totaalExclBtw * btwPercentage);
+    return Math.round(totaalPrijs);
+  };
+
+  const getPriceBreakdown = () => {
+    const oppervlakte = parseFloat(formData.oppervlakte) || 0;
+    const aantalKamers = parseInt(formData.aantal_kamers) || 0;
+    
+    const breakdown = [];
+    
+    if (oppervlakte > 0) {
+      breakdown.push(`Oppervlakte: ${oppervlakte}m²`);
+    }
+    if (aantalKamers > 0) {
+      breakdown.push(`Aantal kamers: ${aantalKamers}`);
+    }
+    breakdown.push(`Afwerking: ${formData.afwerking.replace('_', ' ')}`);
+    if (formData.isolatie_gewenst) {
+      breakdown.push('Met isolatie');
+    }
+    
+    return breakdown;
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
         return;
@@ -83,12 +97,10 @@ const StukadoorConfigurator = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     setIsSubmitting(true);
 
     try {
       const totalPrice = calculatePrice();
-      const totalOppervlakte = (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0);
       
       // Save to database
       const { data: savedData, error } = await supabase
@@ -102,12 +114,13 @@ const StukadoorConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          werk_type: `${formData.werk_type} - ${formData.bouw_type}`,
-          afwerking: formData.stuc_type === 'sausklaar' ? 'Sausklaar stucwerk' : 
-                    formData.stuc_type === 'sierpleister' ? 'Sierpleister (spachtel)' : 'Beton ciré',
-          oppervlakte: Math.round(totalOppervlakte),
-          uitvoertermijn: formData.uitvoertermijn,
-          reden_aanvraag: formData.reden_aanvraag,
+          werk_type: formData.werk_type,
+          afwerking: formData.afwerking.replace('_', ' '),
+          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          aantal_kamers: parseInt(formData.aantal_kamers) || 0,
+          isolatie_gewenst: formData.isolatie_gewenst,
+          huidige_staat: formData.huidige_staat,
+          voorbewerking: formData.voorbewerking,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw'
@@ -117,40 +130,39 @@ const StukadoorConfigurator = () => {
 
       if (error) throw error;
 
-      // Send confirmation email to customer
+      // Send notification email to main admin address
       await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: formData.voornaam + ' ' + formData.achternaam,
         from_email: formData.emailadres,
         to_name: 'Refurbish Totaal Nederland',
         to_email: 'info@refurbishtotaalnederland.nl',
-        subject: 'Nieuwe Stukadoorswerk Aanvraag',
+        subject: 'Nieuwe Stukadoor Aanvraag',
         message: `
-          Nieuwe stukadoorswerk aanvraag ontvangen:
+          Nieuwe stukadoor aanvraag ontvangen:
           
           Klant: ${formData.voornaam} ${formData.achternaam}
           Email: ${formData.emailadres}
           Telefoon: ${formData.telefoon}
           Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
           
-          Project: ${formData.werk_type} - ${formData.bouw_type}
-          Type stucwerk: ${formData.stuc_type === 'sausklaar' ? 'Sausklaar stucwerk' : 
-                          formData.stuc_type === 'sierpleister' ? 'Sierpleister (spachtel)' : 'Beton ciré'}
-          Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
-          Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²
+          Project: ${formData.werk_type.replace('_', ' ')}
+          Afwerking: ${formData.afwerking.replace('_', ' ')}
+          Oppervlakte: ${formData.oppervlakte}m²
+          Aantal kamers: ${formData.aantal_kamers}
+          Isolatie gewenst: ${formData.isolatie_gewenst ? 'Ja' : 'Nee'}
           
           Geschatte prijs: €${totalPrice.toLocaleString()}
           
-          Uitvoertermijn: ${formData.uitvoertermijn}
-          Reden aanvraag: ${formData.reden_aanvraag}
+          Huidige staat: ${formData.huidige_staat}
+          Voorbewerking: ${formData.voorbewerking}
           
           ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
         `,
         reply_to: formData.emailadres,
         phone: formData.telefoon,
-        service: 'Stukadoorswerk',
-        location: `${formData.plaats}`,
-        preferred_date: formData.uitvoertermijn
+        service: 'Stukadoor',
+        location: `${formData.plaats}`
       });
 
       // Send notification to second email address
@@ -159,13 +171,43 @@ const StukadoorConfigurator = () => {
         from_name: 'System',
         from_email: 'info@refurbishtotaalnederland.nl',  
         to_name: 'Admin',
-        to_email: 'admin@refurbishtotaalnederland.nl',
-        subject: 'Nieuwe Stukadoorswerk Aanvraag',
-        message: `Nieuwe stukadoorswerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
+        to_email: 'mazenaddas95@gmail.com',
+        subject: 'Nieuwe Stukadoor Aanvraag',
+        message: `Nieuwe stukadoor aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen enkele minuten een bevestigingsmail.');
+      // Send confirmation email to customer
+      await sendEmail({
+        templateId: 'template_ix4mdjh',
+        from_name: 'Refurbish Totaal Nederland',
+        from_email: 'info@refurbishtotaalnederland.nl',
+        to_name: `${formData.voornaam} ${formData.achternaam}`,
+        to_email: formData.emailadres,
+        subject: 'Bevestiging Stukadoor Aanvraag',
+        message: `
+          Beste ${formData.voornaam},
+          
+          Bedankt voor uw aanvraag voor stukadoorswerk. Wij hebben uw aanvraag in goede orde ontvangen.
+          
+          Uw projectdetails:
+          - Project: ${formData.werk_type.replace('_', ' ')}
+          - Afwerking: ${formData.afwerking.replace('_', ' ')}
+          - Oppervlakte: ${formData.oppervlakte}m²
+          - Geschatte prijs: €${totalPrice.toLocaleString()}
+          
+          Wij nemen binnen 24 uur contact met u op voor een afspraak.
+          
+          Met vriendelijke groet,
+          Refurbish Totaal Nederland
+          
+          Tel: 06-12345678
+          Email: info@refurbishtotaalnederland.nl
+        `,
+        reply_to: 'info@refurbishtotaalnederland.nl'
+      });
+
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
       
       // Reset form
       setFormData({
@@ -177,13 +219,13 @@ const StukadoorConfigurator = () => {
         huisnummer: '',
         postcode: '',
         plaats: '',
-        werk_type: 'binnen',
-        bouw_type: 'renovatie',
-        stuc_type: 'sausklaar',
-        oppervlakte_wanden: '',
-        oppervlakte_plafonds: '',
-        uitvoertermijn: '',
-        reden_aanvraag: '',
+        werk_type: 'binnen_stucwerk',
+        afwerking: 'glad_stucwerk',
+        oppervlakte: '',
+        aantal_kamers: '',
+        isolatie_gewenst: false,
+        huidige_staat: '',
+        voorbewerking: '',
         bericht: ''
       });
       setUploadedFile(null);
@@ -196,118 +238,122 @@ const StukadoorConfigurator = () => {
     }
   };
 
-  // Bepaal BTW percentage
-  const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
-  const hasAnyInput = parseFloat(formData.oppervlakte_wanden) > 0 || parseFloat(formData.oppervlakte_plafonds) > 0;
+  const hasAnyInput = parseFloat(formData.oppervlakte) > 0;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Stucwerk Configurator</CardTitle>
+          <CardTitle className="text-2xl text-center">Stukadoor Configurator</CardTitle>
           <p className="text-center text-gray-600">
-            Configureer je stucwerk project en ontvang direct een prijsindicatie
+            Configureer je stucproject en ontvang direct een prijsindicatie
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Build Type Selection */}
-            <div>
-              <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
-              <RadioGroup
-                value={formData.bouw_type}
-                onValueChange={(value) => setFormData({...formData, bouw_type: value})}
-                className="flex flex-col space-y-2 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="renovatie" id="renovatie-stuc" />
-                  <Label htmlFor="renovatie-stuc">Renovatie (9% BTW)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="nieuwbouw" id="nieuwbouw-stuc" />
-                  <Label htmlFor="nieuwbouw-stuc">Nieuwbouw (21% BTW)</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
             {/* Work Type Selection */}
             <div>
-              <Label className="text-base font-medium">Binnen of buiten stukadoorswerk?</Label>
+              <Label className="text-base font-medium">Type stucwerk</Label>
               <RadioGroup
                 value={formData.werk_type}
                 onValueChange={(value) => setFormData({...formData, werk_type: value})}
                 className="flex flex-col space-y-2 mt-2"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="binnen" id="binnen-stuc" />
-                  <Label htmlFor="binnen-stuc">Binnen stukadoorswerk</Label>
+                  <RadioGroupItem value="binnen_stucwerk" id="binnen_stucwerk" />
+                  <Label htmlFor="binnen_stucwerk">Binnen stucwerk</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="buiten" id="buiten-stuc" />
-                  <Label htmlFor="buiten-stuc">Buiten stukadoorswerk</Label>
+                  <RadioGroupItem value="buiten_stucwerk" id="buiten_stucwerk" />
+                  <Label htmlFor="buiten_stucwerk">Buiten stucwerk</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="herstel_stucwerk" id="herstel_stucwerk" />
+                  <Label htmlFor="herstel_stucwerk">Herstel stucwerk</Label>
                 </div>
               </RadioGroup>
             </div>
 
-            {/* Stuc Type Selection */}
+            {/* Finish Type Selection */}
             <div>
-              <Label htmlFor="stuc_type" className="text-base font-medium">Type stucwerk</Label>
-              <Select value={formData.stuc_type} onValueChange={(value) => setFormData({...formData, stuc_type: value})}>
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Selecteer type stucwerk" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sausklaar">Sausklaar stucwerk</SelectItem>
-                  <SelectItem value="sierpleister">Sierpleister (spachtel)</SelectItem>
-                  <SelectItem value="beton_cire">Beton ciré</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label className="text-base font-medium">Gewenste afwerking</Label>
+              <RadioGroup
+                value={formData.afwerking}
+                onValueChange={(value) => setFormData({...formData, afwerking: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="glad_stucwerk" id="glad_stucwerk" />
+                  <Label htmlFor="glad_stucwerk">Glad stucwerk</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="spachtelputz" id="spachtelputz" />
+                  <Label htmlFor="spachtelputz">Spachtelputz</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="decoratief_stucwerk" id="decoratief_stucwerk" />
+                  <Label htmlFor="decoratief_stucwerk">Decoratief stucwerk</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Isolation Option */}
+            <div>
+              <Label className="text-base font-medium">Isolatie</Label>
+              <div className="flex items-center space-x-2 mt-2">
+                <Checkbox
+                  id="isolatie_gewenst"
+                  checked={formData.isolatie_gewenst}
+                  onCheckedChange={(checked) => setFormData({...formData, isolatie_gewenst: checked as boolean})}
+                />
+                <Label htmlFor="isolatie_gewenst">Isolatie gewenst (hogere prijs)</Label>
+              </div>
             </div>
 
             {/* Project Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="oppervlakte_wanden">Wand oppervlakte (m²)</Label>
+                <Label htmlFor="oppervlakte">Oppervlakte (m²)</Label>
                 <Input
-                  id="oppervlakte_wanden"
+                  id="oppervlakte"
                   type="number"
-                  value={formData.oppervlakte_wanden}
-                  onChange={(e) => setFormData({...formData, oppervlakte_wanden: e.target.value})}
-                  placeholder="Bijvoorbeeld: 30"
+                  value={formData.oppervlakte}
+                  onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
+                  placeholder="Bijvoorbeeld: 100"
+                  required
                 />
               </div>
               <div>
-                <Label htmlFor="oppervlakte_plafonds">Plafond oppervlakte (m²)</Label>
+                <Label htmlFor="aantal_kamers">Aantal kamers</Label>
                 <Input
-                  id="oppervlakte_plafonds"
+                  id="aantal_kamers"
                   type="number"
-                  value={formData.oppervlakte_plafonds}
-                  onChange={(e) => setFormData({...formData, oppervlakte_plafonds: e.target.value})}
-                  placeholder="Bijvoorbeeld: 20"
+                  value={formData.aantal_kamers}
+                  onChange={(e) => setFormData({...formData, aantal_kamers: e.target.value})}
+                  placeholder="Bijvoorbeeld: 4"
                 />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn?</Label>
-              <Input
-                id="uitvoertermijn"
-                value={formData.uitvoertermijn}
-                onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
-                placeholder="Bijvoorbeeld: binnen 3 weken, flexibel"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag?</Label>
-              <Input
-                id="reden_aanvraag"
-                value={formData.reden_aanvraag}
-                onChange={(e) => setFormData({...formData, reden_aanvraag: e.target.value})}
-                placeholder="Bijvoorbeeld: schade herstel, vernieuwing, renovatie"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="huidige_staat">Huidige staat van de wanden</Label>
+                <Input
+                  id="huidige_staat"
+                  value={formData.huidige_staat}
+                  onChange={(e) => setFormData({...formData, huidige_staat: e.target.value})}
+                  placeholder="Bijvoorbeeld: goed, matig, slecht"
+                />
+              </div>
+              <div>
+                <Label htmlFor="voorbewerking">Benodigde voorbewerking</Label>
+                <Input
+                  id="voorbewerking"
+                  value={formData.voorbewerking}
+                  onChange={(e) => setFormData({...formData, voorbewerking: e.target.value})}
+                  placeholder="Bijvoorbeeld: schuren, primer aanbrengen"
+                />
+              </div>
             </div>
 
             {/* File Upload */}
@@ -351,9 +397,12 @@ const StukadoorConfigurator = () => {
                     <p className="text-sm text-green-700 mb-2">
                       Inclusief materiaal en arbeid
                     </p>
-                    <p className="text-xs text-green-600">
-                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
-                    </p>
+                    <div className="text-xs text-green-500 text-left">
+                      <p className="font-semibold mb-1">Prijsopbouw:</p>
+                      {getPriceBreakdown().map((item, index) => (
+                        <p key={index}>{item}</p>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
