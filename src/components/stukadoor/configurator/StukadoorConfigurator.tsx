@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { sendEmail } from '@/config/email';
@@ -21,8 +22,11 @@ const StukadoorConfigurator = () => {
     postcode: '',
     plaats: '',
     werk_type: 'binnen_stucwerk',
-    oppervlakte: '',
+    afwerking_type: 'sausklaar_stucwerk',
+    oppervlakte_wanden: '',
+    oppervlakte_plafonds: '',
     aantal_kamers: '',
+    plafond_meestucken: false,
     bericht: ''
   });
 
@@ -30,17 +34,49 @@ const StukadoorConfigurator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculatePrice = () => {
-    const oppervlakte = parseFloat(formData.oppervlakte) || 0;
-    const aantalKamers = parseInt(formData.aantal_kamers) || 0;
+    if (formData.werk_type === 'buiten_stucwerk') {
+      return null; // Geen prijs voor buitenstucwerk
+    }
+
+    const wandenOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
+    const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
     
-    // Basisprijs per m²
-    const basisPrijs = 35;
+    let wandenPrijs = 0;
+    let plafondPrijs = 0;
+
+    // Prijzen voor wanden
+    switch (formData.afwerking_type) {
+      case 'sausklaar_stucwerk':
+        wandenPrijs = wandenOppervlakte * 17.25;
+        break;
+      case 'sierpleister':
+        wandenPrijs = wandenOppervlakte * 20.70;
+        break;
+      case 'beton_cire':
+        wandenPrijs = wandenOppervlakte * 103.50;
+        break;
+      default:
+        wandenPrijs = wandenOppervlakte * 17.25;
+    }
+
+    // Prijzen voor plafonds (alleen als plafond wordt meegestucukt)
+    if (formData.plafond_meestucken) {
+      switch (formData.afwerking_type) {
+        case 'sausklaar_stucwerk':
+          plafondPrijs = plafondOppervlakte * 18.40;
+          break;
+        case 'sierpleister':
+          plafondPrijs = plafondOppervlakte * 23.00;
+          break;
+        case 'beton_cire':
+          plafondPrijs = plafondOppervlakte * 138.00;
+          break;
+        default:
+          plafondPrijs = plafondOppervlakte * 18.40;
+      }
+    }
     
-    // Extra kosten voor aantal kamers (voorbereidingswerk)
-    const kamerToeslag = aantalKamers * 150;
-    
-    const totaalPrijs = (oppervlakte * basisPrijs) + kamerToeslag;
-    
+    const totaalPrijs = wandenPrijs + plafondPrijs;
     return Math.round(totaalPrijs);
   };
 
@@ -63,9 +99,22 @@ const StukadoorConfigurator = () => {
     try {
       // Validatie verplichte velden
       if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon || 
-          !formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats || 
-          !formData.oppervlakte) {
+          !formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats) {
         toast.error('Vul alle verplichte velden in');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Voor binnenstucwerk is oppervlakte wanden verplicht
+      if (formData.werk_type === 'binnen_stucwerk' && !formData.oppervlakte_wanden) {
+        toast.error('Vul de oppervlakte van de wanden in');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Als plafond wordt meegestucukt, is plafondoppervlakte verplicht
+      if (formData.plafond_meestucken && !formData.oppervlakte_plafonds) {
+        toast.error('Vul de oppervlakte van de plafonds in');
         setIsSubmitting(false);
         return;
       }
@@ -85,8 +134,8 @@ const StukadoorConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           werk_type: formData.werk_type,
-          afwerking: 'glad_stucwerk',
-          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          afwerking: formData.afwerking_type,
+          oppervlakte: parseInt(formData.oppervlakte_wanden) || 0,
           aantal_kamers: parseInt(formData.aantal_kamers) || 0,
           isolatie_gewenst: false,
           huidige_staat: '',
@@ -122,10 +171,12 @@ const StukadoorConfigurator = () => {
           Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
           
           Project: ${formData.werk_type.replace('_', ' ')}
-          Oppervlakte: ${formData.oppervlakte}m²
+          Afwerking: ${formData.afwerking_type.replace('_', ' ')}
+          Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
+          ${formData.plafond_meestucken ? `Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
           Aantal kamers: ${formData.aantal_kamers}
           
-          Geschatte prijs: €${totalPrice.toLocaleString()}
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString()}` : 'Prijs: Op maat (buitenstucwerk)'}
           
           ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
         `,
@@ -154,7 +205,7 @@ const StukadoorConfigurator = () => {
       // Send confirmation email to customer
       await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: '}Refurbish Totaal Nederland',
+        from_name: 'Refurbish Totaal Nederland',
         from_email: 'info@refurbishtotaalnederland.nl',
         to_name: `${formData.voornaam} ${formData.achternaam}`,
         to_email: formData.emailadres,
@@ -166,8 +217,10 @@ const StukadoorConfigurator = () => {
           
           Uw projectdetails:
           - Project: ${formData.werk_type.replace('_', ' ')}
-          - Oppervlakte: ${formData.oppervlakte}m²
-          - Geschatte prijs: €${totalPrice.toLocaleString()}
+          - Afwerking: ${formData.afwerking_type.replace('_', ' ')}
+          - Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
+          ${formData.plafond_meestucken ? `- Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
+          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString()}` : '- Prijs: Wij nemen contact met u op voor een prijs op maat'}
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
           
@@ -195,8 +248,11 @@ const StukadoorConfigurator = () => {
         postcode: '',
         plaats: '',
         werk_type: 'binnen_stucwerk',
-        oppervlakte: '',
+        afwerking_type: 'sausklaar_stucwerk',
+        oppervlakte_wanden: '',
+        oppervlakte_plafonds: '',
         aantal_kamers: '',
+        plafond_meestucken: false,
         bericht: ''
       });
       setUploadedFile(null);
@@ -209,7 +265,8 @@ const StukadoorConfigurator = () => {
     }
   };
 
-  const hasAnyInput = parseFloat(formData.oppervlakte) > 0;
+  const hasInput = formData.werk_type === 'binnen_stucwerk' && parseFloat(formData.oppervlakte_wanden) > 0;
+  const calculatedPrice = calculatePrice();
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -224,7 +281,7 @@ const StukadoorConfigurator = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Work Type Selection */}
             <div>
-              <Label className="text-base font-medium">Type stucwerk</Label>
+              <Label className="text-base font-medium">Type stucwerk *</Label>
               <RadioGroup
                 value={formData.werk_type}
                 onValueChange={(value) => setFormData({...formData, werk_type: value})}
@@ -245,17 +302,44 @@ const StukadoorConfigurator = () => {
               </RadioGroup>
             </div>
 
+            {/* Afwerking Type - alleen voor binnen stucwerk */}
+            {formData.werk_type === 'binnen_stucwerk' && (
+              <div>
+                <Label className="text-base font-medium">Type afwerking *</Label>
+                <RadioGroup
+                  value={formData.afwerking_type}
+                  onValueChange={(value) => setFormData({...formData, afwerking_type: value})}
+                  className="flex flex-col space-y-2 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="sausklaar_stucwerk" id="sausklaar_stucwerk" />
+                    <Label htmlFor="sausklaar_stucwerk">Sausklaar stucwerk</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="sierpleister" id="sierpleister" />
+                    <Label htmlFor="sierpleister">Sierpleister (Spachtelputz)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="beton_cire" id="beton_cire" />
+                    <Label htmlFor="beton_cire">Beton Ciré</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+
             {/* Project Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="oppervlakte">Oppervlakte (m²) *</Label>
+                <Label htmlFor="oppervlakte_wanden">
+                  Oppervlakte wanden (m²) {formData.werk_type === 'binnen_stucwerk' ? '*' : ''}
+                </Label>
                 <Input
-                  id="oppervlakte"
+                  id="oppervlakte_wanden"
                   type="number"
-                  value={formData.oppervlakte}
-                  onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
-                  placeholder="Bijvoorbeeld: 100"
-                  required
+                  value={formData.oppervlakte_wanden}
+                  onChange={(e) => setFormData({...formData, oppervlakte_wanden: e.target.value})}
+                  placeholder="Bijvoorbeeld: 80"
+                  required={formData.werk_type === 'binnen_stucwerk'}
                 />
               </div>
               <div>
@@ -269,6 +353,36 @@ const StukadoorConfigurator = () => {
                 />
               </div>
             </div>
+
+            {/* Plafond opties - alleen voor binnen stucwerk */}
+            {formData.werk_type === 'binnen_stucwerk' && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="plafond_meestucken"
+                    checked={formData.plafond_meestucken}
+                    onCheckedChange={(checked) => setFormData({...formData, plafond_meestucken: !!checked})}
+                  />
+                  <Label htmlFor="plafond_meestucken">
+                    Plafond(s) ook laten stucken
+                  </Label>
+                </div>
+
+                {formData.plafond_meestucken && (
+                  <div>
+                    <Label htmlFor="oppervlakte_plafonds">Oppervlakte plafonds (m²) *</Label>
+                    <Input
+                      id="oppervlakte_plafonds"
+                      type="number"
+                      value={formData.oppervlakte_plafonds}
+                      onChange={(e) => setFormData({...formData, oppervlakte_plafonds: e.target.value})}
+                      placeholder="Bijvoorbeeld: 30"
+                      required={formData.plafond_meestucken}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* File Upload */}
             <div>
@@ -302,15 +416,25 @@ const StukadoorConfigurator = () => {
             </div>
 
             {/* Price Display */}
-            {hasAnyInput && (
+            {(hasInput || formData.werk_type === 'buiten_stucwerk') && (
               <Card className="bg-green-50 border-green-200">
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs (Indicatief)</h3>
-                    <p className="text-3xl font-bold text-green-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-green-700">
-                      Inclusief materiaal en arbeid
-                    </p>
+                    <h3 className="text-lg font-semibold text-green-800">
+                      {formData.werk_type === 'buiten_stucwerk' ? 'Prijs op maat' : 'Geschatte Prijs (Indicatief)'}
+                    </h3>
+                    {formData.werk_type === 'buiten_stucwerk' ? (
+                      <p className="text-lg font-bold text-green-600 mt-2">
+                        Wij nemen contact met u op voor een prijs op maat
+                      </p>
+                    ) : calculatedPrice ? (
+                      <>
+                        <p className="text-3xl font-bold text-green-600">€{calculatedPrice.toLocaleString()}</p>
+                        <p className="text-sm text-green-700">
+                          Inclusief materiaal en arbeid
+                        </p>
+                      </>
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>
