@@ -91,11 +91,8 @@ function App() {
                 <AdminDashboardPage />
               </ProtectedAdminRoute>
             } />
-            <Route path="/admin-dashboard" element={
-              <ProtectedAdminRoute>
-                <UnifiedAdminDashboard />
-              </ProtectedAdminRoute>
-            } />
+            {/* Admin dashboard is now accessible without login */}
+            <Route path="/admin-dashboard" element={<UnifiedAdminDashboard />} />
             <Route path="/admin-dakkapel" element={
               <ProtectedAdminRoute>
                 <AdminDakkapelPage />
