@@ -100,6 +100,15 @@ const StukadoorConfigurator = () => {
     setIsSubmitting(true);
 
     try {
+      // Validatie
+      if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon || 
+          !formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats || 
+          !formData.oppervlakte) {
+        toast.error('Vul alle verplichte velden in');
+        setIsSubmitting(false);
+        return;
+      }
+
       const totalPrice = calculatePrice();
       
       // Save to database
@@ -115,7 +124,7 @@ const StukadoorConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           werk_type: formData.werk_type,
-          afwerking: formData.afwerking.replace('_', ' '),
+          afwerking: formData.afwerking,
           oppervlakte: parseInt(formData.oppervlakte) || 0,
           aantal_kamers: parseInt(formData.aantal_kamers) || 0,
           isolatie_gewenst: formData.isolatie_gewenst,
@@ -128,7 +137,10 @@ const StukadoorConfigurator = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
       // Send notification email to main admin address
       await sendEmail({
@@ -232,7 +244,7 @@ const StukadoorConfigurator = () => {
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Er ging iets mis bij het verzenden van je aanvraag');
+      toast.error('Er ging iets mis bij het verzenden van je aanvraag. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
@@ -313,7 +325,7 @@ const StukadoorConfigurator = () => {
             {/* Project Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="oppervlakte">Oppervlakte (m²)</Label>
+                <Label htmlFor="oppervlakte">Oppervlakte (m²) *</Label>
                 <Input
                   id="oppervlakte"
                   type="number"
@@ -413,7 +425,7 @@ const StukadoorConfigurator = () => {
               <h3 className="text-lg font-medium mb-4">Contactgegevens</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="voornaam">Voornaam</Label>
+                  <Label htmlFor="voornaam">Voornaam *</Label>
                   <Input
                     id="voornaam"
                     value={formData.voornaam}
@@ -422,7 +434,7 @@ const StukadoorConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="achternaam">Achternaam</Label>
+                  <Label htmlFor="achternaam">Achternaam *</Label>
                   <Input
                     id="achternaam"
                     value={formData.achternaam}
@@ -434,7 +446,7 @@ const StukadoorConfigurator = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="emailadres">E-mailadres</Label>
+                  <Label htmlFor="emailadres">E-mailadres *</Label>
                   <Input
                     id="emailadres"
                     type="email"
@@ -444,7 +456,7 @@ const StukadoorConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="telefoon">Telefoonnummer</Label>
+                  <Label htmlFor="telefoon">Telefoonnummer *</Label>
                   <Input
                     id="telefoon"
                     value={formData.telefoon}
@@ -457,7 +469,7 @@ const StukadoorConfigurator = () => {
               {/* Address */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div className="md:col-span-2">
-                  <Label htmlFor="straatnaam">Straatnaam</Label>
+                  <Label htmlFor="straatnaam">Straatnaam *</Label>
                   <Input
                     id="straatnaam"
                     value={formData.straatnaam}
@@ -466,7 +478,7 @@ const StukadoorConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="huisnummer">Huisnummer</Label>
+                  <Label htmlFor="huisnummer">Huisnummer *</Label>
                   <Input
                     id="huisnummer"
                     value={formData.huisnummer}
@@ -478,7 +490,7 @@ const StukadoorConfigurator = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="postcode">Postcode</Label>
+                  <Label htmlFor="postcode">Postcode *</Label>
                   <Input
                     id="postcode"
                     value={formData.postcode}
@@ -487,7 +499,7 @@ const StukadoorConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="plaats">Plaats</Label>
+                  <Label htmlFor="plaats">Plaats *</Label>
                   <Input
                     id="plaats"
                     value={formData.plaats}
