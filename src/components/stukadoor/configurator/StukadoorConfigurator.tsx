@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,7 +43,7 @@ const StukadoorConfigurator = () => {
     let wandenPrijs = 0;
     let plafondPrijs = 0;
 
-    // Prijzen voor wanden
+    // EXACTE PRIJZEN VOOR WANDEN
     switch (formData.afwerking_type) {
       case 'sausklaar_stucwerk':
         wandenPrijs = wandenOppervlakte * 17.25;
@@ -59,7 +58,7 @@ const StukadoorConfigurator = () => {
         wandenPrijs = wandenOppervlakte * 17.25;
     }
 
-    // Prijzen voor plafonds (alleen als plafond wordt meegestucukt)
+    // EXACTE PRIJZEN VOOR PLAFONDS (alleen als plafond wordt meegestuckt)
     if (formData.plafond_meestucken) {
       switch (formData.afwerking_type) {
         case 'sausklaar_stucwerk':
@@ -77,7 +76,8 @@ const StukadoorConfigurator = () => {
     }
     
     const totaalPrijs = wandenPrijs + plafondPrijs;
-    return Math.round(totaalPrijs);
+    // Gebruik parseFloat en toFixed(2) voor exacte prijzen
+    return parseFloat(totaalPrijs.toFixed(2));
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +176,7 @@ const StukadoorConfigurator = () => {
           ${formData.plafond_meestucken ? `Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
           Aantal kamers: ${formData.aantal_kamers}
           
-          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString()}` : 'Prijs: Op maat (buitenstucwerk)'}
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat (buitenstucwerk)'}
           
           ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
         `,
@@ -220,7 +220,7 @@ const StukadoorConfigurator = () => {
           - Afwerking: ${formData.afwerking_type.replace('_', ' ')}
           - Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
           ${formData.plafond_meestucken ? `- Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
-          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString()}` : '- Prijs: Wij nemen contact met u op voor een prijs op maat'}
+          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Prijs: Wij nemen contact met u op voor een prijs op maat'}
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
           
@@ -336,6 +336,7 @@ const StukadoorConfigurator = () => {
                 <Input
                   id="oppervlakte_wanden"
                   type="number"
+                  step="0.01"
                   value={formData.oppervlakte_wanden}
                   onChange={(e) => setFormData({...formData, oppervlakte_wanden: e.target.value})}
                   placeholder="Bijvoorbeeld: 80"
@@ -374,6 +375,7 @@ const StukadoorConfigurator = () => {
                     <Input
                       id="oppervlakte_plafonds"
                       type="number"
+                      step="0.01"
                       value={formData.oppervlakte_plafonds}
                       onChange={(e) => setFormData({...formData, oppervlakte_plafonds: e.target.value})}
                       placeholder="Bijvoorbeeld: 30"
@@ -429,7 +431,7 @@ const StukadoorConfigurator = () => {
                       </p>
                     ) : calculatedPrice ? (
                       <>
-                        <p className="text-3xl font-bold text-green-600">€{calculatedPrice.toLocaleString()}</p>
+                        <p className="text-3xl font-bold text-green-600">€{calculatedPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                         <p className="text-sm text-green-700">
                           Inclusief materiaal en arbeid
                         </p>

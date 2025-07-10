@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,7 +47,7 @@ const SchilderConfigurator = () => {
     const aantalRamen = parseInt(formData.aantal_ramen) || 0;
     const meerderKleuren = formData.meerdere_kleuren;
     
-    // NIEUWE PRIJZEN PER ONDERDEEL (excl. BTW)
+    // EXACTE PRIJZEN PER ONDERDEEL (excl. BTW)
     const wandPrijs = meerderKleuren ? 19.55 : 17.25;
     const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
     const deurPrijs = meerderKleuren ? 345.00 : 287.50;
@@ -65,7 +64,9 @@ const SchilderConfigurator = () => {
     // BTW percentage bepalen (9% voor renovatie, 21% voor nieuwbouw)
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
-    return Math.round(totaalExclBtw * btwPercentage);
+    const totaalPrijs = totaalExclBtw * btwPercentage;
+    // Gebruik parseFloat en toFixed(2) voor exacte prijzen
+    return parseFloat(totaalPrijs.toFixed(2));
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +140,7 @@ const SchilderConfigurator = () => {
           Aantal ramen: ${formData.aantal_ramen}
           Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}
           
-          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString()}` : 'Buiten schilderwerk - prijs op maat'}
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Buiten schilderwerk - prijs op maat'}
           
           Uitvoertermijn: ${formData.uitvoertermijn}
           Reden aanvraag: ${formData.reden_aanvraag}
@@ -181,7 +182,7 @@ const SchilderConfigurator = () => {
           Uw projectdetails:
           - Project: ${formData.project_type} - ${formData.bouw_type}
           - Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
-          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString()}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
+          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
           - Gewenste uitvoertermijn: ${formData.uitvoertermijn}
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
@@ -302,6 +303,7 @@ const SchilderConfigurator = () => {
                 <Input
                   id="oppervlakte"
                   type="number"
+                  step="0.01"
                   value={formData.oppervlakte}
                   onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
                   placeholder="Bijvoorbeeld: 50"
@@ -312,6 +314,7 @@ const SchilderConfigurator = () => {
                 <Input
                   id="plafond_oppervlakte"
                   type="number"
+                  step="0.01"
                   value={formData.plafond_oppervlakte}
                   onChange={(e) => setFormData({...formData, plafond_oppervlakte: e.target.value})}
                   placeholder="Bijvoorbeeld: 25"
@@ -403,7 +406,7 @@ const SchilderConfigurator = () => {
                     <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
                     {formData.project_type === 'binnen' && totalPrice ? (
                       <>
-                        <p className="text-3xl font-bold text-blue-600">€{totalPrice.toLocaleString()}</p>
+                        <p className="text-3xl font-bold text-blue-600">€{totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                         <p className="text-sm text-blue-700 mb-2">
                           Inclusief materiaal en arbeid
                         </p>
