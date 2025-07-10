@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +11,8 @@ import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import QuoteDialog from '@/components/admin/QuoteDialog';
 import MobileAdminHeader from '@/components/admin/MobileAdminHeader';
 
+type ServiceType = 'dakkapel' | 'schilder' | 'stukadoor' | 'zonnepaneel';
+
 const UnifiedAdminDashboard = () => {
   const [configuraties, setConfiguraties] = useState([]);
   const [schilderAanvragen, setSchilderAanvragen] = useState([]);
@@ -21,7 +22,7 @@ const UnifiedAdminDashboard = () => {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState(null);
-  const [activeService, setActiveService] = useState('dakkapel');
+  const [activeService, setActiveService] = useState<ServiceType>('dakkapel');
 
   const loadData = async () => {
     console.log('Loading unified dashboard data...');
