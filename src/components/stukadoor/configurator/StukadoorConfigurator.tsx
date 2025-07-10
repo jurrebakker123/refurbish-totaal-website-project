@@ -9,7 +9,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
 import { sendEmail } from '@/config/email';
 
 const StukadoorConfigurator = () => {
@@ -29,8 +28,7 @@ const StukadoorConfigurator = () => {
     oppervlakte_plafonds: '',
     uitvoertermijn: '',
     reden_aanvraag: '',
-    bericht: '',
-    whatsapp_optin: false
+    bericht: ''
   });
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -70,45 +68,6 @@ const StukadoorConfigurator = () => {
     return Math.round(totaalExclBtw * btwPercentage);
   };
 
-  const getPriceBreakdown = () => {
-    const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
-    const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
-    
-    // CORRECTE PRIJZEN PER STUC TYPE (excl. BTW)
-    let wandPrijs = 0;
-    let plafondPrijs = 0;
-    let stucTypeNaam = '';
-    
-    switch (formData.stuc_type) {
-      case 'sausklaar':
-        wandPrijs = 17.25;
-        plafondPrijs = 18.40;
-        stucTypeNaam = 'Sausklaar stucwerk';
-        break;
-      case 'sierpleister':
-        wandPrijs = 20.70;
-        plafondPrijs = 23.00;
-        stucTypeNaam = 'Sierpleister (spachtel)';
-        break;
-      case 'beton_cire':
-        wandPrijs = 103.50;
-        plafondPrijs = 138.00;
-        stucTypeNaam = 'Beton ciré';
-        break;
-    }
-    
-    const breakdown = [];
-    
-    if (wandOppervlakte > 0) {
-      breakdown.push(`${stucTypeNaam} - Wanden: ${wandOppervlakte}m² = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
-    }
-    if (plafondOppervlakte > 0) {
-      breakdown.push(`${stucTypeNaam} - Plafonds: ${plafondOppervlakte}m² = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
-    }
-    
-    return breakdown;
-  };
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -124,11 +83,6 @@ const StukadoorConfigurator = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.whatsapp_optin) {
-      toast.error('WhatsApp toestemming is verplicht voor deze service');
-      return;
-    }
     
     setIsSubmitting(true);
 
@@ -211,23 +165,7 @@ const StukadoorConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      // Trigger WhatsApp lead nurturing
-      if (formData.whatsapp_optin && savedData) {
-        const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
-        const formattedPhone = phoneNumber.startsWith('06') ? '31' + phoneNumber.substring(1) : 
-                              phoneNumber.startsWith('6') ? '31' + phoneNumber : phoneNumber;
-
-        await supabase.functions.invoke('whatsapp-lead-nurturing', {
-          body: {
-            leadId: savedData.id,
-            phoneNumber: formattedPhone,
-            customerName: `${formData.voornaam} ${formData.achternaam}`,
-            step: 'initial'
-          }
-        });
-      }
-
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht en een bevestigingsmail.');
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen enkele minuten een bevestigingsmail.');
       
       // Reset form
       setFormData({
@@ -246,8 +184,7 @@ const StukadoorConfigurator = () => {
         oppervlakte_plafonds: '',
         uitvoertermijn: '',
         reden_aanvraag: '',
-        bericht: '',
-        whatsapp_optin: false
+        bericht: ''
       });
       setUploadedFile(null);
 
@@ -414,15 +351,9 @@ const StukadoorConfigurator = () => {
                     <p className="text-sm text-green-700 mb-2">
                       Inclusief materiaal en arbeid
                     </p>
-                    <p className="text-xs text-green-600 mb-2">
+                    <p className="text-xs text-green-600">
                       {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
                     </p>
-                    <div className="text-xs text-green-500 text-left">
-                      <p className="font-semibold mb-1">Prijsopbouw:</p>
-                      {getPriceBreakdown().map((item, index) => (
-                        <p key={index}>{item}</p>
-                      ))}
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -517,12 +448,6 @@ const StukadoorConfigurator = () => {
                 </div>
               </div>
             </div>
-
-            {/* WhatsApp Opt-in */}
-            <WhatsAppOptInCheckbox
-              checked={formData.whatsapp_optin}
-              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
-            />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Bezig met verzenden...' : 'Aanvraag Versturen'}
