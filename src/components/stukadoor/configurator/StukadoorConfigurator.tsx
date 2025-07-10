@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { sendEmail } from '@/config/email';
@@ -22,12 +21,8 @@ const StukadoorConfigurator = () => {
     postcode: '',
     plaats: '',
     werk_type: 'binnen_stucwerk',
-    afwerking: 'glad_stucwerk',
     oppervlakte: '',
     aantal_kamers: '',
-    isolatie_gewenst: false,
-    huidige_staat: '',
-    voorbewerking: '',
     bericht: ''
   });
 
@@ -37,23 +32,9 @@ const StukadoorConfigurator = () => {
   const calculatePrice = () => {
     const oppervlakte = parseFloat(formData.oppervlakte) || 0;
     const aantalKamers = parseInt(formData.aantal_kamers) || 0;
-    const isolatieGewenst = formData.isolatie_gewenst;
     
-    // Basisprijs per m² op basis van afwerking
-    let basisPrijs = 0;
-    switch (formData.afwerking) {
-      case 'glad_stucwerk':
-        basisPrijs = isolatieGewenst ? 45 : 35;
-        break;
-      case 'spachtelputz':
-        basisPrijs = isolatieGewenst ? 55 : 45;
-        break;
-      case 'decoratief_stucwerk':
-        basisPrijs = isolatieGewenst ? 75 : 65;
-        break;
-      default:
-        basisPrijs = 35;
-    }
+    // Basisprijs per m²
+    const basisPrijs = 35;
     
     // Extra kosten voor aantal kamers (voorbereidingswerk)
     const kamerToeslag = aantalKamers * 150;
@@ -61,26 +42,6 @@ const StukadoorConfigurator = () => {
     const totaalPrijs = (oppervlakte * basisPrijs) + kamerToeslag;
     
     return Math.round(totaalPrijs);
-  };
-
-  const getPriceBreakdown = () => {
-    const oppervlakte = parseFloat(formData.oppervlakte) || 0;
-    const aantalKamers = parseInt(formData.aantal_kamers) || 0;
-    
-    const breakdown = [];
-    
-    if (oppervlakte > 0) {
-      breakdown.push(`Oppervlakte: ${oppervlakte}m²`);
-    }
-    if (aantalKamers > 0) {
-      breakdown.push(`Aantal kamers: ${aantalKamers}`);
-    }
-    breakdown.push(`Afwerking: ${formData.afwerking.replace('_', ' ')}`);
-    if (formData.isolatie_gewenst) {
-      breakdown.push('Met isolatie');
-    }
-    
-    return breakdown;
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +61,7 @@ const StukadoorConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      // Validatie
+      // Validatie verplichte velden
       if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon || 
           !formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats || 
           !formData.oppervlakte) {
@@ -124,12 +85,12 @@ const StukadoorConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           werk_type: formData.werk_type,
-          afwerking: formData.afwerking,
+          afwerking: 'glad_stucwerk',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
           aantal_kamers: parseInt(formData.aantal_kamers) || 0,
-          isolatie_gewenst: formData.isolatie_gewenst,
-          huidige_staat: formData.huidige_staat,
-          voorbewerking: formData.voorbewerking,
+          isolatie_gewenst: false,
+          huidige_staat: '',
+          voorbewerking: '',
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw'
@@ -142,7 +103,9 @@ const StukadoorConfigurator = () => {
         throw error;
       }
 
-      // Send notification email to main admin address
+      console.log('Data saved to database:', savedData);
+
+      // Send notification email to first admin address
       await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: formData.voornaam + ' ' + formData.achternaam,
@@ -159,15 +122,10 @@ const StukadoorConfigurator = () => {
           Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
           
           Project: ${formData.werk_type.replace('_', ' ')}
-          Afwerking: ${formData.afwerking.replace('_', ' ')}
           Oppervlakte: ${formData.oppervlakte}m²
           Aantal kamers: ${formData.aantal_kamers}
-          Isolatie gewenst: ${formData.isolatie_gewenst ? 'Ja' : 'Nee'}
           
           Geschatte prijs: €${totalPrice.toLocaleString()}
-          
-          Huidige staat: ${formData.huidige_staat}
-          Voorbewerking: ${formData.voorbewerking}
           
           ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
         `,
@@ -176,6 +134,8 @@ const StukadoorConfigurator = () => {
         service: 'Stukadoor',
         location: `${formData.plaats}`
       });
+
+      console.log('First admin email sent');
 
       // Send notification to second email address
       await sendEmail({
@@ -189,10 +149,12 @@ const StukadoorConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
+      console.log('Second admin email sent');
+
       // Send confirmation email to customer
       await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: 'Refurbish Totaal Nederland',
+        from_name: '}Refurbish Totaal Nederland',
         from_email: 'info@refurbishtotaalnederland.nl',
         to_name: `${formData.voornaam} ${formData.achternaam}`,
         to_email: formData.emailadres,
@@ -204,7 +166,6 @@ const StukadoorConfigurator = () => {
           
           Uw projectdetails:
           - Project: ${formData.werk_type.replace('_', ' ')}
-          - Afwerking: ${formData.afwerking.replace('_', ' ')}
           - Oppervlakte: ${formData.oppervlakte}m²
           - Geschatte prijs: €${totalPrice.toLocaleString()}
           
@@ -219,6 +180,8 @@ const StukadoorConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
+      console.log('Customer confirmation email sent');
+
       toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
       
       // Reset form
@@ -232,12 +195,8 @@ const StukadoorConfigurator = () => {
         postcode: '',
         plaats: '',
         werk_type: 'binnen_stucwerk',
-        afwerking: 'glad_stucwerk',
         oppervlakte: '',
         aantal_kamers: '',
-        isolatie_gewenst: false,
-        huidige_staat: '',
-        voorbewerking: '',
         bericht: ''
       });
       setUploadedFile(null);
@@ -286,42 +245,6 @@ const StukadoorConfigurator = () => {
               </RadioGroup>
             </div>
 
-            {/* Finish Type Selection */}
-            <div>
-              <Label className="text-base font-medium">Gewenste afwerking</Label>
-              <RadioGroup
-                value={formData.afwerking}
-                onValueChange={(value) => setFormData({...formData, afwerking: value})}
-                className="flex flex-col space-y-2 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="glad_stucwerk" id="glad_stucwerk" />
-                  <Label htmlFor="glad_stucwerk">Glad stucwerk</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="spachtelputz" id="spachtelputz" />
-                  <Label htmlFor="spachtelputz">Spachtelputz</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="decoratief_stucwerk" id="decoratief_stucwerk" />
-                  <Label htmlFor="decoratief_stucwerk">Decoratief stucwerk</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Isolation Option */}
-            <div>
-              <Label className="text-base font-medium">Isolatie</Label>
-              <div className="flex items-center space-x-2 mt-2">
-                <Checkbox
-                  id="isolatie_gewenst"
-                  checked={formData.isolatie_gewenst}
-                  onCheckedChange={(checked) => setFormData({...formData, isolatie_gewenst: checked as boolean})}
-                />
-                <Label htmlFor="isolatie_gewenst">Isolatie gewenst (hogere prijs)</Label>
-              </div>
-            </div>
-
             {/* Project Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -343,27 +266,6 @@ const StukadoorConfigurator = () => {
                   value={formData.aantal_kamers}
                   onChange={(e) => setFormData({...formData, aantal_kamers: e.target.value})}
                   placeholder="Bijvoorbeeld: 4"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="huidige_staat">Huidige staat van de wanden</Label>
-                <Input
-                  id="huidige_staat"
-                  value={formData.huidige_staat}
-                  onChange={(e) => setFormData({...formData, huidige_staat: e.target.value})}
-                  placeholder="Bijvoorbeeld: goed, matig, slecht"
-                />
-              </div>
-              <div>
-                <Label htmlFor="voorbewerking">Benodigde voorbewerking</Label>
-                <Input
-                  id="voorbewerking"
-                  value={formData.voorbewerking}
-                  onChange={(e) => setFormData({...formData, voorbewerking: e.target.value})}
-                  placeholder="Bijvoorbeeld: schuren, primer aanbrengen"
                 />
               </div>
             </div>
@@ -406,21 +308,15 @@ const StukadoorConfigurator = () => {
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs (Indicatief)</h3>
                     <p className="text-3xl font-bold text-green-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-green-700 mb-2">
+                    <p className="text-sm text-green-700">
                       Inclusief materiaal en arbeid
                     </p>
-                    <div className="text-xs text-green-500 text-left">
-                      <p className="font-semibold mb-1">Prijsopbouw:</p>
-                      {getPriceBreakdown().map((item, index) => (
-                        <p key={index}>{item}</p>
-                      ))}
-                    </div>
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Contact Information - MOVED TO END */}
+            {/* Contact Information */}
             <div className="border-t pt-6">
               <h3 className="text-lg font-medium mb-4">Contactgegevens</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
