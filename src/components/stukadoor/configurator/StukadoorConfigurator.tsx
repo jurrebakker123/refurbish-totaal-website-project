@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
+import { sendEmail } from '@/config/email';
 
 const StukadoorConfigurator = () => {
   const [formData, setFormData] = useState({
@@ -99,10 +100,10 @@ const StukadoorConfigurator = () => {
     const breakdown = [];
     
     if (wandOppervlakte > 0) {
-      breakdown.push(`${stucTypeNaam} - Wanden: ${wandOppervlakte}m² × €${wandPrijs} = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
+      breakdown.push(`${stucTypeNaam} - Wanden: ${wandOppervlakte}m² = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
     }
     if (plafondOppervlakte > 0) {
-      breakdown.push(`${stucTypeNaam} - Plafonds: ${plafondOppervlakte}m² × €${plafondPrijs} = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
+      breakdown.push(`${stucTypeNaam} - Plafonds: ${plafondOppervlakte}m² = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
     }
     
     return breakdown;
@@ -162,6 +163,54 @@ const StukadoorConfigurator = () => {
 
       if (error) throw error;
 
+      // Send confirmation email to customer
+      await sendEmail({
+        templateId: 'template_ix4mdjh',
+        from_name: formData.voornaam + ' ' + formData.achternaam,
+        from_email: formData.emailadres,
+        to_name: 'Refurbish Totaal Nederland',
+        to_email: 'info@refurbishtotaalnederland.nl',
+        subject: 'Nieuwe Stukadoorswerk Aanvraag',
+        message: `
+          Nieuwe stukadoorswerk aanvraag ontvangen:
+          
+          Klant: ${formData.voornaam} ${formData.achternaam}
+          Email: ${formData.emailadres}
+          Telefoon: ${formData.telefoon}
+          Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
+          
+          Project: ${formData.werk_type} - ${formData.bouw_type}
+          Type stucwerk: ${formData.stuc_type === 'sausklaar' ? 'Sausklaar stucwerk' : 
+                          formData.stuc_type === 'sierpleister' ? 'Sierpleister (spachtel)' : 'Beton ciré'}
+          Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
+          Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²
+          
+          Geschatte prijs: €${totalPrice.toLocaleString()}
+          
+          Uitvoertermijn: ${formData.uitvoertermijn}
+          Reden aanvraag: ${formData.reden_aanvraag}
+          
+          ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
+        `,
+        reply_to: formData.emailadres,
+        phone: formData.telefoon,
+        service: 'Stukadoorswerk',
+        location: `${formData.plaats}`,
+        preferred_date: formData.uitvoertermijn
+      });
+
+      // Send notification to second email address
+      await sendEmail({
+        templateId: 'template_ix4mdjh',
+        from_name: 'System',
+        from_email: 'info@refurbishtotaalnederland.nl',  
+        to_name: 'Admin',
+        to_email: 'admin@refurbishtotaalnederland.nl',
+        subject: 'Nieuwe Stukadoorswerk Aanvraag',
+        message: `Nieuwe stukadoorswerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
+        reply_to: 'info@refurbishtotaalnederland.nl'
+      });
+
       // Trigger WhatsApp lead nurturing
       if (formData.whatsapp_optin && savedData) {
         const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
@@ -178,7 +227,7 @@ const StukadoorConfigurator = () => {
         });
       }
 
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht.');
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht en een bevestigingsmail.');
       
       // Reset form
       setFormData({
@@ -225,93 +274,6 @@ const StukadoorConfigurator = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="voornaam">Voornaam</Label>
-                <Input
-                  id="voornaam"
-                  value={formData.voornaam}
-                  onChange={(e) => setFormData({...formData, voornaam: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="achternaam">Achternaam</Label>
-                <Input
-                  id="achternaam"
-                  value={formData.achternaam}
-                  onChange={(e) => setFormData({...formData, achternaam: e.target.value})}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="emailadres">E-mailadres</Label>
-                <Input
-                  id="emailadres"
-                  type="email"
-                  value={formData.emailadres}
-                  onChange={(e) => setFormData({...formData, emailadres: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="telefoon">Telefoonnummer</Label>
-                <Input
-                  id="telefoon"
-                  value={formData.telefoon}
-                  onChange={(e) => setFormData({...formData, telefoon: e.target.value})}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Address */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <Label htmlFor="straatnaam">Straatnaam</Label>
-                <Input
-                  id="straatnaam"
-                  value={formData.straatnaam}
-                  onChange={(e) => setFormData({...formData, straatnaam: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="huisnummer">Huisnummer</Label>
-                <Input
-                  id="huisnummer"
-                  value={formData.huisnummer}
-                  onChange={(e) => setFormData({...formData, huisnummer: e.target.value})}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="postcode">Postcode</Label>
-                <Input
-                  id="postcode"
-                  value={formData.postcode}
-                  onChange={(e) => setFormData({...formData, postcode: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="plaats">Plaats</Label>
-                <Input
-                  id="plaats"
-                  value={formData.plaats}
-                  onChange={(e) => setFormData({...formData, plaats: e.target.value})}
-                  required
-                />
-              </div>
-            </div>
-
             {/* Build Type Selection */}
             <div>
               <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
@@ -442,12 +404,6 @@ const StukadoorConfigurator = () => {
               />
             </div>
 
-            {/* WhatsApp Opt-in */}
-            <WhatsAppOptInCheckbox
-              checked={formData.whatsapp_optin}
-              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
-            />
-
             {/* Price Display */}
             {hasAnyInput && (
               <Card className="bg-green-50 border-green-200">
@@ -471,6 +427,102 @@ const StukadoorConfigurator = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* Contact Information - MOVED TO END */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-medium mb-4">Contactgegevens</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="voornaam">Voornaam</Label>
+                  <Input
+                    id="voornaam"
+                    value={formData.voornaam}
+                    onChange={(e) => setFormData({...formData, voornaam: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="achternaam">Achternaam</Label>
+                  <Input
+                    id="achternaam"
+                    value={formData.achternaam}
+                    onChange={(e) => setFormData({...formData, achternaam: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <Label htmlFor="emailadres">E-mailadres</Label>
+                  <Input
+                    id="emailadres"
+                    type="email"
+                    value={formData.emailadres}
+                    onChange={(e) => setFormData({...formData, emailadres: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="telefoon">Telefoonnummer</Label>
+                  <Input
+                    id="telefoon"
+                    value={formData.telefoon}
+                    onChange={(e) => setFormData({...formData, telefoon: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="md:col-span-2">
+                  <Label htmlFor="straatnaam">Straatnaam</Label>
+                  <Input
+                    id="straatnaam"
+                    value={formData.straatnaam}
+                    onChange={(e) => setFormData({...formData, straatnaam: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="huisnummer">Huisnummer</Label>
+                  <Input
+                    id="huisnummer"
+                    value={formData.huisnummer}
+                    onChange={(e) => setFormData({...formData, huisnummer: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <Label htmlFor="postcode">Postcode</Label>
+                  <Input
+                    id="postcode"
+                    value={formData.postcode}
+                    onChange={(e) => setFormData({...formData, postcode: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="plaats">Plaats</Label>
+                  <Input
+                    id="plaats"
+                    value={formData.plaats}
+                    onChange={(e) => setFormData({...formData, plaats: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* WhatsApp Opt-in */}
+            <WhatsAppOptInCheckbox
+              checked={formData.whatsapp_optin}
+              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
+            />
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Bezig met verzenden...' : 'Aanvraag Versturen'}
