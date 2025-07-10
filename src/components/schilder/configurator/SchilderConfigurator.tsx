@@ -37,13 +37,18 @@ const SchilderConfigurator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculatePrice = () => {
+    // Only calculate for binnen schilderwerk
+    if (formData.project_type !== 'binnen') {
+      return null;
+    }
+
     const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
     const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
     const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
     const aantalRamen = parseInt(formData.aantal_ramen) || 0;
     const meerderKleuren = formData.meerdere_kleuren;
     
-    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
+    // NIEUWE PRIJZEN PER ONDERDEEL (excl. BTW)
     const wandPrijs = meerderKleuren ? 19.55 : 17.25;
     const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
     const deurPrijs = meerderKleuren ? 345.00 : 287.50;
@@ -61,30 +66,6 @@ const SchilderConfigurator = () => {
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
     return Math.round(totaalExclBtw * btwPercentage);
-  };
-
-  const getPriceBreakdown = () => {
-    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
-    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
-    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
-    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
-    
-    const breakdown = [];
-    
-    if (wandOppervlakte > 0) {
-      breakdown.push(`Wanden: ${wandOppervlakte}m²`);
-    }
-    if (plafondOppervlakte > 0) {
-      breakdown.push(`Plafonds: ${plafondOppervlakte}m²`);
-    }
-    if (aantalDeuren > 0) {
-      breakdown.push(`Deuren: ${aantalDeuren} stuks`);
-    }
-    if (aantalRamen > 0) {
-      breakdown.push(`Ramen: ${aantalRamen} stuks`);
-    }
-    
-    return breakdown;
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +139,7 @@ const SchilderConfigurator = () => {
           Aantal ramen: ${formData.aantal_ramen}
           Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}
           
-          Geschatte prijs: €${totalPrice.toLocaleString()}
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString()}` : 'Buiten schilderwerk - prijs op maat'}
           
           Uitvoertermijn: ${formData.uitvoertermijn}
           Reden aanvraag: ${formData.reden_aanvraag}
@@ -200,7 +181,7 @@ const SchilderConfigurator = () => {
           Uw projectdetails:
           - Project: ${formData.project_type} - ${formData.bouw_type}
           - Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
-          - Geschatte prijs: €${totalPrice.toLocaleString()}
+          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString()}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
           - Gewenste uitvoertermijn: ${formData.uitvoertermijn}
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
@@ -250,6 +231,7 @@ const SchilderConfigurator = () => {
   // Bepaal BTW percentage
   const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
   const hasAnyInput = parseFloat(formData.oppervlakte) > 0 || parseFloat(formData.plafond_oppervlakte) > 0 || parseInt(formData.aantal_deuren) > 0 || parseInt(formData.aantal_ramen) > 0;
+  const totalPrice = calculatePrice();
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -309,7 +291,7 @@ const SchilderConfigurator = () => {
                   checked={formData.meerdere_kleuren}
                   onCheckedChange={(checked) => setFormData({...formData, meerdere_kleuren: checked as boolean})}
                 />
-                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken (hogere prijs)</Label>
+                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken</Label>
               </div>
             </div>
 
@@ -419,28 +401,31 @@ const SchilderConfigurator = () => {
                 <CardContent className="p-4">
                   <div className="text-center">
                     <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
-                    <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-blue-700 mb-2">
-                      Inclusief materiaal en arbeid
-                    </p>
-                    <p className="text-xs text-blue-600 mb-2">
-                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
-                    </p>
-                    <p className="text-xs text-blue-600 mb-2">
-                      {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
-                    </p>
-                    <div className="text-xs text-blue-500 text-left">
-                      <p className="font-semibold mb-1">Prijsopbouw:</p>
-                      {getPriceBreakdown().map((item, index) => (
-                        <p key={index}>{item}</p>
-                      ))}
-                    </div>
+                    {formData.project_type === 'binnen' && totalPrice ? (
+                      <>
+                        <p className="text-3xl font-bold text-blue-600">€{totalPrice.toLocaleString()}</p>
+                        <p className="text-sm text-blue-700 mb-2">
+                          Inclusief materiaal en arbeid
+                        </p>
+                        <p className="text-xs text-blue-600 mb-2">
+                          {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
+                        </p>
+                        <p className="text-xs text-blue-600">
+                          {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
+                        </p>
+                      </>
+                    ) : (
+                      <div className="text-blue-700">
+                        <p className="text-lg font-semibold">Wij nemen contact met u op voor een prijs op maat</p>
+                        <p className="text-sm">Voor buitenschilderwerk hebben wij geen standaard prijzen</p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Contact Information - MOVED TO END */}
+            {/* Contact Information */}
             <div className="border-t pt-6">
               <h3 className="text-lg font-medium mb-4">Contactgegevens</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
