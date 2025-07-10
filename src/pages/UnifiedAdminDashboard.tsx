@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +21,7 @@ const UnifiedAdminDashboard = () => {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
   const [sendingQuote, setSendingQuote] = useState(null);
+  const [activeService, setActiveService] = useState('dakkapel');
 
   const loadData = async () => {
     console.log('Loading unified dashboard data...');
@@ -77,6 +79,55 @@ const UnifiedAdminDashboard = () => {
            stukadoorAanvragen.filter(s => s.status === 'afgehandeld').length;
   };
 
+  // Get current service data based on active service
+  const getCurrentServiceData = () => {
+    switch (activeService) {
+      case 'dakkapel':
+        return configuraties;
+      case 'schilder':
+        return schilderAanvragen;
+      case 'stukadoor':
+        return stukadoorAanvragen;
+      default:
+        return [];
+    }
+  };
+
+  const currentData = getCurrentServiceData();
+
+  // Filter data by status for different tabs
+  const teVerwerken = currentData.filter(item => 
+    item.status === 'nieuw' || item.status === 'in_behandeling'
+  );
+  
+  const wachtOpReactie = currentData.filter(item => 
+    item.status === 'offerte_verzonden'
+  );
+  
+  const interesseBevestigd = currentData.filter(item => 
+    item.status === 'interesse_bevestigd'
+  );
+  
+  const akkoord = currentData.filter(item => 
+    item.status === 'akkoord'
+  );
+  
+  const nietAkkoord = currentData.filter(item => 
+    item.status === 'niet_akkoord' || item.status === 'geen_interesse'
+  );
+  
+  const opLocatie = currentData.filter(item => 
+    item.status === 'op_locatie'
+  );
+  
+  const inAanbouw = currentData.filter(item => 
+    item.status === 'in_aanbouw'
+  );
+  
+  const afgerond = currentData.filter(item => 
+    item.status === 'afgehandeld'
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -105,10 +156,41 @@ const UnifiedAdminDashboard = () => {
       
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600">Overzicht van alle aanvragen</p>
+          <div className="flex items-center gap-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+              <p className="text-gray-600">Overzicht van alle aanvragen</p>
+            </div>
+            
+            {/* Service selector tabs next to title */}
+            <div className="flex gap-2">
+              <Button
+                variant={activeService === 'dakkapel' ? 'default' : 'outline'}
+                onClick={() => setActiveService('dakkapel')}
+                className="flex items-center gap-2"
+              >
+                <Home className="h-4 w-4" />
+                Dakkapel ({configuraties.length})
+              </Button>
+              <Button
+                variant={activeService === 'schilder' ? 'default' : 'outline'}
+                onClick={() => setActiveService('schilder')}
+                className="flex items-center gap-2"
+              >
+                <PaintBucket className="h-4 w-4" />
+                Schilderwerk ({schilderAanvragen.length})
+              </Button>
+              <Button
+                variant={activeService === 'stukadoor' ? 'default' : 'outline'}
+                onClick={() => setActiveService('stukadoor')}
+                className="flex items-center gap-2"
+              >
+                <Building className="h-4 w-4" />
+                Stukadoorswerk ({stukadoorAanvragen.length})
+              </Button>
+            </div>
           </div>
+          
           <Button onClick={loadData} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Vernieuwen
@@ -147,55 +229,138 @@ const UnifiedAdminDashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Aanvragen Overzicht</CardTitle>
+            <CardTitle>Aanvragen Overzicht - {activeService === 'dakkapel' ? 'Dakkapel' : activeService === 'schilder' ? 'Schilderwerk' : 'Stukadoorswerk'}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="dakkapel" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="dakkapel" className="flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                  Dakkapel ({configuraties.length})
+            <Tabs defaultValue="te-verwerken" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 gap-1 h-auto p-1 bg-gray-100">
+                <TabsTrigger value="te-verwerken" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Te Verwerken ({teVerwerken.length})
                 </TabsTrigger>
-                <TabsTrigger value="schilder" className="flex items-center gap-2">
-                  <PaintBucket className="h-4 w-4" />
-                  Schilderwerk ({schilderAanvragen.length})
+                <TabsTrigger value="wacht-op-reactie" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Wacht op Reactie ({wachtOpReactie.length})
                 </TabsTrigger>
-                <TabsTrigger value="stukadoor" className="flex items-center gap-2">
-                  <Building className="h-4 w-4" />
-                  Stukadoorswerk ({stukadoorAanvragen.length})
+                <TabsTrigger value="interesse-bevestigd" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Interesse Bevestigd ({interesseBevestigd.length})
+                </TabsTrigger>
+                <TabsTrigger value="akkoord" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Akkoord ({akkoord.length})
+                </TabsTrigger>
+                <TabsTrigger value="niet-akkoord" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Niet Akkoord ({nietAkkoord.length})
+                </TabsTrigger>
+                <TabsTrigger value="op-locatie" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Op Locatie ({opLocatie.length})
+                </TabsTrigger>
+                <TabsTrigger value="in-aanbouw" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  In Aanbouw ({inAanbouw.length})
+                </TabsTrigger>
+                <TabsTrigger value="afgerond" className="text-xs py-2 px-2 h-auto whitespace-normal">
+                  Afgerond ({afgerond.length})
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="dakkapel">
+              <TabsContent value="te-verwerken">
                 <ConfiguratorRequestsTable
-                  configuraties={configuraties}
+                  configuraties={activeService === 'dakkapel' ? teVerwerken : []}
+                  schilderAanvragen={activeService === 'schilder' ? teVerwerken : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? teVerwerken : []}
                   onViewDetails={handleViewDetails}
                   onOpenQuoteDialog={handleOpenQuoteDialog}
                   onDataChange={loadData}
                   sendingQuote={sendingQuote}
-                  type="dakkapel"
+                  type={activeService}
                 />
               </TabsContent>
 
-              <TabsContent value="schilder">
+              <TabsContent value="wacht-op-reactie">
                 <ConfiguratorRequestsTable
-                  schilderAanvragen={schilderAanvragen}
+                  configuraties={activeService === 'dakkapel' ? wachtOpReactie : []}
+                  schilderAanvragen={activeService === 'schilder' ? wachtOpReactie : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? wachtOpReactie : []}
                   onViewDetails={handleViewDetails}
                   onOpenQuoteDialog={handleOpenQuoteDialog}
                   onDataChange={loadData}
                   sendingQuote={sendingQuote}
-                  type="schilder"
+                  type={activeService}
                 />
               </TabsContent>
 
-              <TabsContent value="stukadoor">
+              <TabsContent value="interesse-bevestigd">
                 <ConfiguratorRequestsTable
-                  stukadoorAanvragen={stukadoorAanvragen}
+                  configuraties={activeService === 'dakkapel' ? interesseBevestigd : []}
+                  schilderAanvragen={activeService === 'schilder' ? interesseBevestigd : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? interesseBevestigd : []}
                   onViewDetails={handleViewDetails}
                   onOpenQuoteDialog={handleOpenQuoteDialog}
                   onDataChange={loadData}
                   sendingQuote={sendingQuote}
-                  type="stukadoor"
+                  type={activeService}
+                />
+              </TabsContent>
+
+              <TabsContent value="akkoord">
+                <ConfiguratorRequestsTable
+                  configuraties={activeService === 'dakkapel' ? akkoord : []}
+                  schilderAanvragen={activeService === 'schilder' ? akkoord : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? akkoord : []}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type={activeService}
+                />
+              </TabsContent>
+
+              <TabsContent value="niet-akkoord">
+                <ConfiguratorRequestsTable
+                  configuraties={activeService === 'dakkapel' ? nietAkkoord : []}
+                  schilderAanvragen={activeService === 'schilder' ? nietAkkoord : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? nietAkkoord : []}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type={activeService}
+                />
+              </TabsContent>
+
+              <TabsContent value="op-locatie">
+                <ConfiguratorRequestsTable
+                  configuraties={activeService === 'dakkapel' ? opLocatie : []}
+                  schilderAanvragen={activeService === 'schilder' ? opLocatie : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? opLocatie : []}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type={activeService}
+                />
+              </TabsContent>
+
+              <TabsContent value="in-aanbouw">
+                <ConfiguratorRequestsTable
+                  configuraties={activeService === 'dakkapel' ? inAanbouw : []}
+                  schilderAanvragen={activeService === 'schilder' ? inAanbouw : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? inAanbouw : []}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type={activeService}
+                />
+              </TabsContent>
+
+              <TabsContent value="afgerond">
+                <ConfiguratorRequestsTable
+                  configuraties={activeService === 'dakkapel' ? afgerond : []}
+                  schilderAanvragen={activeService === 'schilder' ? afgerond : []}
+                  stukadoorAanvragen={activeService === 'stukadoor' ? afgerond : []}
+                  onViewDetails={handleViewDetails}
+                  onOpenQuoteDialog={handleOpenQuoteDialog}
+                  onDataChange={loadData}
+                  sendingQuote={sendingQuote}
+                  type={activeService}
                 />
               </TabsContent>
             </Tabs>
