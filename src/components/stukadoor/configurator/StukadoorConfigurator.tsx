@@ -9,7 +9,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
 
 const StukadoorConfigurator = () => {
   const [formData, setFormData] = useState({
@@ -28,8 +27,7 @@ const StukadoorConfigurator = () => {
     oppervlakte_plafonds: '',
     uitvoertermijn: '',
     reden_aanvraag: '',
-    bericht: '',
-    whatsapp_optin: false
+    bericht: ''
   });
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -123,12 +121,6 @@ const StukadoorConfigurator = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.whatsapp_optin) {
-      toast.error('WhatsApp toestemming is verplicht voor deze service');
-      return;
-    }
-    
     setIsSubmitting(true);
 
     try {
@@ -136,7 +128,7 @@ const StukadoorConfigurator = () => {
       const totalOppervlakte = (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0);
       
       // Save to database
-      const { data: savedData, error } = await supabase
+      const { error } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -156,29 +148,11 @@ const StukadoorConfigurator = () => {
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw'
-        })
-        .select()
-        .single();
+        });
 
       if (error) throw error;
 
-      // Trigger WhatsApp lead nurturing
-      if (formData.whatsapp_optin && savedData) {
-        const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
-        const formattedPhone = phoneNumber.startsWith('06') ? '31' + phoneNumber.substring(1) : 
-                              phoneNumber.startsWith('6') ? '31' + phoneNumber : phoneNumber;
-
-        await supabase.functions.invoke('whatsapp-lead-nurturing', {
-          body: {
-            leadId: savedData.id,
-            phoneNumber: formattedPhone,
-            customerName: `${formData.voornaam} ${formData.achternaam}`,
-            step: 'initial'
-          }
-        });
-      }
-
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht.');
+      toast.success('Aanvraag succesvol verzonden!');
       
       // Reset form
       setFormData({
@@ -197,8 +171,7 @@ const StukadoorConfigurator = () => {
         oppervlakte_plafonds: '',
         uitvoertermijn: '',
         reden_aanvraag: '',
-        bericht: '',
-        whatsapp_optin: false
+        bericht: ''
       });
       setUploadedFile(null);
 
@@ -441,12 +414,6 @@ const StukadoorConfigurator = () => {
                 placeholder="Eventuele extra informatie over uw project..."
               />
             </div>
-
-            {/* WhatsApp Opt-in */}
-            <WhatsAppOptInCheckbox
-              checked={formData.whatsapp_optin}
-              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
-            />
 
             {/* Price Display */}
             {hasAnyInput && (

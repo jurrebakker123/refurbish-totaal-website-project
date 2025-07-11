@@ -9,7 +9,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
 
 const SchilderConfigurator = () => {
   const [formData, setFormData] = useState({
@@ -30,8 +29,7 @@ const SchilderConfigurator = () => {
     meerdere_kleuren: false,
     uitvoertermijn: '',
     reden_aanvraag: '',
-    bericht: '',
-    whatsapp_optin: false
+    bericht: ''
   });
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -110,19 +108,13 @@ const SchilderConfigurator = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.whatsapp_optin) {
-      toast.error('WhatsApp toestemming is verplicht voor deze service');
-      return;
-    }
-    
     setIsSubmitting(true);
 
     try {
       const totalPrice = calculatePrice();
       
       // Save to database
-      const { data: savedData, error } = await supabase
+      const { error } = await supabase
         .from('schilder_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -143,29 +135,11 @@ const SchilderConfigurator = () => {
           status: 'nieuw',
           plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
           kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
-        })
-        .select()
-        .single();
+        });
 
       if (error) throw error;
 
-      // Trigger WhatsApp lead nurturing
-      if (formData.whatsapp_optin && savedData) {
-        const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
-        const formattedPhone = phoneNumber.startsWith('06') ? '31' + phoneNumber.substring(1) : 
-                              phoneNumber.startsWith('6') ? '31' + phoneNumber : phoneNumber;
-
-        await supabase.functions.invoke('whatsapp-lead-nurturing', {
-          body: {
-            leadId: savedData.id,
-            phoneNumber: formattedPhone,
-            customerName: `${formData.voornaam} ${formData.achternaam}`,
-            step: 'initial'
-          }
-        });
-      }
-
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht.');
+      toast.success('Aanvraag succesvol verzonden!');
       
       // Reset form
       setFormData({
@@ -186,8 +160,7 @@ const SchilderConfigurator = () => {
         meerdere_kleuren: false,
         uitvoertermijn: '',
         reden_aanvraag: '',
-        bericht: '',
-        whatsapp_optin: false
+        bericht: ''
       });
       setUploadedFile(null);
 
@@ -451,12 +424,6 @@ const SchilderConfigurator = () => {
                 placeholder="Eventuele extra informatie over uw project..."
               />
             </div>
-
-            {/* WhatsApp Opt-in */}
-            <WhatsAppOptInCheckbox
-              checked={formData.whatsapp_optin}
-              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
-            />
 
             {/* Price Display */}
             {hasAnyInput && (
