@@ -31,11 +31,12 @@ import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import MobileRequestCard from './MobileRequestCard';
 import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
-import { deleteQuote } from '@/utils/adminUtils';
 import { toast } from 'sonner';
 import AutoQuoteButton from './AutoQuoteButton';
 import WhatsAppQuoteButton from './WhatsAppQuoteButton';
 import CombinedQuoteButton from './CombinedQuoteButton';
+
+type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
 
 interface ResponsiveRequestTableProps {
   items: any[];
@@ -74,14 +75,18 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
         const isSchilder = items.length > 0 && 'project_type' in items[0] && 'verf_type' in items[0];
         const isStukadoor = items.length > 0 && 'werk_type' in items[0] && 'afwerking' in items[0];
         
-        let tableName = 'dakkapel_calculator_aanvragen';
+        let tableName: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen';
         if (isZonnepaneel) tableName = 'refurbished_zonnepanelen';
         else if (isSchilder) tableName = 'schilder_aanvragen';
         else if (isStukadoor) tableName = 'stukadoor_aanvragen';
         
-        await deleteQuote(id, tableName);
+        const { error } = await supabase.from(tableName).delete().eq('id', id);
+        if (error) throw error;
+        
         onDataChange();
+        toast.success('Aanvraag succesvol verwijderd');
       } catch (error) {
+        console.error('Delete error:', error);
         toast.error("Er is een fout opgetreden bij het verwijderen van de aanvraag.");
       }
     }
@@ -118,7 +123,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
   const isSchilder = items.length > 0 && 'project_type' in items[0] && 'verf_type' in items[0];
   const isStukadoor = items.length > 0 && 'werk_type' in items[0] && 'afwerking' in items[0];
 
-  let type: 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor' = 'dakkapel';
+  let type: ServiceType = 'dakkapel';
   if (isZonnepaneel) type = 'zonnepaneel';
   else if (isSchilder) type = 'schilder';
   else if (isStukadoor) type = 'stukadoor';
@@ -181,16 +186,18 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                         Aanpassen
                       </Button>
                       
-                      <AutoQuoteButton
-                        requestId={item.id}
-                        type={type}
-                        customerEmail={itemEmail}
-                        onSuccess={onDataChange}
-                        disabled={sendingQuote === item.id}
-                      />
+                      {(type === 'dakkapel' || type === 'zonnepaneel') && (
+                        <AutoQuoteButton
+                          requestId={item.id}
+                          type={type}
+                          customerEmail={itemEmail}
+                          onSuccess={onDataChange}
+                          disabled={sendingQuote === item.id}
+                        />
+                      )}
                       
                       {/* WhatsApp Quote Button */}
-                      {item.telefoon && (
+                      {item.telefoon && (type === 'dakkapel' || type === 'zonnepaneel') && (
                         <WhatsAppQuoteButton
                           requestId={item.id}
                           type={type}
@@ -202,7 +209,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       )}
                       
                       {/* Combined Quote Button */}
-                      {(itemEmail || item.telefoon) && (
+                      {(itemEmail || item.telefoon) && (type === 'dakkapel' || type === 'zonnepaneel') && (
                         <CombinedQuoteButton
                           requestId={item.id}
                           type={type}
@@ -213,6 +220,15 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                           disabled={sendingQuote === item.id}
                         />
                       )}
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

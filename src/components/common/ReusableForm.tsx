@@ -13,10 +13,11 @@ import { sendEmail, EmailData } from '@/config/email';
 interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'tel' | 'textarea' | 'number' | 'select';
+  type: 'text' | 'email' | 'tel' | 'textarea' | 'number' | 'select' | 'hidden';
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string; }[];
+  value?: string;
 }
 
 interface ReusableFormProps {
@@ -187,7 +188,18 @@ const ReusableForm = ({
   };
 
   const renderField = (field: FormField) => {
-    const value = formData[field.name] || '';
+    const value = formData[field.name] || field.value || '';
+
+    if (field.type === 'hidden') {
+      return (
+        <input
+          type="hidden"
+          name={field.name}
+          value={value}
+          onChange={() => {}}
+        />
+      );
+    }
 
     if (field.type === 'textarea') {
       return (
@@ -239,8 +251,8 @@ const ReusableForm = ({
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {allFields.map((field) => (
-            <div key={field.name}>
-              <Label htmlFor={field.name}>{field.label}</Label>
+            <div key={field.name} className={field.type === 'hidden' ? 'hidden' : ''}>
+              {field.type !== 'hidden' && <Label htmlFor={field.name}>{field.label}</Label>}
               {renderField(field)}
             </div>
           ))}

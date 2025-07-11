@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -197,7 +198,7 @@ const UnifiedAdminDashboard = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
                 <p className="text-gray-600">Beheer alle aanvragen en configuraties</p>
               </div>
-              <NotificationCenter configuraties={configuraties || []} />
+              <NotificationCenter configuraties={getCurrentData()} />
             </div>
 
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
