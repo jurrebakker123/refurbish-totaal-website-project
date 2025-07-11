@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,8 @@ const StukadoorConfigurator = () => {
     oppervlakte_plafonds: '',
     aantal_kamers: '',
     plafond_meestucken: false,
+    uitvoertermijn: '',
+    reden_aanvraag: '',
     bericht: ''
   });
 
@@ -175,6 +178,8 @@ const StukadoorConfigurator = () => {
           Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
           ${formData.plafond_meestucken ? `Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
           Aantal kamers: ${formData.aantal_kamers}
+          Uitvoertermijn: ${formData.uitvoertermijn}
+          Reden aanvraag: ${formData.reden_aanvraag}
           
           ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat (buitenstucwerk)'}
           
@@ -183,7 +188,8 @@ const StukadoorConfigurator = () => {
         reply_to: formData.emailadres,
         phone: formData.telefoon,
         service: 'Stukadoor',
-        location: `${formData.plaats}`
+        location: `${formData.plaats}`,
+        preferred_date: formData.uitvoertermijn
       });
 
       console.log('First admin email sent');
@@ -220,6 +226,7 @@ const StukadoorConfigurator = () => {
           - Afwerking: ${formData.afwerking_type.replace('_', ' ')}
           - Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
           ${formData.plafond_meestucken ? `- Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
+          - Uitvoertermijn: ${formData.uitvoertermijn}
           ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Prijs: Wij nemen contact met u op voor een prijs op maat'}
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
@@ -253,6 +260,8 @@ const StukadoorConfigurator = () => {
         oppervlakte_plafonds: '',
         aantal_kamers: '',
         plafond_meestucken: false,
+        uitvoertermijn: '',
+        reden_aanvraag: '',
         bericht: ''
       });
       setUploadedFile(null);
@@ -385,6 +394,28 @@ const StukadoorConfigurator = () => {
                 )}
               </div>
             )}
+
+            <div>
+              <Label htmlFor="uitvoertermijn">Gewenste startdatum</Label>
+              <Input
+                id="uitvoertermijn"
+                value={formData.uitvoertermijn}
+                onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
+                placeholder="Bijvoorbeeld: 15 januari 2024, flexibel, zo snel mogelijk"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag?</Label>
+              <Input
+                id="reden_aanvraag"
+                value={formData.reden_aanvraag}
+                onChange={(e) => setFormData({...formData, reden_aanvraag: e.target.value})}
+                placeholder="Bijvoorbeeld: verhuizing, onderhoud, renovatie"
+                required
+              />
+            </div>
 
             {/* File Upload */}
             <div>

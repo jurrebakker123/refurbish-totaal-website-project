@@ -105,13 +105,11 @@ const SchilderConfigurator = () => {
           project_type: `${formData.project_type} - ${formData.bouw_type}`,
           verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
-          uitvoertermijn: formData.uitvoertermijn,
-          reden_aanvraag: formData.reden_aanvraag,
-          bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw',
           plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
+          bericht: formData.bericht
         })
         .select()
         .single();
