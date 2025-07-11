@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,13 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Calculator, MapPin, Phone, Mail, FileText } from 'lucide-react';
+import { Calculator, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
 const StukadoorConfigurator = () => {
-  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     // Project details
     werktype: '',
@@ -81,9 +80,17 @@ const StukadoorConfigurator = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!formData.voorwaarden) {
       toast.error('Accepteer de algemene voorwaarden om door te gaan');
+      return;
+    }
+
+    // Validatie voor verplichte velden
+    if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoon || !formData.werktype || !formData.oppervlakte) {
+      toast.error('Vul alle verplichte velden in');
       return;
     }
 
@@ -256,7 +263,6 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
           budget: '',
           voorwaarden: false
         });
-        setCurrentStep(1);
       } else {
         throw new Error('Geen emails konden worden verstuurd');
       }
@@ -269,260 +275,11 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
     }
   };
 
-  const renderStep1 = () => (
-    <div className="space-y-6">
-      <div>
-        <Label htmlFor="werktype">Type stukadoorwerk *</Label>
-        <Select value={formData.werktype} onValueChange={(value) => handleInputChange('werktype', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecteer werktype" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="glad_stucwerk">Glad stucwerk</SelectItem>
-            <SelectItem value="spachtelputz">Spachtelputz</SelectItem>
-            <SelectItem value="decoratief_stucwerk">Decoratief stucwerk</SelectItem>
-            <SelectItem value="reparatie_stucwerk">Reparatie stucwerk</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="binnen_buiten">Locatie *</Label>
-        <Select value={formData.binnen_buiten} onValueChange={(value) => handleInputChange('binnen_buiten', value)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="binnen">Binnen</SelectItem>
-            <SelectItem value="buiten">Buiten</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="oppervlakte">Oppervlakte (m²) *</Label>
-        <Input
-          id="oppervlakte"
-          type="number"
-          value={formData.oppervlakte}
-          onChange={(e) => handleInputChange('oppervlakte', e.target.value)}
-          placeholder="Bijv. 25"
-          step="0.1"
-          min="0"
-        />
-      </div>
-
-      {formData.binnen_buiten === 'binnen' && (
-        <div>
-          <Label htmlFor="kamers">Aantal kamers</Label>
-          <Input
-            id="kamers"
-            type="number"
-            value={formData.kamers}
-            onChange={(e) => handleInputChange('kamers', e.target.value)}
-            placeholder="Bijv. 3"
-            min="1"
-          />
-        </div>
-      )}
-
-      <div>
-        <Label htmlFor="locatie">Locatie beschrijving</Label>
-        <Textarea
-          id="locatie"
-          value={formData.locatie}
-          onChange={(e) => handleInputChange('locatie', e.target.value)}
-          placeholder="Beschrijf de locatie of specifieke wensen..."
-        />
-      </div>
-    </div>
-  );
-
-  const renderStep2 = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="voornaam">Voornaam *</Label>
-          <Input
-            id="voornaam"
-            value={formData.voornaam}
-            onChange={(e) => handleInputChange('voornaam', e.target.value)}
-            placeholder="Uw voornaam"
-          />
-        </div>
-        <div>
-          <Label htmlFor="achternaam">Achternaam *</Label>
-          <Input
-            id="achternaam"
-            value={formData.achternaam}
-            onChange={(e) => handleInputChange('achternaam', e.target.value)}
-            placeholder="Uw achternaam"
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="email">E-mailadres *</Label>
-        <Input
-          id="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleInputChange('email', e.target.value)}
-          placeholder="uw@email.nl"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="telefoon">Telefoonnummer *</Label>
-        <Input
-          id="telefoon"
-          value={formData.telefoon}
-          onChange={(e) => handleInputChange('telefoon', e.target.value)}
-          placeholder="06 12345678"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
-          <Label htmlFor="straat">Straatnaam *</Label>
-          <Input
-            id="straat"
-            value={formData.straat}
-            onChange={(e) => handleInputChange('straat', e.target.value)}
-            placeholder="Straatnaam"
-          />
-        </div>
-        <div>
-          <Label htmlFor="huisnummer">Huisnummer *</Label>
-          <Input
-            id="huisnummer"
-            value={formData.huisnummer}
-            onChange={(e) => handleInputChange('huisnummer', e.target.value)}
-            placeholder="123"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="postcode">Postcode *</Label>
-          <Input
-            id="postcode"
-            value={formData.postcode}
-            onChange={(e) => handleInputChange('postcode', e.target.value)}
-            placeholder="1234AB"
-          />
-        </div>
-        <div>
-          <Label htmlFor="plaats">Plaats *</Label>
-          <Input
-            id="plaats"
-            value={formData.plaats}
-            onChange={(e) => handleInputChange('plaats', e.target.value)}
-            placeholder="Amsterdam"
-          />
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStep3 = () => (
-    <div className="space-y-6">
-      <div>
-        <Label htmlFor="gewenste_datum">Gewenste startdatum</Label>
-        <Input
-          id="gewenste_datum"
-          type="date"
-          value={formData.gewenste_datum}
-          onChange={(e) => handleInputChange('gewenste_datum', e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="budget">Indicatief budget</Label>
-        <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecteer budget" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="< €1.000">Minder dan €1.000</SelectItem>
-            <SelectItem value="€1.000 - €2.500">€1.000 - €2.500</SelectItem>
-            <SelectItem value="€2.500 - €5.000">€2.500 - €5.000</SelectItem>
-            <SelectItem value="€5.000 - €7.500">€5.000 - €7.500</SelectItem>
-            <SelectItem value="> €7.500">Meer dan €7.500</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="bericht">Aanvullende opmerkingen</Label>
-        <Textarea
-          id="bericht"
-          value={formData.bericht}
-          onChange={(e) => handleInputChange('bericht', e.target.value)}
-          placeholder="Eventuele aanvullende informatie of specifieke wensen..."
-          rows={4}
-        />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="voorwaarden"
-          checked={formData.voorwaarden}
-          onCheckedChange={(checked) => handleInputChange('voorwaarden', checked)}
-        />
-        <Label htmlFor="voorwaarden" className="text-sm">
-          Ik ga akkoord met de algemene voorwaarden *
-        </Label>
-      </div>
-    </div>
-  );
-
-  const canProceedToNextStep = () => {
-    switch (currentStep) {
-      case 1:
-        return formData.werktype && formData.oppervlakte && formData.binnen_buiten;
-      case 2:
-        return formData.voornaam && formData.achternaam && formData.email && 
-               formData.telefoon && formData.straat && formData.huisnummer && 
-               formData.postcode && formData.plaats;
-      case 3:
-        return formData.voorwaarden;
-      default:
-        return false;
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Stukadoor Configurator</h1>
         <p className="text-gray-600">Configureer uw stukadoor project en ontvang direct een offerte</p>
-      </div>
-
-      {/* Progress steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {[1, 2, 3].map((step) => (
-            <div key={step} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                step <= currentStep ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'
-              }`}>
-                {step}
-              </div>
-              <div className={`ml-2 text-sm font-medium ${
-                step <= currentStep ? 'text-green-600' : 'text-gray-400'
-              }`}>
-                {step === 1 && 'Project Details'}
-                {step === 2 && 'Contactgegevens'}
-                {step === 3 && 'Bevestigen'}
-              </div>
-              {step < 3 && <div className={`w-16 h-1 mx-4 ${
-                step < currentStep ? 'bg-green-600' : 'bg-gray-200'
-              }`} />}
-            </div>
-          ))}
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -532,42 +289,231 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="h-5 w-5" />
-                {currentStep === 1 && 'Project Details'}
-                {currentStep === 2 && 'Contactgegevens'}
-                {currentStep === 3 && 'Bevestigen & Versturen'}
+                Project Configuratie
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {currentStep === 1 && renderStep1()}
-              {currentStep === 2 && renderStep2()}
-              {currentStep === 3 && renderStep3()}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Project Details */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Project Details</h3>
+                  
+                  <div>
+                    <Label htmlFor="werktype">Type stukadoorwerk *</Label>
+                    <Select value={formData.werktype} onValueChange={(value) => handleInputChange('werktype', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecteer werktype" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="glad_stucwerk">Glad stucwerk</SelectItem>
+                        <SelectItem value="spachtelputz">Spachtelputz</SelectItem>
+                        <SelectItem value="decoratief_stucwerk">Decoratief stucwerk</SelectItem>
+                        <SelectItem value="reparatie_stucwerk">Reparatie stucwerk</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <div className="flex justify-between mt-8">
+                  <div>
+                    <Label htmlFor="binnen_buiten">Locatie *</Label>
+                    <Select value={formData.binnen_buiten} onValueChange={(value) => handleInputChange('binnen_buiten', value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="binnen">Binnen</SelectItem>
+                        <SelectItem value="buiten">Buiten</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="oppervlakte">Oppervlakte (m²) *</Label>
+                    <Input
+                      id="oppervlakte"
+                      type="number"
+                      value={formData.oppervlakte}
+                      onChange={(e) => handleInputChange('oppervlakte', e.target.value)}
+                      placeholder="Bijv. 25"
+                      step="0.1"
+                      min="0"
+                    />
+                  </div>
+
+                  {formData.binnen_buiten === 'binnen' && (
+                    <div>
+                      <Label htmlFor="kamers">Aantal kamers</Label>
+                      <Input
+                        id="kamers"
+                        type="number"
+                        value={formData.kamers}
+                        onChange={(e) => handleInputChange('kamers', e.target.value)}
+                        placeholder="Bijv. 3"
+                        min="1"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="locatie">Locatie beschrijving</Label>
+                    <Textarea
+                      id="locatie"
+                      value={formData.locatie}
+                      onChange={(e) => handleInputChange('locatie', e.target.value)}
+                      placeholder="Beschrijf de locatie of specifieke wensen..."
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Details */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Contactgegevens</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="voornaam">Voornaam *</Label>
+                      <Input
+                        id="voornaam"
+                        value={formData.voornaam}
+                        onChange={(e) => handleInputChange('voornaam', e.target.value)}
+                        placeholder="Uw voornaam"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="achternaam">Achternaam *</Label>
+                      <Input
+                        id="achternaam"
+                        value={formData.achternaam}
+                        onChange={(e) => handleInputChange('achternaam', e.target.value)}
+                        placeholder="Uw achternaam"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email">E-mailadres *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="uw@email.nl"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="telefoon">Telefoonnummer *</Label>
+                    <Input
+                      id="telefoon"
+                      value={formData.telefoon}
+                      onChange={(e) => handleInputChange('telefoon', e.target.value)}
+                      placeholder="06 12345678"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                      <Label htmlFor="straat">Straatnaam</Label>
+                      <Input
+                        id="straat"
+                        value={formData.straat}
+                        onChange={(e) => handleInputChange('straat', e.target.value)}
+                        placeholder="Straatnaam"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="huisnummer">Huisnummer</Label>
+                      <Input
+                        id="huisnummer"
+                        value={formData.huisnummer}
+                        onChange={(e) => handleInputChange('huisnummer', e.target.value)}
+                        placeholder="123"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="postcode">Postcode</Label>
+                      <Input
+                        id="postcode"
+                        value={formData.postcode}
+                        onChange={(e) => handleInputChange('postcode', e.target.value)}
+                        placeholder="1234AB"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="plaats">Plaats</Label>
+                      <Input
+                        id="plaats"
+                        value={formData.plaats}
+                        onChange={(e) => handleInputChange('plaats', e.target.value)}
+                        placeholder="Amsterdam"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Aanvullende Informatie</h3>
+                  
+                  <div>
+                    <Label htmlFor="gewenste_datum">Gewenste startdatum</Label>
+                    <Input
+                      id="gewenste_datum"
+                      type="date"
+                      value={formData.gewenste_datum}
+                      onChange={(e) => handleInputChange('gewenste_datum', e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="budget">Indicatief budget</Label>
+                    <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecteer budget" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="< €1.000">Minder dan €1.000</SelectItem>
+                        <SelectItem value="€1.000 - €2.500">€1.000 - €2.500</SelectItem>
+                        <SelectItem value="€2.500 - €5.000">€2.500 - €5.000</SelectItem>
+                        <SelectItem value="€5.000 - €7.500">€5.000 - €7.500</SelectItem>
+                        <SelectItem value="> €7.500">Meer dan €7.500</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="bericht">Aanvullende opmerkingen</Label>
+                    <Textarea
+                      id="bericht"
+                      value={formData.bericht}
+                      onChange={(e) => handleInputChange('bericht', e.target.value)}
+                      placeholder="Eventuele aanvullende informatie of specifieke wensen..."
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="voorwaarden"
+                      checked={formData.voorwaarden}
+                      onCheckedChange={(checked) => handleInputChange('voorwaarden', checked)}
+                    />
+                    <Label htmlFor="voorwaarden" className="text-sm">
+                      Ik ga akkoord met de algemene voorwaarden *
+                    </Label>
+                  </div>
+                </div>
+
                 <Button
-                  variant="outline"
-                  onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
-                  disabled={currentStep === 1}
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-green-600 hover:bg-green-700"
                 >
-                  Vorige
+                  {isSubmitting ? 'Versturen...' : 'Verstuur Aanvraag'}
                 </Button>
-                
-                {currentStep < 3 ? (
-                  <Button
-                    onClick={() => setCurrentStep(prev => prev + 1)}
-                    disabled={!canProceedToNextStep()}
-                  >
-                    Volgende
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!canProceedToNextStep() || isSubmitting}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    {isSubmitting ? 'Versturen...' : 'Verstuur Aanvraag'}
-                  </Button>
-                )}
-              </div>
+              </form>
             </CardContent>
           </Card>
         </div>
