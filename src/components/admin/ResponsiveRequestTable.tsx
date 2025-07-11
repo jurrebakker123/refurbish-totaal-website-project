@@ -33,8 +33,6 @@ import MobileRequestCard from './MobileRequestCard';
 import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
 import { toast } from 'sonner';
 import AutoQuoteButton from './AutoQuoteButton';
-import WhatsAppQuoteButton from './WhatsAppQuoteButton';
-import CombinedQuoteButton from './CombinedQuoteButton';
 import { supabase } from '@/integrations/supabase/client';
 
 type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
@@ -96,10 +94,30 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'nieuw': return 'bg-blue-100 text-blue-800';
-      case 'interesse_bevestigd': return 'bg-green-100 text-green-800';
-      case 'offerte_verzonden': return 'bg-yellow-100 text-yellow-800';
+      case 'in_behandeling': return 'bg-yellow-100 text-yellow-800';
+      case 'offerte_verzonden': return 'bg-orange-100 text-orange-800';
+      case 'interesse_bevestigd': return 'bg-purple-100 text-purple-800';
+      case 'akkoord': return 'bg-green-100 text-green-800';
       case 'niet_akkoord': return 'bg-red-100 text-red-800';
+      case 'op_locatie': return 'bg-cyan-100 text-cyan-800';
+      case 'in_aanbouw': return 'bg-indigo-100 text-indigo-800';
+      case 'afgehandeld': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'nieuw': return 'Nieuw';
+      case 'in_behandeling': return 'In Behandeling';
+      case 'offerte_verzonden': return 'Offerte Verzonden';
+      case 'interesse_bevestigd': return 'Interesse Bevestigd';
+      case 'akkoord': return 'Akkoord';
+      case 'niet_akkoord': return 'Niet Akkoord';
+      case 'op_locatie': return 'Op Locatie';
+      case 'in_aanbouw': return 'In Aanbouw';
+      case 'afgehandeld': return 'Afgehandeld';
+      default: return status;
     }
   };
 
@@ -174,7 +192,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                   <TableCell>{formatDate(item.created_at)}</TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(item.status)}>
-                      {item.status}
+                      {getStatusLabel(item.status)}
                     </Badge>
                   </TableCell>
                   
@@ -191,40 +209,13 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       </Button>
                       
                       {showQuoteButtons && (
-                        <>
-                          <AutoQuoteButton
-                            requestId={item.id}
-                            type={type as 'dakkapel' | 'zonnepaneel'}
-                            customerEmail={itemEmail}
-                            onSuccess={onDataChange}
-                            disabled={sendingQuote === item.id}
-                          />
-                          
-                          {/* WhatsApp Quote Button */}
-                          {item.telefoon && (
-                            <WhatsAppQuoteButton
-                              requestId={item.id}
-                              type={type as 'dakkapel' | 'zonnepaneel'}
-                              customerPhone={item.telefoon}
-                              customerName={itemName}
-                              onSuccess={onDataChange}
-                              disabled={sendingQuote === item.id}
-                            />
-                          )}
-                          
-                          {/* Combined Quote Button */}
-                          {(itemEmail || item.telefoon) && (
-                            <CombinedQuoteButton
-                              requestId={item.id}
-                              type={type as 'dakkapel' | 'zonnepaneel'}
-                              customerEmail={itemEmail}
-                              customerPhone={item.telefoon}
-                              customerName={itemName}
-                              onSuccess={onDataChange}
-                              disabled={sendingQuote === item.id}
-                            />
-                          )}
-                        </>
+                        <AutoQuoteButton
+                          requestId={item.id}
+                          type={type as 'dakkapel' | 'zonnepaneel'}
+                          customerEmail={itemEmail}
+                          onSuccess={onDataChange}
+                          disabled={sendingQuote === item.id}
+                        />
                       )}
 
                       <Button

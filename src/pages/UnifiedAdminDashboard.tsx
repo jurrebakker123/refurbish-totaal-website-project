@@ -15,7 +15,6 @@ import AdminFilters from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
 import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
 import NotificationCenter from '@/components/admin/NotificationCenter';
-import InvoiceOverview from '@/components/admin/InvoiceOverview';
 import VacaturesManager from '@/components/admin/VacaturesManager';
 import ContentManager from '@/components/admin/ContentManager';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
@@ -210,58 +209,49 @@ const UnifiedAdminDashboard = () => {
 
               {Object.keys(serviceLabels).map((service) => (
                 <TabsContent key={service} value={service} className="space-y-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                      <Card>
-                        <CardHeader>
-                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <CardTitle>Aanvragen Beheer</CardTitle>
-                            <BulkActions
-                              selectedIds={selectedIds}
-                              onSelectAll={handleSelectAll}
-                              onSelectItem={handleSelectItem}
-                              onBulkAction={handleBulkAction}
-                              allIds={getCurrentData().map(item => item.id)}
-                              configurations={getCurrentData()}
-                            />
-                          </div>
-                          <AdminFilters
-                            filters={{
-                              search: filters.searchTerm,
-                              status: filters.status,
-                              dateFilter: filters.dateRange,
-                              sortBy: 'created_at',
-                              sortOrder: 'desc'
-                            }}
-                            onFiltersChange={(newFilters) => {
-                              setFilters({
-                                status: newFilters.status,
-                                dateRange: newFilters.dateFilter,
-                                searchTerm: newFilters.search,
-                                priceRange: filters.priceRange
-                              });
-                            }}
-                          />
-                        </CardHeader>
-                        <CardContent>
-                          <ResponsiveRequestTable
-                            items={getCurrentData()}
-                            searchTerm={filters.searchTerm}
-                            selectedStatus={filters.status}
-                            onEdit={handleViewDetails}
-                            onDataChange={refetchData}
-                            sendingQuote={sendingQuote}
-                            setSendingQuote={setSendingQuote}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    <div className="space-y-6">
-                      <AutomatedCommunication onSendMessage={() => {}} />
-                      <InvoiceOverview />
-                    </div>
-                  </div>
+                  <Card>
+                    <CardHeader>
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <CardTitle>Aanvragen Beheer</CardTitle>
+                        <BulkActions
+                          selectedIds={selectedIds}
+                          onSelectAll={handleSelectAll}
+                          onSelectItem={handleSelectItem}
+                          onBulkAction={handleBulkAction}
+                          allIds={getCurrentData().map(item => item.id)}
+                          configurations={getCurrentData()}
+                        />
+                      </div>
+                      <AdminFilters
+                        filters={{
+                          search: filters.searchTerm,
+                          status: filters.status,
+                          dateFilter: filters.dateRange,
+                          sortBy: 'created_at',
+                          sortOrder: 'desc'
+                        }}
+                        onFiltersChange={(newFilters) => {
+                          setFilters({
+                            status: newFilters.status,
+                            dateRange: newFilters.dateFilter,
+                            searchTerm: newFilters.search,
+                            priceRange: filters.priceRange
+                          });
+                        }}
+                      />
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveRequestTable
+                        items={getCurrentData()}
+                        searchTerm={filters.searchTerm}
+                        selectedStatus={filters.status}
+                        onEdit={handleViewDetails}
+                        onDataChange={refetchData}
+                        sendingQuote={sendingQuote}
+                        setSendingQuote={setSendingQuote}
+                      />
+                    </CardContent>
+                  </Card>
                 </TabsContent>
               ))}
             </Tabs>
