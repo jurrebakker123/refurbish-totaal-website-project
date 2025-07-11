@@ -88,35 +88,47 @@ const SchilderConfigurator = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Starting form submission...');
       const totalPrice = calculatePrice();
       
+      // Prepare data for database insertion - match exact column names
+      const insertData = {
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        emailadres: formData.emailadres,
+        telefoon: formData.telefoon,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats,
+        project_type: `${formData.project_type} - ${formData.bouw_type}`,
+        verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
+        oppervlakte: parseInt(formData.oppervlakte) || 0,
+        totaal_prijs: totalPrice,
+        status: 'nieuw',
+        plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+        kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
+        bericht: formData.bericht
+      };
+
+      console.log('Inserting data:', insertData);
+
       // Save to database
       const { data: savedData, error } = await supabase
         .from('schilder_aanvragen')
-        .insert({
-          voornaam: formData.voornaam,
-          achternaam: formData.achternaam,
-          emailadres: formData.emailadres,
-          telefoon: formData.telefoon,
-          straatnaam: formData.straatnaam,
-          huisnummer: formData.huisnummer,
-          postcode: formData.postcode,
-          plaats: formData.plaats,
-          project_type: `${formData.project_type} - ${formData.bouw_type}`,
-          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-          oppervlakte: parseInt(formData.oppervlakte) || 0,
-          totaal_prijs: totalPrice,
-          status: 'nieuw',
-          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
-          bericht: formData.bericht
-        })
+        .insert(insertData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
+      console.log('Data saved successfully:', savedData);
 
       // Send notification email to main admin address
+      console.log('Sending first admin email...');
       await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: formData.voornaam + ' ' + formData.achternaam,
@@ -153,7 +165,10 @@ const SchilderConfigurator = () => {
         preferred_date: formData.uitvoertermijn
       });
 
+      console.log('First admin email sent');
+
       // Send notification to second email address
+      console.log('Sending second admin email...');
       await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: 'System',
@@ -165,7 +180,10 @@ const SchilderConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
+      console.log('Second admin email sent');
+
       // Send confirmation email to customer
+      console.log('Sending customer confirmation email...');
       await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: 'Refurbish Totaal Nederland',
@@ -195,6 +213,8 @@ const SchilderConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
+      console.log('Customer email sent');
+
       toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
       
       // Reset form
@@ -222,7 +242,7 @@ const SchilderConfigurator = () => {
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Er ging iets mis bij het verzenden van je aanvraag');
+      toast.error('Er ging iets mis bij het verzenden van je aanvraag. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
