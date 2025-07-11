@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -110,7 +109,6 @@ const UnifiedAdminDashboard = () => {
   const handleSendQuote = async (item: any, quoteDetails: any) => {
     setSendingQuote(item.id);
     try {
-      // Simulate sending a quote
       await new Promise(resolve => setTimeout(resolve, 1500));
       toast.success(`Offerte verzonden naar ${item.email || item.emailadres}`);
     } catch (error) {
@@ -142,7 +140,6 @@ const UnifiedAdminDashboard = () => {
     }
 
     try {
-      // Simulate bulk action
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success(`Bulkactie "${action}" succesvol uitgevoerd op ${selectedIds.length} items.`);
       setSelectedIds([]);
@@ -165,34 +162,18 @@ const UnifiedAdminDashboard = () => {
     stukadoor: 'Stukadoor'
   };
 
-  const getServiceData = () => {
+  const getCurrentData = () => {
     switch (activeService) {
       case 'dakkapel':
-        return {
-          data: configuraties || [],
-          loading: isLoadingConfigurations,
-          error: configurationsError
-        };
+        return configuraties || [];
       case 'zonnepaneel':
-        return {
-          data: zonnepanelen || [],
-          loading: isLoadingZonnepanelen,
-          error: zonnepanelenError
-        };
+        return zonnepanelen || [];
       case 'schilder':
-        return {
-          data: schilderAanvragen || [],
-          loading: isLoadingSchilder,
-          error: schilderError
-        };
+        return schilderAanvragen || [];
       case 'stukadoor':
-        return {
-          data: stukadoorAanvragen || [],
-          loading: isLoadingStukadoor,
-          error: stukadoorError
-        };
+        return stukadoorAanvragen || [];
       default:
-        return { data: [], loading: false, error: null };
+        return [];
     }
   };
 
@@ -234,8 +215,13 @@ const UnifiedAdminDashboard = () => {
 
               {Object.keys(serviceLabels).map((service) => (
                 <TabsContent key={service} value={service} className="space-y-6">
-                  <DashboardStats configuraties={service === 'dakkapel' ? configuraties : service === 'zonnepaneel' ? zonnepanelen : service === 'schilder' ? schilderAanvragen : stukadoorAanvragen || []} />
-                  <ConversieStats type={service === 'dakkapel' || service === 'zonnepaneel' ? service : 'dakkapel'} />
+                  <DashboardStats configuraties={getCurrentData()} />
+                  {(service === 'dakkapel' || service === 'zonnepaneel') && (
+                    <ConversieStats 
+                      type={service as 'dakkapel' | 'zonnepaneel'} 
+                      configuraties={getCurrentData()}
+                    />
+                  )}
                   
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">
@@ -260,20 +246,17 @@ const UnifiedAdminDashboard = () => {
                             onFiltersChange={(newFilters) => {
                               setFilters({
                                 status: newFilters.status,
-                                dateRange: newFilters.dateFilter,
+                                dateFilter: newFilters.dateFilter,
                                 searchTerm: newFilters.search,
                                 priceRange: filters.priceRange
                               });
                             }}
-                            type={activeService}
                           />
                         </CardHeader>
                         <CardContent>
                           <ResponsiveRequestTable
-                            configuraties={activeService === 'dakkapel' ? configuraties : []}
-                            zonnepanelen={activeService === 'zonnepaneel' ? zonnepanelen : []}
-                            schilderAanvragen={activeService === 'schilder' ? schilderAanvragen : []}
-                            stukadoorAanvragen={activeService === 'stukadoor' ? stukadoorAanvragen : []}
+                            data={getCurrentData()}
+                            type={activeService}
                             onViewDetails={handleViewDetails}
                             onOpenQuoteDialog={handleOpenQuoteDialog}
                             onDataChange={refetchData}
@@ -287,7 +270,7 @@ const UnifiedAdminDashboard = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <AutomatedCommunication />
+                      <AutomatedCommunication onSendMessage={() => {}} />
                       <InvoiceOverview />
                     </div>
                   </div>
