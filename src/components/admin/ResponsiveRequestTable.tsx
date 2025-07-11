@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Table,
@@ -189,7 +190,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       {(type === 'dakkapel' || type === 'zonnepaneel') && (
                         <AutoQuoteButton
                           requestId={item.id}
-                          type={type}
+                          type={type as 'dakkapel' | 'zonnepaneel'}
                           customerEmail={itemEmail}
                           onSuccess={onDataChange}
                           disabled={sendingQuote === item.id}
@@ -200,7 +201,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       {item.telefoon && (type === 'dakkapel' || type === 'zonnepaneel') && (
                         <WhatsAppQuoteButton
                           requestId={item.id}
-                          type={type}
+                          type={type as 'dakkapel' | 'zonnepaneel'}
                           customerPhone={item.telefoon}
                           customerName={itemName}
                           onSuccess={onDataChange}
@@ -212,7 +213,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       {(itemEmail || item.telefoon) && (type === 'dakkapel' || type === 'zonnepaneel') && (
                         <CombinedQuoteButton
                           requestId={item.id}
-                          type={type}
+                          type={type as 'dakkapel' | 'zonnepaneel'}
                           customerEmail={itemEmail}
                           customerPhone={item.telefoon}
                           customerName={itemName}
