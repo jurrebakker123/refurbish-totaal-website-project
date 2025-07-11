@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -87,6 +88,15 @@ const SchilderConfigurator = () => {
     setIsSubmitting(true);
 
     try {
+      // Validatie verplichte velden
+      if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon || 
+          !formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats || 
+          !formData.uitvoertermijn || !formData.reden_aanvraag) {
+        toast.error('Vul alle verplichte velden in');
+        setIsSubmitting(false);
+        return;
+      }
+
       const totalPrice = calculatePrice();
       
       // Save to database
@@ -104,23 +114,28 @@ const SchilderConfigurator = () => {
           project_type: `${formData.project_type} - ${formData.bouw_type}`,
           verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
-          uitvoertermijn: formData.uitvoertermijn,
-          reden_aanvraag: formData.reden_aanvraag,
+          aantal_kamers: 0,
+          voorbewerking_nodig: false,
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
-          status: 'nieuw',
-          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
+          status: 'nieuw'
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
 
-      // Send notification email to main admin address
-      await sendEmail({
+      console.log('Data saved to database:', savedData);
+
+      // Verstuur email naar eerste admin adres (info@refurbishtotaalnederland.nl)
+      const emailResult1 = await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: formData.voornaam + ' ' + formData.achternaam,
+        from_name: `${formData.voornaam} ${formData.achternaam}`,
         from_email: formData.emailadres,
         to_name: 'Refurbish Totaal Nederland',
         to_email: 'info@refurbishtotaalnederland.nl',
@@ -154,26 +169,40 @@ const SchilderConfigurator = () => {
         preferred_date: formData.uitvoertermijn
       });
 
-      // Send notification to second email address
-      await sendEmail({
+      console.log('Admin email 1 result:', emailResult1);
+
+      // Verstuur email naar tweede admin adres (mazenaddas95@gmail.com)
+      const emailResult2 = await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: 'System',
+        from_name: 'Refurbish Totaal Nederland System',
         from_email: 'info@refurbishtotaalnederland.nl',  
         to_name: 'Admin',
         to_email: 'mazenaddas95@gmail.com',
-        subject: 'Nieuwe Schilderwerk Aanvraag',
-        message: `Nieuwe schilderwerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
+        subject: 'Nieuwe Schilderwerk Aanvraag - Melding',
+        message: `
+          Er is een nieuwe schilderwerk aanvraag binnengekomen:
+          
+          Van: ${formData.voornaam} ${formData.achternaam}
+          Email: ${formData.emailadres}
+          Telefoon: ${formData.telefoon}
+          
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat'}
+          
+          Bekijk de volledige details in het dashboard.
+        `,
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      // Send confirmation email to customer
-      await sendEmail({
+      console.log('Admin email 2 result:', emailResult2);
+
+      // Verstuur bevestigingsmail naar klant
+      const confirmationResult = await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: 'Refurbish Totaal Nederland',
         from_email: 'info@refurbishtotaalnederland.nl',
         to_name: `${formData.voornaam} ${formData.achternaam}`,
         to_email: formData.emailadres,
-        subject: 'Bevestiging Schilderwerk Aanvraag',
+        subject: 'Bevestiging Schilderwerk Aanvraag - Offerte',
         message: `
           Beste ${formData.voornaam},
           
@@ -181,9 +210,14 @@ const SchilderConfigurator = () => {
           
           Uw projectdetails:
           - Project: ${formData.project_type} - ${formData.bouw_type}
-          - Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
-          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
+          - Oppervlakte wanden: ${formData.oppervlakte}m²${formData.plafond_oppervlakte ? `, plafonds: ${formData.plafond_oppervlakte}m²` : ''}
+          - Aantal deuren: ${formData.aantal_deuren}
+          - Aantal ramen: ${formData.aantal_ramen}
+          - Kleuren: ${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
+          ${totalPrice ? `- Geschatte indicatieve prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
           - Gewenste uitvoertermijn: ${formData.uitvoertermijn}
+          
+          Deze prijzen zijn indicatief en kunnen verschillen na een persoonlijke inspectie.
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
           
@@ -196,7 +230,9 @@ const SchilderConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
+      console.log('Customer confirmation result:', confirmationResult);
+
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail met de offerte.');
       
       // Reset form
       setFormData({
@@ -223,7 +259,7 @@ const SchilderConfigurator = () => {
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Er ging iets mis bij het verzenden van je aanvraag');
+      toast.error('Er ging iets mis bij het verzenden van je aanvraag. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
@@ -340,13 +376,13 @@ const SchilderConfigurator = () => {
                   type="number"
                   value={formData.aantal_ramen}
                   onChange={(e) => setFormData({...formData, aantal_ramen: e.target.value})}
-                  placeholder="Bijvoorbeeld: 5"
+                  placeholder="Voorbeeld: 5"
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn?</Label>
+              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn? *</Label>
               <Input
                 id="uitvoertermijn"
                 value={formData.uitvoertermijn}
@@ -357,7 +393,7 @@ const SchilderConfigurator = () => {
             </div>
 
             <div>
-              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag?</Label>
+              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag? *</Label>
               <Input
                 id="reden_aanvraag"
                 value={formData.reden_aanvraag}
@@ -399,12 +435,18 @@ const SchilderConfigurator = () => {
             </div>
 
             {/* Price Display */}
-            {hasAnyInput && (
+            {(hasAnyInput || formData.project_type === 'buiten') && (
               <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
-                    {formData.project_type === 'binnen' && totalPrice ? (
+                    <h3 className="text-lg font-semibold text-blue-800">
+                      {formData.project_type === 'buiten' ? 'Prijs op maat' : 'Geschatte Prijs (Indicatief)'}
+                    </h3>
+                    {formData.project_type === 'buiten' ? (
+                      <p className="text-lg font-bold text-blue-600 mt-2">
+                        Wij nemen contact met u op voor een prijs op maat
+                      </p>
+                    ) : totalPrice ? (
                       <>
                         <p className="text-3xl font-bold text-blue-600">€{totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                         <p className="text-sm text-blue-700 mb-2">
@@ -417,12 +459,7 @@ const SchilderConfigurator = () => {
                           {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
                         </p>
                       </>
-                    ) : (
-                      <div className="text-blue-700">
-                        <p className="text-lg font-semibold">Wij nemen contact met u op voor een prijs op maat</p>
-                        <p className="text-sm">Voor buitenschilderwerk hebben wij geen standaard prijzen</p>
-                      </div>
-                    )}
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>
@@ -433,7 +470,7 @@ const SchilderConfigurator = () => {
               <h3 className="text-lg font-medium mb-4">Contactgegevens</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="voornaam">Voornaam</Label>
+                  <Label htmlFor="voornaam">Voornaam *</Label>
                   <Input
                     id="voornaam"
                     value={formData.voornaam}
@@ -442,7 +479,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="achternaam">Achternaam</Label>
+                  <Label htmlFor="achternaam">Achternaam *</Label>
                   <Input
                     id="achternaam"
                     value={formData.achternaam}
@@ -454,7 +491,7 @@ const SchilderConfigurator = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="emailadres">E-mailadres</Label>
+                  <Label htmlFor="emailadres">E-mailadres *</Label>
                   <Input
                     id="emailadres"
                     type="email"
@@ -464,7 +501,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="telefoon">Telefoonnummer</Label>
+                  <Label htmlFor="telefoon">Telefoonnummer *</Label>
                   <Input
                     id="telefoon"
                     value={formData.telefoon}
@@ -477,7 +514,7 @@ const SchilderConfigurator = () => {
               {/* Address */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div className="md:col-span-2">
-                  <Label htmlFor="straatnaam">Straatnaam</Label>
+                  <Label htmlFor="straatnaam">Straatnaam *</Label>
                   <Input
                     id="straatnaam"
                     value={formData.straatnaam}
@@ -486,7 +523,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="huisnummer">Huisnummer</Label>
+                  <Label htmlFor="huisnummer">Huisnummer *</Label>
                   <Input
                     id="huisnummer"
                     value={formData.huisnummer}
@@ -498,7 +535,7 @@ const SchilderConfigurator = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="postcode">Postcode</Label>
+                  <Label htmlFor="postcode">Postcode *</Label>
                   <Input
                     id="postcode"
                     value={formData.postcode}
@@ -507,7 +544,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="plaats">Plaats</Label>
+                  <Label htmlFor="plaats">Plaats *</Label>
                   <Input
                     id="plaats"
                     value={formData.plaats}

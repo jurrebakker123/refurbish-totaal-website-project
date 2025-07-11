@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -154,10 +155,10 @@ const StukadoorConfigurator = () => {
 
       console.log('Data saved to database:', savedData);
 
-      // Send notification email to first admin address
-      await sendEmail({
+      // Verstuur email naar eerste admin adres (info@refurbishtotaalnederland.nl)
+      const emailResult1 = await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: formData.voornaam + ' ' + formData.achternaam,
+        from_name: `${formData.voornaam} ${formData.achternaam}`,
         from_email: formData.emailadres,
         to_name: 'Refurbish Totaal Nederland',
         to_email: 'info@refurbishtotaalnederland.nl',
@@ -186,30 +187,40 @@ const StukadoorConfigurator = () => {
         location: `${formData.plaats}`
       });
 
-      console.log('First admin email sent');
+      console.log('Admin email 1 result:', emailResult1);
 
-      // Send notification to second email address
-      await sendEmail({
+      // Verstuur email naar tweede admin adres (mazenaddas95@gmail.com)
+      const emailResult2 = await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: 'System',
+        from_name: 'Refurbish Totaal Nederland System',
         from_email: 'info@refurbishtotaalnederland.nl',  
         to_name: 'Admin',
         to_email: 'mazenaddas95@gmail.com',
-        subject: 'Nieuwe Stukadoor Aanvraag',
-        message: `Nieuwe stukadoor aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
+        subject: 'Nieuwe Stukadoor Aanvraag - Melding',
+        message: `
+          Er is een nieuwe stukadoor aanvraag binnengekomen:
+          
+          Van: ${formData.voornaam} ${formData.achternaam}
+          Email: ${formData.emailadres}
+          Telefoon: ${formData.telefoon}
+          
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat'}
+          
+          Bekijk de volledige details in het dashboard.
+        `,
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      console.log('Second admin email sent');
+      console.log('Admin email 2 result:', emailResult2);
 
-      // Send confirmation email to customer
-      await sendEmail({
+      // Verstuur bevestigingsmail naar klant
+      const confirmationResult = await sendEmail({
         templateId: 'template_ix4mdjh',
         from_name: 'Refurbish Totaal Nederland',
         from_email: 'info@refurbishtotaalnederland.nl',
         to_name: `${formData.voornaam} ${formData.achternaam}`,
         to_email: formData.emailadres,
-        subject: 'Bevestiging Stukadoor Aanvraag',
+        subject: 'Bevestiging Stukadoor Aanvraag - Offerte',
         message: `
           Beste ${formData.voornaam},
           
@@ -220,7 +231,9 @@ const StukadoorConfigurator = () => {
           - Afwerking: ${formData.afwerking_type.replace('_', ' ')}
           - Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
           ${formData.plafond_meestucken ? `- Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
-          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Prijs: Wij nemen contact met u op voor een prijs op maat'}
+          ${totalPrice ? `- Geschatte indicatieve prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Prijs: Wij nemen contact met u op voor een prijs op maat'}
+          
+          Deze prijzen zijn indicatief en kunnen verschillen na een persoonlijke inspectie.
           
           Wij nemen binnen 24 uur contact met u op voor een afspraak.
           
@@ -233,9 +246,9 @@ const StukadoorConfigurator = () => {
         reply_to: 'info@refurbishtotaalnederland.nl'
       });
 
-      console.log('Customer confirmation email sent');
+      console.log('Customer confirmation result:', confirmationResult);
 
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail met de offerte.');
       
       // Reset form
       setFormData({
