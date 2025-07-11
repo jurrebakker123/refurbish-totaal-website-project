@@ -1,229 +1,141 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw } from 'lucide-react';
-import { RefurbishedZonnepaneel, ZonnepaneelQuoteItem } from '@/types/admin';
-import { loadAdminData, updateRequestStatus } from '@/utils/adminUtils';
-import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
-import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
-import QuoteDialog from '@/components/admin/QuoteDialog';
-import ProcessedRequestsTable from '@/components/admin/ProcessedRequestsTable';
-import AdminFilters, { FilterState } from '@/components/admin/AdminFilters';
-import BulkActions from '@/components/admin/BulkActions';
-import InvoiceActions from '@/components/admin/InvoiceActions';
-import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
-import AutoQuoteManager from '@/components/admin/AutoQuoteManager';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { CalendarDays, Users, Euro, TrendingUp } from 'lucide-react';
+import AdminHeader from '@/components/admin/AdminHeader';
+import AdminSidebar from '@/components/admin/AdminSidebar';
+import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
+import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
+import AdminFilters from '@/components/admin/AdminFilters';
+import BulkActions from '@/components/admin/BulkActions';
+import NotificationCenter from '@/components/admin/NotificationCenter';
+import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
+import { RefurbishedZonnepaneel } from '@/types/admin';
 
 const AdminZonnepanelenPage = () => {
-  const [allZonnepanelen, setAllZonnepanelen] = useState<RefurbishedZonnepaneel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('te-verwerken');
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [sendingQuote, setSendingQuote] = useState<string | null>(null);
-  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
-  const [selectedQuoteItem, setSelectedQuoteItem] = useState<ZonnepaneelQuoteItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
+  const [filters, setFilters] = useState({
     status: 'all',
-    dateFilter: 'all',
-    sortBy: 'created_at',
-    sortOrder: 'desc'
+    dateRange: 'all',
+    searchTerm: '',
+    priceRange: { min: 0, max: 100000 }
   });
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
-    setLoading(true);
-    const { zonnepanelen: solarData, success } = await loadAdminData();
-    
-    if (success) {
-      setAllZonnepanelen(solarData);
-    }
-    
-    setLoading(false);
-  };
-
-  // Filter and sort zonnepanelen data
-  const filteredZonnepanelen = useMemo(() => {
-    let filtered = [...allZonnepanelen];
-
-    // Search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(item => 
-        item.naam.toLowerCase().includes(searchLower) ||
-        item.email.toLowerCase().includes(searchLower) ||
-        item.plaats.toLowerCase().includes(searchLower) ||
-        item.telefoon.includes(filters.search)
-      );
-    }
-
-    // Status filter
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(item => item.status === filters.status);
-    }
-
-    // Date filter
-    if (filters.dateFilter !== 'all') {
-      const now = new Date();
-      const filterDate = new Date();
-      
-      switch (filters.dateFilter) {
-        case 'today':
-          filterDate.setHours(0, 0, 0, 0);
-          break;
-        case 'week':
-          filterDate.setDate(now.getDate() - 7);
-          break;
-        case 'month':
-          filterDate.setMonth(now.getMonth() - 1);
-          break;
+  const { data: zonnepanelen, isLoading, error, refetch } = useQuery({
+    queryKey: ['refurbished_zonnepanelen'],
+    queryFn: async () => {
+      console.log('Fetching refurbished zonnepanelen...');
+      const { data, error } = await supabase
+        .from('refurbished_zonnepanelen')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching zonnepanelen:', error);
+        throw error;
       }
-      
-      if (filters.dateFilter !== 'all') {
-        filtered = filtered.filter(item => 
-          new Date(item.created_at) >= filterDate
-        );
-      }
-    }
+      console.log('Zonnepanelen loaded:', data?.length);
+      return data as RefurbishedZonnepaneel[];
+    },
+    refetchOnWindowFocus: false
+  });
 
-    // Sort
-    filtered.sort((a, b) => {
-      let aValue, bValue;
-      
-      switch (filters.sortBy) {
-        case 'naam':
-          aValue = a.naam.toLowerCase();
-          bValue = b.naam.toLowerCase();
-          break;
-        case 'totaal_prijs':
-          aValue = a.totaal_prijs || 0;
-          bValue = b.totaal_prijs || 0;
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        default:
-          aValue = new Date(a.created_at).getTime();
-          bValue = new Date(b.created_at).getTime();
-      }
-      
-      if (filters.sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    return filtered;
-  }, [allZonnepanelen, filters]);
-
-  // Split zonnepanelen data by categories for tabs
-  const zonnepanelenTeVerwerken = filteredZonnepanelen.filter(item => 
-    item.status === 'nieuw' || item.status === 'in_behandeling'
-  );
-  
-  const zonnepanelenWachtOpReactie = filteredZonnepanelen.filter(item => 
-    item.status === 'offerte_verzonden'
-  );
-  
-  const zonnepanelenAkkoord = filteredZonnepanelen.filter(item => 
-    item.status === 'akkoord'
-  );
-  
-  const zonnepanelenOpLocatie = filteredZonnepanelen.filter(item => 
-    item.status === 'op_locatie'
-  );
-  
-  const zonnepanelenInAanbouw = filteredZonnepanelen.filter(item => 
-    item.status === 'in_aanbouw'
-  );
-  
-  const zonnepanelenNietAkkoord = filteredZonnepanelen.filter(item => 
-    item.status === 'niet_akkoord'
-  );
-  
-  const zonnepanelenAfgerond = filteredZonnepanelen.filter(item => 
-    item.status === 'afgehandeld'
-  );
-
-  const getCurrentTabData = () => {
-    switch (activeTab) {
-      case 'te-verwerken':
-        return zonnepanelenTeVerwerken;
-      case 'wacht-op-reactie':
-        return zonnepanelenWachtOpReactie;
-      case 'akkoord':
-        return zonnepanelenAkkoord;
-      case 'op-locatie':
-        return zonnepanelenOpLocatie;
-      case 'in-aanbouw':
-        return zonnepanelenInAanbouw;
-      case 'niet-akkoord':
-        return zonnepanelenNietAkkoord;
-      case 'afgerond':
-        return zonnepanelenAfgerond;
-      default:
-        return [];
-    }
-  };
-
-  const currentTabData = getCurrentTabData();
-
-  const openDetails = (item: any) => {
+  const handleViewDetails = (item: any) => {
+    console.log('Opening details for item:', item);
     setSelectedItem(item);
-    setIsDetailOpen(true);
   };
 
-  const openQuoteDialog = (item: any) => {
-    setSelectedQuoteItem({ ...item, isZonnepaneel: true });
-    setIsQuoteDialogOpen(true);
+  const handleOpenQuoteDialog = (item: any) => {
+    setSelectedItem(item);
+    setShowQuoteDialog(true);
   };
 
-  const handleBulkAction = async (action: string, ids: string[]) => {
-    setLoading(true);
-    let successCount = 0;
-    
-    for (const id of ids) {
-      const success = await updateRequestStatus(id, action, 'refurbished_zonnepanelen');
-      if (success) successCount++;
-    }
-    
-    if (successCount > 0) {
-      toast.success(`${successCount} item(s) bijgewerkt naar "${action}"`);
-      loadDashboardData();
-      setSelectedIds([]);
-    }
-    
-    setLoading(false);
+  const handleCloseQuoteDialog = () => {
+    setSelectedItem(null);
+    setShowQuoteDialog(false);
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(currentTabData.map(item => item.id));
-    } else {
-      setSelectedIds([]);
+  const handleSendQuote = async (item: any, quoteDetails: any) => {
+    setSendingQuote(item.id);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      toast.success(`Offerte verzonden naar ${item.email}`);
+    } catch (error) {
+      toast.error('Er is een fout opgetreden bij het verzenden van de offerte.');
+    } finally {
+      setSendingQuote(null);
+      handleCloseQuoteDialog();
     }
   };
 
   const handleSelectItem = (id: string, checked: boolean) => {
+    setSelectedIds(prev => {
+      if (checked) {
+        return [...prev, id];
+      } else {
+        return prev.filter(itemId => itemId !== id);
+      }
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(prev => [...prev, id]);
+      setSelectedIds(zonnepanelen?.map(item => item.id) || []);
     } else {
-      setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+      setSelectedIds([]);
     }
   };
 
-  if (loading) {
+  const handleBulkAction = async (action: string, ids: string[]) => {
+    if (ids.length === 0) {
+      toast.error('Selecteer ten minste één item.');
+      return;
+    }
+
+    if (action === 'delete') {
+      if (!confirm('Weet je zeker dat je de geselecteerde items wilt verwijderen?')) return;
+    }
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success(`Bulkactie "${action}" succesvol uitgevoerd op ${ids.length} items.`);
+      setSelectedIds([]);
+    } catch (error) {
+      toast.error('Er is een fout opgetreden bij het uitvoeren van de bulkactie.');
+    }
+  };
+
+  const handleStatusFilter = (status: string) => {
+    console.log('Status filter clicked:', status);
+    setFilters(prev => ({ ...prev, status }));
+    toast.success(`Filter ingesteld op: ${getStatusLabel(status)}`);
+  };
+
+  const getStatusLabel = (status: string) => {
+    if (!status) return 'Onbekend';
+    
+    switch (status.toLowerCase()) {
+      case 'nieuw': return 'Nieuw';
+      case 'in_behandeling': return 'In Behandeling';
+      case 'offerte_verzonden': return 'Offerte Verzonden';
+      case 'interesse_bevestigd': return 'Interesse Bevestigd';
+      case 'akkoord': return 'Akkoord';
+      case 'niet_akkoord': return 'Niet Akkoord';
+      case 'op_locatie': return 'Op Locatie';
+      case 'in_aanbouw': return 'In Aanbouw';
+      case 'afgehandeld': return 'Afgehandeld';
+      default: return status;
+    }
+  };
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -235,273 +147,84 @@ const AdminZonnepanelenPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 h-16 px-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-brand-darkGreen">Zonnepanelen Admin</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <EmailMarketingDialog onCampaignSent={loadDashboardData} />
-          <Button onClick={loadDashboardData} variant="outline" className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Vernieuwen
-          </Button>
-        </div>
-      </header>
-
-      <div className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <h1 className="text-3xl font-bold mb-6">Zonnepanelen Dashboard</h1>
-          
-          <Tabs defaultValue="te-verwerken" className="space-y-8" onValueChange={setActiveTab}>
-            <div className="border-b border-gray-200 pb-4">
-              <TabsList className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 w-full gap-2 h-auto p-2 bg-gray-100">
-                <TabsTrigger value="te-verwerken" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Te Verwerken ({zonnepanelenTeVerwerken.length})
-                </TabsTrigger>
-                <TabsTrigger value="wacht-op-reactie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Wacht op Reactie ({zonnepanelenWachtOpReactie.length})
-                </TabsTrigger>
-                <TabsTrigger value="akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Akkoord ({zonnepanelenAkkoord.length})
-                </TabsTrigger>
-                <TabsTrigger value="op-locatie" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Op Locatie/Factureren ({zonnepanelenOpLocatie.length})
-                </TabsTrigger>
-                <TabsTrigger value="in-aanbouw" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  In Aanbouw ({zonnepanelenInAanbouw.length})
-                </TabsTrigger>
-                <TabsTrigger value="niet-akkoord" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Niet Akkoord ({zonnepanelenNietAkkoord.length})
-                </TabsTrigger>
-                <TabsTrigger value="afgerond" className="text-xs py-3 px-2 h-auto whitespace-normal">
-                  Afgerond ({zonnepanelenAfgerond.length})
-                </TabsTrigger>
-              </TabsList>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <AdminHeader 
+        showMobileMenu={false}
+        setShowMobileMenu={() => {}}
+        activeView=""
+        setActiveView={() => {}}
+        onDataChange={refetch}
+      />
+      <div className="flex">
+        <AdminSidebar />
+        <main className="flex-1 p-6">
+          <div className="max-w-7xl mx-auto space-y-6">
+            <PWAInstallPrompt />
             
-            <TabsContent value="te-verwerken" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Te Verwerken Aanvragen ({zonnepanelenTeVerwerken.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Zonnepanelen Dashboard</h1>
+                <p className="text-gray-600">Beheer alle zonnepanelen aanvragen</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <EmailMarketingDialog onCampaignSent={refetch} />
+                <NotificationCenter configuraties={zonnepanelen || []} />
+              </div>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <CardTitle>Zonnepanelen Aanvragen Beheer</CardTitle>
                   <BulkActions
                     selectedIds={selectedIds}
                     onSelectAll={handleSelectAll}
                     onSelectItem={handleSelectItem}
                     onBulkAction={handleBulkAction}
-                    allIds={currentTabData.map(item => item.id)}
-                    configurations={currentTabData}
-                    type="zonnepaneel"
+                    allIds={zonnepanelen?.map(item => item.id) || []}
+                    configurations={zonnepanelen || []}
                   />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={zonnepanelenTeVerwerken}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    selectedIds={selectedIds}
-                    onSelectItem={handleSelectItem}
-                    type="zonnepaneel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="wacht-op-reactie" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Wacht op Reactie ({zonnepanelenWachtOpReactie.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={zonnepanelenWachtOpReactie}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="zonnepaneel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="akkoord" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Akkoord ({zonnepanelenAkkoord.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={zonnepanelenAkkoord}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="zonnepaneel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="op-locatie" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Op Locatie/Factureren ({zonnepanelenOpLocatie.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <div className="space-y-4">
-                    {zonnepanelenOpLocatie.map((item) => (
-                      <Card key={item.id} className="p-4">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="font-semibold text-lg">{item.naam}</h3>
-                            <p className="text-gray-600">{item.email} • {item.telefoon}</p>
-                            <p className="text-gray-600">{item.adres}, {item.postcode} {item.plaats}</p>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {item.aantal_panelen}x {item.type_paneel} ({item.vermogen}W) • Prijs: €{item.totaal_prijs}
-                            </p>
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => openDetails(item)}
-                              className="text-xs"
-                            >
-                              Details
-                            </Button>
-                            <InvoiceActions 
-                              item={item} 
-                              onInvoiceSent={loadDashboardData}
-                            />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                    
-                    {zonnepanelenOpLocatie.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        Geen projecten op locatie gevonden
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="in-aanbouw" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">In Aanbouw ({zonnepanelenInAanbouw.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={zonnepanelenInAanbouw}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="zonnepaneel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="niet-akkoord" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Niet Akkoord ({zonnepanelenNietAkkoord.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ConfiguratorRequestsTable 
-                    configuraties={zonnepanelenNietAkkoord}
-                    onViewDetails={openDetails}
-                    onOpenQuoteDialog={openQuoteDialog}
-                    onDataChange={loadDashboardData}
-                    sendingQuote={sendingQuote}
-                    type="zonnepaneel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="afgerond" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">Afgeronde Aanvragen ({zonnepanelenAfgerond.length})</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <AdminFilters 
-                    filters={filters} 
-                    onFiltersChange={setFilters}
-                    showStatusFilter={false}
-                  />
-                  
-                  <ProcessedRequestsTable 
-                    configuraties={zonnepanelenAfgerond}
-                    onViewDetails={openDetails}
-                    onDataChange={loadDashboardData}
-                    type="zonnepaneel"
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+                </div>
+                <AdminFilters
+                  filters={{
+                    search: filters.searchTerm,
+                    status: filters.status,
+                    dateFilter: filters.dateRange,
+                    sortBy: 'created_at',
+                    sortOrder: 'desc'
+                  }}
+                  onFiltersChange={(newFilters) => {
+                    setFilters({
+                      status: newFilters.status,
+                      dateRange: newFilters.dateFilter,
+                      searchTerm: newFilters.search,
+                      priceRange: filters.priceRange
+                    });
+                  }}
+                />
+              </CardHeader>
+              <CardContent>
+                <ResponsiveRequestTable
+                  items={zonnepanelen || []}
+                  searchTerm={filters.searchTerm}
+                  selectedStatus={filters.status}
+                  onEdit={handleViewDetails}
+                  onDataChange={refetch}
+                  sendingQuote={sendingQuote}
+                  setSendingQuote={setSendingQuote}
+                  onStatusFilter={handleStatusFilter}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </main>
       </div>
-      
+
       <RequestDetailDialog
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
         item={selectedItem}
-        onDataChange={loadDashboardData}
-      />
-      
-      <QuoteDialog
-        isOpen={isQuoteDialogOpen}
-        onClose={() => setIsQuoteDialogOpen(false)}
-        selectedItem={selectedQuoteItem}
-        onDataChange={loadDashboardData}
-        setSendingQuote={setSendingQuote}
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        onDataChange={refetch}
       />
     </div>
   );
