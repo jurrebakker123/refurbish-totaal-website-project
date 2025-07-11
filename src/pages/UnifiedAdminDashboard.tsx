@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -61,8 +62,8 @@ const UnifiedAdminDashboard = () => {
         console.error('Error fetching schilder aanvragen:', error);
         throw error;
       }
-      console.log('Schilder aanvragen loaded:', data?.length);
-      return data;
+      console.log('Schilder aanvragen loaded:', data?.length || 0);
+      return data || [];
     },
     refetchOnWindowFocus: false
   });
@@ -79,8 +80,8 @@ const UnifiedAdminDashboard = () => {
         console.error('Error fetching stukadoor aanvragen:', error);
         throw error;
       }
-      console.log('Stukadoor aanvragen loaded:', data?.length);
-      return data;
+      console.log('Stukadoor aanvragen loaded:', data?.length || 0);
+      return data || [];
     },
     refetchOnWindowFocus: false
   });
@@ -193,12 +194,16 @@ const UnifiedAdminDashboard = () => {
   };
 
   const getCurrentData = () => {
+    console.log('Getting current data for service:', activeService);
     switch (activeService) {
       case 'dakkapel':
+        console.log('Returning dakkapel data:', configuraties?.length || 0);
         return configuraties || [];
       case 'schilder':
+        console.log('Returning schilder data:', schilderAanvragen?.length || 0);
         return schilderAanvragen || [];
       case 'stukadoor':
+        console.log('Returning stukadoor data:', stukadoorAanvragen?.length || 0);
         return stukadoorAanvragen || [];
       default:
         return [];
@@ -259,12 +264,15 @@ const UnifiedAdminDashboard = () => {
               <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
                   const Icon = serviceIcons[key as ServiceType];
-                  const currentData = key === 'dakkapel' ? configuraties : 
-                                    key === 'schilder' ? schilderAanvragen : stukadoorAanvragen;
+                  let currentData = [];
+                  if (key === 'dakkapel') currentData = configuraties || [];
+                  else if (key === 'schilder') currentData = schilderAanvragen || [];
+                  else if (key === 'stukadoor') currentData = stukadoorAanvragen || [];
+                  
                   return (
                     <TabsTrigger key={key} value={key} className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
-                      {label} ({currentData?.length || 0})
+                      {label} ({currentData.length})
                     </TabsTrigger>
                   );
                 })}
