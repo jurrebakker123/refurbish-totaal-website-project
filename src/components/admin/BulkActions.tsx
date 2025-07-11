@@ -13,7 +13,7 @@ interface BulkActionsProps {
   onSelectItem: (id: string, checked: boolean) => void;
   onBulkAction: (action: string, ids: string[]) => void;
   allIds: string[];
-  configurations: (DakkapelConfiguratie | RefurbishedZonnepaneel)[];
+  configurations: (DakkapelConfiguratie | RefurbishedZonnepaneel | any)[];
   type?: 'dakkapel' | 'zonnepaneel';
 }
 
@@ -22,8 +22,8 @@ const BulkActions: React.FC<BulkActionsProps> = ({
   onSelectAll,
   onSelectItem,
   onBulkAction,
-  allIds,
-  configurations,
+  allIds = [], // Provide default empty array
+  configurations = [], // Provide default empty array
   type = 'dakkapel'
 }) => {
   const [bulkAction, setBulkAction] = React.useState('');

@@ -131,8 +131,17 @@ const UnifiedAdminDashboard = () => {
     });
   };
 
-  const handleBulkAction = async (action: string) => {
-    if (selectedIds.length === 0) {
+  const handleSelectAll = (checked: boolean) => {
+    const currentData = getCurrentData();
+    if (checked) {
+      setSelectedIds(currentData.map(item => item.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleBulkAction = async (action: string, ids: string[]) => {
+    if (ids.length === 0) {
       toast.error('Selecteer ten minste één item.');
       return;
     }
@@ -143,7 +152,7 @@ const UnifiedAdminDashboard = () => {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success(`Bulkactie "${action}" succesvol uitgevoerd op ${selectedIds.length} items.`);
+      toast.success(`Bulkactie "${action}" succesvol uitgevoerd op ${ids.length} items.`);
       setSelectedIds([]);
     } catch (error) {
       toast.error('Er is een fout opgetreden bij het uitvoeren van de bulkactie.');
@@ -269,8 +278,12 @@ const UnifiedAdminDashboard = () => {
                             <CardTitle>Aanvragen Beheer</CardTitle>
                             <BulkActions
                               selectedIds={selectedIds}
+                              onSelectAll={handleSelectAll}
+                              onSelectItem={handleSelectItem}
                               onBulkAction={handleBulkAction}
-                              type={activeService}
+                              allIds={getCurrentData().map(item => item.id)}
+                              configurations={getCurrentData()}
+                              type={activeService === 'dakkapel' || activeService === 'zonnepaneel' ? activeService : undefined}
                             />
                           </div>
                           <AdminFilters
