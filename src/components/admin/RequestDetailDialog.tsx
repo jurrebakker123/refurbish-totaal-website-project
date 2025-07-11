@@ -1,293 +1,240 @@
 
-import React, { useState } from 'react';
-import { format } from 'date-fns';
-import { Clock, Mail, CheckCircle, ThumbsUp, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { DakkapelConfiguratie, RequestDetailItem } from '@/types/admin';
-import { updateRequestDetails, updateRequestStatus } from '@/utils/adminUtils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface RequestDetailDialogProps {
+  item: any;
   isOpen: boolean;
   onClose: () => void;
-  item?: DakkapelConfiguratie | null;
-  request?: RequestDetailItem | null;
-  onDataChange?: () => void;
+  onDataChange: () => void;
 }
 
 const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
+  item,
   isOpen,
   onClose,
-  item,
-  request,
   onDataChange
 }) => {
-  const [notes, setNotes] = useState('');
-  const [price, setPrice] = useState('');
+  const [currentItem, setCurrentItem] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  const currentItem = item || request;
-
-  React.useEffect(() => {
-    if (currentItem && typeof currentItem === 'object') {
-      setNotes(currentItem.notities || '');
-      setPrice(currentItem.totaal_prijs ? currentItem.totaal_prijs.toString() : '');
+  useEffect(() => {
+    if (item && isOpen) {
+      setCurrentItem({ ...item });
     }
-  }, [currentItem]);
+  }, [item, isOpen]);
 
-  if (!currentItem || typeof currentItem !== 'object') return null;
-  
-  const handleUpdateDetails = async () => {
-    const success = await updateRequestDetails(currentItem, notes, price);
-    if (success && onDataChange) {
+  const handleSave = async () => {
+    if (!currentItem) return;
+
+    setLoading(true);
+    try {
+      const isZonnepaneel = 'aantal_panelen' in currentItem;
+      const isSchilder = 'project_type' in currentItem && 'verf_type' in currentItem;
+      const isStukadoor = 'werk_type' in currentItem && 'afwerking' in currentItem;
+      
+      let tableName: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen';
+      if (isZonnepaneel) tableName = 'refurbished_zonnepanelen';
+      else if (isSchilder) tableName = 'schilder_aanvragen';
+      else if (isStukadoor) tableName = 'stukadoor_aanvragen';
+
+      const { error } = await supabase
+        .from(tableName)
+        .update(currentItem)
+        .eq('id', currentItem.id);
+
+      if (error) throw error;
+
+      toast.success('Aanvraag succesvol bijgewerkt');
       onDataChange();
       onClose();
+    } catch (error) {
+      console.error('Update error:', error);
+      toast.error('Er is een fout opgetreden bij het bijwerken van de aanvraag');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleStatusChange = async (status: string) => {
-    const success = await updateRequestStatus(currentItem.id, status);
-    if (success && onDataChange) {
-      onDataChange();
-      onClose();
-    }
-  };
+  if (!currentItem) return null;
 
-  // Safe check for contact info
-  const getName = () => {
-    if ('naam' in currentItem) return currentItem.naam;
-    if ('voornaam' in currentItem && 'achternaam' in currentItem) {
-      return `${currentItem.voornaam} ${currentItem.achternaam}`;
-    }
-    return 'Onbekend';
-  };
+  const itemName = currentItem.naam || `${currentItem.voornaam || ''} ${currentItem.achternaam || ''}`.trim() || 'Onbekend';
+  const itemEmail = currentItem.email || currentItem.emailadres || '';
+  const itemAddress = `${currentItem.straatnaam || ''} ${currentItem.huisnummer || ''}, ${currentItem.postcode || ''} ${currentItem.plaats || ''}`.trim();
 
-  const getEmail = () => {
-    if ('email' in currentItem) return currentItem.email;
-    if ('emailadres' in currentItem) return currentItem.emailadres;
-    return 'Niet beschikbaar';
-  };
+  const statusOptions = [
+    'nieuw',
+    'in_behandeling',
+    'offerte_verzonden',
+    'interesse_bevestigd',
+    'akkoord',
+    'niet_akkoord',
+    'op_locatie',
+    'in_aanbouw',
+    'afgehandeld'
+  ];
 
-  const getAddress = () => {
-    if ('adres' in currentItem) return `${currentItem.adres}, ${currentItem.postcode} ${currentItem.plaats}`;
-    if ('straatnaam' in currentItem && 'huisnummer' in currentItem) {
-      return `${currentItem.straatnaam} ${currentItem.huisnummer}, ${currentItem.postcode} ${currentItem.plaats}`;
-    }
-    return 'Niet beschikbaar';
-  };
-
-  const contactInfo = (
-    <div>
-      <p><strong>Naam:</strong> {getName()}</p>
-      <p><strong>Email:</strong> {getEmail()}</p>
-      <p><strong>Telefoon:</strong> {currentItem.telefoon || 'Niet beschikbaar'}</p>
-      <p><strong>Adres:</strong> {getAddress()}</p>
-    </div>
-  );
-  
-  const getProjectInfo = () => {
-    // Check if it's a dakkapel item
-    if ('model' in currentItem && 'breedte' in currentItem) {
-      return (
-        <div>
-          <p><strong>Model:</strong> {currentItem.model}</p>
-          <p><strong>Breedte:</strong> {currentItem.breedte}cm</p>
-          <p><strong>Materiaal:</strong> {currentItem.materiaal}</p>
-          {currentItem.dakhelling && (
-            <p><strong>Dakhelling:</strong> {currentItem.dakhelling}° ({currentItem.dakhelling_type})</p>
-          )}
-          {'kleur_kozijn' in currentItem && (
-            <p><strong>Kleuren:</strong> Kozijn: {currentItem.kleur_kozijn}, Zijkanten: {currentItem.kleur_zijkanten}, Draaikiepramen: {currentItem.kleur_draaikiepramen}</p>
-          )}
-          {'ventilationgrids' in currentItem && (
-            <>
-              <p><strong>Opties:</strong></p>
-              <ul>
-                <li>Ventilatierooster: {currentItem.ventilationgrids ? 'Ja' : 'Nee'}</li>
-                <li>Zonwering: {currentItem.sunshade ? 'Ja' : 'Nee'}</li>
-                <li>Insectenhorren: {currentItem.insectscreens ? 'Ja' : 'Nee'}</li>
-                <li>Airconditioning: {currentItem.airconditioning ? 'Ja' : 'Nee'}</li>
-              </ul>
-            </>
-          )}
-        </div>
-      );
-    }
-    
-    // Check if it's a schilder item
+  // Service-specific rendering
+  const renderServiceSpecificFields = () => {
     if ('project_type' in currentItem && 'verf_type' in currentItem) {
+      // Schilder service
       return (
-        <div>
-          <p><strong>Project Type:</strong> {currentItem.project_type}</p>
-          <p><strong>Verf Type:</strong> {currentItem.verf_type}</p>
-          <p><strong>Oppervlakte:</strong> {currentItem.oppervlakte}m²</p>
-          {currentItem.aantal_kamers && (
-            <p><strong>Aantal Kamers:</strong> {currentItem.aantal_kamers}</p>
-          )}
-          {currentItem.gewenste_kleur && (
-            <p><strong>Gewenste Kleur:</strong> {currentItem.gewenste_kleur}</p>
-          )}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Project Type</Label>
+              <div className="p-2 bg-gray-50 rounded">{String(currentItem.project_type || '')}</div>
+            </div>
+            <div>
+              <Label>Verf Type</Label>
+              <div className="p-2 bg-gray-50 rounded">{String(currentItem.verf_type || '')}</div>
+            </div>
+            <div>
+              <Label>Oppervlakte (m²)</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.oppervlakte || ''}</div>
+            </div>
+            <div>
+              <Label>Aantal Kamers</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.aantal_kamers ? String(currentItem.aantal_kamers) : 'N.v.t.'}</div>
+            </div>
+          </div>
+          <div>
+            <Label>Gewenste Kleur</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.gewenste_kleur ? String(currentItem.gewenste_kleur) : 'N.v.t.'}</div>
+          </div>
         </div>
       );
     }
-    
-    // Check if it's a stukadoor item
+
     if ('werk_type' in currentItem && 'afwerking' in currentItem) {
+      // Stukadoor service
       return (
-        <div>
-          <p><strong>Werk Type:</strong> {currentItem.werk_type}</p>
-          <p><strong>Afwerking:</strong> {currentItem.afwerking}</p>
-          <p><strong>Oppervlakte:</strong> {currentItem.oppervlakte}m²</p>
-          {currentItem.aantal_kamers && (
-            <p><strong>Aantal Kamers:</strong> {currentItem.aantal_kamers}</p>
-          )}
-          {currentItem.voorbewerking && (
-            <p><strong>Voorbewerking:</strong> {currentItem.voorbewerking}</p>
-          )}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Werk Type</Label>
+              <div className="p-2 bg-gray-50 rounded">{String(currentItem.werk_type || '')}</div>
+            </div>
+            <div>
+              <Label>Afwerking</Label>
+              <div className="p-2 bg-gray-50 rounded">{String(currentItem.afwerking || '')}</div>
+            </div>
+            <div>
+              <Label>Oppervlakte (m²)</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.oppervlakte || ''}</div>
+            </div>
+            <div>
+              <Label>Aantal Kamers</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.aantal_kamers ? String(currentItem.aantal_kamers) : 'N.v.t.'}</div>
+            </div>
+          </div>
+          <div>
+            <Label>Voorbewerking</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.voorbewerking ? String(currentItem.voorbewerking) : 'N.v.t.'}</div>
+          </div>
         </div>
       );
     }
-    
-    return <p>Project details niet beschikbaar</p>;
+
+    // Default dakkapel or other services
+    return null;
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Aanvraag Details</DialogTitle>
-          <DialogDescription>
-            Bekijk en bewerk de details van deze aanvraag
-          </DialogDescription>
+          <DialogTitle>Aanvraag Details - {itemName}</DialogTitle>
         </DialogHeader>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contactgegevens</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {contactInfo}
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Project Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {getProjectInfo()}
-            </CardContent>
-          </Card>
-        </div>
-        
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Opmerkingen</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{currentItem.opmerkingen || currentItem.bericht || 'Geen opmerkingen'}</p>
-          </CardContent>
-        </Card>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Notities voor intern gebruik</label>
-            <Textarea 
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-lightGreen focus:border-brand-lightGreen text-black"
-              rows={4}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Interne notities..."
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-2">Prijs (€)</label>
-            <Input
-              type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="0,00"
-              className="mb-4"
-            />
-            
-            <div className="flex justify-between">
-              <div>
-                <p className="text-sm"><strong>Status:</strong> {currentItem.status}</p>
-                {currentItem.offerte_verzonden_op && (
-                  <p className="text-sm"><strong>Offerte verzonden:</strong> {format(new Date(currentItem.offerte_verzonden_op), 'dd MMM yyyy')}</p>
-                )}
-                {currentItem.afgehandeld_op && (
-                  <p className="text-sm"><strong>Afgehandeld op:</strong> {format(new Date(currentItem.afgehandeld_op), 'dd MMM yyyy')}</p>
-                )}
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  title="In behandeling"
-                  onClick={() => handleStatusChange('in_behandeling')}
-                >
-                  <Clock className="h-4 w-4 mr-1" /> In behandeling
-                </Button>
-                
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  title="Offerte verzonden"
-                  onClick={() => handleStatusChange('offerte_verzonden')}
-                >
-                  <Mail className="h-4 w-4 mr-1" /> Offerte verzonden
-                </Button>
-                
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  title="Akkoord"
-                  onClick={() => handleStatusChange('akkoord')}
-                  className="bg-green-50 hover:bg-green-100"
-                >
-                  <ThumbsUp className="h-4 w-4 mr-1" /> Akkoord
-                </Button>
-                
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  title="Niet Akkoord"
-                  onClick={() => handleStatusChange('niet_akkoord')}
-                  className="bg-red-50 hover:bg-red-100"
-                >
-                  <X className="h-4 w-4 mr-1" /> Niet Akkoord
-                </Button>
-                
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  title="Afgehandeld"
-                  onClick={() => handleStatusChange('afgehandeld')}
-                >
-                  <CheckCircle className="h-4 w-4 mr-1" /> Afgehandeld
-                </Button>
-              </div>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Naam</Label>
+              <div className="p-2 bg-gray-50 rounded">{itemName}</div>
+            </div>
+            <div>
+              <Label>Email</Label>
+              <div className="p-2 bg-gray-50 rounded">{itemEmail}</div>
+            </div>
+            <div>
+              <Label>Telefoon</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.telefoon || 'N.v.t.'}</div>
+            </div>
+            <div>
+              <Label>Adres</Label>
+              <div className="p-2 bg-gray-50 rounded">{itemAddress}</div>
             </div>
           </div>
+
+          {renderServiceSpecificFields()}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select 
+                value={currentItem.status || 'nieuw'} 
+                onValueChange={(value) => setCurrentItem({...currentItem, status: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="totaal_prijs">Totaal Prijs (€)</Label>
+              <Input
+                id="totaal_prijs"
+                type="number"
+                value={currentItem.totaal_prijs || ''}
+                onChange={(e) => setCurrentItem({...currentItem, totaal_prijs: parseFloat(e.target.value) || null})}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="notities">Notities</Label>
+            <Textarea
+              id="notities"
+              value={currentItem.notities || ''}
+              onChange={(e) => setCurrentItem({...currentItem, notities: e.target.value})}
+              rows={4}
+            />
+          </div>
+
+          {(currentItem.bericht || currentItem.opmerkingen) && (
+            <div>
+              <Label>Klant Bericht/Opmerkingen</Label>
+              <div className="p-3 bg-gray-50 rounded">
+                {currentItem.bericht || currentItem.opmerkingen || 'Geen bericht'}
+              </div>
+            </div>
+          )}
         </div>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Annuleren</Button>
-          <Button onClick={handleUpdateDetails}>Opslaan</Button>
-        </DialogFooter>
+
+        <div className="flex justify-end space-x-2 pt-4">
+          <Button variant="outline" onClick={onClose}>
+            Annuleren
+          </Button>
+          <Button onClick={handleSave} disabled={loading}>
+            {loading ? 'Opslaan...' : 'Opslaan'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Table,
@@ -32,6 +33,7 @@ import MobileRequestCard from './MobileRequestCard';
 import { QuoteItem, ZonnepaneelQuoteItem } from '@/types/admin';
 import { toast } from 'sonner';
 import AutoQuoteButton from './AutoQuoteButton';
+import StatusBadge from './StatusBadge';
 import { supabase } from '@/integrations/supabase/client';
 
 type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
@@ -87,21 +89,6 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
         console.error('Delete error:', error);
         toast.error("Er is een fout opgetreden bij het verwijderen van de aanvraag.");
       }
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'nieuw': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'in_behandeling': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'offerte_verzonden': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'interesse_bevestigd': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'akkoord': return 'bg-green-100 text-green-800 border-green-200';
-      case 'niet_akkoord': return 'bg-red-100 text-red-800 border-red-200';
-      case 'op_locatie': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
-      case 'in_aanbouw': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-      case 'afgehandeld': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -177,7 +164,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
         {allStatuses.map((status) => (
           <Card key={status} className="p-3">
             <div className="text-center">
-              <Badge className={`${getStatusColor(status)} text-xs mb-1`}>
+              <Badge variant="outline" className="text-xs mb-1">
                 {getStatusLabel(status)}
               </Badge>
               <div className="text-lg font-bold text-gray-900">
@@ -227,9 +214,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                   <TableCell>{item.telefoon || 'N.v.t.'}</TableCell>
                   <TableCell>{formatDate(item.created_at)}</TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(item.status || 'nieuw')}>
-                      {getStatusLabel(item.status || 'nieuw')}
-                    </Badge>
+                    <StatusBadge status={item.status || 'nieuw'} />
                   </TableCell>
                   
                   <TableCell>

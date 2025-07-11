@@ -1,35 +1,39 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Clock, Mail, CheckCircle, ThumbsUp, X, MapPin, Wrench, Heart } from 'lucide-react';
 
 interface StatusBadgeProps {
   status: string;
+  onClick?: () => void;
 }
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-  switch (status) {
-    case 'nieuw':
-      return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Nieuw</Badge>;
-    case 'in_behandeling':
-      return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />In behandeling</Badge>;
-    case 'offerte_verzonden':
-      return <Badge variant="default"><Mail className="w-3 h-3 mr-1" />Offerte verzonden</Badge>;
-    case 'interesse_bevestigd':
-      return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200"><Heart className="w-3 h-3 mr-1" />Interesse bevestigd</Badge>;
-    case 'akkoord':
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-200"><ThumbsUp className="w-3 h-3 mr-1" />Akkoord</Badge>;
-    case 'niet_akkoord':
-      return <Badge className="bg-red-100 text-red-800 hover:bg-red-200"><X className="w-3 h-3 mr-1" />Niet Akkoord</Badge>;
-    case 'op_locatie':
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200"><MapPin className="w-3 h-3 mr-1" />Op Locatie/Factureren</Badge>;
-    case 'in_aanbouw':
-      return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200"><Wrench className="w-3 h-3 mr-1" />In Aanbouw</Badge>;
-    case 'afgehandeld':
-      return <Badge variant="outline"><CheckCircle className="w-3 h-3 mr-1" />Afgehandeld</Badge>;
-    default:
-      return <Badge variant="secondary">{status}</Badge>;
-  }
+const StatusBadge: React.FC<StatusBadgeProps> = ({ status, onClick }) => {
+  const getStatusLabel = (status: string) => {
+    if (!status) return 'Onbekend';
+    
+    switch (status.toLowerCase()) {
+      case 'nieuw': return 'Nieuw';
+      case 'in_behandeling': return 'In Behandeling';
+      case 'offerte_verzonden': return 'Offerte Verzonden';
+      case 'interesse_bevestigd': return 'Interesse Bevestigd';
+      case 'akkoord': return 'Akkoord';
+      case 'niet_akkoord': return 'Niet Akkoord';
+      case 'op_locatie': return 'Op Locatie';
+      case 'in_aanbouw': return 'In Aanbouw';
+      case 'afgehandeld': return 'Afgehandeld';
+      default: return status;
+    }
+  };
+
+  return (
+    <Badge 
+      variant="outline" 
+      className={`cursor-pointer hover:bg-gray-100 transition-colors ${onClick ? 'hover:shadow-sm' : ''}`}
+      onClick={onClick}
+    >
+      {getStatusLabel(status)}
+    </Badge>
+  );
 };
 
 export default StatusBadge;

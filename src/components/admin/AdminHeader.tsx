@@ -1,9 +1,7 @@
 
 import React from 'react';
-import { LogOut, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import NurtureFlowButton from './NurtureFlowButton';
 
 type AdminHeaderProps = {
   showMobileMenu: boolean;
@@ -30,10 +28,6 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <span className="text-gray-600">Admin Dashboard</span>
           </div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <NurtureFlowButton />
         </div>
       </div>
     </div>
