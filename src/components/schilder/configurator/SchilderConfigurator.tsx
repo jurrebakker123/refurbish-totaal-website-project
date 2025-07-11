@@ -105,7 +105,7 @@ const SchilderConfigurator = () => {
       const totaalprijs = berekenTotaalprijs();
       const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
       
-      // Sla aanvraag op in database - with correct data types
+      // Sla aanvraag op in database - matching the exact schema
       const { data: savedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
         .insert({
