@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -95,7 +94,7 @@ const StukadoorConfigurator = () => {
       const totaalprijs = berekenTotaalprijs();
       const oppervlakte = parseFloat(formData.oppervlakte) || 0;
       
-      // Sla aanvraag op in database
+      // Sla aanvraag op in database - use correct column names from schema
       const { data: savedData, error: dbError } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
@@ -107,14 +106,12 @@ const StukadoorConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          werktype: formData.werktype,
-          oppervlakte: oppervlakte || null,
-          binnen_buiten: formData.binnen_buiten,
-          kamers: formData.kamers || null,
+          werk_type: formData.werktype,
+          oppervlakte: oppervlakte,
+          aantal_kamers: formData.kamers ? parseInt(formData.kamers) : null,
+          afwerking: formData.binnen_buiten,
           totaal_prijs: totaalprijs.includes('€') ? totaalprijs : null,
           bericht: formData.bericht || null,
-          gewenste_datum: formData.gewenste_datum || null,
-          budget: formData.budget || null,
           status: 'nieuw'
         })
         .select()
@@ -166,7 +163,7 @@ ${formData.bericht ? `\nBericht van klant:\n${formData.bericht}` : ''}
               from_email: 'info@refurbishtotaalnederland.nl',
               to_email: formData.email,
               to_name: `${formData.voornaam} ${formData.achternaam}`,
-              subject: `Stukadoor Offerte - ${tariefInfo?.naam || formData.werktype}`,
+              subject: `Stucwerk Offerte - ${tariefInfo?.naam || formData.werktype}`,
               message: `Beste ${formData.voornaam},
 
 Bedankt voor uw aanvraag voor stukadoor werkzaamheden. Hierbij ontvangt u uw offerte:
@@ -203,7 +200,7 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
           }
         }),
 
-        // Email naar mazenaddas95@gmail.com
+        // Email naar mazenaddas95@gmail.com - volledige details
         supabase.functions.invoke('send-quote', {
           body: {
             templateParams: {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -103,7 +102,7 @@ const SchilderConfigurator = () => {
       const totaalprijs = berekenTotaalprijs();
       const oppervlakte = parseFloat(formData.oppervlakte) || 0;
       
-      // Sla aanvraag op in database
+      // Sla aanvraag op in database - use correct column names from schema
       const { data: savedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
         .insert({
@@ -115,17 +114,12 @@ const SchilderConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          werktype: formData.werktype,
-          oppervlakte: oppervlakte || null,
-          binnen_buiten: formData.binnen_buiten,
-          kamers: formData.kamers || null,
-          ondergrond: formData.ondergrond || null,
-          schilderwerk_type: formData.schilderwerk_type || null,
-          nieuwbouw_renovatie: formData.nieuwbouw_renovatie,
+          oppervlakte: oppervlakte,
+          aantal_kamers: formData.kamers ? parseInt(formData.kamers) : null,
+          project_type: formData.nieuwbouw_renovatie,
+          verf_type: formData.schilderwerk_type || 'latex',
           totaal_prijs: totaalprijs.includes('€') ? totaalprijs : null,
           bericht: formData.bericht || null,
-          gewenste_datum: formData.gewenste_datum || null,
-          budget: formData.budget || null,
           status: 'nieuw'
         })
         .select()
@@ -216,7 +210,7 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
           }
         }),
 
-        // Email naar mazenaddas95@gmail.com
+        // Email naar mazenaddas95@gmail.com - volledige details
         supabase.functions.invoke('send-quote', {
           body: {
             templateParams: {
