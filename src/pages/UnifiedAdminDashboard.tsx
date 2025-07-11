@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { CalendarDays, Users, Euro, TrendingUp, Home, Brush, Hammer, Sun } from 'lucide-react';
+import { CalendarDays, Users, Euro, TrendingUp, Home, Brush, Hammer } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
@@ -24,7 +24,7 @@ import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import { DakkapelConfiguratie } from '@/types/admin';
 
-type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
+type ServiceType = 'dakkapel' | 'schilder' | 'stukadoor';
 
 const UnifiedAdminDashboard = () => {
   const [activeService, setActiveService] = useState<ServiceType>('dakkapel');
@@ -44,18 +44,6 @@ const UnifiedAdminDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('dakkapel_calculator_aanvragen')
-        .select('*');
-      if (error) throw error;
-      return data;
-    },
-    refetchOnWindowFocus: false
-  });
-
-  const { data: zonnepanelen, isLoading: isLoadingZonnepanelen, error: zonnepanelenError, refetch: refetchZonnepanelen } = useQuery({
-    queryKey: ['refurbished_zonnepanelen'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('refurbished_zonnepanelen')
         .select('*');
       if (error) throw error;
       return data;
@@ -89,7 +77,6 @@ const UnifiedAdminDashboard = () => {
 
   const refetchData = () => {
     refetchConfigurations();
-    refetchZonnepanelen();
     refetchSchilder();
     refetchStukadoor();
   };
@@ -161,14 +148,12 @@ const UnifiedAdminDashboard = () => {
 
   const serviceIcons = {
     dakkapel: Home,
-    zonnepaneel: Sun,
     schilder: Brush,
     stukadoor: Hammer
   };
 
   const serviceLabels = {
     dakkapel: 'Dakkapel',
-    zonnepaneel: 'Zonnepanelen',
     schilder: 'Schilderwerk',
     stukadoor: 'Stukadoor'
   };
@@ -177,8 +162,6 @@ const UnifiedAdminDashboard = () => {
     switch (activeService) {
       case 'dakkapel':
         return configuraties || [];
-      case 'zonnepaneel':
-        return zonnepanelen || [];
       case 'schilder':
         return schilderAanvragen || [];
       case 'stukadoor':
@@ -248,7 +231,7 @@ const UnifiedAdminDashboard = () => {
             </div>
 
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
                   const Icon = serviceIcons[key as ServiceType];
                   return (
@@ -263,10 +246,10 @@ const UnifiedAdminDashboard = () => {
               {Object.keys(serviceLabels).map((service) => (
                 <TabsContent key={service} value={service} className="space-y-6">
                   <DashboardStats configuraties={getDashboardStatsData()} />
-                  {(service === 'dakkapel' || service === 'zonnepaneel') && (
+                  {service === 'dakkapel' && (
                     <ConversieStats 
-                      type={service as 'dakkapel' | 'zonnepaneel'} 
-                      configuraties={service === 'dakkapel' ? getDashboardStatsData() : (zonnepanelen || [])}
+                      type="dakkapel" 
+                      configuraties={getDashboardStatsData()}
                     />
                   )}
                   
@@ -283,7 +266,7 @@ const UnifiedAdminDashboard = () => {
                               onBulkAction={handleBulkAction}
                               allIds={getCurrentData().map(item => item.id)}
                               configurations={getCurrentData()}
-                              type={activeService === 'dakkapel' || activeService === 'zonnepaneel' ? activeService : undefined}
+                              type={activeService === 'dakkapel' ? activeService : undefined}
                             />
                           </div>
                           <AdminFilters
