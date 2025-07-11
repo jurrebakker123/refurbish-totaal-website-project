@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Table,
@@ -128,6 +129,9 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
   else if (isSchilder) type = 'schilder';
   else if (isStukadoor) type = 'stukadoor';
 
+  // Only show quote buttons for dakkapel and zonnepaneel
+  const showQuoteButtons = type === 'dakkapel' || type === 'zonnepaneel';
+
   return (
     <div className="space-y-4">
       {/* Mobile Cards */}
@@ -186,11 +190,11 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                         Aanpassen
                       </Button>
                       
-                      {(type === 'dakkapel' || type === 'zonnepaneel') && (
+                      {showQuoteButtons && (
                         <>
                           <AutoQuoteButton
                             requestId={item.id}
-                            type={type}
+                            type={type as 'dakkapel' | 'zonnepaneel'}
                             customerEmail={itemEmail}
                             onSuccess={onDataChange}
                             disabled={sendingQuote === item.id}
@@ -200,7 +204,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                           {item.telefoon && (
                             <WhatsAppQuoteButton
                               requestId={item.id}
-                              type={type}
+                              type={type as 'dakkapel' | 'zonnepaneel'}
                               customerPhone={item.telefoon}
                               customerName={itemName}
                               onSuccess={onDataChange}
@@ -212,7 +216,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                           {(itemEmail || item.telefoon) && (
                             <CombinedQuoteButton
                               requestId={item.id}
-                              type={type}
+                              type={type as 'dakkapel' | 'zonnepaneel'}
                               customerEmail={itemEmail}
                               customerPhone={item.telefoon}
                               customerName={itemName}
