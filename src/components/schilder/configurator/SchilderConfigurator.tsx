@@ -66,14 +66,12 @@ const SchilderConfigurator = () => {
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
     const totaalPrijs = totaalExclBtw * btwPercentage;
-    // Gebruik parseFloat en toFixed(2) voor exacte prijzen
     return parseFloat(totaalPrijs.toFixed(2));
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
         return;
@@ -88,134 +86,163 @@ const SchilderConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('Starting form submission...');
-      const totalPrice = calculatePrice();
+      console.log('=== STARTING FORM SUBMISSION ===');
       
-      // Prepare data for database insertion - match exact column names
-      const insertData = {
-        voornaam: formData.voornaam,
-        achternaam: formData.achternaam,
-        emailadres: formData.emailadres,
-        telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats,
+      // Validatie van verplichte velden
+      if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon) {
+        toast.error('Vul alle verplichte contactgegevens in');
+        return;
+      }
+
+      if (!formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats) {
+        toast.error('Vul alle adresgegevens in');
+        return;
+      }
+
+      if (!formData.uitvoertermijn || !formData.reden_aanvraag) {
+        toast.error('Vul de uitvoertermijn en reden aanvraag in');
+        return;
+      }
+
+      const totalPrice = calculatePrice();
+      console.log('Calculated price:', totalPrice);
+
+      // Database insert data - exact match met database kolommen
+      const dbData = {
+        voornaam: formData.voornaam.trim(),
+        achternaam: formData.achternaam.trim(),
+        emailadres: formData.emailadres.trim().toLowerCase(),
+        telefoon: formData.telefoon.trim(),
+        straatnaam: formData.straatnaam.trim(),
+        huisnummer: formData.huisnummer.trim(),
+        postcode: formData.postcode.trim().toUpperCase(),
+        plaats: formData.plaats.trim(),
         project_type: `${formData.project_type} - ${formData.bouw_type}`,
         verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: parseInt(formData.oppervlakte) || 0,
+        oppervlakte: Math.max(0, parseInt(formData.oppervlakte) || 0),
         totaal_prijs: totalPrice,
-        status: 'nieuw',
-        plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-        kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
-        bericht: formData.bericht
+        plafond_meeverven: parseFloat(formData.plafond_oppervlakte || '0') > 0,
+        kozijnen_meeverven: (parseInt(formData.aantal_deuren || '0') + parseInt(formData.aantal_ramen || '0')) > 0,
+        bericht: formData.bericht?.trim() || null,
+        status: 'nieuw'
       };
 
-      console.log('Inserting data:', insertData);
+      console.log('Database insert data:', dbData);
 
-      // Save to database
-      const { data: savedData, error } = await supabase
+      // Database insert
+      const { data: insertedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
-        .insert(insertData)
+        .insert([dbData])
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
+      if (dbError) {
+        console.error('DATABASE ERROR:', dbError);
+        toast.error('Database fout: ' + dbError.message);
+        return;
       }
 
-      console.log('Data saved successfully:', savedData);
+      console.log('✅ DATABASE INSERT SUCCESS:', insertedData);
 
-      // Send notification email to main admin address
-      console.log('Sending first admin email...');
-      await sendEmail({
-        templateId: 'template_ix4mdjh',
-        from_name: formData.voornaam + ' ' + formData.achternaam,
-        from_email: formData.emailadres,
-        to_name: 'Refurbish Totaal Nederland',
-        to_email: 'info@refurbishtotaalnederland.nl',
-        subject: 'Nieuwe Schilderwerk Aanvraag',
-        message: `
-          Nieuwe schilderwerk aanvraag ontvangen:
-          
-          Klant: ${formData.voornaam} ${formData.achternaam}
-          Email: ${formData.emailadres}
-          Telefoon: ${formData.telefoon}
-          Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
-          
-          Project: ${formData.project_type} - ${formData.bouw_type}
-          Oppervlakte wanden: ${formData.oppervlakte}m²
-          Oppervlakte plafonds: ${formData.plafond_oppervlakte}m²
-          Aantal deuren: ${formData.aantal_deuren}
-          Aantal ramen: ${formData.aantal_ramen}
-          Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}
-          
-          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Buiten schilderwerk - prijs op maat'}
-          
-          Uitvoertermijn: ${formData.uitvoertermijn}
-          Reden aanvraag: ${formData.reden_aanvraag}
-          
-          ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
-        `,
-        reply_to: formData.emailadres,
-        phone: formData.telefoon,
-        service: 'Schilderwerk',
-        location: `${formData.plaats}`,
-        preferred_date: formData.uitvoertermijn
-      });
+      // Email naar hoofdadmin
+      try {
+        console.log('📧 Sending admin email 1...');
+        await sendEmail({
+          templateId: 'template_ix4mdjh',
+          from_name: `${formData.voornaam} ${formData.achternaam}`,
+          from_email: formData.emailadres,
+          to_name: 'Refurbish Totaal Nederland',
+          to_email: 'info@refurbishtotaalnederland.nl',
+          subject: 'Nieuwe Schilderwerk Aanvraag',
+          message: `
+Nieuwe schilderwerk aanvraag ontvangen:
 
-      console.log('First admin email sent');
+Klant: ${formData.voornaam} ${formData.achternaam}
+Email: ${formData.emailadres}
+Telefoon: ${formData.telefoon}
+Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
 
-      // Send notification to second email address
-      console.log('Sending second admin email...');
-      await sendEmail({
-        templateId: 'template_ix4mdjh',
-        from_name: 'System',
-        from_email: 'info@refurbishtotaalnederland.nl',  
-        to_name: 'Admin',
-        to_email: 'mazenaddas95@gmail.com',
-        subject: 'Nieuwe Schilderwerk Aanvraag',
-        message: `Nieuwe schilderwerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
-        reply_to: 'info@refurbishtotaalnederland.nl'
-      });
+Project: ${formData.project_type} - ${formData.bouw_type}
+Oppervlakte wanden: ${formData.oppervlakte}m²
+${formData.plafond_oppervlakte ? `Oppervlakte plafonds: ${formData.plafond_oppervlakte}m²` : ''}
+${formData.aantal_deuren ? `Aantal deuren: ${formData.aantal_deuren}` : ''}
+${formData.aantal_ramen ? `Aantal ramen: ${formData.aantal_ramen}` : ''}
+Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}
 
-      console.log('Second admin email sent');
+${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Buiten schilderwerk - prijs op maat'}
 
-      // Send confirmation email to customer
-      console.log('Sending customer confirmation email...');
-      await sendEmail({
-        templateId: 'template_ix4mdjh',
-        from_name: 'Refurbish Totaal Nederland',
-        from_email: 'info@refurbishtotaalnederland.nl',
-        to_name: `${formData.voornaam} ${formData.achternaam}`,
-        to_email: formData.emailadres,
-        subject: 'Bevestiging Schilderwerk Aanvraag',
-        message: `
-          Beste ${formData.voornaam},
-          
-          Bedankt voor uw aanvraag voor schilderwerk. Wij hebben uw aanvraag in goede orde ontvangen.
-          
-          Uw projectdetails:
-          - Project: ${formData.project_type} - ${formData.bouw_type}
-          - Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
-          ${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
-          - Gewenste uitvoertermijn: ${formData.uitvoertermijn}
-          
-          Wij nemen binnen 24 uur contact met u op voor een afspraak.
-          
-          Met vriendelijke groet,
-          Refurbish Totaal Nederland
-          
-          Tel: 06-12345678
-          Email: info@refurbishtotaalnederland.nl
-        `,
-        reply_to: 'info@refurbishtotaalnederland.nl'
-      });
+Uitvoertermijn: ${formData.uitvoertermijn}
+Reden aanvraag: ${formData.reden_aanvraag}
 
-      console.log('Customer email sent');
+${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
+          `,
+          reply_to: formData.emailadres,
+          phone: formData.telefoon,
+          service: 'Schilderwerk',
+          location: formData.plaats,
+          preferred_date: formData.uitvoertermijn
+        });
+        console.log('✅ Admin email 1 sent');
+      } catch (emailError) {
+        console.error('❌ Admin email 1 failed:', emailError);
+      }
 
-      toast.success('Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
+      // Email naar tweede admin
+      try {
+        console.log('📧 Sending admin email 2...');
+        await sendEmail({
+          templateId: 'template_ix4mdjh',
+          from_name: 'Refurbish Totaal Nederland',
+          from_email: 'info@refurbishtotaalnederland.nl',
+          to_name: 'Admin',
+          to_email: 'mazenaddas95@gmail.com',
+          subject: 'Nieuwe Schilderwerk Aanvraag',
+          message: `Nieuwe schilderwerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
+          reply_to: 'info@refurbishtotaalnederland.nl'
+        });
+        console.log('✅ Admin email 2 sent');
+      } catch (emailError) {
+        console.error('❌ Admin email 2 failed:', emailError);
+      }
+
+      // Bevestigingsmail naar klant
+      try {
+        console.log('📧 Sending customer confirmation...');
+        await sendEmail({
+          templateId: 'template_ix4mdjh',
+          from_name: 'Refurbish Totaal Nederland',
+          from_email: 'info@refurbishtotaalnederland.nl',
+          to_name: `${formData.voornaam} ${formData.achternaam}`,
+          to_email: formData.emailadres,
+          subject: 'Bevestiging Schilderwerk Aanvraag',
+          message: `
+Beste ${formData.voornaam},
+
+Bedankt voor uw aanvraag voor schilderwerk. Wij hebben uw aanvraag in goede orde ontvangen.
+
+Uw projectdetails:
+- Project: ${formData.project_type} - ${formData.bouw_type}
+- Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
+${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
+- Gewenste uitvoertermijn: ${formData.uitvoertermijn}
+
+Wij nemen binnen 24 uur contact met u op voor een afspraak.
+
+Met vriendelijke groet,
+Refurbish Totaal Nederland
+
+Tel: 06-12345678
+Email: info@refurbishtotaalnederland.nl
+          `,
+          reply_to: 'info@refurbishtotaalnederland.nl'
+        });
+        console.log('✅ Customer email sent');
+      } catch (emailError) {
+        console.error('❌ Customer email failed:', emailError);
+      }
+
+      // Success feedback
+      toast.success('✅ Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
       
       // Reset form
       setFormData({
@@ -240,9 +267,11 @@ const SchilderConfigurator = () => {
       });
       setUploadedFile(null);
 
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('Er ging iets mis bij het verzenden van je aanvraag. Probeer het opnieuw.');
+      console.log('=== FORM SUBMISSION COMPLETED SUCCESSFULLY ===');
+
+    } catch (error: any) {
+      console.error('=== SUBMISSION ERROR ===', error);
+      toast.error(`Fout bij verzenden: ${error.message || 'Onbekende fout'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -365,7 +394,7 @@ const SchilderConfigurator = () => {
             </div>
 
             <div>
-              <Label htmlFor="uitvoertermijn">Gewenste startdatum</Label>
+              <Label htmlFor="uitvoertermijn">Gewenste startdatum *</Label>
               <Input
                 id="uitvoertermijn"
                 value={formData.uitvoertermijn}
@@ -376,7 +405,7 @@ const SchilderConfigurator = () => {
             </div>
 
             <div>
-              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag?</Label>
+              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag? *</Label>
               <Input
                 id="reden_aanvraag"
                 value={formData.reden_aanvraag}
@@ -452,7 +481,7 @@ const SchilderConfigurator = () => {
               <h3 className="text-lg font-medium mb-4">Contactgegevens</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="voornaam">Voornaam</Label>
+                  <Label htmlFor="voornaam">Voornaam *</Label>
                   <Input
                     id="voornaam"
                     value={formData.voornaam}
@@ -461,7 +490,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="achternaam">Achternaam</Label>
+                  <Label htmlFor="achternaam">Achternaam *</Label>
                   <Input
                     id="achternaam"
                     value={formData.achternaam}
@@ -473,7 +502,7 @@ const SchilderConfigurator = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="emailadres">E-mailadres</Label>
+                  <Label htmlFor="emailadres">E-mailadres *</Label>
                   <Input
                     id="emailadres"
                     type="email"
@@ -483,7 +512,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="telefoon">Telefoonnummer</Label>
+                  <Label htmlFor="telefoon">Telefoonnummer *</Label>
                   <Input
                     id="telefoon"
                     value={formData.telefoon}
@@ -496,7 +525,7 @@ const SchilderConfigurator = () => {
               {/* Address */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div className="md:col-span-2">
-                  <Label htmlFor="straatnaam">Straatnaam</Label>
+                  <Label htmlFor="straatnaam">Straatnaam *</Label>
                   <Input
                     id="straatnaam"
                     value={formData.straatnaam}
@@ -505,7 +534,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="huisnummer">Huisnummer</Label>
+                  <Label htmlFor="huisnummer">Huisnummer *</Label>
                   <Input
                     id="huisnummer"
                     value={formData.huisnummer}
@@ -517,7 +546,7 @@ const SchilderConfigurator = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <Label htmlFor="postcode">Postcode</Label>
+                  <Label htmlFor="postcode">Postcode *</Label>
                   <Input
                     id="postcode"
                     value={formData.postcode}
@@ -526,7 +555,7 @@ const SchilderConfigurator = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="plaats">Plaats</Label>
+                  <Label htmlFor="plaats">Plaats *</Label>
                   <Input
                     id="plaats"
                     value={formData.plaats}
