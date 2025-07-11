@@ -58,10 +58,10 @@ const SchilderConfigurator = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    console.log('🚀 Form submission started');
 
     try {
-      console.log('=== STARTING FORM SUBMISSION ===');
-      
       // Validatie van verplichte velden
       const requiredFields = {
         voornaam: formData.voornaam,
@@ -81,7 +81,7 @@ const SchilderConfigurator = () => {
         .map(([key, _]) => key);
 
       if (missingFields.length > 0) {
-        console.error('Missing required fields:', missingFields);
+        console.error('❌ Missing required fields:', missingFields);
         toast.error('Vul alle verplichte velden in');
         return;
       }
@@ -91,10 +91,9 @@ const SchilderConfigurator = () => {
         return;
       }
 
-      console.log('All validation passed. Preparing database insert...');
-      console.log('Calculated price:', totalPrice);
+      console.log('✅ Form validation passed');
 
-      // Clean database insert data
+      // Bereid database data voor
       const insertData = {
         voornaam: formData.voornaam.trim(),
         achternaam: formData.achternaam.trim(),
@@ -114,29 +113,24 @@ const SchilderConfigurator = () => {
         status: 'nieuw'
       };
 
-      console.log('Inserting data:', insertData);
+      console.log('📊 Insert data prepared:', insertData);
 
-      // Database insert with comprehensive error handling
-      const { data: insertedData, error: dbError } = await supabase
+      // Database insert
+      const { data: result, error: dbError } = await supabase
         .from('schilder_aanvragen')
         .insert(insertData)
-        .select();
+        .select()
+        .single();
 
       if (dbError) {
-        console.error('DATABASE ERROR:', {
-          message: dbError.message,
-          details: dbError.details,
-          hint: dbError.hint,
-          code: dbError.code,
-          insertData: insertData
-        });
+        console.error('❌ Database error:', dbError);
         toast.error(`Database fout: ${dbError.message}`);
         return;
       }
 
-      console.log('✅ DATABASE INSERT SUCCESS:', insertedData);
+      console.log('✅ Database insert successful:', result);
 
-      // Send admin notification email
+      // Verstuur admin email
       try {
         console.log('📧 Sending admin notification...');
         await sendEmail({
@@ -174,13 +168,12 @@ ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
           location: formData.plaats,
           preferred_date: formData.uitvoertermijn
         });
-        console.log('✅ Admin email sent successfully');
+        console.log('✅ Admin email sent');
       } catch (emailError) {
-        console.error('❌ Admin email failed:', emailError);
-        // Don't fail the entire process if email fails
+        console.error('⚠️ Admin email failed:', emailError);
       }
 
-      // Send customer confirmation email
+      // Verstuur klant bevestiging
       try {
         console.log('📧 Sending customer confirmation...');
         await sendEmail({
@@ -211,16 +204,15 @@ Email: info@refurbishtotaalnederland.nl
           `,
           reply_to: 'info@refurbishtotaalnederland.nl'
         });
-        console.log('✅ Customer email sent successfully');
+        console.log('✅ Customer email sent');
       } catch (emailError) {
-        console.error('❌ Customer email failed:', emailError);
-        // Don't fail the entire process if email fails
+        console.error('⚠️ Customer email failed:', emailError);
       }
 
-      // Success feedback
+      // Succes feedback
       toast.success('✅ Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
       
-      // Reset form
+      // Reset formulier
       setFormData({
         voornaam: '',
         achternaam: '',
@@ -243,10 +235,10 @@ Email: info@refurbishtotaalnederland.nl
       });
       setUploadedFile(null);
 
-      console.log('=== FORM SUBMISSION COMPLETED SUCCESSFULLY ===');
+      console.log('🎉 Form submission completed successfully');
 
     } catch (error: any) {
-      console.error('=== SUBMISSION ERROR ===', error);
+      console.error('💥 Submission error:', error);
       toast.error(`Er is een fout opgetreden: ${error.message || 'Onbekende fout'}`);
     } finally {
       setIsSubmitting(false);
