@@ -22,6 +22,7 @@ import VacaturesManager from '@/components/admin/VacaturesManager';
 import ContentManager from '@/components/admin/ContentManager';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
+import { DakkapelConfiguratie } from '@/types/admin';
 
 type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
 
@@ -178,6 +179,11 @@ const UnifiedAdminDashboard = () => {
     }
   };
 
+  // Get dakkapel data for dashboard stats (only use dakkapel data for general stats)
+  const getDashboardStatsData = (): DakkapelConfiguratie[] => {
+    return configuraties || [];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminHeader 
@@ -198,7 +204,7 @@ const UnifiedAdminDashboard = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
                 <p className="text-gray-600">Beheer alle aanvragen en configuraties</p>
               </div>
-              <NotificationCenter configuraties={getCurrentData()} />
+              <NotificationCenter configuraties={getDashboardStatsData()} />
             </div>
 
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
@@ -216,11 +222,11 @@ const UnifiedAdminDashboard = () => {
 
               {Object.keys(serviceLabels).map((service) => (
                 <TabsContent key={service} value={service} className="space-y-6">
-                  <DashboardStats configuraties={getCurrentData()} />
+                  <DashboardStats configuraties={getDashboardStatsData()} />
                   {(service === 'dakkapel' || service === 'zonnepaneel') && (
                     <ConversieStats 
                       type={service as 'dakkapel' | 'zonnepaneel'} 
-                      configuraties={getCurrentData()}
+                      configuraties={service === 'dakkapel' ? (configuraties || []) : (zonnepanelen || [])}
                     />
                   )}
                   

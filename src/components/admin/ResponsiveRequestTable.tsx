@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -188,38 +187,40 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       </Button>
                       
                       {(type === 'dakkapel' || type === 'zonnepaneel') && (
-                        <AutoQuoteButton
-                          requestId={item.id}
-                          type={type as 'dakkapel' | 'zonnepaneel'}
-                          customerEmail={itemEmail}
-                          onSuccess={onDataChange}
-                          disabled={sendingQuote === item.id}
-                        />
-                      )}
-                      
-                      {/* WhatsApp Quote Button */}
-                      {item.telefoon && (type === 'dakkapel' || type === 'zonnepaneel') && (
-                        <WhatsAppQuoteButton
-                          requestId={item.id}
-                          type={type as 'dakkapel' | 'zonnepaneel'}
-                          customerPhone={item.telefoon}
-                          customerName={itemName}
-                          onSuccess={onDataChange}
-                          disabled={sendingQuote === item.id}
-                        />
-                      )}
-                      
-                      {/* Combined Quote Button */}
-                      {(itemEmail || item.telefoon) && (type === 'dakkapel' || type === 'zonnepaneel') && (
-                        <CombinedQuoteButton
-                          requestId={item.id}
-                          type={type as 'dakkapel' | 'zonnepaneel'}
-                          customerEmail={itemEmail}
-                          customerPhone={item.telefoon}
-                          customerName={itemName}
-                          onSuccess={onDataChange}
-                          disabled={sendingQuote === item.id}
-                        />
+                        <>
+                          <AutoQuoteButton
+                            requestId={item.id}
+                            type={type}
+                            customerEmail={itemEmail}
+                            onSuccess={onDataChange}
+                            disabled={sendingQuote === item.id}
+                          />
+                          
+                          {/* WhatsApp Quote Button */}
+                          {item.telefoon && (
+                            <WhatsAppQuoteButton
+                              requestId={item.id}
+                              type={type}
+                              customerPhone={item.telefoon}
+                              customerName={itemName}
+                              onSuccess={onDataChange}
+                              disabled={sendingQuote === item.id}
+                            />
+                          )}
+                          
+                          {/* Combined Quote Button */}
+                          {(itemEmail || item.telefoon) && (
+                            <CombinedQuoteButton
+                              requestId={item.id}
+                              type={type}
+                              customerEmail={itemEmail}
+                              customerPhone={item.telefoon}
+                              customerName={itemName}
+                              onSuccess={onDataChange}
+                              disabled={sendingQuote === item.id}
+                            />
+                          )}
+                        </>
                       )}
 
                       <Button
