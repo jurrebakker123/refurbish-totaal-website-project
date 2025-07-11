@@ -13,7 +13,6 @@ import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import AdminFilters from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
-import ConversieStats from '@/components/admin/ConversieStats';
 import DashboardStats from '@/components/admin/DashboardStats';
 import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
 import NotificationCenter from '@/components/admin/NotificationCenter';
@@ -22,7 +21,7 @@ import VacaturesManager from '@/components/admin/VacaturesManager';
 import ContentManager from '@/components/admin/ContentManager';
 import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
-import { DakkapelConfiguratie } from '@/types/admin';
+import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
 type ServiceType = 'dakkapel' | 'schilder' | 'stukadoor';
 
@@ -171,42 +170,6 @@ const UnifiedAdminDashboard = () => {
     }
   };
 
-  // Get dakkapel data for dashboard stats (only use dakkapel data for general stats)
-  const getDashboardStatsData = (): DakkapelConfiguratie[] => {
-    // Transform dakkapel_calculator_aanvragen to match DakkapelConfiguratie interface
-    return (configuraties || []).map(item => ({
-      id: item.id,
-      created_at: item.created_at || '',
-      naam: `${item.voornaam} ${item.achternaam}`,
-      email: item.emailadres,
-      telefoon: item.telefoon,
-      adres: `${item.straatnaam} ${item.huisnummer}`,
-      postcode: item.postcode,
-      plaats: item.plaats,
-      opmerkingen: item.bericht,
-      model: item.type,
-      breedte: item.breedte,
-      materiaal: item.materiaal,
-      kleur_kozijn: item.kleurkozijnen,
-      kleur_zijkanten: item.kleurzijkanten,
-      kleur_draaikiepramen: item.kleurdraaikiepramen,
-      dakhelling: item.dakhelling,
-      dakhelling_type: item.dakhellingtype,
-      levertijd: undefined,
-      ventilationgrids: false,
-      sunshade: false,
-      insectscreens: false,
-      airconditioning: false,
-      status: item.status || 'nieuw',
-      offerte_verzonden_op: item.offerte_verzonden_op,
-      op_locatie_op: undefined,
-      in_aanbouw_op: undefined,
-      afgehandeld_op: item.afgehandeld_op,
-      notities: item.notities,
-      totaal_prijs: item.totaal_prijs
-    }));
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminHeader 
@@ -227,7 +190,10 @@ const UnifiedAdminDashboard = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
                 <p className="text-gray-600">Beheer alle aanvragen en configuraties</p>
               </div>
-              <NotificationCenter configuraties={getDashboardStatsData()} />
+              <div className="flex items-center gap-4">
+                <EmailMarketingDialog onCampaignSent={refetchData} />
+                <NotificationCenter configuraties={configuraties || []} />
+              </div>
             </div>
 
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
@@ -245,14 +211,6 @@ const UnifiedAdminDashboard = () => {
 
               {Object.keys(serviceLabels).map((service) => (
                 <TabsContent key={service} value={service} className="space-y-6">
-                  <DashboardStats configuraties={getDashboardStatsData()} />
-                  {service === 'dakkapel' && (
-                    <ConversieStats 
-                      type="dakkapel" 
-                      configuraties={getDashboardStatsData()}
-                    />
-                  )}
-                  
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">
                       <Card>
@@ -266,7 +224,6 @@ const UnifiedAdminDashboard = () => {
                               onBulkAction={handleBulkAction}
                               allIds={getCurrentData().map(item => item.id)}
                               configurations={getCurrentData()}
-                              type={activeService === 'dakkapel' ? activeService : undefined}
                             />
                           </div>
                           <AdminFilters
