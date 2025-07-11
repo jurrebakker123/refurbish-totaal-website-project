@@ -41,7 +41,7 @@ interface ResponsiveRequestTableProps {
   items: any[];
   searchTerm: string;
   selectedStatus: string;
-  onEdit: (id: string) => void;
+  onEdit: (item: any) => void;
   onDataChange: () => void;
   sendingQuote: string | null;
   setSendingQuote: (id: string | null) => void;
@@ -92,22 +92,24 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'nieuw': return 'bg-blue-100 text-blue-800';
-      case 'in_behandeling': return 'bg-yellow-100 text-yellow-800';
-      case 'offerte_verzonden': return 'bg-orange-100 text-orange-800';
-      case 'interesse_bevestigd': return 'bg-purple-100 text-purple-800';
-      case 'akkoord': return 'bg-green-100 text-green-800';
-      case 'niet_akkoord': return 'bg-red-100 text-red-800';
-      case 'op_locatie': return 'bg-cyan-100 text-cyan-800';
-      case 'in_aanbouw': return 'bg-indigo-100 text-indigo-800';
-      case 'afgehandeld': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+    switch (status?.toLowerCase()) {
+      case 'nieuw': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'in_behandeling': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'offerte_verzonden': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'interesse_bevestigd': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'akkoord': return 'bg-green-100 text-green-800 border-green-200';
+      case 'niet_akkoord': return 'bg-red-100 text-red-800 border-red-200';
+      case 'op_locatie': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
+      case 'in_aanbouw': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'afgehandeld': return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
+    if (!status) return 'Onbekend';
+    
+    switch (status.toLowerCase()) {
       case 'nieuw': return 'Nieuw';
       case 'in_behandeling': return 'In Behandeling';
       case 'offerte_verzonden': return 'Offerte Verzonden';
@@ -150,16 +152,51 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
   // Only show quote buttons for dakkapel and zonnepaneel
   const showQuoteButtons = type === 'dakkapel' || type === 'zonnepaneel';
 
+  // Show status overview
+  const statusCounts = filteredItems.reduce((acc, item) => {
+    const status = item.status || 'nieuw';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const allStatuses = [
+    'nieuw',
+    'in_behandeling', 
+    'offerte_verzonden',
+    'interesse_bevestigd',
+    'akkoord',
+    'niet_akkoord',
+    'op_locatie',
+    'in_aanbouw',
+    'afgehandeld'
+  ];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Status Overview Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-9 gap-2">
+        {allStatuses.map((status) => (
+          <Card key={status} className="p-3">
+            <div className="text-center">
+              <Badge className={`${getStatusColor(status)} text-xs mb-1`}>
+                {getStatusLabel(status)}
+              </Badge>
+              <div className="text-lg font-bold text-gray-900">
+                {statusCounts[status] || 0}
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
         {filteredItems.map((item) => (
           <MobileRequestCard
             key={item.id}
             item={item}
-            onViewDetails={() => onEdit(item.id)}
-            onOpenQuoteDialog={() => onEdit(item.id)}
+            onViewDetails={() => onEdit(item)}
+            onOpenQuoteDialog={() => onEdit(item)}
             type={showQuoteButtons ? (type as 'dakkapel' | 'zonnepaneel') : 'dakkapel'}
             sendingQuote={sendingQuote}
           />
@@ -191,8 +228,8 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                   <TableCell>{item.telefoon || 'N.v.t.'}</TableCell>
                   <TableCell>{formatDate(item.created_at)}</TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(item.status)}>
-                      {getStatusLabel(item.status)}
+                    <Badge className={getStatusColor(item.status || 'nieuw')}>
+                      {getStatusLabel(item.status || 'nieuw')}
                     </Badge>
                   </TableCell>
                   
@@ -201,7 +238,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onEdit(item.id)}
+                        onClick={() => onEdit(item)}
                         disabled={sendingQuote === item.id}
                       >
                         <Edit className="h-4 w-4 mr-2" />
@@ -231,9 +268,15 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                 </TableRow>
               );
             })}
-          </TableBody>
+          </tbody>
         </Table>
       </div>
+
+      {filteredItems.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500">Geen aanvragen gevonden met de huidige filters.</p>
+        </div>
+      )}
     </div>
   );
 };

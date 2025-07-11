@@ -75,6 +75,7 @@ const UnifiedAdminDashboard = () => {
   };
 
   const handleViewDetails = (item: any) => {
+    console.log('Opening details for item:', item);
     setSelectedItem(item);
   };
 
@@ -259,6 +260,7 @@ const UnifiedAdminDashboard = () => {
         item={selectedItem}
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
+        onDataChange={refetchData}
       />
     </div>
   );

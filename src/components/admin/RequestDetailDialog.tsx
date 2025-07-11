@@ -38,13 +38,13 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
   const currentItem = item || request;
 
   React.useEffect(() => {
-    if (currentItem) {
+    if (currentItem && typeof currentItem === 'object') {
       setNotes(currentItem.notities || '');
       setPrice(currentItem.totaal_prijs ? currentItem.totaal_prijs.toString() : '');
     }
   }, [currentItem]);
 
-  if (!currentItem) return null;
+  if (!currentItem || typeof currentItem !== 'object') return null;
   
   const handleUpdateDetails = async () => {
     const success = await updateRequestDetails(currentItem, notes, price);
@@ -62,53 +62,103 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
     }
   };
 
+  // Safe check for contact info
+  const getName = () => {
+    if ('naam' in currentItem) return currentItem.naam;
+    if ('voornaam' in currentItem && 'achternaam' in currentItem) {
+      return `${currentItem.voornaam} ${currentItem.achternaam}`;
+    }
+    return 'Onbekend';
+  };
+
+  const getEmail = () => {
+    if ('email' in currentItem) return currentItem.email;
+    if ('emailadres' in currentItem) return currentItem.emailadres;
+    return 'Niet beschikbaar';
+  };
+
+  const getAddress = () => {
+    if ('adres' in currentItem) return `${currentItem.adres}, ${currentItem.postcode} ${currentItem.plaats}`;
+    if ('straatnaam' in currentItem && 'huisnummer' in currentItem) {
+      return `${currentItem.straatnaam} ${currentItem.huisnummer}, ${currentItem.postcode} ${currentItem.plaats}`;
+    }
+    return 'Niet beschikbaar';
+  };
+
   const contactInfo = (
     <div>
-      <p><strong>Naam:</strong> {currentItem.naam}</p>
-      <p><strong>Email:</strong> {currentItem.email}</p>
-      <p><strong>Telefoon:</strong> {currentItem.telefoon}</p>
-      <p><strong>Adres:</strong> {currentItem.adres}, {currentItem.postcode} {currentItem.plaats}</p>
+      <p><strong>Naam:</strong> {getName()}</p>
+      <p><strong>Email:</strong> {getEmail()}</p>
+      <p><strong>Telefoon:</strong> {currentItem.telefoon || 'Niet beschikbaar'}</p>
+      <p><strong>Adres:</strong> {getAddress()}</p>
     </div>
   );
   
-  const productInfo = (
-    <div>
-      {'projectDetails' in currentItem ? (
-        <p><strong>Project:</strong> {currentItem.projectDetails}</p>
-      ) : (
-        <>
-          <p><strong>Model:</strong> {(currentItem as any).model}</p>
-          <p><strong>Breedte:</strong> {(currentItem as any).breedte}cm</p>
-          <p><strong>Materiaal:</strong> {(currentItem as any).materiaal}</p>
-        </>
-      )}
-      
-      {request?.extraDetails && (
+  const getProjectInfo = () => {
+    // Check if it's a dakkapel item
+    if ('model' in currentItem && 'breedte' in currentItem) {
+      return (
         <div>
-          <p><strong>Extra details:</strong></p>
-          <ul className="list-disc ml-4">
-            {request.extraDetails.map((detail, index) => (
-              <li key={index}>{detail}</li>
-            ))}
-          </ul>
+          <p><strong>Model:</strong> {currentItem.model}</p>
+          <p><strong>Breedte:</strong> {currentItem.breedte}cm</p>
+          <p><strong>Materiaal:</strong> {currentItem.materiaal}</p>
+          {currentItem.dakhelling && (
+            <p><strong>Dakhelling:</strong> {currentItem.dakhelling}° ({currentItem.dakhelling_type})</p>
+          )}
+          {'kleur_kozijn' in currentItem && (
+            <p><strong>Kleuren:</strong> Kozijn: {currentItem.kleur_kozijn}, Zijkanten: {currentItem.kleur_zijkanten}, Draaikiepramen: {currentItem.kleur_draaikiepramen}</p>
+          )}
+          {'ventilationgrids' in currentItem && (
+            <>
+              <p><strong>Opties:</strong></p>
+              <ul>
+                <li>Ventilatierooster: {currentItem.ventilationgrids ? 'Ja' : 'Nee'}</li>
+                <li>Zonwering: {currentItem.sunshade ? 'Ja' : 'Nee'}</li>
+                <li>Insectenhorren: {currentItem.insectscreens ? 'Ja' : 'Nee'}</li>
+                <li>Airconditioning: {currentItem.airconditioning ? 'Ja' : 'Nee'}</li>
+              </ul>
+            </>
+          )}
         </div>
-      )}
-      
-      {item && (
-        <>
-          <p><strong>Dakhelling:</strong> {item.dakhelling ? `${item.dakhelling}° (${item.dakhelling_type})` : 'Niet opgegeven'}</p>
-          <p><strong>Kleuren:</strong> Kozijn: {item.kleur_kozijn}, Zijkanten: {item.kleur_zijkanten}, Draaikiepramen: {item.kleur_draaikiepramen}</p>
-          <p><strong>Opties:</strong></p>
-          <ul>
-            <li>Ventilatierooster: {item.ventilationgrids ? 'Ja' : 'Nee'}</li>
-            <li>Zonwering: {item.sunshade ? 'Ja' : 'Nee'}</li>
-            <li>Insectenhorren: {item.insectscreens ? 'Ja' : 'Nee'}</li>
-            <li>Airconditioning: {item.airconditioning ? 'Ja' : 'Nee'}</li>
-          </ul>
-        </>
-      )}
-    </div>
-  );
+      );
+    }
+    
+    // Check if it's a schilder item
+    if ('project_type' in currentItem && 'verf_type' in currentItem) {
+      return (
+        <div>
+          <p><strong>Project Type:</strong> {currentItem.project_type}</p>
+          <p><strong>Verf Type:</strong> {currentItem.verf_type}</p>
+          <p><strong>Oppervlakte:</strong> {currentItem.oppervlakte}m²</p>
+          {currentItem.aantal_kamers && (
+            <p><strong>Aantal Kamers:</strong> {currentItem.aantal_kamers}</p>
+          )}
+          {currentItem.gewenste_kleur && (
+            <p><strong>Gewenste Kleur:</strong> {currentItem.gewenste_kleur}</p>
+          )}
+        </div>
+      );
+    }
+    
+    // Check if it's a stukadoor item
+    if ('werk_type' in currentItem && 'afwerking' in currentItem) {
+      return (
+        <div>
+          <p><strong>Werk Type:</strong> {currentItem.werk_type}</p>
+          <p><strong>Afwerking:</strong> {currentItem.afwerking}</p>
+          <p><strong>Oppervlakte:</strong> {currentItem.oppervlakte}m²</p>
+          {currentItem.aantal_kamers && (
+            <p><strong>Aantal Kamers:</strong> {currentItem.aantal_kamers}</p>
+          )}
+          {currentItem.voorbewerking && (
+            <p><strong>Voorbewerking:</strong> {currentItem.voorbewerking}</p>
+          )}
+        </div>
+      );
+    }
+    
+    return <p>Project details niet beschikbaar</p>;
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -135,7 +185,7 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
               <CardTitle>Project Details</CardTitle>
             </CardHeader>
             <CardContent>
-              {productInfo}
+              {getProjectInfo()}
             </CardContent>
           </Card>
         </div>
@@ -145,7 +195,7 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
             <CardTitle>Opmerkingen</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{currentItem.opmerkingen || 'Geen opmerkingen'}</p>
+            <p>{currentItem.opmerkingen || currentItem.bericht || 'Geen opmerkingen'}</p>
           </CardContent>
         </Card>
         
