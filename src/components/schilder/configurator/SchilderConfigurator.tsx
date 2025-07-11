@@ -80,8 +80,8 @@ const SchilderConfigurator = () => {
 
       console.log('Calculated price:', totalPrice);
 
-      // Database insert data - exact match met database kolommen
-      const dbData = {
+      // Database insert data - EXACT match met database schema
+      const insertData = {
         voornaam: formData.voornaam.trim(),
         achternaam: formData.achternaam.trim(),
         emailadres: formData.emailadres.trim().toLowerCase(),
@@ -92,34 +92,62 @@ const SchilderConfigurator = () => {
         plaats: formData.plaats.trim(),
         project_type: `${formData.project_type} - ${formData.bouw_type}`,
         verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: Math.max(0, parseInt(formData.oppervlakte) || 0),
-        totaal_prijs: totalPrice,
+        oppervlakte: Math.max(1, parseInt(formData.oppervlakte) || 1), // Minimum 1
+        totaal_prijs: totalPrice || 0,
         plafond_meeverven: parseFloat(formData.plafond_oppervlakte || '0') > 0,
         kozijnen_meeverven: (parseInt(formData.aantal_deuren || '0') + parseInt(formData.aantal_ramen || '0')) > 0,
         bericht: formData.bericht?.trim() || null,
-        status: 'nieuw'
+        status: 'nieuw',
+        // Alle andere velden op null zetten om conflicts te voorkomen
+        aantal_kamers: null,
+        voorbewerking_nodig: null,
+        huidige_kleur: null,
+        gewenste_kleur: null,
+        notities: null,
+        offerte_verzonden_op: null,
+        op_locatie_op: null,
+        in_aanbouw_op: null,
+        afgehandeld_op: null
       };
 
-      console.log('Database insert data:', dbData);
+      console.log('Final database insert data:', insertData);
 
-      // Database insert
+      // Probeer eerst zonder auth context
       const { data: insertedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
-        .insert([dbData])
+        .insert([insertData])
         .select()
         .single();
 
       if (dbError) {
-        console.error('DATABASE ERROR:', dbError);
-        toast.error('Database fout: ' + dbError.message);
-        return;
+        console.error('DATABASE ERROR DETAILS:', {
+          message: dbError.message,
+          details: dbError.details,
+          hint: dbError.hint,
+          code: dbError.code
+        });
+        
+        // Probeer alternatieve insert methode
+        console.log('Trying alternative insert method...');
+        const { data: altData, error: altError } = await supabase
+          .from('schilder_aanvragen')
+          .insert(insertData)
+          .select();
+
+        if (altError) {
+          console.error('ALTERNATIVE INSERT ALSO FAILED:', altError);
+          toast.error(`Database fout: ${altError.message}`);
+          return;
+        }
+        
+        console.log('✅ ALTERNATIVE INSERT SUCCESS:', altData);
+      } else {
+        console.log('✅ DATABASE INSERT SUCCESS:', insertedData);
       }
 
-      console.log('✅ DATABASE INSERT SUCCESS:', insertedData);
-
-      // Email naar hoofdadmin
+      // Email verzending
       try {
-        console.log('📧 Sending admin email 1...');
+        console.log('📧 Sending admin email...');
         await sendEmail({
           templateId: 'template_ix4mdjh',
           from_name: `${formData.voornaam} ${formData.achternaam}`,
@@ -155,27 +183,9 @@ ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
           location: formData.plaats,
           preferred_date: formData.uitvoertermijn
         });
-        console.log('✅ Admin email 1 sent');
+        console.log('✅ Admin email sent');
       } catch (emailError) {
-        console.error('❌ Admin email 1 failed:', emailError);
-      }
-
-      // Email naar tweede admin
-      try {
-        console.log('📧 Sending admin email 2...');
-        await sendEmail({
-          templateId: 'template_ix4mdjh',
-          from_name: 'Refurbish Totaal Nederland',
-          from_email: 'info@refurbishtotaalnederland.nl',
-          to_name: 'Admin',
-          to_email: 'mazenaddas95@gmail.com',
-          subject: 'Nieuwe Schilderwerk Aanvraag',
-          message: `Nieuwe schilderwerk aanvraag van ${formData.voornaam} ${formData.achternaam} (${formData.emailadres})`,
-          reply_to: 'info@refurbishtotaalnederland.nl'
-        });
-        console.log('✅ Admin email 2 sent');
-      } catch (emailError) {
-        console.error('❌ Admin email 2 failed:', emailError);
+        console.error('❌ Admin email failed:', emailError);
       }
 
       // Bevestigingsmail naar klant
