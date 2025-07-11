@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -346,12 +347,12 @@ const SchilderConfigurator = () => {
             </div>
 
             <div>
-              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn?</Label>
+              <Label htmlFor="uitvoertermijn">Gewenste startdatum</Label>
               <Input
                 id="uitvoertermijn"
                 value={formData.uitvoertermijn}
                 onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
-                placeholder="Bijvoorbeeld: binnen 3 weken, flexibel"
+                placeholder="Bijvoorbeeld: 15 januari 2024, flexibel, zo snel mogelijk"
                 required
               />
             </div>
