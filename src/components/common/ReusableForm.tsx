@@ -83,6 +83,8 @@ const ReusableForm = ({
     const form = e.currentTarget;
     const formData = new FormData(form);
     
+    console.log('🚀 Starting form submission process');
+    
     // Prepare data for Supabase
     if (supabaseTable) {
       const supabaseData: any = {
@@ -106,7 +108,8 @@ const ReusableForm = ({
         }
       });
 
-      console.log('Saving to Supabase:', supabaseData);
+      console.log('💾 Saving to Supabase table:', supabaseTable);
+      console.log('📊 Data being saved:', supabaseData);
 
       try {
         const { data, error } = await supabase
@@ -114,13 +117,17 @@ const ReusableForm = ({
           .insert([supabaseData]);
 
         if (error) {
-          console.error('Supabase error:', error);
+          console.error('❌ Supabase error:', error);
           throw error;
         }
 
-        console.log('Saved to Supabase successfully:', data);
+        console.log('✅ Saved to Supabase successfully:', data);
+        toast.success("Uw aanvraag is succesvol opgeslagen!", {
+          duration: 3000,
+          position: 'top-center',
+        });
       } catch (error) {
-        console.error('Error saving to Supabase:', error);
+        console.error('💥 Error saving to Supabase:', error);
         toast.error("Er is een fout opgetreden bij het opslaan van uw aanvraag.", {
           duration: 5000,
           position: 'top-center',
@@ -162,13 +169,13 @@ const ReusableForm = ({
       emailData[`field_${field.name}`] = value;
     });
 
-    console.log("Sending email with data:", emailData);
+    console.log("📧 Sending email with data:", emailData);
     
     try {
       const result = await sendEmail(emailData);
       
       if (result.success) {
-        console.log('Email sent successfully');
+        console.log('✅ Email sent successfully');
         toast.success("Bedankt voor uw bericht! We nemen zo spoedig mogelijk contact met u op.", {
           duration: 5000,
           position: 'top-center',
@@ -187,7 +194,7 @@ const ReusableForm = ({
         throw new Error("Email sending failed");
       }
     } catch (error) {
-      console.error('Email sending failed:', error);
+      console.error('❌ Email sending failed:', error);
       toast.error("Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw.", {
         duration: 5000,
         position: 'top-center',
