@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -304,7 +303,7 @@ const AdminZonnepanelenPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    zonnepanelen={zonnepanelenTeVerwerken}
+                    configuraties={zonnepanelenTeVerwerken}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -330,7 +329,7 @@ const AdminZonnepanelenPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    zonnepanelen={zonnepanelenWachtOpReactie}
+                    configuraties={zonnepanelenWachtOpReactie}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -354,7 +353,7 @@ const AdminZonnepanelenPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    zonnepanelen={zonnepanelenAkkoord}
+                    configuraties={zonnepanelenAkkoord}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -430,7 +429,7 @@ const AdminZonnepanelenPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    zonnepanelen={zonnepanelenInAanbouw}
+                    configuraties={zonnepanelenInAanbouw}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}
@@ -454,7 +453,7 @@ const AdminZonnepanelenPage = () => {
                   />
                   
                   <ConfiguratorRequestsTable 
-                    zonnepanelen={zonnepanelenNietAkkoord}
+                    configuraties={zonnepanelenNietAkkoord}
                     onViewDetails={openDetails}
                     onOpenQuoteDialog={openQuoteDialog}
                     onDataChange={loadDashboardData}

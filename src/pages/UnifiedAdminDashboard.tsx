@@ -35,10 +35,16 @@ const UnifiedAdminDashboard = () => {
   const { data: configuraties, isLoading: isLoadingConfigurations, error: configurationsError, refetch: refetchConfigurations } = useQuery({
     queryKey: ['dakkapel_calculator_aanvragen'],
     queryFn: async () => {
+      console.log('Fetching dakkapel calculator aanvragen...');
       const { data, error } = await supabase
         .from('dakkapel_calculator_aanvragen')
-        .select('*');
-      if (error) throw error;
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching dakkapel aanvragen:', error);
+        throw error;
+      }
+      console.log('Dakkapel aanvragen loaded:', data?.length);
       return data;
     },
     refetchOnWindowFocus: false
@@ -47,10 +53,16 @@ const UnifiedAdminDashboard = () => {
   const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
     queryKey: ['schilder_aanvragen'],
     queryFn: async () => {
+      console.log('Fetching schilder aanvragen...');
       const { data, error } = await supabase
         .from('schilder_aanvragen')
-        .select('*');
-      if (error) throw error;
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching schilder aanvragen:', error);
+        throw error;
+      }
+      console.log('Schilder aanvragen loaded:', data?.length);
       return data;
     },
     refetchOnWindowFocus: false
@@ -59,10 +71,16 @@ const UnifiedAdminDashboard = () => {
   const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
     queryKey: ['stukadoor_aanvragen'],
     queryFn: async () => {
+      console.log('Fetching stukadoor aanvragen...');
       const { data, error } = await supabase
         .from('stukadoor_aanvragen')
-        .select('*');
-      if (error) throw error;
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching stukadoor aanvragen:', error);
+        throw error;
+      }
+      console.log('Stukadoor aanvragen loaded:', data?.length);
       return data;
     },
     refetchOnWindowFocus: false
@@ -140,6 +158,29 @@ const UnifiedAdminDashboard = () => {
     }
   };
 
+  const handleStatusFilter = (status: string) => {
+    console.log('Status filter clicked:', status);
+    setFilters(prev => ({ ...prev, status }));
+    toast.success(`Filter ingesteld op: ${getStatusLabel(status)}`);
+  };
+
+  const getStatusLabel = (status: string) => {
+    if (!status) return 'Onbekend';
+    
+    switch (status.toLowerCase()) {
+      case 'nieuw': return 'Nieuw';
+      case 'in_behandeling': return 'In Behandeling';
+      case 'offerte_verzonden': return 'Offerte Verzonden';
+      case 'interesse_bevestigd': return 'Interesse Bevestigd';
+      case 'akkoord': return 'Akkoord';
+      case 'niet_akkoord': return 'Niet Akkoord';
+      case 'op_locatie': return 'Op Locatie';
+      case 'in_aanbouw': return 'In Aanbouw';
+      case 'afgehandeld': return 'Afgehandeld';
+      default: return status;
+    }
+  };
+
   const serviceIcons = {
     dakkapel: Home,
     schilder: Brush,
@@ -164,6 +205,30 @@ const UnifiedAdminDashboard = () => {
         return [];
     }
   };
+
+  const getLoadingState = () => {
+    switch (activeService) {
+      case 'dakkapel':
+        return isLoadingConfigurations;
+      case 'schilder':
+        return isLoadingSchilder;
+      case 'stukadoor':
+        return isLoadingStukadoor;
+      default:
+        return false;
+    }
+  };
+
+  if (getLoadingState()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Gegevens worden geladen...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -195,10 +260,12 @@ const UnifiedAdminDashboard = () => {
               <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
                   const Icon = serviceIcons[key as ServiceType];
+                  const currentData = key === 'dakkapel' ? configuraties : 
+                                    key === 'schilder' ? schilderAanvragen : stukadoorAanvragen;
                   return (
                     <TabsTrigger key={key} value={key} className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
-                      {label}
+                      {label} ({currentData?.length || 0})
                     </TabsTrigger>
                   );
                 })}
@@ -209,7 +276,7 @@ const UnifiedAdminDashboard = () => {
                   <Card>
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <CardTitle>Aanvragen Beheer</CardTitle>
+                        <CardTitle>{serviceLabels[service as ServiceType]} Aanvragen Beheer</CardTitle>
                         <BulkActions
                           selectedIds={selectedIds}
                           onSelectAll={handleSelectAll}
@@ -246,6 +313,7 @@ const UnifiedAdminDashboard = () => {
                         onDataChange={refetchData}
                         sendingQuote={sendingQuote}
                         setSendingQuote={setSendingQuote}
+                        onStatusFilter={handleStatusFilter}
                       />
                     </CardContent>
                   </Card>
