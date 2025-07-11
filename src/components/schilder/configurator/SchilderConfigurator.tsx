@@ -63,24 +63,38 @@ const SchilderConfigurator = () => {
       console.log('=== STARTING FORM SUBMISSION ===');
       
       // Validatie van verplichte velden
-      if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon) {
-        toast.error('Vul alle verplichte contactgegevens in');
+      const requiredFields = {
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        emailadres: formData.emailadres,
+        telefoon: formData.telefoon,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats,
+        uitvoertermijn: formData.uitvoertermijn,
+        reden_aanvraag: formData.reden_aanvraag
+      };
+
+      const missingFields = Object.entries(requiredFields)
+        .filter(([_, value]) => !value || value.trim() === '')
+        .map(([key, _]) => key);
+
+      if (missingFields.length > 0) {
+        console.error('Missing required fields:', missingFields);
+        toast.error('Vul alle verplichte velden in');
         return;
       }
 
-      if (!formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats) {
-        toast.error('Vul alle adresgegevens in');
+      if (!formData.oppervlakte || parseInt(formData.oppervlakte) <= 0) {
+        toast.error('Vul een geldige oppervlakte in');
         return;
       }
 
-      if (!formData.uitvoertermijn || !formData.reden_aanvraag) {
-        toast.error('Vul de uitvoertermijn en reden aanvraag in');
-        return;
-      }
-
+      console.log('All validation passed. Preparing database insert...');
       console.log('Calculated price:', totalPrice);
 
-      // Database insert data - EXACT match met database schema
+      // Clean database insert data
       const insertData = {
         voornaam: formData.voornaam.trim(),
         achternaam: formData.achternaam.trim(),
@@ -92,62 +106,39 @@ const SchilderConfigurator = () => {
         plaats: formData.plaats.trim(),
         project_type: `${formData.project_type} - ${formData.bouw_type}`,
         verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: Math.max(1, parseInt(formData.oppervlakte) || 1), // Minimum 1
-        totaal_prijs: totalPrice || 0,
+        oppervlakte: parseInt(formData.oppervlakte),
+        totaal_prijs: totalPrice,
         plafond_meeverven: parseFloat(formData.plafond_oppervlakte || '0') > 0,
         kozijnen_meeverven: (parseInt(formData.aantal_deuren || '0') + parseInt(formData.aantal_ramen || '0')) > 0,
         bericht: formData.bericht?.trim() || null,
-        status: 'nieuw',
-        // Alle andere velden op null zetten om conflicts te voorkomen
-        aantal_kamers: null,
-        voorbewerking_nodig: null,
-        huidige_kleur: null,
-        gewenste_kleur: null,
-        notities: null,
-        offerte_verzonden_op: null,
-        op_locatie_op: null,
-        in_aanbouw_op: null,
-        afgehandeld_op: null
+        status: 'nieuw'
       };
 
-      console.log('Final database insert data:', insertData);
+      console.log('Inserting data:', insertData);
 
-      // Probeer eerst zonder auth context
+      // Database insert with comprehensive error handling
       const { data: insertedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
-        .insert([insertData])
-        .select()
-        .single();
+        .insert(insertData)
+        .select();
 
       if (dbError) {
-        console.error('DATABASE ERROR DETAILS:', {
+        console.error('DATABASE ERROR:', {
           message: dbError.message,
           details: dbError.details,
           hint: dbError.hint,
-          code: dbError.code
+          code: dbError.code,
+          insertData: insertData
         });
-        
-        // Probeer alternatieve insert methode
-        console.log('Trying alternative insert method...');
-        const { data: altData, error: altError } = await supabase
-          .from('schilder_aanvragen')
-          .insert(insertData)
-          .select();
-
-        if (altError) {
-          console.error('ALTERNATIVE INSERT ALSO FAILED:', altError);
-          toast.error(`Database fout: ${altError.message}`);
-          return;
-        }
-        
-        console.log('✅ ALTERNATIVE INSERT SUCCESS:', altData);
-      } else {
-        console.log('✅ DATABASE INSERT SUCCESS:', insertedData);
+        toast.error(`Database fout: ${dbError.message}`);
+        return;
       }
 
-      // Email verzending
+      console.log('✅ DATABASE INSERT SUCCESS:', insertedData);
+
+      // Send admin notification email
       try {
-        console.log('📧 Sending admin email...');
+        console.log('📧 Sending admin notification...');
         await sendEmail({
           templateId: 'template_ix4mdjh',
           from_name: `${formData.voornaam} ${formData.achternaam}`,
@@ -183,12 +174,13 @@ ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
           location: formData.plaats,
           preferred_date: formData.uitvoertermijn
         });
-        console.log('✅ Admin email sent');
+        console.log('✅ Admin email sent successfully');
       } catch (emailError) {
         console.error('❌ Admin email failed:', emailError);
+        // Don't fail the entire process if email fails
       }
 
-      // Bevestigingsmail naar klant
+      // Send customer confirmation email
       try {
         console.log('📧 Sending customer confirmation...');
         await sendEmail({
@@ -219,9 +211,10 @@ Email: info@refurbishtotaalnederland.nl
           `,
           reply_to: 'info@refurbishtotaalnederland.nl'
         });
-        console.log('✅ Customer email sent');
+        console.log('✅ Customer email sent successfully');
       } catch (emailError) {
         console.error('❌ Customer email failed:', emailError);
+        // Don't fail the entire process if email fails
       }
 
       // Success feedback
@@ -254,7 +247,7 @@ Email: info@refurbishtotaalnederland.nl
 
     } catch (error: any) {
       console.error('=== SUBMISSION ERROR ===', error);
-      toast.error(`Fout bij verzenden: ${error.message || 'Onbekende fout'}`);
+      toast.error(`Er is een fout opgetreden: ${error.message || 'Onbekende fout'}`);
     } finally {
       setIsSubmitting(false);
     }
