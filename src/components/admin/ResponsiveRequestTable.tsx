@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -35,6 +34,7 @@ import { toast } from 'sonner';
 import AutoQuoteButton from './AutoQuoteButton';
 import WhatsAppQuoteButton from './WhatsAppQuoteButton';
 import CombinedQuoteButton from './CombinedQuoteButton';
+import { supabase } from '@/integrations/supabase/client';
 
 type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
 
