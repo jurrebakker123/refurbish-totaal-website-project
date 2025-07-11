@@ -17,7 +17,20 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Edit, Trash2, Mail } from 'lucide-react';
+import { 
+  MoreVertical, 
+  Edit, 
+  Trash2, 
+  Mail, 
+  Clock, 
+  FileText, 
+  CheckCircle, 
+  XCircle, 
+  MapPin, 
+  Hammer, 
+  CheckCheck,
+  Euro
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -47,6 +60,7 @@ interface ResponsiveRequestTableProps {
   onDataChange: () => void;
   sendingQuote: string | null;
   setSendingQuote: (id: string | null) => void;
+  onStatusFilter?: (status: string) => void;
 }
 
 const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
@@ -56,7 +70,8 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
   onEdit,
   onDataChange,
   sendingQuote,
-  setSendingQuote
+  setSendingQuote,
+  onStatusFilter
 }) => {
   const formatDate = (dateString: string) => {
     try {
@@ -107,6 +122,21 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
       case 'in_aanbouw': return 'In Aanbouw';
       case 'afgehandeld': return 'Afgehandeld';
       default: return status;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'nieuw': return Clock;
+      case 'in_behandeling': return FileText;
+      case 'offerte_verzonden': return Mail;
+      case 'interesse_bevestigd': return CheckCircle;
+      case 'akkoord': return CheckCheck;
+      case 'niet_akkoord': return XCircle;
+      case 'op_locatie': return MapPin;
+      case 'in_aanbouw': return Hammer;
+      case 'afgehandeld': return CheckCircle;
+      default: return Clock;
     }
   };
 
@@ -196,26 +226,34 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
     <div className="space-y-6">
       {/* Status Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-9 gap-2">
-        {allStatuses.map((status) => (
-          <Card key={status} className="p-3">
-            <div className="text-center">
-              <StatusBadge 
-                status={status} 
-                onClick={() => {
-                  // This will be handled by the parent component to filter by status
-                  const statusItems = items.filter(item => (item.status || 'nieuw') === status);
-                  if (statusItems.length > 0) {
-                    console.log(`Items met status ${getStatusLabel(status)}:`, statusItems);
-                    toast.success(`${statusItems.length} aanvra${statusItems.length === 1 ? 'ag' : 'gen'} met status: ${getStatusLabel(status)}`);
-                  }
-                }}
-              />
-              <div className="text-lg font-bold text-gray-900 mt-1">
-                {statusCounts[status] || 0}
+        {allStatuses.map((status) => {
+          const StatusIcon = getStatusIcon(status);
+          const count = statusCounts[status] || 0;
+          return (
+            <Card 
+              key={status} 
+              className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => {
+                if (onStatusFilter) {
+                  onStatusFilter(status);
+                  toast.success(`Filter ingesteld op: ${getStatusLabel(status)}`);
+                }
+              }}
+            >
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <StatusIcon className="h-6 w-6 text-gray-600" />
+                </div>
+                <div className="text-xs text-gray-600 mb-1">
+                  {getStatusLabel(status)}
+                </div>
+                <div className="text-lg font-bold text-gray-900">
+                  {count}
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       {/* Mobile Cards */}
@@ -240,6 +278,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
               <TableHead className="w-[200px]">Naam</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Telefoon</TableHead>
+              <TableHead>Prijs</TableHead>
               <TableHead>Aanvraag Datum</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Acties</TableHead>
@@ -255,6 +294,16 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                   <TableCell className="font-medium">{itemName}</TableCell>
                   <TableCell>{itemEmail}</TableCell>
                   <TableCell>{item.telefoon || 'N.v.t.'}</TableCell>
+                  <TableCell>
+                    {item.totaal_prijs ? (
+                      <div className="flex items-center gap-1 text-green-600 font-medium">
+                        <Euro className="h-4 w-4" />
+                        {Number(item.totaal_prijs).toLocaleString('nl-NL')}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">Geen prijs</span>
+                    )}
+                  </TableCell>
                   <TableCell>{formatDate(item.created_at)}</TableCell>
                   <TableCell>
                     <StatusBadge 
@@ -296,20 +345,25 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                         </Button>
                       </div>
                       
-                      {/* Status Change Buttons */}
+                      {/* Status Change Icons */}
                       <div className="flex gap-1 flex-wrap">
-                        {statusOptions.map((status) => (
-                          <Button
-                            key={status}
-                            variant={item.status === status ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleStatusUpdate(item.id, status)}
-                            disabled={sendingQuote === item.id || item.status === status}
-                            className="text-xs h-6 px-2"
-                          >
-                            {getStatusLabel(status)}
-                          </Button>
-                        ))}
+                        {statusOptions.map((status) => {
+                          const StatusIcon = getStatusIcon(status);
+                          const isCurrentStatus = item.status === status;
+                          return (
+                            <Button
+                              key={status}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleStatusUpdate(item.id, status)}
+                              disabled={sendingQuote === item.id || isCurrentStatus}
+                              className={`h-8 w-8 p-0 ${isCurrentStatus ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+                              title={getStatusLabel(status)}
+                            >
+                              <StatusIcon className="h-4 w-4" />
+                            </Button>
+                          );
+                        })}
                       </div>
                     </div>
                   </TableCell>

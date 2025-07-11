@@ -242,6 +242,10 @@ const AdminDashboardPage = () => {
     toast.success('Bericht verzonden!');
   };
 
+  const handleStatusFilter = (status: string) => {
+    setFilters(prev => ({ ...prev, status }));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -344,6 +348,7 @@ const AdminDashboardPage = () => {
                     selectedIds={selectedIds}
                     onSelectItem={handleSelectItem}
                     type="dakkapel"
+                    onStatusFilter={handleStatusFilter}
                   />
                 </CardContent>
               </Card>
