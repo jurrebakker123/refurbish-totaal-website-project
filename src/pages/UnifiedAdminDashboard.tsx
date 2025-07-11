@@ -1,385 +1,393 @@
-
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, RefreshCw, PaintBucket, Building, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { 
+  Users, 
+  FileText, 
+  Calendar, 
+  TrendingUp, 
+  Building2,
+  PaintBucket,
+  Home,
+  Sun
+} from 'lucide-react';
+import { ResponsiveRequestTable } from '@/components/admin/ResponsiveRequestTable';
+import { RequestDetailDialog } from '@/components/admin/RequestDetailDialog';
+import { AdminFilters } from '@/components/admin/AdminFilters';
+import { BulkActions } from '@/components/admin/BulkActions';
+import { ConversieStats } from '@/components/admin/ConversieStats';
+import { DashboardStats } from '@/components/admin/DashboardStats';
+import { AutomatedCommunication } from '@/components/admin/AutomatedCommunication';
+import { NotificationCenter } from '@/components/admin/NotificationCenter';
+import { InvoiceOverview } from '@/components/admin/InvoiceOverview';
+import { VacaturesManager } from '@/components/admin/VacaturesManager';
+import { ContentManager } from '@/components/admin/ContentManager';
+import { AdminPriceEditor } from '@/components/admin/AdminPriceEditor';
+import { PWAInstallPrompt } from '@/components/admin/PWAInstallPrompt';
 import { toast } from 'sonner';
-import { loadUnifiedAdminData } from '@/utils/adminUtils';
-import ConfiguratorRequestsTable from '@/components/admin/ConfiguratorRequestsTable';
-import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
-import QuoteDialog from '@/components/admin/QuoteDialog';
-import MobileAdminHeader from '@/components/admin/MobileAdminHeader';
+
+type ServiceType = 'dakkapel' | 'schilder' | 'zonnepaneel' | 'stukadoor';
 
 const UnifiedAdminDashboard = () => {
-  const [configuraties, setConfiguraties] = useState([]);
-  const [schilderAanvragen, setSchilderAanvragen] = useState([]);
-  const [stukadoorAanvragen, setStukadoorAanvragen] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
-  const [sendingQuote, setSendingQuote] = useState(null);
-  const [activeService, setActiveService] = useState('dakkapel');
+  const [activeService, setActiveService] = useState<ServiceType>('dakkapel');
+  const [selectedRequests, setSelectedRequests] = useState<string[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [filters, setFilters] = useState({
+    status: 'all',
+    dateRange: 'all',
+    sortBy: 'created_at',
+    sortOrder: 'desc' as 'asc' | 'desc'
+  });
 
-  const loadData = async () => {
-    console.log('Loading unified dashboard data...');
-    setLoading(true);
-    
+  // Queries and functions
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
+    const tableName = activeService === 'dakkapel' ? 'dakkapel_calculator_aanvragen' :
+                     activeService === 'schilder' ? 'schilder_aanvragen' :
+                     activeService === 'stukadoor' ? 'stukadoor_aanvragen' :
+                     'refurbished_zonnepanelen';
+
     try {
-      const result = await loadUnifiedAdminData();
+      const { error } = await supabase
+        .from(tableName)
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
       
-      if (result.success) {
-        setConfiguraties(result.configuraties);
-        setSchilderAanvragen(result.schilderAanvragen);
-        setStukadoorAanvragen(result.stukadoorAanvragen);
-        console.log('Data loaded successfully:', {
-          dakkapel: result.configuraties.length,
-          schilder: result.schilderAanvragen.length,
-          stukadoor: result.stukadoorAanvragen.length
-        });
+      // Invalidate the query to refetch data
+      if (activeService === 'dakkapel') {
+        // @ts-ignore
+        queryClient.invalidateQueries('dakkapel-requests');
+      } else if (activeService === 'schilder') {
+        // @ts-ignore
+        queryClient.invalidateQueries('schilder-requests');
+      } else if (activeService === 'stukadoor') {
+        // @ts-ignore
+        queryClient.invalidateQueries('stukadoor-requests');
+      } else if (activeService === 'zonnepaneel') {
+        // @ts-ignore
+        queryClient.invalidateQueries('zonnepaneel-requests');
       }
+
+      toast.success('Status updated successfully');
     } catch (error) {
-      console.error('Error loading data:', error);
-      toast.error('Fout bij het laden van gegevens');
-    } finally {
-      setLoading(false);
+      console.error('Status update error:', error);
+      toast.error('Failed to update status');
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const { data: dakkapelData, isLoading: dakkapelLoading } = useQuery({
+    queryKey: ['dakkapel-requests', filters],
+    queryFn: async () => {
+      let query = supabase.from('dakkapel_calculator_aanvragen').select('*');
+      
+      if (filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+      
+      if (filters.dateRange !== 'all') {
+        const days = filters.dateRange === 'week' ? 7 : filters.dateRange === 'month' ? 30 : 90;
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        query = query.gte('created_at', date.toISOString());
+      }
+      
+      query = query.order(filters.sortBy, { ascending: filters.sortOrder === 'asc' });
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const handleViewDetails = (item) => {
-    setSelectedItem(item);
-    setIsDetailDialogOpen(true);
-  };
+  const { data: schilderData, isLoading: schilderLoading } = useQuery({
+    queryKey: ['schilder-requests', filters],
+    queryFn: async () => {
+      let query = supabase.from('schilder_aanvragen').select('*');
+      
+      if (filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+      
+      if (filters.dateRange !== 'all') {
+        const days = filters.dateRange === 'week' ? 7 : filters.dateRange === 'month' ? 30 : 90;
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        query = query.gte('created_at', date.toISOString());
+      }
+      
+      query = query.order(filters.sortBy, { ascending: filters.sortOrder === 'asc' });
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const handleOpenQuoteDialog = (item) => {
-    setSelectedItem(item);
-    setIsQuoteDialogOpen(true);
-  };
+  const { data: stukadoorData, isLoading: stukadoorLoading } = useQuery({
+    queryKey: ['stukadoor-requests', filters],
+    queryFn: async () => {
+      let query = supabase.from('stukadoor_aanvragen').select('*');
+      
+      if (filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+      
+      if (filters.dateRange !== 'all') {
+        const days = filters.dateRange === 'week' ? 7 : filters.dateRange === 'month' ? 30 : 90;
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        query = query.gte('created_at', date.toISOString());
+      }
+      
+      query = query.order(filters.sortBy, { ascending: filters.sortOrder === 'asc' });
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const getTotalCount = () => {
-    return configuraties.length + schilderAanvragen.length + stukadoorAanvragen.length;
-  };
+  const { data: zonnepaneelData, isLoading: zonnepaneelLoading } = useQuery({
+    queryKey: ['zonnepaneel-requests', filters],
+    queryFn: async () => {
+      let query = supabase.from('refurbished_zonnepanelen').select('*');
+      
+      if (filters.status !== 'all') {
+        query = query.eq('status', filters.status);
+      }
+      
+      if (filters.dateRange !== 'all') {
+        const days = filters.dateRange === 'week' ? 7 : filters.dateRange === 'month' ? 30 : 90;
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        query = query.gte('created_at', date.toISOString());
+      }
+      
+      query = query.order(filters.sortBy, { ascending: filters.sortOrder === 'asc' });
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const getNewCount = () => {
-    const dakkapelNew = configuraties.filter(item => item.status === 'nieuw').length;
-    const schilderNew = schilderAanvragen.filter(item => item.status === 'nieuw').length;
-    const stukadoorNew = stukadoorAanvragen.filter(item => item.status === 'nieuw').length;
-    return dakkapelNew + schilderNew + stukadoorNew;
-  };
-
-  const getCompletedCount = () => {
-    return configuraties.filter(c => c.status === 'afgehandeld').length + 
-           schilderAanvragen.filter(s => s.status === 'afgehandeld').length + 
-           stukadoorAanvragen.filter(s => s.status === 'afgehandeld').length;
-  };
-
-  // Get current service data based on active service
-  const getCurrentServiceData = () => {
+  const getCurrentData = () => {
     switch (activeService) {
-      case 'dakkapel':
-        return configuraties;
-      case 'schilder':
-        return schilderAanvragen;
-      case 'stukadoor':
-        return stukadoorAanvragen;
-      default:
-        return [];
+      case 'dakkapel': return dakkapelData || [];
+      case 'schilder': return schilderData || [];
+      case 'stukadoor': return stukadoorData || [];
+      case 'zonnepaneel': return zonnepaneelData || [];
+      default: return [];
     }
   };
 
-  const currentData = getCurrentServiceData();
+  const getCurrentLoading = () => {
+    switch (activeService) {
+      case 'dakkapel': return dakkapelLoading;
+      case 'schilder': return schilderLoading;
+      case 'stukadoor': return stukadoorLoading;
+      case 'zonnepaneel': return zonnepaneelLoading;
+      default: return false;
+    }
+  };
 
-  // Filter data by status for different tabs
-  const teVerwerken = currentData.filter(item => 
-    item.status === 'nieuw' || item.status === 'in_behandeling'
-  );
-  
-  const wachtOpReactie = currentData.filter(item => 
-    item.status === 'offerte_verzonden'
-  );
-  
-  const interesseBevestigd = currentData.filter(item => 
-    item.status === 'interesse_bevestigd'
-  );
-  
-  const akkoord = currentData.filter(item => 
-    item.status === 'akkoord'
-  );
-  
-  const nietAkkoord = currentData.filter(item => 
-    item.status === 'niet_akkoord' || item.status === 'geen_interesse'
-  );
-  
-  const opLocatie = currentData.filter(item => 
-    item.status === 'op_locatie'
-  );
-  
-  const inAanbouw = currentData.filter(item => 
-    item.status === 'in_aanbouw'
-  );
-  
-  const afgerond = currentData.filter(item => 
-    item.status === 'afgehandeld'
-  );
+  const handleBulkAction = async (action: string) => {
+    if (selectedRequests.length === 0) {
+      toast.error('Selecteer eerst aanvragen');
+      return;
+    }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <MobileAdminHeader 
-          title="Admin Dashboard"
-          onRefresh={loadData}
-          onDataChange={loadData}
-        />
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p>Dashboard laden...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    const tableName = activeService === 'dakkapel' ? 'dakkapel_calculator_aanvragen' :
+                     activeService === 'schilder' ? 'schilder_aanvragen' :
+                     activeService === 'stukadoor' ? 'stukadoor_aanvragen' :
+                     'refurbished_zonnepanelen';
+
+    try {
+      if (action === 'delete') {
+        const { error } = await supabase
+          .from(tableName)
+          .delete()
+          .in('id', selectedRequests);
+        
+        if (error) throw error;
+        toast.success(`${selectedRequests.length} aanvragen verwijderd`);
+      } else {
+        const { error } = await supabase
+          .from(tableName)
+          .update({ status: action })
+          .in('id', selectedRequests);
+        
+        if (error) throw error;
+        toast.success(`${selectedRequests.length} aanvragen bijgewerkt naar ${action}`);
+      }
+      
+      setSelectedRequests([]);
+    } catch (error) {
+      console.error('Bulk action error:', error);
+      toast.error('Er ging iets mis');
+    }
+  };
+
+  const totalRequests = getCurrentData().length;
+  const newRequests = getCurrentData().filter((req: any) => req.status === 'nieuw').length;
+  const processedRequests = getCurrentData().filter((req: any) => req.status === 'afgehandeld').length;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <MobileAdminHeader 
-        title="Admin Dashboard"
-        onRefresh={loadData}
-        onDataChange={loadData}
-      />
+      <PWAInstallPrompt />
       
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Overzicht van alle aanvragen</p>
-            </div>
-            
-            {/* Service selector tabs next to title */}
-            <div className="flex gap-2">
-              <Button
-                variant={activeService === 'dakkapel' ? 'default' : 'outline'}
-                onClick={() => setActiveService('dakkapel')}
-                className="flex items-center gap-2"
-              >
-                <Home className="h-4 w-4" />
-                Dakkapel ({configuraties.length})
-              </Button>
-              <Button
-                variant={activeService === 'schilder' ? 'default' : 'outline'}
-                onClick={() => setActiveService('schilder')}
-                className="flex items-center gap-2"
-              >
-                <PaintBucket className="h-4 w-4" />
-                Schilderwerk ({schilderAanvragen.length})
-              </Button>
-              <Button
-                variant={activeService === 'stukadoor' ? 'default' : 'outline'}
-                onClick={() => setActiveService('stukadoor')}
-                className="flex items-center gap-2"
-              >
-                <Building className="h-4 w-4" />
-                Stukadoorswerk ({stukadoorAanvragen.length})
-              </Button>
-            </div>
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Unified Admin Dashboard
+            </h1>
+            <NotificationCenter />
           </div>
-          
-          <Button onClick={loadData} variant="outline" className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Vernieuwen
-          </Button>
         </div>
-
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Totaal Aanvragen</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{getTotalCount()}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Nieuwe Aanvragen</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{getNewCount()}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Afgehandeld</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{getCompletedCount()}</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Aanvragen Overzicht - {activeService === 'dakkapel' ? 'Dakkapel' : activeService === 'schilder' ? 'Schilderwerk' : 'Stukadoorswerk'}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="te-verwerken" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 gap-1 h-auto p-1 bg-gray-100">
-                <TabsTrigger value="te-verwerken" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Te Verwerken ({teVerwerken.length})
-                </TabsTrigger>
-                <TabsTrigger value="wacht-op-reactie" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Wacht op Reactie ({wachtOpReactie.length})
-                </TabsTrigger>
-                <TabsTrigger value="interesse-bevestigd" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Interesse Bevestigd ({interesseBevestigd.length})
-                </TabsTrigger>
-                <TabsTrigger value="akkoord" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Akkoord ({akkoord.length})
-                </TabsTrigger>
-                <TabsTrigger value="niet-akkoord" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Niet Akkoord ({nietAkkoord.length})
-                </TabsTrigger>
-                <TabsTrigger value="op-locatie" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Op Locatie ({opLocatie.length})
-                </TabsTrigger>
-                <TabsTrigger value="in-aanbouw" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  In Aanbouw ({inAanbouw.length})
-                </TabsTrigger>
-                <TabsTrigger value="afgerond" className="text-xs py-2 px-2 h-auto whitespace-normal">
-                  Afgerond ({afgerond.length})
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="te-verwerken">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? teVerwerken : []}
-                  schilderAanvragen={activeService === 'schilder' ? teVerwerken : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? teVerwerken : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="wacht-op-reactie">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? wachtOpReactie : []}
-                  schilderAanvragen={activeService === 'schilder' ? wachtOpReactie : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? wachtOpReactie : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="interesse-bevestigd">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? interesseBevestigd : []}
-                  schilderAanvragen={activeService === 'schilder' ? interesseBevestigd : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? interesseBevestigd : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="akkoord">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? akkoord : []}
-                  schilderAanvragen={activeService === 'schilder' ? akkoord : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? akkoord : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="niet-akkoord">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? nietAkkoord : []}
-                  schilderAanvragen={activeService === 'schilder' ? nietAkkoord : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? nietAkkoord : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="op-locatie">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? opLocatie : []}
-                  schilderAanvragen={activeService === 'schilder' ? opLocatie : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? opLocatie : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="in-aanbouw">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? inAanbouw : []}
-                  schilderAanvragen={activeService === 'schilder' ? inAanbouw : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? inAanbouw : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-
-              <TabsContent value="afgerond">
-                <ConfiguratorRequestsTable
-                  configuraties={activeService === 'dakkapel' ? afgerond : []}
-                  schilderAanvragen={activeService === 'schilder' ? afgerond : []}
-                  stukadoorAanvragen={activeService === 'stukadoor' ? afgerond : []}
-                  onViewDetails={handleViewDetails}
-                  onOpenQuoteDialog={handleOpenQuoteDialog}
-                  onDataChange={loadData}
-                  sendingQuote={sendingQuote}
-                  type={activeService}
-                />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
       </div>
 
-      <RequestDetailDialog
-        item={selectedItem}
-        isOpen={isDetailDialogOpen}
-        onClose={() => setIsDetailDialogOpen(false)}
-      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)} className="space-y-6">
+          <TabsList className="grid grid-cols-4 w-full max-w-md">
+            <TabsTrigger value="dakkapel" className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              Dakkapel
+            </TabsTrigger>
+            <TabsTrigger value="schilder" className="flex items-center gap-2">
+              <PaintBucket className="h-4 w-4" />
+              Schilder
+            </TabsTrigger>
+            <TabsTrigger value="stukadoor" className="flex items-center gap-2">
+              <Home className="h-4 w-4" />
+              Stukadoor
+            </TabsTrigger>
+            <TabsTrigger value="zonnepaneel" className="flex items-center gap-2">
+              <Sun className="h-4 w-4" />
+              Zonnepaneel
+            </TabsTrigger>
+          </TabsList>
 
-      <QuoteDialog
-        selectedItem={selectedItem}
-        isOpen={isQuoteDialogOpen}
-        onClose={() => setIsQuoteDialogOpen(false)}
-        setSendingQuote={setSendingQuote}
-      />
+          <TabsContent value={activeService} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Totaal</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{totalRequests}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Nieuwe</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-orange-600">{newRequests}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Afgehandeld</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-600">{processedRequests}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Conversie</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {totalRequests > 0 ? Math.round((processedRequests / totalRequests) * 100) : 0}%
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <AdminFilters 
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                />
+                
+                <BulkActions
+                  selectedCount={selectedRequests.length}
+                  onBulkAction={handleBulkAction}
+                />
+
+                <ResponsiveRequestTable
+                  data={getCurrentData()}
+                  isLoading={getCurrentLoading()}
+                  selectedRequests={selectedRequests}
+                  onSelectionChange={setSelectedRequests}
+                  onRequestClick={setSelectedRequest}
+                  serviceType={activeService}
+                />
+              </div>
+
+              <div className="space-y-6">
+                <ConversieStats serviceType={activeService} />
+                <DashboardStats serviceType={activeService} />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        <div className="mt-12 space-y-8">
+          <Tabs defaultValue="automation" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="automation">Automatisering</TabsTrigger>
+              <TabsTrigger value="invoices">Facturen</TabsTrigger>
+              <TabsTrigger value="vacatures">Vacatures</TabsTrigger>
+              <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="prices">Prijzen</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="automation" className="space-y-6">
+              <AutomatedCommunication />
+            </TabsContent>
+
+            <TabsContent value="invoices" className="space-y-6">
+              <InvoiceOverview />
+            </TabsContent>
+
+            <TabsContent value="vacatures" className="space-y-6">
+              <VacaturesManager />
+            </TabsContent>
+
+            <TabsContent value="content" className="space-y-6">
+              <ContentManager />
+            </TabsContent>
+
+            <TabsContent value="prices" className="space-y-6">
+              <AdminPriceEditor />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {selectedRequest && (
+        <RequestDetailDialog
+          request={selectedRequest}
+          onClose={() => setSelectedRequest(null)}
+          serviceType={activeService}
+        />
+      )}
     </div>
   );
 };
