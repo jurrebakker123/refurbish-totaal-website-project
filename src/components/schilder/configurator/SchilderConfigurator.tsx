@@ -17,9 +17,6 @@ const SchilderConfigurator = () => {
     werktype: '',
     oppervlakte: '',
     binnen_buiten: 'binnen',
-    kamers: '',
-    ondergrond: '',
-    schilderwerk_type: '',
     nieuwbouw_renovatie: 'renovatie',
     
     // Contact details
@@ -122,9 +119,8 @@ const SchilderConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           oppervlakte: oppervlakteNum, // Convert to number
-          aantal_kamers: formData.kamers ? parseInt(formData.kamers) : null,
           project_type: formData.nieuwbouw_renovatie,
-          verf_type: formData.schilderwerk_type || 'latex',
+          verf_type: 'latex',
           totaal_prijs: totaalprijs.includes('€') ? totaalprijs : null,
           bericht: formData.bericht || null,
           status: 'nieuw'
@@ -149,11 +145,8 @@ SCHILDERWERK PROJECT DETAILS:
 =============================
 
 Werktype: ${tariefInfo?.naam || formData.werktype}
-Locatie: ${formData.binnen_buiten === 'binnen' ? 'Binnen' : 'Buiten'}
+Locatie: ${formData.binnen_buiten === 'binnen' ? 'Binnen schilderwerk' : 'Buiten schilderwerk'}
 Oppervlakte: ${formData.oppervlakte ? `${formData.oppervlakte} m²` : 'Niet opgegeven'}
-${formData.kamers ? `Aantal kamers: ${formData.kamers}` : ''}
-${formData.ondergrond ? `Ondergrond: ${formData.ondergrond}` : ''}
-${formData.schilderwerk_type ? `Type schilderwerk: ${formData.schilderwerk_type}` : ''}
 Project type: ${formData.nieuwbouw_renovatie === 'nieuwbouw' ? 'Nieuwbouw (21% BTW)' : 'Renovatie (9% BTW)'}
 
 GESCHATTE PRIJS: ${totaalprijs}
@@ -258,9 +251,6 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
           werktype: '',
           oppervlakte: '',
           binnen_buiten: 'binnen',
-          kamers: '',
-          ondergrond: '',
-          schilderwerk_type: '',
           nieuwbouw_renovatie: 'renovatie',
           voornaam: '',
           achternaam: '',
@@ -311,47 +301,49 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
                   <h3 className="text-lg font-semibold">Project Details</h3>
                   
                   <div>
-                    <Label htmlFor="werktype">Type schilderwerk *</Label>
-                    <Select value={formData.werktype} onValueChange={(value) => handleInputChange('werktype', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecteer werktype" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="muren_plafonds">Muren en plafonds</SelectItem>
-                        <SelectItem value="deuren_kozijnen">Deuren en kozijnen</SelectItem>
-                        <SelectItem value="radiatoren">Radiatoren</SelectItem>
-                        <SelectItem value="trap_leuning">Trap en leuning</SelectItem>
-                        <SelectItem value="behang_aanbrengen">Behang aanbrengen</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="binnen_buiten">Locatie *</Label>
+                    <Label htmlFor="binnen_buiten">Type schilderwerk *</Label>
                     <Select value={formData.binnen_buiten} onValueChange={(value) => handleInputChange('binnen_buiten', value)}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="binnen">Binnen</SelectItem>
-                        <SelectItem value="buiten">Buiten</SelectItem>
+                        <SelectItem value="binnen">Binnen schilderwerk</SelectItem>
+                        <SelectItem value="buiten">Buiten schilderwerk</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {formData.binnen_buiten === 'binnen' && (
-                    <div>
-                      <Label htmlFor="nieuwbouw_renovatie">Project type *</Label>
-                      <Select value={formData.nieuwbouw_renovatie} onValueChange={(value) => handleInputChange('nieuwbouw_renovatie', value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="renovatie">Renovatie (9% BTW)</SelectItem>
-                          <SelectItem value="nieuwbouw">Nieuwbouw (21% BTW)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <>
+                      <div>
+                        <Label htmlFor="werktype">Soort werkzaamheden *</Label>
+                        <Select value={formData.werktype} onValueChange={(value) => handleInputChange('werktype', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecteer werktype" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="muren_plafonds">Muren en plafonds</SelectItem>
+                            <SelectItem value="deuren_kozijnen">Deuren en kozijnen</SelectItem>
+                            <SelectItem value="radiatoren">Radiatoren</SelectItem>
+                            <SelectItem value="trap_leuning">Trap en leuning</SelectItem>
+                            <SelectItem value="behang_aanbrengen">Behang aanbrengen</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="nieuwbouw_renovatie">Project type *</Label>
+                        <Select value={formData.nieuwbouw_renovatie} onValueChange={(value) => handleInputChange('nieuwbouw_renovatie', value)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="renovatie">Renovatie (9% BTW)</SelectItem>
+                            <SelectItem value="nieuwbouw">Nieuwbouw (21% BTW)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
                   )}
 
                   <div>
@@ -366,55 +358,6 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
                       min="0"
                     />
                   </div>
-
-                  {formData.binnen_buiten === 'binnen' && (
-                    <>
-                      <div>
-                        <Label htmlFor="kamers">Aantal kamers</Label>
-                        <Input
-                          id="kamers"
-                          type="number"
-                          value={formData.kamers}
-                          onChange={(e) => handleInputChange('kamers', e.target.value)}
-                          placeholder="Bijv. 3"
-                          min="1"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="ondergrond">Ondergrond</Label>
-                        <Select value={formData.ondergrond} onValueChange={(value) => handleInputChange('ondergrond', value)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecteer ondergrond" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="gipsplaat">Gipsplaat</SelectItem>
-                            <SelectItem value="behang">Behang</SelectItem>
-                            <SelectItem value="steen">Steen/Beton</SelectItem>
-                            <SelectItem value="hout">Hout</SelectItem>
-                            <SelectItem value="metaal">Metaal</SelectItem>
-                            <SelectItem value="anders">Anders</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="schilderwerk_type">Type verf</Label>
-                        <Select value={formData.schilderwerk_type} onValueChange={(value) => handleInputChange('schilderwerk_type', value)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecteer type verf" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="latex">Latex</SelectItem>
-                            <SelectItem value="alkyd">Alkyd</SelectItem>
-                            <SelectItem value="krijtverf">Krijtverf</SelectItem>
-                            <SelectItem value="kalkverf">Kalkverf</SelectItem>
-                            <SelectItem value="anders">Anders</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </>
-                  )}
                 </div>
 
                 {/* Contact Details */}
@@ -578,14 +521,17 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
               <CardTitle className="text-lg">Prijsoverzicht</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {formData.werktype && (
+              {formData.binnen_buiten && (
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <h4 className="font-medium mb-2">Geselecteerd werk:</h4>
                   <p className="text-sm text-gray-600">
-                    {formData.binnen_buiten === 'binnen' 
-                      ? schilderTarieven.binnen[formData.werktype as keyof typeof schilderTarieven.binnen]?.naam 
-                      : schilderTarieven.buiten.contact_voor_prijs.naam}
+                    {formData.binnen_buiten === 'binnen' ? 'Binnen schilderwerk' : 'Buiten schilderwerk'}
                   </p>
+                  {formData.werktype && formData.binnen_buiten === 'binnen' && (
+                    <p className="text-sm text-gray-600">
+                      {schilderTarieven.binnen[formData.werktype as keyof typeof schilderTarieven.binnen]?.naam}
+                    </p>
+                  )}
                   {formData.oppervlakte && (
                     <p className="text-sm text-gray-600">
                       Oppervlakte: {formData.oppervlakte} m²
