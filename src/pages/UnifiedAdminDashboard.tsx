@@ -13,11 +13,7 @@ import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import AdminFilters from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
-import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
 import NotificationCenter from '@/components/admin/NotificationCenter';
-import VacaturesManager from '@/components/admin/VacaturesManager';
-import ContentManager from '@/components/admin/ContentManager';
-import AdminPriceEditor from '@/components/admin/AdminPriceEditor';
 import PWAInstallPrompt from '@/components/admin/PWAInstallPrompt';
 import EmailMarketingDialog from '@/components/admin/EmailMarketingDialog';
 
@@ -255,13 +251,6 @@ const UnifiedAdminDashboard = () => {
                 </TabsContent>
               ))}
             </Tabs>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <VacaturesManager />
-              <ContentManager />
-            </div>
-
-            <AdminPriceEditor />
           </div>
         </main>
       </div>
