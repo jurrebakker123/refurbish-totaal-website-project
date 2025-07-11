@@ -38,7 +38,7 @@ import WhatsAppQuoteButton from './WhatsAppQuoteButton';
 import CombinedQuoteButton from './CombinedQuoteButton';
 
 interface ResponsiveRequestTableProps {
-  items: QuoteItem[] | ZonnepaneelQuoteItem[];
+  items: any[];
   searchTerm: string;
   selectedStatus: string;
   onEdit: (id: string) => void;
@@ -70,8 +70,16 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
     const confirmDelete = window.confirm("Weet je zeker dat je deze aanvraag wilt verwijderen?");
     if (confirmDelete) {
       try {
-        const isZonnepaneel = items.length > 0 && 'isZonnepaneel' in items[0];
-        await deleteQuote(id, isZonnepaneel ? 'refurbished_zonnepanelen' : 'dakkapel_calculator_aanvragen');
+        const isZonnepaneel = items.length > 0 && 'aantal_panelen' in items[0];
+        const isSchilder = items.length > 0 && 'project_type' in items[0] && 'verf_type' in items[0];
+        const isStukadoor = items.length > 0 && 'werk_type' in items[0] && 'afwerking' in items[0];
+        
+        let tableName = 'dakkapel_calculator_aanvragen';
+        if (isZonnepaneel) tableName = 'refurbished_zonnepanelen';
+        else if (isSchilder) tableName = 'schilder_aanvragen';
+        else if (isStukadoor) tableName = 'stukadoor_aanvragen';
+        
+        await deleteQuote(id, tableName);
         onDataChange();
       } catch (error) {
         toast.error("Er is een fout opgetreden bij het verwijderen van de aanvraag.");
@@ -91,18 +99,29 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
 
   const filteredItems = items.filter((item) => {
     const searchTermLower = searchTerm.toLowerCase();
+    const itemName = item.naam || `${item.voornaam} ${item.achternaam}` || '';
+    const itemEmail = item.email || item.emailadres || '';
+    const itemPhone = item.telefoon || '';
+    
     const matchesSearchTerm =
-      item.naam.toLowerCase().includes(searchTermLower) ||
-      item.email.toLowerCase().includes(searchTermLower) ||
-      (item.telefoon && item.telefoon.toLowerCase().includes(searchTermLower)) ||
+      itemName.toLowerCase().includes(searchTermLower) ||
+      itemEmail.toLowerCase().includes(searchTermLower) ||
+      itemPhone.toLowerCase().includes(searchTermLower) ||
       item.id.toLowerCase().includes(searchTermLower);
 
-    const matchesStatus = selectedStatus === 'alle' || item.status === selectedStatus;
+    const matchesStatus = selectedStatus === 'all' || selectedStatus === 'alle' || item.status === selectedStatus;
 
     return matchesSearchTerm && matchesStatus;
   });
 
-  const isZonnepaneel = items.length > 0 && 'isZonnepaneel' in items[0];
+  const isZonnepaneel = items.length > 0 && 'aantal_panelen' in items[0];
+  const isSchilder = items.length > 0 && 'project_type' in items[0] && 'verf_type' in items[0];
+  const isStukadoor = items.length > 0 && 'werk_type' in items[0] && 'afwerking' in items[0];
+
+  let type: 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor' = 'dakkapel';
+  if (isZonnepaneel) type = 'zonnepaneel';
+  else if (isSchilder) type = 'schilder';
+  else if (isStukadoor) type = 'stukadoor';
 
   return (
     <div className="space-y-4">
@@ -114,7 +133,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
             item={item}
             onViewDetails={() => onEdit(item.id)}
             onOpenQuoteDialog={() => onEdit(item.id)}
-            type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
+            type={type}
             sendingQuote={sendingQuote}
           />
         ))}
@@ -134,66 +153,71 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredItems.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.naam}</TableCell>
-                <TableCell>{item.email}</TableCell>
-                <TableCell>{item.telefoon || 'N.v.t.'}</TableCell>
-                <TableCell>{formatDate(item.created_at)}</TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(item.status)}>
-                    {item.status}
-                  </Badge>
-                </TableCell>
-                
-                <TableCell>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onEdit(item.id)}
-                      disabled={sendingQuote === item.id}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Aanpassen
-                    </Button>
-                    
-                    <AutoQuoteButton
-                      requestId={item.id}
-                      type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
-                      customerEmail={item.email}
-                      onSuccess={onDataChange}
-                      disabled={sendingQuote === item.id}
-                    />
-                    
-                    {/* WhatsApp Quote Button */}
-                    {item.telefoon && (
-                      <WhatsAppQuoteButton
+            {filteredItems.map((item) => {
+              const itemName = item.naam || `${item.voornaam} ${item.achternaam}` || 'Onbekend';
+              const itemEmail = item.email || item.emailadres || '';
+              
+              return (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{itemName}</TableCell>
+                  <TableCell>{itemEmail}</TableCell>
+                  <TableCell>{item.telefoon || 'N.v.t.'}</TableCell>
+                  <TableCell>{formatDate(item.created_at)}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(item.status)}>
+                      {item.status}
+                    </Badge>
+                  </TableCell>
+                  
+                  <TableCell>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEdit(item.id)}
+                        disabled={sendingQuote === item.id}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Aanpassen
+                      </Button>
+                      
+                      <AutoQuoteButton
                         requestId={item.id}
-                        type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
-                        customerPhone={item.telefoon}
-                        customerName={item.naam}
+                        type={type}
+                        customerEmail={itemEmail}
                         onSuccess={onDataChange}
                         disabled={sendingQuote === item.id}
                       />
-                    )}
-                    
-                    {/* Combined Quote Button */}
-                    {(item.email || item.telefoon) && (
-                      <CombinedQuoteButton
-                        requestId={item.id}
-                        type={isZonnepaneel ? 'zonnepaneel' : 'dakkapel'}
-                        customerEmail={item.email}
-                        customerPhone={item.telefoon}
-                        customerName={item.naam}
-                        onSuccess={onDataChange}
-                        disabled={sendingQuote === item.id}
-                      />
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                      
+                      {/* WhatsApp Quote Button */}
+                      {item.telefoon && (
+                        <WhatsAppQuoteButton
+                          requestId={item.id}
+                          type={type}
+                          customerPhone={item.telefoon}
+                          customerName={itemName}
+                          onSuccess={onDataChange}
+                          disabled={sendingQuote === item.id}
+                        />
+                      )}
+                      
+                      {/* Combined Quote Button */}
+                      {(itemEmail || item.telefoon) && (
+                        <CombinedQuoteButton
+                          requestId={item.id}
+                          type={type}
+                          customerEmail={itemEmail}
+                          customerPhone={item.telefoon}
+                          customerName={itemName}
+                          onSuccess={onDataChange}
+                          disabled={sendingQuote === item.id}
+                        />
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

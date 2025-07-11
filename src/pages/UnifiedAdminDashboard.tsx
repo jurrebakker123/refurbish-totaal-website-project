@@ -246,7 +246,7 @@ const UnifiedAdminDashboard = () => {
                             onFiltersChange={(newFilters) => {
                               setFilters({
                                 status: newFilters.status,
-                                dateFilter: newFilters.dateFilter,
+                                dateRange: newFilters.dateFilter,
                                 searchTerm: newFilters.search,
                                 priceRange: filters.priceRange
                               });
@@ -255,15 +255,13 @@ const UnifiedAdminDashboard = () => {
                         </CardHeader>
                         <CardContent>
                           <ResponsiveRequestTable
-                            data={getCurrentData()}
-                            type={activeService}
-                            onViewDetails={handleViewDetails}
-                            onOpenQuoteDialog={handleOpenQuoteDialog}
+                            items={getCurrentData()}
+                            searchTerm={filters.searchTerm}
+                            selectedStatus={filters.status}
+                            onEdit={handleViewDetails}
                             onDataChange={refetchData}
                             sendingQuote={sendingQuote}
-                            selectedIds={selectedIds}
-                            onSelectItem={handleSelectItem}
-                            filters={filters}
+                            setSendingQuote={setSendingQuote}
                           />
                         </CardContent>
                       </Card>

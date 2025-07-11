@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { sendEmail, EmailData } from '@/config/email';
@@ -12,17 +13,27 @@ import { sendEmail, EmailData } from '@/config/email';
 interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'tel' | 'textarea' | 'number';
+  type: 'text' | 'email' | 'tel' | 'textarea' | 'number' | 'select';
   required?: boolean;
   placeholder?: string;
+  options?: { value: string; label: string; }[];
 }
 
 interface ReusableFormProps {
   title: string;
-  fields: FormField[];
-  onSubmit: (data: any) => Promise<void>;
+  description?: string;
+  fields?: FormField[];
+  onSubmit?: (data: any) => Promise<void>;
   submitButtonText?: string;
   tableName?: string;
+  supabaseTable?: string;
+  templateId?: string;
+  buttonText?: string;
+  showServiceInput?: boolean;
+  showFileUpload?: boolean;
+  showDateField?: boolean;
+  additionalFields?: FormField[];
+  onSuccess?: () => void;
   emailConfig?: {
     subject: string;
     confirmationMessage: string;
@@ -32,14 +43,73 @@ interface ReusableFormProps {
 
 const ReusableForm = ({ 
   title, 
-  fields, 
+  description,
+  fields = [],
   onSubmit, 
   submitButtonText = 'Versturen',
   tableName,
+  supabaseTable,
+  templateId,
+  buttonText,
+  showServiceInput = false,
+  showFileUpload = false,
+  showDateField = false,
+  additionalFields = [],
+  onSuccess,
   emailConfig
 }: ReusableFormProps) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Default fields for common forms
+  const defaultFields: FormField[] = [
+    { name: 'voornaam', label: 'Voornaam', type: 'text', required: true },
+    { name: 'achternaam', label: 'Achternaam', type: 'text', required: true },
+    { name: 'emailadres', label: 'E-mailadres', type: 'email', required: true },
+    { name: 'telefoon', label: 'Telefoonnummer', type: 'tel', required: true },
+    { name: 'straatnaam', label: 'Straatnaam', type: 'text', required: true },
+    { name: 'huisnummer', label: 'Huisnummer', type: 'text', required: true },
+    { name: 'postcode', label: 'Postcode', type: 'text', required: true },
+    { name: 'plaats', label: 'Plaats', type: 'text', required: true },
+  ];
+
+  // Add service field if requested
+  if (showServiceInput) {
+    defaultFields.push({
+      name: 'dienst',
+      label: 'Welke dienst heeft u nodig?',
+      type: 'select',
+      required: true,
+      options: [
+        { value: 'Dakkapel', label: 'Dakkapel' },
+        { value: 'Zonnepanelen', label: 'Zonnepanelen' },
+        { value: 'Schilderwerk', label: 'Schilderwerk' },
+        { value: 'Stukadoorswerk', label: 'Stukadoorswerk' },
+        { value: 'Isolatie', label: 'Isolatie' },
+        { value: 'Anders', label: 'Anders' }
+      ]
+    });
+  }
+
+  // Add preferred date field if requested
+  if (showDateField) {
+    defaultFields.push({
+      name: 'gewenste_datum',
+      label: 'Gewenste datum',
+      type: 'text',
+      placeholder: 'Bijvoorbeeld: volgende maand, flexibel'
+    });
+  }
+
+  // Add message field
+  defaultFields.push({
+    name: 'bericht',
+    label: 'Bericht (optioneel)',
+    type: 'textarea',
+    placeholder: 'Vertel ons meer over uw project...'
+  });
+
+  const allFields = [...defaultFields, ...additionalFields, ...fields];
 
   const handleInputChange = (name: string, value: any) => {
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -50,10 +120,12 @@ const ReusableForm = ({
     setIsSubmitting(true);
 
     try {
-      // Save to database if tableName provided
-      if (tableName) {
+      const tableToUse = tableName || supabaseTable;
+      
+      // Save to database if table specified
+      if (tableToUse) {
         const { error } = await supabase
-          .from(tableName)
+          .from(tableToUse as any)
           .insert(formData);
         
         if (error) throw error;
@@ -96,6 +168,11 @@ const ReusableForm = ({
         await onSubmit(formData);
       }
 
+      // Call onSuccess callback
+      if (onSuccess) {
+        onSuccess();
+      }
+
       toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!');
       
       // Reset form
@@ -124,6 +201,23 @@ const ReusableForm = ({
       );
     }
 
+    if (field.type === 'select' && field.options) {
+      return (
+        <Select value={value} onValueChange={(val) => handleInputChange(field.name, val)}>
+          <SelectTrigger>
+            <SelectValue placeholder={field.placeholder || `Selecteer ${field.label.toLowerCase()}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    }
+
     return (
       <Input
         id={field.name}
@@ -140,18 +234,34 @@ const ReusableForm = ({
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        {description && <p className="text-gray-600">{description}</p>}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {fields.map((field) => (
+          {allFields.map((field) => (
             <div key={field.name}>
               <Label htmlFor={field.name}>{field.label}</Label>
               {renderField(field)}
             </div>
           ))}
+
+          {showFileUpload && (
+            <div>
+              <Label htmlFor="file-upload">Bijlage uploaden (optioneel)</Label>
+              <Input
+                id="file-upload"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                className="mt-2"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Ondersteunde formaten: PDF, JPG, PNG, DOC, DOCX (max 10MB)
+              </p>
+            </div>
+          )}
           
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Bezig met verzenden...' : submitButtonText}
+            {isSubmitting ? 'Bezig met verzenden...' : (buttonText || submitButtonText)}
           </Button>
         </form>
       </CardContent>
