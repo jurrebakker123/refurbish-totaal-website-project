@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -268,7 +267,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                 </TableRow>
               );
             })}
-          </tbody>
+          </TableBody>
         </Table>
       </div>
 
