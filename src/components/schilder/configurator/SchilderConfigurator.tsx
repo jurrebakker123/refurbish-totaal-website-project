@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Paintbrush } from 'lucide-react';
@@ -106,7 +105,7 @@ const SchilderConfigurator = () => {
       const totaalprijs = berekenTotaalprijs();
       const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
       
-      // Sla aanvraag op in database - use correct column names and types
+      // Sla aanvraag op in database - with correct data types
       const { data: savedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
         .insert({
@@ -118,7 +117,7 @@ const SchilderConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          oppervlakte: oppervlakteNum, // Convert to number
+          oppervlakte: oppervlakteNum,
           project_type: formData.nieuwbouw_renovatie,
           verf_type: 'latex',
           totaal_prijs: totaalprijs.includes('€') ? totaalprijs : null,
@@ -301,49 +300,133 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
                   <h3 className="text-lg font-semibold">Project Details</h3>
                   
                   <div>
-                    <Label htmlFor="binnen_buiten">Type schilderwerk *</Label>
-                    <Select value={formData.binnen_buiten} onValueChange={(value) => handleInputChange('binnen_buiten', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="binnen">Binnen schilderwerk</SelectItem>
-                        <SelectItem value="buiten">Buiten schilderwerk</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="text-base font-medium mb-3 block">Type schilderwerk *</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="binnen"
+                          name="binnen_buiten"
+                          value="binnen"
+                          checked={formData.binnen_buiten === 'binnen'}
+                          onChange={(e) => handleInputChange('binnen_buiten', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="binnen" className="cursor-pointer">Binnen schilderwerk</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="buiten"
+                          name="binnen_buiten"
+                          value="buiten"
+                          checked={formData.binnen_buiten === 'buiten'}
+                          onChange={(e) => handleInputChange('binnen_buiten', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="buiten" className="cursor-pointer">Buiten schilderwerk</Label>
+                      </div>
+                    </div>
                   </div>
 
                   {formData.binnen_buiten === 'binnen' && (
-                    <>
-                      <div>
-                        <Label htmlFor="werktype">Soort werkzaamheden *</Label>
-                        <Select value={formData.werktype} onValueChange={(value) => handleInputChange('werktype', value)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecteer werktype" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="muren_plafonds">Muren en plafonds</SelectItem>
-                            <SelectItem value="deuren_kozijnen">Deuren en kozijnen</SelectItem>
-                            <SelectItem value="radiatoren">Radiatoren</SelectItem>
-                            <SelectItem value="trap_leuning">Trap en leuning</SelectItem>
-                            <SelectItem value="behang_aanbrengen">Behang aanbrengen</SelectItem>
-                          </SelectContent>
-                        </Select>
+                    <div>
+                      <Label className="text-base font-medium mb-3 block">Soort werkzaamheden *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="muren_plafonds"
+                            name="werktype"
+                            value="muren_plafonds"
+                            checked={formData.werktype === 'muren_plafonds'}
+                            onChange={(e) => handleInputChange('werktype', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="muren_plafonds" className="cursor-pointer">Muren en plafonds</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="deuren_kozijnen"
+                            name="werktype"
+                            value="deuren_kozijnen"
+                            checked={formData.werktype === 'deuren_kozijnen'}
+                            onChange={(e) => handleInputChange('werktype', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="deuren_kozijnen" className="cursor-pointer">Deuren en kozijnen</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="radiatoren"
+                            name="werktype"
+                            value="radiatoren"
+                            checked={formData.werktype === 'radiatoren'}
+                            onChange={(e) => handleInputChange('werktype', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="radiatoren" className="cursor-pointer">Radiatoren</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="trap_leuning"
+                            name="werktype"
+                            value="trap_leuning"
+                            checked={formData.werktype === 'trap_leuning'}
+                            onChange={(e) => handleInputChange('werktype', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="trap_leuning" className="cursor-pointer">Trap en leuning</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="behang_aanbrengen"
+                            name="werktype"
+                            value="behang_aanbrengen"
+                            checked={formData.werktype === 'behang_aanbrengen'}
+                            onChange={(e) => handleInputChange('werktype', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="behang_aanbrengen" className="cursor-pointer">Behang aanbrengen</Label>
+                        </div>
                       </div>
+                    </div>
+                  )}
 
-                      <div>
-                        <Label htmlFor="nieuwbouw_renovatie">Project type *</Label>
-                        <Select value={formData.nieuwbouw_renovatie} onValueChange={(value) => handleInputChange('nieuwbouw_renovatie', value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="renovatie">Renovatie (9% BTW)</SelectItem>
-                            <SelectItem value="nieuwbouw">Nieuwbouw (21% BTW)</SelectItem>
-                          </SelectContent>
-                        </Select>
+                  {formData.binnen_buiten === 'binnen' && (
+                    <div>
+                      <Label className="text-base font-medium mb-3 block">Project type *</Label>
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="renovatie"
+                            name="nieuwbouw_renovatie"
+                            value="renovatie"
+                            checked={formData.nieuwbouw_renovatie === 'renovatie'}
+                            onChange={(e) => handleInputChange('nieuwbouw_renovatie', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="renovatie" className="cursor-pointer">Renovatie (9% BTW)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="nieuwbouw"
+                            name="nieuwbouw_renovatie"
+                            value="nieuwbouw"
+                            checked={formData.nieuwbouw_renovatie === 'nieuwbouw'}
+                            onChange={(e) => handleInputChange('nieuwbouw_renovatie', e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor="nieuwbouw" className="cursor-pointer">Nieuwbouw (21% BTW)</Label>
+                        </div>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   <div>
@@ -457,26 +540,77 @@ Log in op het dashboard om deze aanvraag te bekijken en te bewerken.`,
                     <Label htmlFor="gewenste_datum">Gewenste startdatum</Label>
                     <Input
                       id="gewenste_datum"
-                      type="date"
+                      type="text"
                       value={formData.gewenste_datum}
                       onChange={(e) => handleInputChange('gewenste_datum', e.target.value)}
+                      placeholder="Bijv. Begin januari 2024"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="budget">Indicatief budget</Label>
-                    <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecteer budget" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="< €1.000">Minder dan €1.000</SelectItem>
-                        <SelectItem value="€1.000 - €2.500">€1.000 - €2.500</SelectItem>
-                        <SelectItem value="€2.500 - €5.000">€2.500 - €5.000</SelectItem>
-                        <SelectItem value="€5.000 - €7.500">€5.000 - €7.500</SelectItem>
-                        <SelectItem value="> €7.500">Meer dan €7.500</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="text-base font-medium mb-3 block">Indicatief budget</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="budget1"
+                          name="budget"
+                          value="< €1.000"
+                          checked={formData.budget === '< €1.000'}
+                          onChange={(e) => handleInputChange('budget', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="budget1" className="cursor-pointer">Minder dan €1.000</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="budget2"
+                          name="budget"
+                          value="€1.000 - €2.500"
+                          checked={formData.budget === '€1.000 - €2.500'}
+                          onChange={(e) => handleInputChange('budget', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="budget2" className="cursor-pointer">€1.000 - €2.500</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="budget3"
+                          name="budget"
+                          value="€2.500 - €5.000"
+                          checked={formData.budget === '€2.500 - €5.000'}
+                          onChange={(e) => handleInputChange('budget', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="budget3" className="cursor-pointer">€2.500 - €5.000</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="budget4"
+                          name="budget"
+                          value="€5.000 - €7.500"
+                          checked={formData.budget === '€5.000 - €7.500'}
+                          onChange={(e) => handleInputChange('budget', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="budget4" className="cursor-pointer">€5.000 - €7.500</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          id="budget5"
+                          name="budget"
+                          value="> €7.500"
+                          checked={formData.budget === '> €7.500'}
+                          onChange={(e) => handleInputChange('budget', e.target.value)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="budget5" className="cursor-pointer">Meer dan €7.500</Label>
+                      </div>
+                    </div>
                   </div>
 
                   <div>
