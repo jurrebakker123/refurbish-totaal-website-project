@@ -142,7 +142,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
             item={item}
             onViewDetails={() => onEdit(item.id)}
             onOpenQuoteDialog={() => onEdit(item.id)}
-            type={type}
+            type={showQuoteButtons ? (type as 'dakkapel' | 'zonnepaneel') : 'dakkapel'}
             sendingQuote={sendingQuote}
           />
         ))}

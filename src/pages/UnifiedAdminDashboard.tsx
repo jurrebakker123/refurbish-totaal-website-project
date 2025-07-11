@@ -181,7 +181,38 @@ const UnifiedAdminDashboard = () => {
 
   // Get dakkapel data for dashboard stats (only use dakkapel data for general stats)
   const getDashboardStatsData = (): DakkapelConfiguratie[] => {
-    return configuraties || [];
+    // Transform dakkapel_calculator_aanvragen to match DakkapelConfiguratie interface
+    return (configuraties || []).map(item => ({
+      id: item.id,
+      created_at: item.created_at || '',
+      naam: `${item.voornaam} ${item.achternaam}`,
+      email: item.emailadres,
+      telefoon: item.telefoon,
+      adres: `${item.straatnaam} ${item.huisnummer}`,
+      postcode: item.postcode,
+      plaats: item.plaats,
+      opmerkingen: item.bericht,
+      model: item.type,
+      breedte: item.breedte,
+      materiaal: item.materiaal,
+      kleur_kozijn: item.kleurkozijnen,
+      kleur_zijkanten: item.kleurzijkanten,
+      kleur_draaikiepramen: item.kleurdraaikiepramen,
+      dakhelling: item.dakhelling,
+      dakhelling_type: item.dakhellingtype,
+      levertijd: undefined,
+      ventilationgrids: false,
+      sunshade: false,
+      insectscreens: false,
+      airconditioning: false,
+      status: item.status || 'nieuw',
+      offerte_verzonden_op: item.offerte_verzonden_op,
+      op_locatie_op: undefined,
+      in_aanbouw_op: undefined,
+      afgehandeld_op: item.afgehandeld_op,
+      notities: item.notities,
+      totaal_prijs: item.totaal_prijs
+    }));
   };
 
   return (
@@ -226,7 +257,7 @@ const UnifiedAdminDashboard = () => {
                   {(service === 'dakkapel' || service === 'zonnepaneel') && (
                     <ConversieStats 
                       type={service as 'dakkapel' | 'zonnepaneel'} 
-                      configuraties={service === 'dakkapel' ? (configuraties || []) : (zonnepanelen || [])}
+                      configuraties={service === 'dakkapel' ? getDashboardStatsData() : (zonnepanelen || [])}
                     />
                   )}
                   
