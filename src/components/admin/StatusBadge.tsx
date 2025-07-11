@@ -28,7 +28,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, onClick }) => {
   return (
     <Badge 
       variant="outline" 
-      className={`cursor-pointer hover:bg-gray-100 transition-colors ${onClick ? 'hover:shadow-sm' : ''}`}
+      className={`cursor-pointer hover:bg-gray-100 transition-colors border-gray-300 text-gray-800 hover:border-gray-400 ${onClick ? 'hover:shadow-sm' : ''}`}
       onClick={onClick}
     >
       {getStatusLabel(status)}

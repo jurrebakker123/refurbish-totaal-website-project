@@ -144,8 +144,117 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
       );
     }
 
-    // Default dakkapel or other services
-    return null;
+    if ('aantal_panelen' in currentItem) {
+      // Zonnepaneel service
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Aantal Panelen</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.aantal_panelen || ''}</div>
+            </div>
+            <div>
+              <Label>Vermogen (W)</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.vermogen || ''}</div>
+            </div>
+            <div>
+              <Label>Merk</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.merk || ''}</div>
+            </div>
+            <div>
+              <Label>Type Paneel</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.type_paneel || ''}</div>
+            </div>
+            <div>
+              <Label>Conditie</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.conditie || ''}</div>
+            </div>
+            <div>
+              <Label>Dak Type</Label>
+              <div className="p-2 bg-gray-50 rounded">{currentItem.dak_type || ''}</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Dakkapel service - show all configurator details
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Type</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.type || ''}</div>
+          </div>
+          <div>
+            <Label>Model</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.model || ''}</div>
+          </div>
+          <div>
+            <Label>Materiaal</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.materiaal || ''}</div>
+          </div>
+          <div>
+            <Label>Breedte (cm)</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.breedte || ''}</div>
+          </div>
+          <div>
+            <Label>Hoogte (cm)</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.hoogte || ''}</div>
+          </div>
+          <div>
+            <Label>Aantal Ramen</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.aantalramen || ''}</div>
+          </div>
+          <div>
+            <Label>Dakhelling (°)</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.dakhelling || ''}</div>
+          </div>
+          <div>
+            <Label>Dakhelling Type</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.dakhellingtype || ''}</div>
+          </div>
+          <div>
+            <Label>Kozijn Hoogte</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.kozijnhoogte || ''}</div>
+          </div>
+          <div>
+            <Label>RC Waarde</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.rcwaarde || ''}</div>
+          </div>
+          <div>
+            <Label>Woning Zijde</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.woningzijde || ''}</div>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <Label>Kleur Kozijnen</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.kleurkozijnen || currentItem.kleur_kozijn || ''}</div>
+          </div>
+          <div>
+            <Label>Kleur Zijkanten</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.kleurzijkanten || currentItem.kleur_zijkanten || ''}</div>
+          </div>
+          <div>
+            <Label>Kleur Draaikiepramen</Label>
+            <div className="p-2 bg-gray-50 rounded">{currentItem.kleurdraaikiepramen || currentItem.kleur_draaikiepramen || ''}</div>
+          </div>
+        </div>
+        {/* Show extras if available */}
+        {(currentItem.ventilationgrids || currentItem.sunshade || currentItem.insectscreens || currentItem.airconditioning) && (
+          <div>
+            <Label>Extra Opties</Label>
+            <div className="p-2 bg-gray-50 rounded space-y-1">
+              {currentItem.ventilationgrids && <div>✓ Ventilatie roosters</div>}
+              {currentItem.sunshade && <div>✓ Zonwering</div>}
+              {currentItem.insectscreens && <div>✓ Insectenschermen</div>}
+              {currentItem.airconditioning && <div>✓ Airconditioning</div>}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (

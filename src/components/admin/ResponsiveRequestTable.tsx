@@ -164,10 +164,17 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
         {allStatuses.map((status) => (
           <Card key={status} className="p-3">
             <div className="text-center">
-              <Badge variant="outline" className="text-xs mb-1">
-                {getStatusLabel(status)}
-              </Badge>
-              <div className="text-lg font-bold text-gray-900">
+              <StatusBadge 
+                status={status} 
+                onClick={() => {
+                  const statusItems = filteredItems.filter(item => (item.status || 'nieuw') === status);
+                  if (statusItems.length > 0) {
+                    console.log(`Items met status ${getStatusLabel(status)}:`, statusItems);
+                    toast.success(`${statusItems.length} aanvra${statusItems.length === 1 ? 'ag' : 'gen'} met status: ${getStatusLabel(status)}`);
+                  }
+                }}
+              />
+              <div className="text-lg font-bold text-gray-900 mt-1">
                 {statusCounts[status] || 0}
               </div>
             </div>
@@ -214,7 +221,10 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                   <TableCell>{item.telefoon || 'N.v.t.'}</TableCell>
                   <TableCell>{formatDate(item.created_at)}</TableCell>
                   <TableCell>
-                    <StatusBadge status={item.status || 'nieuw'} />
+                    <StatusBadge 
+                      status={item.status || 'nieuw'} 
+                      onClick={() => onEdit(item)}
+                    />
                   </TableCell>
                   
                   <TableCell>
