@@ -99,9 +99,9 @@ const StukadoorConfigurator = () => {
     try {
       // Bereken totaalprijs
       const totaalprijs = berekenTotaalprijs();
-      const oppervlakte = parseFloat(formData.oppervlakte) || 0;
+      const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
       
-      // Sla aanvraag op in database - use correct column names from schema
+      // Sla aanvraag op in database - use correct column names and types
       const { data: savedData, error: dbError } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
@@ -114,7 +114,7 @@ const StukadoorConfigurator = () => {
           postcode: formData.postcode,
           plaats: formData.plaats,
           werk_type: formData.werktype,
-          oppervlakte: oppervlakte,
+          oppervlakte: oppervlakteNum, // Convert to number
           aantal_kamers: formData.kamers ? parseInt(formData.kamers) : null,
           afwerking: formData.binnen_buiten,
           totaal_prijs: totaalprijs.includes('€') ? totaalprijs : null,

@@ -107,9 +107,9 @@ const SchilderConfigurator = () => {
     try {
       // Bereken totaalprijs
       const totaalprijs = berekenTotaalprijs();
-      const oppervlakte = parseFloat(formData.oppervlakte) || 0;
+      const oppervlakteNum = parseFloat(formData.oppervlakte) || 0;
       
-      // Sla aanvraag op in database - use correct column names from schema
+      // Sla aanvraag op in database - use correct column names and types
       const { data: savedData, error: dbError } = await supabase
         .from('schilder_aanvragen')
         .insert({
@@ -121,7 +121,7 @@ const SchilderConfigurator = () => {
           huisnummer: formData.huisnummer,
           postcode: formData.postcode,
           plaats: formData.plaats,
-          oppervlakte: oppervlakte,
+          oppervlakte: oppervlakteNum, // Convert to number
           aantal_kamers: formData.kamers ? parseInt(formData.kamers) : null,
           project_type: formData.nieuwbouw_renovatie,
           verf_type: formData.schilderwerk_type || 'latex',
