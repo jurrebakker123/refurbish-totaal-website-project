@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { sendEmail } from '@/config/email';
-import ProjectTypeSection from './ProjectTypeSection';
-import ProjectDetailsSection from './ProjectDetailsSection';
-import PriceDisplaySection from './PriceDisplaySection';
-import ContactFormSection from './ContactFormSection';
-import { usePriceCalculation } from './usePriceCalculation';
+import WhatsAppOptInCheckbox from '@/components/common/WhatsAppOptInCheckbox';
 
 const SchilderConfigurator = () => {
   const [formData, setFormData] = useState({
@@ -30,22 +30,75 @@ const SchilderConfigurator = () => {
     meerdere_kleuren: false,
     uitvoertermijn: '',
     reden_aanvraag: '',
-    bericht: ''
+    bericht: '',
+    whatsapp_optin: false
   });
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { calculatePrice, hasAnyInput } = usePriceCalculation(formData);
-  const totalPrice = calculatePrice();
+  const calculatePrice = () => {
+    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
+    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
+    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
+    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
+    const meerderKleuren = formData.meerdere_kleuren;
+    
+    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
+    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
+    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
+    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
+    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
+    
+    // Bereken totaal excl. BTW
+    const wandKosten = wandOppervlakte * wandPrijs;
+    const plafondKosten = plafondOppervlakte * plafondPrijs;
+    const deurKosten = aantalDeuren * deurPrijs;
+    const raamKosten = aantalRamen * raamPrijs;
+    
+    const totaalExclBtw = wandKosten + plafondKosten + deurKosten + raamKosten;
+    
+    // BTW percentage bepalen (9% voor renovatie, 21% voor nieuwbouw)
+    const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
+    
+    return Math.round(totaalExclBtw * btwPercentage);
+  };
 
-  const handleFormDataChange = (updates: Partial<typeof formData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+  const getPriceBreakdown = () => {
+    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
+    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
+    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
+    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
+    const meerderKleuren = formData.meerdere_kleuren;
+    
+    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
+    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
+    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
+    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
+    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
+    
+    const breakdown = [];
+    
+    if (wandOppervlakte > 0) {
+      breakdown.push(`Wanden: ${wandOppervlakte}m² × €${wandPrijs} = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
+    }
+    if (plafondOppervlakte > 0) {
+      breakdown.push(`Plafonds: ${plafondOppervlakte}m² × €${plafondPrijs} = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
+    }
+    if (aantalDeuren > 0) {
+      breakdown.push(`Deuren: ${aantalDeuren} × €${deurPrijs} = €${(aantalDeuren * deurPrijs).toFixed(2)}`);
+    }
+    if (aantalRamen > 0) {
+      breakdown.push(`Ramen: ${aantalRamen} × €${raamPrijs} = €${(aantalRamen * raamPrijs).toFixed(2)}`);
+    }
+    
+    return breakdown;
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
         return;
@@ -57,187 +110,64 @@ const SchilderConfigurator = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    console.log('🚀 Form submission started');
+    if (!formData.whatsapp_optin) {
+      toast.error('WhatsApp toestemming is verplicht voor deze service');
+      return;
+    }
+    
+    setIsSubmitting(true);
 
     try {
-      // Strikte validatie van verplichte velden
-      if (!formData.voornaam?.trim()) {
-        toast.error('Voornaam is verplicht');
-        return;
-      }
-      if (!formData.achternaam?.trim()) {
-        toast.error('Achternaam is verplicht');
-        return;
-      }
-      if (!formData.emailadres?.trim()) {
-        toast.error('E-mailadres is verplicht');
-        return;
-      }
-      if (!formData.telefoon?.trim()) {
-        toast.error('Telefoonnummer is verplicht');
-        return;
-      }
-      if (!formData.straatnaam?.trim()) {
-        toast.error('Straatnaam is verplicht');
-        return;
-      }
-      if (!formData.huisnummer?.trim()) {
-        toast.error('Huisnummer is verplicht');
-        return;
-      }
-      if (!formData.postcode?.trim()) {
-        toast.error('Postcode is verplicht');
-        return;
-      }
-      if (!formData.plaats?.trim()) {
-        toast.error('Plaats is verplicht');
-        return;
-      }
-      if (!formData.uitvoertermijn?.trim()) {
-        toast.error('Uitvoertermijn is verplicht');
-        return;
-      }
-      if (!formData.reden_aanvraag?.trim()) {
-        toast.error('Reden aanvraag is verplicht');
-        return;
-      }
-      if (!formData.oppervlakte || parseInt(formData.oppervlakte) <= 0) {
-        toast.error('Vul een geldige oppervlakte in');
-        return;
-      }
-
-      console.log('✅ Form validation passed');
-
-      // Bereid database data voor met expliciete type conversies
-      const insertData = {
-        voornaam: String(formData.voornaam).trim(),
-        achternaam: String(formData.achternaam).trim(),
-        emailadres: String(formData.emailadres).trim().toLowerCase(),
-        telefoon: String(formData.telefoon).trim(),
-        straatnaam: String(formData.straatnaam).trim(),
-        huisnummer: String(formData.huisnummer).trim(),
-        postcode: String(formData.postcode).trim().toUpperCase(),
-        plaats: String(formData.plaats).trim(),
-        project_type: `${formData.project_type} - ${formData.bouw_type}`,
-        verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: Math.max(1, parseInt(formData.oppervlakte) || 1),
-        totaal_prijs: totalPrice || null,
-        plafond_meeverven: Boolean(parseFloat(formData.plafond_oppervlakte || '0') > 0),
-        kozijnen_meeverven: Boolean((parseInt(formData.aantal_deuren || '0') + parseInt(formData.aantal_ramen || '0')) > 0),
-        bericht: formData.bericht?.trim() || null,
-        status: 'nieuw'
-      };
-
-      console.log('📊 Insert data prepared:', insertData);
-
-      // Database insert met expliciet schema en tabel
-      console.log('💾 Attempting database insert...');
+      const totalPrice = calculatePrice();
       
-      const { data: result, error: dbError } = await supabase
+      // Save to database
+      const { data: savedData, error } = await supabase
         .from('schilder_aanvragen')
-        .insert([insertData])
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          emailadres: formData.emailadres,
+          telefoon: formData.telefoon,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          project_type: `${formData.project_type} - ${formData.bouw_type}`,
+          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
+          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          uitvoertermijn: formData.uitvoertermijn,
+          reden_aanvraag: formData.reden_aanvraag,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw',
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
+        })
         .select()
         .single();
 
-      if (dbError) {
-        console.error('❌ Database error details:', {
-          message: dbError.message,
-          details: dbError.details,
-          hint: dbError.hint,
-          code: dbError.code
-        });
-        
-        // Probeer alternatieve insert methode
-        console.log('🔄 Trying alternative insert method...');
-        const { data: altResult, error: altError } = await supabase
-          .from('schilder_aanvragen')
-          .insert(insertData)
-          .select()
-          .maybeSingle();
+      if (error) throw error;
 
-        if (altError) {
-          console.error('❌ Alternative insert also failed:', altError);
-          throw new Error(`Database insert failed: ${altError.message}`);
-        }
-        
-        console.log('✅ Alternative insert successful:', altResult);
-      } else {
-        console.log('✅ Database insert successful:', result);
+      // Trigger WhatsApp lead nurturing
+      if (formData.whatsapp_optin && savedData) {
+        const phoneNumber = formData.telefoon.replace(/[\s\-\+\(\)]/g, '');
+        const formattedPhone = phoneNumber.startsWith('06') ? '31' + phoneNumber.substring(1) : 
+                              phoneNumber.startsWith('6') ? '31' + phoneNumber : phoneNumber;
+
+        await supabase.functions.invoke('whatsapp-lead-nurturing', {
+          body: {
+            leadId: savedData.id,
+            phoneNumber: formattedPhone,
+            customerName: `${formData.voornaam} ${formData.achternaam}`,
+            step: 'initial'
+          }
+        });
       }
 
-      // Verstuur admin email (asynchroon)
-      sendEmail({
-        templateId: 'template_ix4mdjh',
-        from_name: `${formData.voornaam} ${formData.achternaam}`,
-        from_email: formData.emailadres,
-        to_name: 'Refurbish Totaal Nederland',
-        to_email: 'info@refurbishtotaalnederland.nl',
-        subject: 'Nieuwe Schilderwerk Aanvraag',
-        message: `
-Nieuwe schilderwerk aanvraag ontvangen:
-
-Klant: ${formData.voornaam} ${formData.achternaam}
-Email: ${formData.emailadres}
-Telefoon: ${formData.telefoon}
-Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
-
-Project: ${formData.project_type} - ${formData.bouw_type}
-Oppervlakte wanden: ${formData.oppervlakte}m²
-${formData.plafond_oppervlakte ? `Oppervlakte plafonds: ${formData.plafond_oppervlakte}m²` : ''}
-${formData.aantal_deuren ? `Aantal deuren: ${formData.aantal_deuren}` : ''}
-${formData.aantal_ramen ? `Aantal ramen: ${formData.aantal_ramen}` : ''}
-Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}
-
-${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Buiten schilderwerk - prijs op maat'}
-
-Uitvoertermijn: ${formData.uitvoertermijn}
-Reden aanvraag: ${formData.reden_aanvraag}
-
-${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
-        `,
-        reply_to: formData.emailadres,
-        phone: formData.telefoon,
-        service: 'Schilderwerk',
-        location: formData.plaats,
-        preferred_date: formData.uitvoertermijn
-      }).catch(error => console.error('⚠️ Admin email failed:', error));
-
-      // Verstuur klant bevestiging (asynchroon)
-      sendEmail({
-        templateId: 'template_ix4mdjh',
-        from_name: 'Refurbish Totaal Nederland',
-        from_email: 'info@refurbishtotaalnederland.nl',
-        to_name: `${formData.voornaam} ${formData.achternaam}`,
-        to_email: formData.emailadres,
-        subject: 'Bevestiging Schilderwerk Aanvraag',
-        message: `
-Beste ${formData.voornaam},
-
-Bedankt voor uw aanvraag voor schilderwerk. Wij hebben uw aanvraag in goede orde ontvangen.
-
-Uw projectdetails:
-- Project: ${formData.project_type} - ${formData.bouw_type}
-- Oppervlakte: ${formData.oppervlakte}m² wanden${formData.plafond_oppervlakte ? `, ${formData.plafond_oppervlakte}m² plafonds` : ''}
-${totalPrice ? `- Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '- Voor buitenschilderwerk nemen wij contact met u op voor een prijs op maat'}
-- Gewenste uitvoertermijn: ${formData.uitvoertermijn}
-
-Wij nemen binnen 24 uur contact met u op voor een afspraak.
-
-Met vriendelijke groet,
-Refurbish Totaal Nederland
-
-Tel: 06-12345678
-Email: info@refurbishtotaalnederland.nl
-        `,
-        reply_to: 'info@refurbishtotaalnederland.nl'
-      }).catch(error => console.error('⚠️ Customer email failed:', error));
-
-      // Succes feedback
-      toast.success('✅ Aanvraag succesvol verzonden! Je ontvangt een bevestigingsmail.');
+      toast.success('Aanvraag succesvol verzonden! Je ontvangt binnen 1 minuut een WhatsApp bericht.');
       
-      // Reset formulier
+      // Reset form
       setFormData({
         voornaam: '',
         achternaam: '',
@@ -256,19 +186,22 @@ Email: info@refurbishtotaalnederland.nl
         meerdere_kleuren: false,
         uitvoertermijn: '',
         reden_aanvraag: '',
-        bericht: ''
+        bericht: '',
+        whatsapp_optin: false
       });
       setUploadedFile(null);
 
-      console.log('🎉 Form submission completed successfully');
-
-    } catch (error: any) {
-      console.error('💥 Submission error:', error);
-      toast.error(`Er is een fout opgetreden: ${error.message || 'Onbekende fout'}`);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Er ging iets mis bij het verzenden van je aanvraag');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Bepaal BTW percentage
+  const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
+  const hasAnyInput = parseFloat(formData.oppervlakte) > 0 || parseFloat(formData.plafond_oppervlakte) > 0 || parseInt(formData.aantal_deuren) > 0 || parseInt(formData.aantal_ramen) > 0;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -281,28 +214,276 @@ Email: info@refurbishtotaalnederland.nl
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <ProjectTypeSection 
-              formData={formData} 
-              onFormDataChange={handleFormDataChange} 
-            />
-            
-            <ProjectDetailsSection 
-              formData={formData} 
-              onFormDataChange={handleFormDataChange} 
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="voornaam">Voornaam</Label>
+                <Input
+                  id="voornaam"
+                  value={formData.voornaam}
+                  onChange={(e) => setFormData({...formData, voornaam: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="achternaam">Achternaam</Label>
+                <Input
+                  id="achternaam"
+                  value={formData.achternaam}
+                  onChange={(e) => setFormData({...formData, achternaam: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="emailadres">E-mailadres</Label>
+                <Input
+                  id="emailadres"
+                  type="email"
+                  value={formData.emailadres}
+                  onChange={(e) => setFormData({...formData, emailadres: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="telefoon">Telefoonnummer</Label>
+                <Input
+                  id="telefoon"
+                  value={formData.telefoon}
+                  onChange={(e) => setFormData({...formData, telefoon: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <Label htmlFor="straatnaam">Straatnaam</Label>
+                <Input
+                  id="straatnaam"
+                  value={formData.straatnaam}
+                  onChange={(e) => setFormData({...formData, straatnaam: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="huisnummer">Huisnummer</Label>
+                <Input
+                  id="huisnummer"
+                  value={formData.huisnummer}
+                  onChange={(e) => setFormData({...formData, huisnummer: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="postcode">Postcode</Label>
+                <Input
+                  id="postcode"
+                  value={formData.postcode}
+                  onChange={(e) => setFormData({...formData, postcode: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="plaats">Plaats</Label>
+                <Input
+                  id="plaats"
+                  value={formData.plaats}
+                  onChange={(e) => setFormData({...formData, plaats: e.target.value})}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Build Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
+              <RadioGroup
+                value={formData.bouw_type}
+                onValueChange={(value) => setFormData({...formData, bouw_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="renovatie" id="renovatie" />
+                  <Label htmlFor="renovatie">Renovatie (9% BTW)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="nieuwbouw" id="nieuwbouw" />
+                  <Label htmlFor="nieuwbouw">Nieuwbouw (21% BTW)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Project Type Selection */}
+            <div>
+              <Label className="text-base font-medium">Binnen of buiten schilderwerk?</Label>
+              <RadioGroup
+                value={formData.project_type}
+                onValueChange={(value) => setFormData({...formData, project_type: value})}
+                className="flex flex-col space-y-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="binnen" id="binnen" />
+                  <Label htmlFor="binnen">Binnen schilderwerk</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="buiten" id="buiten" />
+                  <Label htmlFor="buiten">Buiten schilderwerk</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Color Selection */}
+            <div>
+              <Label className="text-base font-medium">Kleuroptie</Label>
+              <div className="flex items-center space-x-2 mt-2">
+                <Checkbox
+                  id="meerdere_kleuren"
+                  checked={formData.meerdere_kleuren}
+                  onCheckedChange={(checked) => setFormData({...formData, meerdere_kleuren: checked as boolean})}
+                />
+                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken (hogere prijs)</Label>
+              </div>
+            </div>
+
+            {/* Project Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="oppervlakte">Wand oppervlakte (m²)</Label>
+                <Input
+                  id="oppervlakte"
+                  type="number"
+                  value={formData.oppervlakte}
+                  onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
+                  placeholder="Bijvoorbeeld: 50"
+                />
+              </div>
+              <div>
+                <Label htmlFor="plafond_oppervlakte">Plafond oppervlakte (m²)</Label>
+                <Input
+                  id="plafond_oppervlakte"
+                  type="number"
+                  value={formData.plafond_oppervlakte}
+                  onChange={(e) => setFormData({...formData, plafond_oppervlakte: e.target.value})}
+                  placeholder="Bijvoorbeeld: 25"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="aantal_deuren">Aantal deuren (incl. kozijn)</Label>
+                <Input
+                  id="aantal_deuren"
+                  type="number"
+                  value={formData.aantal_deuren}
+                  onChange={(e) => setFormData({...formData, aantal_deuren: e.target.value})}
+                  placeholder="Bijvoorbeeld: 3"
+                />
+              </div>
+              <div>
+                <Label htmlFor="aantal_ramen">Aantal ramen (incl. kozijn)</Label>
+                <Input
+                  id="aantal_ramen"
+                  type="number"
+                  value={formData.aantal_ramen}
+                  onChange={(e) => setFormData({...formData, aantal_ramen: e.target.value})}
+                  placeholder="Bijvoorbeeld: 5"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn?</Label>
+              <Input
+                id="uitvoertermijn"
+                value={formData.uitvoertermijn}
+                onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
+                placeholder="Bijvoorbeeld: binnen 3 weken, flexibel"
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag?</Label>
+              <Input
+                id="reden_aanvraag"
+                value={formData.reden_aanvraag}
+                onChange={(e) => setFormData({...formData, reden_aanvraag: e.target.value})}
+                placeholder="Bijvoorbeeld: verhuizing, onderhoud, renovatie"
+                required
+              />
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <Label htmlFor="file-upload">Bijlage uploaden (optioneel)</Label>
+              <Input
+                id="file-upload"
+                type="file"
+                onChange={handleFileUpload}
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                className="mt-2"
+              />
+              {uploadedFile && (
+                <p className="text-sm text-green-600 mt-1">
+                  Bestand geüpload: {uploadedFile.name}
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                Ondersteunde formaten: PDF, JPG, PNG, DOC, DOCX (max 10MB)
+              </p>
+            </div>
+
+            {/* Message */}
+            <div>
+              <Label htmlFor="bericht">Aanvullende opmerkingen (optioneel)</Label>
+              <Textarea
+                id="bericht"
+                value={formData.bericht}
+                onChange={(e) => setFormData({...formData, bericht: e.target.value})}
+                placeholder="Eventuele extra informatie over uw project..."
+              />
+            </div>
+
+            {/* WhatsApp Opt-in */}
+            <WhatsAppOptInCheckbox
+              checked={formData.whatsapp_optin}
+              onCheckedChange={(checked) => setFormData({...formData, whatsapp_optin: checked})}
             />
 
-            <PriceDisplaySection 
-              formData={formData} 
-              totalPrice={totalPrice} 
-              hasAnyInput={hasAnyInput} 
-            />
-
-            <ContactFormSection 
-              formData={formData} 
-              onFormDataChange={handleFormDataChange}
-              uploadedFile={uploadedFile}
-              onFileUpload={handleFileUpload}
-            />
+            {/* Price Display */}
+            {hasAnyInput && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
+                    <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
+                    <p className="text-sm text-blue-700 mb-2">
+                      Inclusief materiaal en arbeid
+                    </p>
+                    <p className="text-xs text-blue-600 mb-2">
+                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
+                    </p>
+                    <p className="text-xs text-blue-600 mb-2">
+                      {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
+                    </p>
+                    <div className="text-xs text-blue-500 text-left">
+                      <p className="font-semibold mb-1">Prijsopbouw:</p>
+                      {getPriceBreakdown().map((item, index) => (
+                        <p key={index}>{item}</p>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Bezig met verzenden...' : 'Aanvraag Versturen'}
