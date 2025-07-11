@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -214,6 +215,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
     setIsSubmitting(true);
 
     try {
+      console.log('🎨 Starting schilder form submission...');
       const totalPrice = calculatePrice();
       
       const customerData = {
@@ -227,6 +229,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
         plaats: formData.plaats
       };
 
+      console.log('💾 Saving to database...');
       // Save to database
       const { error } = await supabase
         .from('schilder_aanvragen')
@@ -242,8 +245,6 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
           project_type: `${formData.project_type} - ${formData.bouw_type}`,
           verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
-          uitvoertermijn: formData.uitvoertermijn,
-          reden_aanvraag: formData.reden_aanvraag,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw',
@@ -251,13 +252,21 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
           kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Database error:', error);
+        throw error;
+      }
 
+      console.log('✅ Database save successful!');
+
+      console.log('📧 Sending emails...');
       // Send confirmation email to customer
       await sendConfirmationEmail(customerData, totalPrice);
       
       // Send notification to admins
       await sendAdminNotification(customerData, totalPrice);
+      
+      console.log('✅ Emails sent successfully!');
 
       toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000
@@ -287,8 +296,8 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
       setUploadedFile(null);
 
     } catch (error) {
-      console.error('Error submitting form:', error);
-      toast.error('Er ging iets mis bij het verzenden van je aanvraag');
+      console.error('❌ Form submission error:', error);
+      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
@@ -312,7 +321,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
             {/* Contact Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="voornaam">Voornaam</Label>
+                <Label htmlFor="voornaam">Voornaam *</Label>
                 <Input
                   id="voornaam"
                   value={formData.voornaam}
@@ -321,7 +330,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="achternaam">Achternaam</Label>
+                <Label htmlFor="achternaam">Achternaam *</Label>
                 <Input
                   id="achternaam"
                   value={formData.achternaam}
@@ -333,7 +342,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="emailadres">E-mailadres</Label>
+                <Label htmlFor="emailadres">E-mailadres *</Label>
                 <Input
                   id="emailadres"
                   type="email"
@@ -343,7 +352,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="telefoon">Telefoonnummer</Label>
+                <Label htmlFor="telefoon">Telefoonnummer *</Label>
                 <Input
                   id="telefoon"
                   value={formData.telefoon}
@@ -356,7 +365,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
             {/* Address */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
-                <Label htmlFor="straatnaam">Straatnaam</Label>
+                <Label htmlFor="straatnaam">Straatnaam *</Label>
                 <Input
                   id="straatnaam"
                   value={formData.straatnaam}
@@ -365,7 +374,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="huisnummer">Huisnummer</Label>
+                <Label htmlFor="huisnummer">Huisnummer *</Label>
                 <Input
                   id="huisnummer"
                   value={formData.huisnummer}
@@ -377,7 +386,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="postcode">Postcode</Label>
+                <Label htmlFor="postcode">Postcode *</Label>
                 <Input
                   id="postcode"
                   value={formData.postcode}
@@ -386,7 +395,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="plaats">Plaats</Label>
+                <Label htmlFor="plaats">Plaats *</Label>
                 <Input
                   id="plaats"
                   value={formData.plaats}
@@ -398,7 +407,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
 
             {/* Build Type Selection */}
             <div>
-              <Label className="text-base font-medium">Nieuwbouw of renovatie?</Label>
+              <Label className="text-base font-medium">Nieuwbouw of renovatie? *</Label>
               <RadioGroup
                 value={formData.bouw_type}
                 onValueChange={(value) => setFormData({...formData, bouw_type: value})}
@@ -417,7 +426,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
 
             {/* Project Type Selection */}
             <div>
-              <Label className="text-base font-medium">Binnen of buiten schilderwerk?</Label>
+              <Label className="text-base font-medium">Binnen of buiten schilderwerk? *</Label>
               <RadioGroup
                 value={formData.project_type}
                 onValueChange={(value) => setFormData({...formData, project_type: value})}
@@ -495,7 +504,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
             </div>
 
             <div>
-              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn?</Label>
+              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn? *</Label>
               <Input
                 id="uitvoertermijn"
                 value={formData.uitvoertermijn}
@@ -506,7 +515,7 @@ ${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
             </div>
 
             <div>
-              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag?</Label>
+              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag? *</Label>
               <Input
                 id="reden_aanvraag"
                 value={formData.reden_aanvraag}
