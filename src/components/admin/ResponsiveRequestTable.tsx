@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 import AutoQuoteButton from './AutoQuoteButton';
 import StatusBadge from './StatusBadge';
 import { supabase } from '@/integrations/supabase/client';
+import { updateRequestStatus } from '@/utils/adminUtils';
 
 type ServiceType = 'dakkapel' | 'zonnepaneel' | 'schilder' | 'stukadoor';
 
@@ -109,6 +110,28 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
     }
   };
 
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
+    try {
+      const isZonnepaneel = items.length > 0 && 'aantal_panelen' in items[0];
+      const isSchilder = items.length > 0 && 'project_type' in items[0] && 'verf_type' in items[0];
+      const isStukadoor = items.length > 0 && 'werk_type' in items[0] && 'afwerking' in items[0];
+      
+      let tableName: 'dakkapel_calculator_aanvragen' | 'refurbished_zonnepanelen' | 'schilder_aanvragen' | 'stukadoor_aanvragen' = 'dakkapel_calculator_aanvragen';
+      if (isZonnepaneel) tableName = 'refurbished_zonnepanelen';
+      else if (isSchilder) tableName = 'schilder_aanvragen';
+      else if (isStukadoor) tableName = 'stukadoor_aanvragen';
+      
+      const success = await updateRequestStatus(id, newStatus, tableName);
+      if (success) {
+        onDataChange();
+        toast.success(`Status bijgewerkt naar: ${getStatusLabel(newStatus)}`);
+      }
+    } catch (error) {
+      console.error('Status update error:', error);
+      toast.error('Fout bij bijwerken van status');
+    }
+  };
+
   const filteredItems = items.filter((item) => {
     const searchTermLower = searchTerm.toLowerCase();
     const itemName = item.naam || `${item.voornaam} ${item.achternaam}` || '';
@@ -132,7 +155,7 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
 
   let type: ServiceType = 'dakkapel';
   if (isZonnepaneel) type = 'zonnepaneel';
-  else if (isSchilder) type = 'schilder';
+  else if (isSchilder) type = 'schilder';  
   else if (isStukadoor) type = 'stukadoor';
 
   // Only show quote buttons for dakkapel and zonnepaneel
@@ -157,6 +180,18 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
     'afgehandeld'
   ];
 
+  const statusOptions = [
+    'nieuw',
+    'in_behandeling', 
+    'offerte_verzonden',
+    'interesse_bevestigd',
+    'akkoord',
+    'niet_akkoord',
+    'op_locatie',
+    'in_aanbouw',
+    'afgehandeld'
+  ];
+
   return (
     <div className="space-y-6">
       {/* Status Overview Cards */}
@@ -167,7 +202,8 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
               <StatusBadge 
                 status={status} 
                 onClick={() => {
-                  const statusItems = filteredItems.filter(item => (item.status || 'nieuw') === status);
+                  // This will be handled by the parent component to filter by status
+                  const statusItems = items.filter(item => (item.status || 'nieuw') === status);
                   if (statusItems.length > 0) {
                     console.log(`Items met status ${getStatusLabel(status)}:`, statusItems);
                     toast.success(`${statusItems.length} aanvra${statusItems.length === 1 ? 'ag' : 'gen'} met status: ${getStatusLabel(status)}`);
@@ -228,35 +264,53 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
                   </TableCell>
                   
                   <TableCell>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEdit(item)}
-                        disabled={sendingQuote === item.id}
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Aanpassen
-                      </Button>
-                      
-                      {showQuoteButtons && (
-                        <AutoQuoteButton
-                          requestId={item.id}
-                          type={type as 'dakkapel' | 'zonnepaneel'}
-                          customerEmail={itemEmail}
-                          onSuccess={onDataChange}
+                    <div className="space-y-2">
+                      <div className="flex gap-2 flex-wrap">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onEdit(item)}
                           disabled={sendingQuote === item.id}
-                        />
-                      )}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Bekijken
+                        </Button>
+                        
+                        {showQuoteButtons && (
+                          <AutoQuoteButton
+                            requestId={item.id}
+                            type={type as 'dakkapel' | 'zonnepaneel'}
+                            customerEmail={itemEmail}
+                            onSuccess={onDataChange}
+                            disabled={sendingQuote === item.id}
+                          />
+                        )}
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      {/* Status Change Buttons */}
+                      <div className="flex gap-1 flex-wrap">
+                        {statusOptions.map((status) => (
+                          <Button
+                            key={status}
+                            variant={item.status === status ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleStatusUpdate(item.id, status)}
+                            disabled={sendingQuote === item.id || item.status === status}
+                            className="text-xs h-6 px-2"
+                          >
+                            {getStatusLabel(status)}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>

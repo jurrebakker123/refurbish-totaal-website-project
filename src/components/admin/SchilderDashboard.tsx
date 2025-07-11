@@ -606,33 +606,7 @@ const SchilderDashboard = () => {
               setShowDetailDialog(false);
               setSelectedRequest(null);
             }}
-            request={{
-              id: selectedRequest.id,
-              naam: `${selectedRequest.voornaam} ${selectedRequest.achternaam}`,
-              email: selectedRequest.emailadres,
-              telefoon: selectedRequest.telefoon,
-              adres: `${selectedRequest.straatnaam} ${selectedRequest.huisnummer}`,
-              postcode: selectedRequest.postcode,
-              plaats: selectedRequest.plaats,
-              projectDetails: `${selectedRequest.project_type} - ${selectedRequest.oppervlakte}m² - ${selectedRequest.verf_type}`,
-              extraDetails: [
-                ...(selectedRequest.aantal_kamers ? [`Aantal kamers: ${selectedRequest.aantal_kamers}`] : []),
-                ...(selectedRequest.huidige_kleur ? [`Huidige kleur: ${selectedRequest.huidige_kleur}`] : []),
-                ...(selectedRequest.gewenste_kleur ? [`Gewenste kleur: ${selectedRequest.gewenste_kleur}`] : []),
-                ...(selectedRequest.voorbewerking_nodig ? ['Voorbewerking nodig'] : []),
-                ...(selectedRequest.plafond_meeverven ? ['Plafond meeverven'] : []),
-                ...(selectedRequest.kozijnen_meeverven ? ['Kozijnen meeverven'] : [])
-              ],
-              totaal_prijs: selectedRequest.totaal_prijs,
-              opmerkingen: selectedRequest.bericht,
-              notities: selectedRequest.notities,
-              status: selectedRequest.status,
-              created_at: selectedRequest.created_at,
-              offerte_verzonden_op: selectedRequest.offerte_verzonden_op,
-              op_locatie_op: selectedRequest.op_locatie_op,
-              in_aanbouw_op: selectedRequest.in_aanbouw_op,
-              afgehandeld_op: selectedRequest.afgehandeld_op
-            }}
+            item={selectedRequest}
             onDataChange={loadRequests}
           />
         </>
