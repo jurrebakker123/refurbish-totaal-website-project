@@ -189,26 +189,36 @@ const StukadoorConfigurator = () => {
 
       console.log('Admin email 1 result:', emailResult1);
 
-      // Verstuur email naar tweede admin adres (mazenaddas95@gmail.com)
+      // Verstuur email naar tweede admin adres (mazenaddas95@gmail.com) - NU OOK VOLLEDIGE DETAILS
       const emailResult2 = await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: 'Refurbish Totaal Nederland System',
-        from_email: 'info@refurbishtotaalnederland.nl',  
-        to_name: 'Admin',
+        from_name: `${formData.voornaam} ${formData.achternaam}`,
+        from_email: formData.emailadres,
+        to_name: 'Refurbish Totaal Nederland Admin',
         to_email: 'mazenaddas95@gmail.com',
-        subject: 'Nieuwe Stukadoor Aanvraag - Melding',
+        subject: 'Nieuwe Stukadoor Aanvraag',
         message: `
-          Er is een nieuwe stukadoor aanvraag binnengekomen:
+          Nieuwe stukadoor aanvraag ontvangen:
           
-          Van: ${formData.voornaam} ${formData.achternaam}
+          Klant: ${formData.voornaam} ${formData.achternaam}
           Email: ${formData.emailadres}
           Telefoon: ${formData.telefoon}
+          Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
           
-          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat'}
+          Project: ${formData.werk_type.replace('_', ' ')}
+          Afwerking: ${formData.afwerking_type.replace('_', ' ')}
+          Oppervlakte wanden: ${formData.oppervlakte_wanden}m²
+          ${formData.plafond_meestucken ? `Oppervlakte plafonds: ${formData.oppervlakte_plafonds}m²` : ''}
+          Aantal kamers: ${formData.aantal_kamers}
           
-          Bekijk de volledige details in het dashboard.
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat (buitenstucwerk)'}
+          
+          ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
         `,
-        reply_to: 'info@refurbishtotaalnederland.nl'
+        reply_to: formData.emailadres,
+        phone: formData.telefoon,
+        service: 'Stukadoor',
+        location: `${formData.plaats}`
       });
 
       console.log('Admin email 2 result:', emailResult2);

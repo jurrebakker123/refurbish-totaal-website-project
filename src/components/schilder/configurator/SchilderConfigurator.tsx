@@ -171,26 +171,41 @@ const SchilderConfigurator = () => {
 
       console.log('Admin email 1 result:', emailResult1);
 
-      // Verstuur email naar tweede admin adres (mazenaddas95@gmail.com)
+      // Verstuur email naar tweede admin adres (mazenaddas95@gmail.com) - NU OOK VOLLEDIGE DETAILS
       const emailResult2 = await sendEmail({
         templateId: 'template_ix4mdjh',
-        from_name: 'Refurbish Totaal Nederland System',
-        from_email: 'info@refurbishtotaalnederland.nl',  
-        to_name: 'Admin',
+        from_name: `${formData.voornaam} ${formData.achternaam}`,
+        from_email: formData.emailadres,
+        to_name: 'Refurbish Totaal Nederland Admin',
         to_email: 'mazenaddas95@gmail.com',
-        subject: 'Nieuwe Schilderwerk Aanvraag - Melding',
+        subject: 'Nieuwe Schilderwerk Aanvraag',
         message: `
-          Er is een nieuwe schilderwerk aanvraag binnengekomen:
+          Nieuwe schilderwerk aanvraag ontvangen:
           
-          Van: ${formData.voornaam} ${formData.achternaam}
+          Klant: ${formData.voornaam} ${formData.achternaam}
           Email: ${formData.emailadres}
           Telefoon: ${formData.telefoon}
+          Adres: ${formData.straatnaam} ${formData.huisnummer}, ${formData.postcode} ${formData.plaats}
           
-          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Prijs: Op maat'}
+          Project: ${formData.project_type} - ${formData.bouw_type}
+          Oppervlakte wanden: ${formData.oppervlakte}m²
+          Oppervlakte plafonds: ${formData.plafond_oppervlakte}m²
+          Aantal deuren: ${formData.aantal_deuren}
+          Aantal ramen: ${formData.aantal_ramen}
+          Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}
           
-          Bekijk de volledige details in het dashboard.
+          ${totalPrice ? `Geschatte prijs: €${totalPrice.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Buiten schilderwerk - prijs op maat'}
+          
+          Uitvoertermijn: ${formData.uitvoertermijn}
+          Reden aanvraag: ${formData.reden_aanvraag}
+          
+          ${formData.bericht ? `Bericht: ${formData.bericht}` : ''}
         `,
-        reply_to: 'info@refurbishtotaalnederland.nl'
+        reply_to: formData.emailadres,
+        phone: formData.telefoon,
+        service: 'Schilderwerk',
+        location: `${formData.plaats}`,
+        preferred_date: formData.uitvoertermijn
       });
 
       console.log('Admin email 2 result:', emailResult2);
