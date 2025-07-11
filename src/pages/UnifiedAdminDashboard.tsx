@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,49 +38,53 @@ const UnifiedAdminDashboard = () => {
     priceRange: { min: 0, max: 100000 }
   });
 
-  const { data: configuraties, isLoading: isLoadingConfigurations, error: configurationsError, refetch: refetchConfigurations } = useQuery(
-    ['dakkapel_calculator_aanvragen'],
-    () => supabase
-      .from('dakkapel_calculator_aanvragen')
-      .select('*')
-      .then(res => res.data),
-    {
-      refetchOnWindowFocus: false
-    }
-  );
+  const { data: configuraties, isLoading: isLoadingConfigurations, error: configurationsError, refetch: refetchConfigurations } = useQuery({
+    queryKey: ['dakkapel_calculator_aanvragen'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('dakkapel_calculator_aanvragen')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+    refetchOnWindowFocus: false
+  });
 
-  const { data: zonnepanelen, isLoading: isLoadingZonnepanelen, error: zonnepanelenError, refetch: refetchZonnepanelen } = useQuery(
-    ['refurbished_zonnepanelen'],
-    () => supabase
-      .from('refurbished_zonnepanelen')
-      .select('*')
-      .then(res => res.data),
-    {
-      refetchOnWindowFocus: false
-    }
-  );
+  const { data: zonnepanelen, isLoading: isLoadingZonnepanelen, error: zonnepanelenError, refetch: refetchZonnepanelen } = useQuery({
+    queryKey: ['refurbished_zonnepanelen'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('refurbished_zonnepanelen')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+    refetchOnWindowFocus: false
+  });
 
-  const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery(
-    ['schilder_aanvragen'],
-    () => supabase
-      .from('schilder_aanvragen')
-      .select('*')
-      .then(res => res.data),
-    {
-      refetchOnWindowFocus: false
-    }
-  );
+  const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
+    queryKey: ['schilder_aanvragen'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('schilder_aanvragen')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+    refetchOnWindowFocus: false
+  });
 
-  const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery(
-    ['stukadoor_aanvragen'],
-    () => supabase
-      .from('stukadoor_aanvragen')
-      .select('*')
-      .then(res => res.data),
-    {
-      refetchOnWindowFocus: false
-    }
-  );
+  const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
+    queryKey: ['stukadoor_aanvragen'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('stukadoor_aanvragen')
+        .select('*');
+      if (error) throw error;
+      return data;
+    },
+    refetchOnWindowFocus: false
+  });
 
   const refetchData = () => {
     refetchConfigurations();
@@ -107,7 +112,7 @@ const UnifiedAdminDashboard = () => {
     try {
       // Simulate sending a quote
       await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success(`Offerte verzonden naar ${item.email}`);
+      toast.success(`Offerte verzonden naar ${item.email || item.emailadres}`);
     } catch (error) {
       toast.error('Er is een fout opgetreden bij het verzenden van de offerte.');
     } finally {
@@ -193,7 +198,13 @@ const UnifiedAdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminHeader />
+      <AdminHeader 
+        showMobileMenu={false}
+        setShowMobileMenu={() => {}}
+        activeView=""
+        setActiveView={() => {}}
+        onDataChange={refetchData}
+      />
       <div className="flex">
         <AdminSidebar />
         <main className="flex-1 p-6">
@@ -205,7 +216,7 @@ const UnifiedAdminDashboard = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
                 <p className="text-gray-600">Beheer alle aanvragen en configuraties</p>
               </div>
-              <NotificationCenter />
+              <NotificationCenter configuraties={configuraties || []} />
             </div>
 
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
@@ -223,8 +234,8 @@ const UnifiedAdminDashboard = () => {
 
               {Object.keys(serviceLabels).map((service) => (
                 <TabsContent key={service} value={service} className="space-y-6">
-                  <DashboardStats type={service as ServiceType} />
-                  <ConversieStats type={service as ServiceType} />
+                  <DashboardStats configuraties={service === 'dakkapel' ? configuraties : service === 'zonnepaneel' ? zonnepanelen : service === 'schilder' ? schilderAanvragen : stukadoorAanvragen || []} />
+                  <ConversieStats type={service === 'dakkapel' || service === 'zonnepaneel' ? service : 'dakkapel'} />
                   
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">
@@ -239,14 +250,26 @@ const UnifiedAdminDashboard = () => {
                             />
                           </div>
                           <AdminFilters
-                            filters={filters}
-                            onFiltersChange={setFilters}
+                            filters={{
+                              search: filters.searchTerm,
+                              status: filters.status,
+                              dateFilter: filters.dateRange,
+                              sortBy: 'created_at',
+                              sortOrder: 'desc'
+                            }}
+                            onFiltersChange={(newFilters) => {
+                              setFilters({
+                                status: newFilters.status,
+                                dateRange: newFilters.dateFilter,
+                                searchTerm: newFilters.search,
+                                priceRange: filters.priceRange
+                              });
+                            }}
                             type={activeService}
                           />
                         </CardHeader>
                         <CardContent>
                           <ResponsiveRequestTable
-                            type={activeService}
                             configuraties={activeService === 'dakkapel' ? configuraties : []}
                             zonnepanelen={activeService === 'zonnepaneel' ? zonnepanelen : []}
                             schilderAanvragen={activeService === 'schilder' ? schilderAanvragen : []}
@@ -264,7 +287,7 @@ const UnifiedAdminDashboard = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <AutomatedCommunication type={activeService} />
+                      <AutomatedCommunication />
                       <InvoiceOverview />
                     </div>
                   </div>
@@ -286,7 +309,6 @@ const UnifiedAdminDashboard = () => {
         item={selectedItem}
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
-        type={activeService}
       />
     </div>
   );

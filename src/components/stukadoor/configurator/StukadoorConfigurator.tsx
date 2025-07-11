@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { sendEmail } from '@/config/email';
 
 const StukadoorConfigurator = () => {
   const [formData, setFormData] = useState({
@@ -119,6 +119,115 @@ const StukadoorConfigurator = () => {
     }
   };
 
+  const sendConfirmationEmail = async (customerData: any, totalPrice: number) => {
+    const breakdown = getPriceBreakdown();
+    const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
+    const stucTypeNames = {
+      'sausklaar': 'Sausklaar stucwerk',
+      'sierpleister': 'Sierpleister (spachtel)',
+      'beton_cire': 'Beton ciré'
+    };
+    
+    const customerMessage = `
+Beste ${customerData.voornaam} ${customerData.achternaam},
+
+Bedankt voor uw aanvraag voor stukadoorswerk. Hieronder vindt u een overzicht van uw aanvraag:
+
+CONTACTGEGEVENS:
+- Naam: ${customerData.voornaam} ${customerData.achternaam}
+- E-mail: ${customerData.emailadres}
+- Telefoon: ${customerData.telefoon}
+- Adres: ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}
+
+PROJECTDETAILS:
+- Type: ${formData.werk_type === 'binnen' ? 'Binnen stukadoorswerk' : 'Buiten stukadoorswerk'}
+- Bouwtype: ${formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} (${btw}% BTW)
+- Stucwerk type: ${stucTypeNames[formData.stuc_type as keyof typeof stucTypeNames]}
+- Wand oppervlakte: ${formData.oppervlakte_wanden}m²
+- Plafond oppervlakte: ${formData.oppervlakte_plafonds}m²
+- Uitvoertermijn: ${formData.uitvoertermijn}
+- Reden aanvraag: ${formData.reden_aanvraag}
+
+PRIJSOPBOUW:
+${breakdown.join('\n')}
+
+GESCHATTE TOTAALPRIJS: €${totalPrice.toLocaleString()}
+(Inclusief materiaal, arbeid en ${btw}% BTW)
+
+${formData.bericht ? `AANVULLENDE OPMERKINGEN:\n${formData.bericht}` : ''}
+
+Wij nemen zo spoedig mogelijk contact met u op voor een vrijblijvende offerte.
+
+Met vriendelijke groet,
+Refurbish Totaal Nederland
+`;
+
+    await sendEmail({
+      from_name: 'Refurbish Totaal Nederland',
+      from_email: 'info@refurbishtotaalnederland.nl',
+      to_name: `${customerData.voornaam} ${customerData.achternaam}`,
+      to_email: customerData.emailadres,
+      subject: 'Bevestiging stukadoorswerk aanvraag',
+      message: customerMessage,
+      phone: customerData.telefoon,
+      location: `${customerData.plaats}`,
+      service: 'Stukadoorswerk'
+    });
+  };
+
+  const sendAdminNotification = async (customerData: any, totalPrice: number) => {
+    const breakdown = getPriceBreakdown();
+    const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
+    const stucTypeNames = {
+      'sausklaar': 'Sausklaar stucwerk',
+      'sierpleister': 'Sierpleister (spachtel)',
+      'beton_cire': 'Beton ciré'
+    };
+    
+    const adminMessage = `
+NIEUWE STUKADOORSWERK AANVRAAG
+
+KLANTGEGEVENS:
+- ${customerData.voornaam} ${customerData.achternaam}
+- ${customerData.emailadres}
+- ${customerData.telefoon}
+- ${customerData.straatnaam} ${customerData.huisnummer}
+- ${customerData.postcode} ${customerData.plaats}
+
+PROJECT:
+- Type: ${formData.werk_type === 'binnen' ? 'Binnen stukadoorswerk' : 'Buiten stukadoorswerk'}
+- Bouwtype: ${formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} (${btw}% BTW)
+- Stucwerk type: ${stucTypeNames[formData.stuc_type as keyof typeof stucTypeNames]}
+- Wand oppervlakte: ${formData.oppervlakte_wanden}m²
+- Plafond oppervlakte: ${formData.oppervlakte_plafonds}m²
+- Uitvoertermijn: ${formData.uitvoertermijn}
+- Reden: ${formData.reden_aanvraag}
+
+PRIJSBEREKENING:
+${breakdown.join('\n')}
+TOTAAL: €${totalPrice.toLocaleString()}
+
+${formData.bericht ? `OPMERKINGEN: ${formData.bericht}` : ''}
+`;
+
+    // Send to both admin emails
+    const adminEmails = ['info@refurbishtotaalnederland.nl', 'mazenaddas95@gmail.com'];
+    
+    for (const email of adminEmails) {
+      await sendEmail({
+        from_name: customerData.voornaam + ' ' + customerData.achternaam,
+        from_email: customerData.emailadres,
+        to_name: 'Admin',
+        to_email: email,
+        subject: `Nieuwe stukadoorswerk aanvraag van ${customerData.voornaam} ${customerData.achternaam}`,
+        message: adminMessage,
+        phone: customerData.telefoon,
+        location: customerData.plaats,
+        service: 'Stukadoorswerk'
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -126,6 +235,17 @@ const StukadoorConfigurator = () => {
     try {
       const totalPrice = calculatePrice();
       const totalOppervlakte = (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0);
+      
+      const customerData = {
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        emailadres: formData.emailadres,
+        telefoon: formData.telefoon,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats
+      };
       
       // Save to database
       const { error } = await supabase
@@ -152,7 +272,15 @@ const StukadoorConfigurator = () => {
 
       if (error) throw error;
 
-      toast.success('Aanvraag succesvol verzonden!');
+      // Send confirmation email to customer
+      await sendConfirmationEmail(customerData, totalPrice);
+      
+      // Send notification to admins
+      await sendAdminNotification(customerData, totalPrice);
+
+      toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
+        duration: 5000
+      });
       
       // Reset form
       setFormData({
