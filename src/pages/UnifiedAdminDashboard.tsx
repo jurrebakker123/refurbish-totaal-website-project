@@ -13,7 +13,6 @@ import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
 import RequestDetailDialog from '@/components/admin/RequestDetailDialog';
 import AdminFilters from '@/components/admin/AdminFilters';
 import BulkActions from '@/components/admin/BulkActions';
-import DashboardStats from '@/components/admin/DashboardStats';
 import AutomatedCommunication from '@/components/admin/AutomatedCommunication';
 import NotificationCenter from '@/components/admin/NotificationCenter';
 import InvoiceOverview from '@/components/admin/InvoiceOverview';
