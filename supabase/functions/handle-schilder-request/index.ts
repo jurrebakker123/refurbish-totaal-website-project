@@ -20,34 +20,122 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log('🎨 Processing schilder request:', customerData);
 
-    // Send confirmation email to customer
+    // Send confirmation email to customer with dakkapel-style template
     const customerEmailHtml = `
-      <h2>Bevestiging Schilderwerk Aanvraag</h2>
-      <p>Beste ${customerData.voornaam} ${customerData.achternaam},</p>
-      <p>Bedankt voor uw aanvraag voor schilderwerk. Hieronder vindt u een overzicht:</p>
-      
-      <h3>Contactgegevens:</h3>
-      <ul>
-        <li>Naam: ${customerData.voornaam} ${customerData.achternaam}</li>
-        <li>E-mail: ${customerData.emailadres}</li>
-        <li>Telefoon: ${customerData.telefoon}</li>
-        <li>Adres: ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
-      </ul>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+          .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 20px; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
+          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
+          .content { padding: 30px; }
+          .greeting { font-size: 18px; margin-bottom: 20px; color: #333; }
+          .section { margin: 25px 0; }
+          .section h3 { color: #059669; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
+          .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
+          .details ul { margin: 0; padding-left: 20px; }
+          .details li { margin: 5px 0; color: #555; }
+          .price-box { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; }
+          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+          .price-box .note { font-size: 14px; opacity: 0.8; }
+          .breakdown { background-color: #f0fdf4; padding: 15px; border-radius: 6px; border-left: 4px solid #10b981; }
+          .breakdown p { margin: 5px 0; font-size: 14px; color: #374151; }
+          .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
+          .included h4 { color: #059669; margin: 0 0 10px 0; }
+          .included ul { margin: 0; padding-left: 20px; }
+          .included li { color: #059669; margin: 5px 0; }
+          .contact { background-color: #f8f9fa; padding: 20px; border-radius: 6px; text-align: center; margin: 20px 0; }
+          .contact h4 { color: #333; margin: 0 0 10px 0; }
+          .phone-button { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; margin: 10px 0; }
+          .footer { background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; }
+          .footer .company { color: #10b981; font-weight: bold; font-size: 18px; }
+          .footer .details { color: #6b7280; font-size: 14px; margin: 5px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎨 Schilderwerk Offerte</h1>
+            <div class="subtitle">Refurbish Totaal Nederland</div>
+          </div>
+          
+          <div class="content">
+            <div class="greeting">Beste ${customerData.voornaam} ${customerData.achternaam},</div>
+            
+            <p>Hartelijk dank voor uw interesse in ons schilderwerk! Wij hebben uw configuratie ontvangen en zijn verheugd u hierbij een offerte te kunnen aanbieden.</p>
+            
+            <div class="section">
+              <h3>📋 Overzicht van uw samenstelling</h3>
+              
+              <div class="details">
+                <p><strong>Stap 1 - Project type:</strong> ${formData.project_type}</p>
+                <p><strong>Stap 2 - Bouwtype:</strong> ${formData.bouw_type}</p>
+                <p><strong>Stap 3 - Oppervlakte:</strong> ${formData.oppervlakte}m² wanden</p>
+                ${formData.plafond_oppervlakte ? `<p><strong>Plafond oppervlakte:</strong> ${formData.plafond_oppervlakte}m²</p>` : ''}
+                ${formData.aantal_deuren ? `<p><strong>Aantal deuren:</strong> ${formData.aantal_deuren}</p>` : ''}
+                ${formData.aantal_ramen ? `<p><strong>Aantal ramen:</strong> ${formData.aantal_ramen}</p>` : ''}
+                <p><strong>Kleuren:</strong> ${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}</p>
+              </div>
+            </div>
 
-      <h3>Projectdetails:</h3>
-      <ul>
-        <li>Type: ${formData.project_type}</li>
-        <li>Bouwtype: ${formData.bouw_type}</li>
-        <li>Oppervlakte: ${formData.oppervlakte}m²</li>
-        <li>Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}</li>
-      </ul>
+            <div class="section">
+              <h3>Contactgegevens:</h3>
+              <div class="details">
+                <ul>
+                  <li>Naam: ${customerData.voornaam} ${customerData.achternaam}</li>
+                  <li>E-mail: ${customerData.emailadres}</li>
+                  <li>Telefoon: ${customerData.telefoon}</li>
+                  <li>Adres: ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
+                </ul>
+              </div>
+            </div>
 
-      <h3>Prijsopbouw:</h3>
-      ${breakdown.map(item => `<p>${item}</p>`).join('')}
-      <p><strong>Totaalprijs: €${totalPrice.toLocaleString()}</strong></p>
+            <div class="price-box">
+              <div class="label">💰 Totaalprijs:</div>
+              <div class="amount">€${totalPrice.toLocaleString()}</div>
+              <div class="note">Prijsindicatie inclusief BTW</div>
+              <div class="note">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</div>
+            </div>
 
-      <p>Wij nemen zo spoedig mogelijk contact met u op.</p>
-      <p>Met vriendelijke groet,<br>Refurbish Totaal Nederland</p>
+            <div class="breakdown">
+              <p><strong>Prijsopbouw:</strong></p>
+              ${breakdown.map(item => `<p>${item}</p>`).join('')}
+            </div>
+
+            <div class="included">
+              <h4>✅ Inbegrepen in de prijs:</h4>
+              <ul>
+                <li>Complete levering en toepassing van hoogwaardige verf</li>
+                <li>Professionele voorbehandeling van het oppervlak</li>
+                <li>Vakkundige afwerking door ervaren schilders</li>
+                <li>Opruimen en schoonmaken na afloop</li>
+                <li>Garantie op het uitgevoerde werk</li>
+                <li>Deskundig advies over kleurkeuze</li>
+              </ul>
+            </div>
+
+            <div class="contact">
+              <h4>📞 Bel direct voor een persoonlijk gesprek:</h4>
+              <a href="tel:085-1301578" class="phone-button">085-1301578</a>
+            </div>
+
+            <p>Heeft u vragen over deze offerte of wilt u aanpassingen bespreken? Neem gerust contact met ons op. Wij staan klaar om u te helpen bij de realisatie van uw schilderproject!</p>
+          </div>
+          
+          <div class="footer">
+            <div class="company">Met vriendelijke groet,<br>Refurbish Totaal Nederland</div>
+            <div class="details">📧 info@refurbishtotaalnederland.nl</div>
+            <div class="details">📞 085-1301578</div>
+            <div class="details">🌐 www.refurbishtotaalnederland.nl</div>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
     await resend.emails.send({

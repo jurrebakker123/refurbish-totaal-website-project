@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -48,7 +49,6 @@ const UnifiedAdminDashboard = () => {
       }
       
       console.log('✅ Dakkapel aanvragen loaded:', data?.length || 0, 'records');
-      console.log('First dakkapel record:', data?.[0]);
       return data || [];
     },
     refetchOnWindowFocus: false,
@@ -78,7 +78,9 @@ const UnifiedAdminDashboard = () => {
         }
         
         console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
-        console.log('Schilder data sample:', data?.slice(0, 2));
+        if (data && data.length > 0) {
+          console.log('First schilder record:', data[0]);
+        }
         return data || [];
       } catch (err) {
         console.error('❌ Exception in schilder query:', err);
@@ -112,7 +114,9 @@ const UnifiedAdminDashboard = () => {
         }
         
         console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
-        console.log('Stukadoor data sample:', data?.slice(0, 2));
+        if (data && data.length > 0) {
+          console.log('First stukadoor record:', data[0]);
+        }
         return data || [];
       } catch (err) {
         console.error('❌ Exception in stukadoor query:', err);
@@ -124,8 +128,9 @@ const UnifiedAdminDashboard = () => {
     retryDelay: 1000
   });
 
+  // Manual refresh function
   const refetchData = async () => {
-    console.log('🔄 Refreshing all data...');
+    console.log('🔄 Manual refresh triggered...');
     setRefreshing(true);
     try {
       await Promise.all([
@@ -134,8 +139,9 @@ const UnifiedAdminDashboard = () => {
         refetchStukadoor()
       ]);
       toast.success('Data succesvol vernieuwd!');
+      console.log('🔄 Manual refresh completed successfully');
     } catch (error) {
-      console.error('Error refreshing data:', error);
+      console.error('❌ Error refreshing data:', error);
       toast.error('Fout bij vernieuwen van data');
     } finally {
       setRefreshing(false);
@@ -279,6 +285,7 @@ const UnifiedAdminDashboard = () => {
     }
   };
 
+  // Error handling with toast notifications
   useEffect(() => {
     if (configurationsError) {
       console.error('Dakkapel error:', configurationsError);
@@ -294,14 +301,20 @@ const UnifiedAdminDashboard = () => {
     }
   }, [configurationsError, schilderError, stukadoorError]);
 
+  // Debug logging for data changes
   useEffect(() => {
-    console.log('Active service changed to:', activeService);
-    console.log('Current data counts:', {
-      dakkapel: configuraties?.length || 0,
-      schilder: schilderAanvragen?.length || 0,
-      stukadoor: stukadoorAanvragen?.length || 0
+    console.log('📊 Dashboard Data Status:', {
+      activeService,
+      dakkapelCount: configuraties?.length || 0,
+      schilderCount: schilderAanvragen?.length || 0,
+      stukadoorCount: stukadoorAanvragen?.length || 0,
+      errors: {
+        dakkapel: !!configurationsError,
+        schilder: !!schilderError,
+        stukadoor: !!stukadoorError
+      }
     });
-  }, [activeService, configuraties, schilderAanvragen, stukadoorAanvragen]);
+  }, [activeService, configuraties, schilderAanvragen, stukadoorAanvragen, configurationsError, schilderError, stukadoorError]);
 
   if (getLoadingState()) {
     return (
