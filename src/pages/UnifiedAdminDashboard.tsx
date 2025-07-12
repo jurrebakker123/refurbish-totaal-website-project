@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,17 +34,17 @@ const UnifiedAdminDashboard = () => {
   const { data: configuraties, isLoading: isLoadingConfigurations, error: configurationsError, refetch: refetchConfigurations } = useQuery({
     queryKey: ['dakkapel_calculator_aanvragen'],
     queryFn: async () => {
-      console.log('Fetching dakkapel calculator aanvragen...');
+      console.log('🏠 Fetching dakkapel calculator aanvragen...');
       const { data, error } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) {
-        console.error('Error fetching dakkapel aanvragen:', error);
+        console.error('❌ Error fetching dakkapel aanvragen:', error);
         throw error;
       }
-      console.log('Dakkapel aanvragen loaded:', data?.length);
-      return data;
+      console.log('✅ Dakkapel aanvragen loaded:', data?.length || 0);
+      return data || [];
     },
     refetchOnWindowFocus: false
   });
@@ -53,16 +52,16 @@ const UnifiedAdminDashboard = () => {
   const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
     queryKey: ['schilder_aanvragen'],
     queryFn: async () => {
-      console.log('Fetching schilder aanvragen...');
+      console.log('🎨 Fetching schilder aanvragen...');
       const { data, error } = await supabase
         .from('schilder_aanvragen')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) {
-        console.error('Error fetching schilder aanvragen:', error);
+        console.error('❌ Error fetching schilder aanvragen:', error);
         throw error;
       }
-      console.log('Schilder aanvragen loaded:', data?.length);
+      console.log('✅ Schilder aanvragen loaded:', data?.length || 0);
       return data || [];
     },
     refetchOnWindowFocus: false
@@ -71,22 +70,23 @@ const UnifiedAdminDashboard = () => {
   const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
     queryKey: ['stukadoor_aanvragen'],
     queryFn: async () => {
-      console.log('Fetching stukadoor aanvragen...');
+      console.log('🔨 Fetching stukadoor aanvragen...');
       const { data, error } = await supabase
         .from('stukadoor_aanvragen')
         .select('*')
         .order('created_at', { ascending: false });
       if (error) {
-        console.error('Error fetching stukadoor aanvragen:', error);
+        console.error('❌ Error fetching stukadoor aanvragen:', error);
         throw error;
       }
-      console.log('Stukadoor aanvragen loaded:', data?.length);
+      console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0);
       return data || [];
     },
     refetchOnWindowFocus: false
   });
 
   const refetchData = () => {
+    console.log('🔄 Refreshing all data...');
     refetchConfigurations();
     refetchSchilder();
     refetchStukadoor();
@@ -194,12 +194,16 @@ const UnifiedAdminDashboard = () => {
   };
 
   const getCurrentData = () => {
+    console.log('📊 Getting current data for service:', activeService);
     switch (activeService) {
       case 'dakkapel':
+        console.log('Dakkapel data:', configuraties?.length || 0);
         return configuraties || [];
       case 'schilder':
+        console.log('Schilder data:', schilderAanvragen?.length || 0);
         return schilderAanvragen || [];
       case 'stukadoor':
+        console.log('Stukadoor data:', stukadoorAanvragen?.length || 0);
         return stukadoorAanvragen || [];
       default:
         return [];
@@ -218,6 +222,21 @@ const UnifiedAdminDashboard = () => {
         return false;
     }
   };
+
+  useEffect(() => {
+    if (configurationsError) {
+      console.error('Dakkapel error:', configurationsError);
+      toast.error('Fout bij laden dakkapel aanvragen');
+    }
+    if (schilderError) {
+      console.error('Schilder error:', schilderError);
+      toast.error('Fout bij laden schilder aanvragen');
+    }
+    if (stukadoorError) {
+      console.error('Stukadoor error:', stukadoorError);
+      toast.error('Fout bij laden stukadoor aanvragen');
+    }
+  }, [configurationsError, schilderError, stukadoorError]);
 
   if (getLoadingState()) {
     return (
