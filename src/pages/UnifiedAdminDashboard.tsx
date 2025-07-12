@@ -343,25 +343,6 @@ const UnifiedAdminDashboard = () => {
               </div>
             </div>
 
-            {/* Debug Information */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h3 className="font-semibold mb-2">Debug Info:</h3>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <strong>Dakkapel:</strong> {configuraties?.length || 0} records
-                  {configurationsError && <span className="text-red-600 block">Error: {configurationsError.message}</span>}
-                </div>
-                <div>
-                  <strong>Schilder:</strong> {schilderAanvragen?.length || 0} records
-                  {schilderError && <span className="text-red-600 block">Error: {schilderError.message}</span>}
-                </div>
-                <div>
-                  <strong>Stukadoor:</strong> {stukadoorAanvragen?.length || 0} records
-                  {stukadoorError && <span className="text-red-600 block">Error: {stukadoorError.message}</span>}
-                </div>
-              </div>
-            </div>
-
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
               <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
