@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { supabase } from '@/integrations/supabase/client';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const SchilderConfigurator = () => {
   const [formData, setFormData] = useState({
@@ -20,66 +21,41 @@ const SchilderConfigurator = () => {
     huisnummer: '',
     postcode: '',
     plaats: '',
-    project_type: 'binnen',
-    bouw_type: 'renovatie',
+    project_type: '',
     oppervlakte: '',
-    plafond_oppervlakte: '',
-    aantal_deuren: '',
-    aantal_ramen: '',
-    meerdere_kleuren: false,
-    uitvoertermijn: '',
-    reden_aanvraag: '',
+    aantal_kamers: '',
+    verf_type: '',
+    voorbewerking_nodig: false,
+    plafond_meeverven: false,
+    kozijnen_meeverven: false,
+    huidige_kleur: '',
+    gewenste_kleur: '',
     bericht: ''
   });
 
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const calculatePrice = () => {
-    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
-    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
-    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
-    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
-    const meerderKleuren = formData.meerdere_kleuren;
-    
-    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
-    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
-    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
-    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
-    
-    const wandKosten = wandOppervlakte * wandPrijs;
-    const plafondKosten = plafondOppervlakte * plafondPrijs;
-    const deurKosten = aantalDeuren * deurPrijs;
-    const raamKosten = aantalRamen * raamPrijs;
-    
-    const totaalExclBtw = wandKosten + plafondKosten + deurKosten + raamKosten;
-    
-    const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
-    
-    return Math.round(totaalExclBtw * btwPercentage);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
-        return;
-      }
-      setUploadedFile(file);
-      toast.success('Bestand succesvol geüpload');
-    }
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.voornaam || !formData.achternaam || !formData.emailadres || !formData.telefoon || 
+        !formData.straatnaam || !formData.huisnummer || !formData.postcode || !formData.plaats ||
+        !formData.project_type || !formData.oppervlakte || !formData.verf_type) {
+      toast.error('Vul alle verplichte velden in');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      console.log('🎨 Starting schilder form submission...');
-      const totalPrice = calculatePrice();
-      
-      const customerData = {
+      const submissionData = {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
         emailadres: formData.emailadres,
@@ -87,58 +63,35 @@ const SchilderConfigurator = () => {
         straatnaam: formData.straatnaam,
         huisnummer: formData.huisnummer,
         postcode: formData.postcode,
-        plaats: formData.plaats
+        plaats: formData.plaats,
+        project_type: formData.project_type,
+        oppervlakte: parseInt(formData.oppervlakte) || 0,
+        aantal_kamers: formData.aantal_kamers ? parseInt(formData.aantal_kamers) : null,
+        verf_type: formData.verf_type,
+        voorbewerking_nodig: formData.voorbewerking_nodig,
+        plafond_meeverven: formData.plafond_meeverven,
+        kozijnen_meeverven: formData.kozijnen_meeverven,
+        huidige_kleur: formData.huidige_kleur || null,
+        gewenste_kleur: formData.gewenste_kleur || null,  
+        bericht: formData.bericht || null,
+        status: 'nieuw'
       };
 
-      console.log('💾 Saving to database...');
-      const { error } = await supabase
+      console.log('Submitting schilder data:', submissionData);
+
+      const { data, error } = await supabase
         .from('schilder_aanvragen')
-        .insert({
-          voornaam: formData.voornaam,
-          achternaam: formData.achternaam,
-          emailadres: formData.emailadres,
-          telefoon: formData.telefoon,
-          straatnaam: formData.straatnaam,
-          huisnummer: formData.huisnummer,
-          postcode: formData.postcode,
-          plaats: formData.plaats,
-          project_type: `${formData.project_type} - ${formData.bouw_type}`,
-          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-          oppervlakte: parseInt(formData.oppervlakte) || 0,
-          bericht: formData.bericht,
-          totaal_prijs: totalPrice,
-          status: 'nieuw',
-          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
-        });
+        .insert([submissionData])
+        .select();
 
       if (error) {
-        console.error('❌ Database error:', error);
+        console.error('Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful!');
-
-      console.log('📧 Sending emails via edge function...');
-      const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
-        body: { 
-          customerData, 
-          formData, 
-          totalPrice, 
-          breakdown: [] // We're removing the breakdown display
-        }
-      });
-
-      if (emailError) {
-        console.error('❌ Email error:', emailError);
-        throw emailError;
-      }
+      console.log('Schilder aanvraag successfully inserted:', data);
       
-      console.log('✅ Emails sent successfully!');
-
-      toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
-        duration: 5000
-      });
+      toast.success('Uw schilderwerk aanvraag is succesvol verzonden!');
       
       // Reset form
       setFormData({
@@ -150,49 +103,42 @@ const SchilderConfigurator = () => {
         huisnummer: '',
         postcode: '',
         plaats: '',
-        project_type: 'binnen',
-        bouw_type: 'renovatie',
+        project_type: '',
         oppervlakte: '',
-        plafond_oppervlakte: '',
-        aantal_deuren: '',
-        aantal_ramen: '',
-        meerdere_kleuren: false,
-        uitvoertermijn: '',
-        reden_aanvraag: '',
+        aantal_kamers: '',
+        verf_type: '',
+        voorbewerking_nodig: false,
+        plafond_meeverven: false,
+        kozijnen_meeverven: false,
+        huidige_kleur: '',
+        gewenste_kleur: '',
         bericht: ''
       });
-      setUploadedFile(null);
 
     } catch (error) {
-      console.error('❌ Form submission error:', error);
-      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw.');
+      console.error('Error submitting schilder form:', error);
+      toast.error('Er is een fout opgetreden. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
-  const hasAnyInput = parseFloat(formData.oppervlakte) > 0 || parseFloat(formData.plafond_oppervlakte) > 0 || parseInt(formData.aantal_deuren) > 0 || parseInt(formData.aantal_ramen) > 0;
-
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Schilderwerk Configurator</CardTitle>
-          <p className="text-center text-gray-600">
-            Configureer je schilderproject en ontvang direct een prijsindicatie
-          </p>
+          <CardTitle>Schilderwerk Configurator</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Contact Information */}
+            {/* Contactgegevens */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="voornaam">Voornaam *</Label>
                 <Input
                   id="voornaam"
                   value={formData.voornaam}
-                  onChange={(e) => setFormData({...formData, voornaam: e.target.value})}
+                  onChange={(e) => handleInputChange('voornaam', e.target.value)}
                   required
                 />
               </div>
@@ -201,7 +147,7 @@ const SchilderConfigurator = () => {
                 <Input
                   id="achternaam"
                   value={formData.achternaam}
-                  onChange={(e) => setFormData({...formData, achternaam: e.target.value})}
+                  onChange={(e) => handleInputChange('achternaam', e.target.value)}
                   required
                 />
               </div>
@@ -214,7 +160,7 @@ const SchilderConfigurator = () => {
                   id="emailadres"
                   type="email"
                   value={formData.emailadres}
-                  onChange={(e) => setFormData({...formData, emailadres: e.target.value})}
+                  onChange={(e) => handleInputChange('emailadres', e.target.value)}
                   required
                 />
               </div>
@@ -223,20 +169,20 @@ const SchilderConfigurator = () => {
                 <Input
                   id="telefoon"
                   value={formData.telefoon}
-                  onChange={(e) => setFormData({...formData, telefoon: e.target.value})}
+                  onChange={(e) => handleInputChange('telefoon', e.target.value)}
                   required
                 />
               </div>
             </div>
 
-            {/* Address */}
+            {/* Adresgegevens */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
                 <Label htmlFor="straatnaam">Straatnaam *</Label>
                 <Input
                   id="straatnaam"
                   value={formData.straatnaam}
-                  onChange={(e) => setFormData({...formData, straatnaam: e.target.value})}
+                  onChange={(e) => handleInputChange('straatnaam', e.target.value)}
                   required
                 />
               </div>
@@ -245,7 +191,7 @@ const SchilderConfigurator = () => {
                 <Input
                   id="huisnummer"
                   value={formData.huisnummer}
-                  onChange={(e) => setFormData({...formData, huisnummer: e.target.value})}
+                  onChange={(e) => handleInputChange('huisnummer', e.target.value)}
                   required
                 />
               </div>
@@ -257,7 +203,7 @@ const SchilderConfigurator = () => {
                 <Input
                   id="postcode"
                   value={formData.postcode}
-                  onChange={(e) => setFormData({...formData, postcode: e.target.value})}
+                  onChange={(e) => handleInputChange('postcode', e.target.value)}
                   required
                 />
               </div>
@@ -266,185 +212,131 @@ const SchilderConfigurator = () => {
                 <Input
                   id="plaats"
                   value={formData.plaats}
-                  onChange={(e) => setFormData({...formData, plaats: e.target.value})}
+                  onChange={(e) => handleInputChange('plaats', e.target.value)}
                   required
                 />
               </div>
             </div>
 
-            {/* Build Type Selection */}
-            <div>
-              <Label className="text-base font-medium">Nieuwbouw of renovatie? *</Label>
-              <RadioGroup
-                value={formData.bouw_type}
-                onValueChange={(value) => setFormData({...formData, bouw_type: value})}
-                className="flex flex-col space-y-2 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="renovatie" id="renovatie" />
-                  <Label htmlFor="renovatie">Renovatie (9% BTW)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="nieuwbouw" id="nieuwbouw" />
-                  <Label htmlFor="nieuwbouw">Nieuwbouw (21% BTW)</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Project Type Selection */}
-            <div>
-              <Label className="text-base font-medium">Binnen of buiten schilderwerk? *</Label>
-              <RadioGroup
-                value={formData.project_type}
-                onValueChange={(value) => setFormData({...formData, project_type: value})}
-                className="flex flex-col space-y-2 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="binnen" id="binnen" />
-                  <Label htmlFor="binnen">Binnen schilderwerk</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="buiten" id="buiten" />
-                  <Label htmlFor="buiten">Buiten schilderwerk</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Color Selection */}
-            <div>
-              <Label className="text-base font-medium">Kleuroptie</Label>
-              <div className="flex items-center space-x-2 mt-2">
-                <Checkbox
-                  id="meerdere_kleuren"
-                  checked={formData.meerdere_kleuren}
-                  onCheckedChange={(checked) => setFormData({...formData, meerdere_kleuren: checked as boolean})}
-                />
-                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken</Label>
-              </div>
-            </div>
-
-            {/* Project Details */}
+            {/* Projectdetails */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="oppervlakte">Wand oppervlakte (m²)</Label>
+                <Label htmlFor="project_type">Type Project *</Label>
+                <Select value={formData.project_type} onValueChange={(value) => handleInputChange('project_type', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecteer projecttype" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="binnenschilderwerk">Binnenschilderwerk</SelectItem>
+                    <SelectItem value="buitenschilderwerk">Buitenschilderwerk</SelectItem>
+                    <SelectItem value="binnen_en_buiten">Binnen- en buitenschilderwerk</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="oppervlakte">Oppervlakte (m²) *</Label>
                 <Input
                   id="oppervlakte"
                   type="number"
                   value={formData.oppervlakte}
-                  onChange={(e) => setFormData({...formData, oppervlakte: e.target.value})}
-                  placeholder="Bijvoorbeeld: 50"
-                />
-              </div>
-              <div>
-                <Label htmlFor="plafond_oppervlakte">Plafond oppervlakte (m²)</Label>
-                <Input
-                  id="plafond_oppervlakte"
-                  type="number"
-                  value={formData.plafond_oppervlakte}
-                  onChange={(e) => setFormData({...formData, plafond_oppervlakte: e.target.value})}
-                  placeholder="Bijvoorbeeld: 25"
+                  onChange={(e) => handleInputChange('oppervlakte', e.target.value)}
+                  required
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="aantal_deuren">Aantal deuren (incl. kozijn)</Label>
+                <Label htmlFor="aantal_kamers">Aantal kamers</Label>
                 <Input
-                  id="aantal_deuren"
+                  id="aantal_kamers"
                   type="number"
-                  value={formData.aantal_deuren}
-                  onChange={(e) => setFormData({...formData, aantal_deuren: e.target.value})}
-                  placeholder="Bijvoorbeeld: 3"
+                  value={formData.aantal_kamers}
+                  onChange={(e) => handleInputChange('aantal_kamers', e.target.value)}
                 />
               </div>
               <div>
-                <Label htmlFor="aantal_ramen">Aantal ramen (incl. kozijn)</Label>
+                <Label htmlFor="verf_type">Type verf *</Label>
+                <Select value={formData.verf_type} onValueChange={(value) => handleInputChange('verf_type', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecteer verftype" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="latex">Latex</SelectItem>
+                    <SelectItem value="alkyd">Alkyd</SelectItem>
+                    <SelectItem value="primer">Primer</SelectItem>
+                    <SelectItem value="grondverf">Grondverf</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Opties */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="voorbewerking_nodig"
+                  checked={formData.voorbewerking_nodig}
+                  onCheckedChange={(checked) => handleInputChange('voorbewerking_nodig', checked)}
+                />
+                <Label htmlFor="voorbewerking_nodig">Voorbewerking nodig</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="plafond_meeverven"
+                  checked={formData.plafond_meeverven}
+                  onCheckedChange={(checked) => handleInputChange('plafond_meeverven', checked)}
+                />
+                <Label htmlFor="plafond_meeverven">Plafond meeverven</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="kozijnen_meeverven"
+                  checked={formData.kozijnen_meeverven}
+                  onCheckedChange={(checked) => handleInputChange('kozijnen_meeverven', checked)}
+                />
+                <Label htmlFor="kozijnen_meeverven">Kozijnen meeverven</Label>
+              </div>
+            </div>
+
+            {/* Kleuren */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="huidige_kleur">Huidige kleur</Label>
                 <Input
-                  id="aantal_ramen"
-                  type="number"
-                  value={formData.aantal_ramen}
-                  onChange={(e) => setFormData({...formData, aantal_ramen: e.target.value})}
-                  placeholder="Bijvoorbeeld: 5"
+                  id="huidige_kleur"
+                  value={formData.huidige_kleur}
+                  onChange={(e) => handleInputChange('huidige_kleur', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="gewenste_kleur">Gewenste kleur</Label>
+                <Input
+                  id="gewenste_kleur"
+                  value={formData.gewenste_kleur}
+                  onChange={(e) => handleInputChange('gewenste_kleur', e.target.value)}
                 />
               </div>
             </div>
 
+            {/* Bericht */}
             <div>
-              <Label htmlFor="uitvoertermijn">Wat is de gewenste uitvoertermijn? *</Label>
-              <Input
-                id="uitvoertermijn"
-                value={formData.uitvoertermijn}
-                onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
-                placeholder="Bijvoorbeeld: binnen 3 weken, flexibel"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="reden_aanvraag">Wat is de reden van uw aanvraag? *</Label>
-              <Input
-                id="reden_aanvraag"
-                value={formData.reden_aanvraag}
-                onChange={(e) => setFormData({...formData, reden_aanvraag: e.target.value})}
-                placeholder="Bijvoorbeeld: verhuizing, onderhoud, renovatie"
-                required
-              />
-            </div>
-
-            {/* File Upload */}
-            <div>
-              <Label htmlFor="file-upload">Bijlage uploaden (optioneel)</Label>
-              <Input
-                id="file-upload"
-                type="file"
-                onChange={handleFileUpload}
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                className="mt-2"
-              />
-              {uploadedFile && (
-                <p className="text-sm text-green-600 mt-1">
-                  Bestand geüpload: {uploadedFile.name}
-                </p>
-              )}
-              <p className="text-xs text-gray-500 mt-1">
-                Ondersteunde formaten: PDF, JPG, PNG, DOC, DOCX (max 10MB)
-              </p>
-            </div>
-
-            {/* Message */}
-            <div>
-              <Label htmlFor="bericht">Aanvullende opmerkingen (optioneel)</Label>
+              <Label htmlFor="bericht">Extra opmerkingen</Label>
               <Textarea
                 id="bericht"
                 value={formData.bericht}
-                onChange={(e) => setFormData({...formData, bericht: e.target.value})}
-                placeholder="Eventuele extra informatie over uw project..."
+                onChange={(e) => handleInputChange('bericht', e.target.value)}
+                rows={4}
               />
             </div>
 
-            {/* Price Display */}
-            {hasAnyInput && (
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="p-4">
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
-                    <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-blue-700 mb-2">
-                      Inclusief materiaal en arbeid
-                    </p>
-                    <p className="text-xs text-blue-600 mb-2">
-                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
-                    </p>
-                    <p className="text-xs text-blue-600 mb-2">
-                      {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? 'Bezig met verzenden...' : 'Aanvraag Versturen'}
             </Button>
           </form>
