@@ -4,8 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { CalendarDays, Users, Euro, TrendingUp, Home, Brush, Hammer } from 'lucide-react';
+import { CalendarDays, Users, Euro, TrendingUp, Home, Brush, Hammer, RefreshCw } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import ResponsiveRequestTable from '@/components/admin/ResponsiveRequestTable';
@@ -30,6 +31,7 @@ const UnifiedAdminDashboard = () => {
     searchTerm: '',
     priceRange: { min: 0, max: 100000 }
   });
+  const [refreshing, setRefreshing] = useState(false);
 
   const { data: configuraties, isLoading: isLoadingConfigurations, error: configurationsError, refetch: refetchConfigurations } = useQuery({
     queryKey: ['dakkapel_calculator_aanvragen'],
@@ -39,57 +41,105 @@ const UnifiedAdminDashboard = () => {
         .from('dakkapel_calculator_aanvragen')
         .select('*')
         .order('created_at', { ascending: false });
+      
       if (error) {
         console.error('❌ Error fetching dakkapel aanvragen:', error);
         throw error;
       }
-      console.log('✅ Dakkapel aanvragen loaded:', data?.length || 0);
+      
+      console.log('✅ Dakkapel aanvragen loaded:', data?.length || 0, 'records');
+      console.log('First dakkapel record:', data?.[0]);
       return data || [];
     },
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: 1000
   });
 
   const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
     queryKey: ['schilder_aanvragen'],
     queryFn: async () => {
       console.log('🎨 Fetching schilder aanvragen...');
-      const { data, error } = await supabase
-        .from('schilder_aanvragen')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) {
-        console.error('❌ Error fetching schilder aanvragen:', error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('schilder_aanvragen')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('❌ Error fetching schilder aanvragen:', error);
+          console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+          throw error;
+        }
+        
+        console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
+        console.log('Schilder data sample:', data?.slice(0, 2));
+        return data || [];
+      } catch (err) {
+        console.error('❌ Exception in schilder query:', err);
+        throw err;
       }
-      console.log('✅ Schilder aanvragen loaded:', data?.length || 0);
-      return data || [];
     },
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: 1000
   });
 
   const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
     queryKey: ['stukadoor_aanvragen'],
     queryFn: async () => {
       console.log('🔨 Fetching stukadoor aanvragen...');
-      const { data, error } = await supabase
-        .from('stukadoor_aanvragen')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) {
-        console.error('❌ Error fetching stukadoor aanvragen:', error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('stukadoor_aanvragen')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('❌ Error fetching stukadoor aanvragen:', error);
+          console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+          throw error;
+        }
+        
+        console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
+        console.log('Stukadoor data sample:', data?.slice(0, 2));
+        return data || [];
+      } catch (err) {
+        console.error('❌ Exception in stukadoor query:', err);
+        throw err;
       }
-      console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0);
-      return data || [];
     },
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: 1000
   });
 
-  const refetchData = () => {
+  const refetchData = async () => {
     console.log('🔄 Refreshing all data...');
-    refetchConfigurations();
-    refetchSchilder();
-    refetchStukadoor();
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        refetchConfigurations(),
+        refetchSchilder(),
+        refetchStukadoor()
+      ]);
+      toast.success('Data succesvol vernieuwd!');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Fout bij vernieuwen van data');
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleViewDetails = (item: any) => {
@@ -195,19 +245,25 @@ const UnifiedAdminDashboard = () => {
 
   const getCurrentData = () => {
     console.log('📊 Getting current data for service:', activeService);
+    let data;
     switch (activeService) {
       case 'dakkapel':
-        console.log('Dakkapel data:', configuraties?.length || 0);
-        return configuraties || [];
+        data = configuraties || [];
+        console.log('Dakkapel data:', data.length, 'items');
+        break;
       case 'schilder':
-        console.log('Schilder data:', schilderAanvragen?.length || 0);
-        return schilderAanvragen || [];
+        data = schilderAanvragen || [];
+        console.log('Schilder data:', data.length, 'items');
+        break;
       case 'stukadoor':
-        console.log('Stukadoor data:', stukadoorAanvragen?.length || 0);
-        return stukadoorAanvragen || [];
+        data = stukadoorAanvragen || [];
+        console.log('Stukadoor data:', data.length, 'items');
+        break;
       default:
-        return [];
+        data = [];
     }
+    console.log('Current data for', activeService, ':', data);
+    return data;
   };
 
   const getLoadingState = () => {
@@ -237,6 +293,15 @@ const UnifiedAdminDashboard = () => {
       toast.error('Fout bij laden stukadoor aanvragen');
     }
   }, [configurationsError, schilderError, stukadoorError]);
+
+  useEffect(() => {
+    console.log('Active service changed to:', activeService);
+    console.log('Current data counts:', {
+      dakkapel: configuraties?.length || 0,
+      schilder: schilderAanvragen?.length || 0,
+      stukadoor: stukadoorAanvragen?.length || 0
+    });
+  }, [activeService, configuraties, schilderAanvragen, stukadoorAanvragen]);
 
   if (getLoadingState()) {
     return (
@@ -270,6 +335,15 @@ const UnifiedAdminDashboard = () => {
                 <p className="text-gray-600">Beheer alle aanvragen en configuraties</p>
               </div>
               <div className="flex items-center gap-4">
+                <Button
+                  onClick={refetchData}
+                  disabled={refreshing}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                  {refreshing ? 'Vernieuwen...' : 'Vernieuwen'}
+                </Button>
                 <EmailMarketingDialog onCampaignSent={refetchData} />
                 <NotificationCenter configuraties={configuraties || []} />
               </div>
