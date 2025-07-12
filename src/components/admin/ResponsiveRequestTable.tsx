@@ -224,30 +224,34 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Status Overview Cards */}
+      {/* Interactive Status Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-9 gap-2">
         {allStatuses.map((status) => {
           const StatusIcon = getStatusIcon(status);
           const count = statusCounts[status] || 0;
+          const isActive = selectedStatus === status;
           return (
             <Card 
               key={status} 
-              className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+              className={`p-3 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                isActive 
+                  ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-200' 
+                  : 'hover:bg-gray-50 border-gray-200'
+              }`}
               onClick={() => {
                 if (onStatusFilter) {
                   onStatusFilter(status);
-                  toast.success(`Filter ingesteld op: ${getStatusLabel(status)}`);
                 }
               }}
             >
               <div className="text-center">
                 <div className="flex justify-center mb-2">
-                  <StatusIcon className="h-6 w-6 text-gray-600" />
+                  <StatusIcon className={`h-6 w-6 ${isActive ? 'text-blue-600' : 'text-gray-600'}`} />
                 </div>
-                <div className="text-xs text-gray-600 mb-1">
+                <div className={`text-xs mb-1 ${isActive ? 'text-blue-700 font-medium' : 'text-gray-600'}`}>
                   {getStatusLabel(status)}
                 </div>
-                <div className="text-lg font-bold text-gray-900">
+                <div className={`text-lg font-bold ${isActive ? 'text-blue-900' : 'text-gray-900'}`}>
                   {count}
                 </div>
               </div>
@@ -255,6 +259,19 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
           );
         })}
       </div>
+
+      {/* Show All / Reset Filter Button */}
+      {selectedStatus !== 'all' && (
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            onClick={() => onStatusFilter && onStatusFilter('all')}
+            className="text-sm"
+          >
+            Toon alle aanvragen ({items.length})
+          </Button>
+        </div>
+      )}
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
@@ -376,7 +393,12 @@ const ResponsiveRequestTable: React.FC<ResponsiveRequestTableProps> = ({
 
       {filteredItems.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-gray-500">Geen aanvragen gevonden met de huidige filters.</p>
+          <p className="text-gray-500">
+            {selectedStatus === 'all' 
+              ? 'Geen aanvragen gevonden met de huidige filters.'
+              : `Geen aanvragen gevonden met status "${getStatusLabel(selectedStatus)}".`
+            }
+          </p>
         </div>
       )}
     </div>

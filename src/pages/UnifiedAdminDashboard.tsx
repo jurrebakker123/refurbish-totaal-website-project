@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -62,7 +63,7 @@ const UnifiedAdminDashboard = () => {
         throw error;
       }
       console.log('Schilder aanvragen loaded:', data?.length);
-      return data;
+      return data || [];
     },
     refetchOnWindowFocus: false
   });
@@ -80,7 +81,7 @@ const UnifiedAdminDashboard = () => {
         throw error;
       }
       console.log('Stukadoor aanvragen loaded:', data?.length);
-      return data;
+      return data || [];
     },
     refetchOnWindowFocus: false
   });
@@ -259,8 +260,20 @@ const UnifiedAdminDashboard = () => {
               <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
                   const Icon = serviceIcons[key as ServiceType];
-                  const currentData = key === 'dakkapel' ? configuraties : 
-                                    key === 'schilder' ? schilderAanvragen : stukadoorAanvragen;
+                  let currentData;
+                  switch (key) {
+                    case 'dakkapel':
+                      currentData = configuraties;
+                      break;
+                    case 'schilder':
+                      currentData = schilderAanvragen;
+                      break;
+                    case 'stukadoor':
+                      currentData = stukadoorAanvragen;
+                      break;
+                    default:
+                      currentData = [];
+                  }
                   return (
                     <TabsTrigger key={key} value={key} className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
