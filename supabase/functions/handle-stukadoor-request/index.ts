@@ -16,9 +16,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { customerData, formData, totalPrice, breakdown } = await req.json();
+    const { customerData, formData, totalPrice } = await req.json();
     
     console.log('🏗️ Processing stukadoor request:', customerData);
+
+    // Format form data for display
+    const formatFieldName = (fieldName: string) => {
+      return fieldName
+        .replace(/_/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    };
 
     // Send confirmation email to customer with dakkapel-style template
     const customerEmailHtml = `
@@ -43,8 +52,6 @@ const handler = async (req: Request): Promise<Response> => {
           .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; }
           .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
           .price-box .note { font-size: 14px; opacity: 0.8; }
-          .breakdown { background-color: #f0fdf4; padding: 15px; border-radius: 6px; border-left: 4px solid #10b981; }
-          .breakdown p { margin: 5px 0; font-size: 14px; color: #374151; }
           .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
           .included h4 { color: #059669; margin: 0 0 10px 0; }
           .included ul { margin: 0; padding-left: 20px; }
@@ -73,11 +80,11 @@ const handler = async (req: Request): Promise<Response> => {
               <h3>📋 Overzicht van uw samenstelling</h3>
               
               <div class="details">
-                <p><strong>Stap 1 - Werk type:</strong> ${formData.werk_type}</p>
-                <p><strong>Stap 2 - Bouwtype:</strong> ${formData.bouw_type}</p>
-                <p><strong>Stap 3 - Stucwerk type:</strong> ${formData.stuc_type}</p>
+                <p><strong>Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
+                <p><strong>Stucwerk type:</strong> ${formatFieldName(formData.stuc_type)}</p>
                 <p><strong>Wand oppervlakte:</strong> ${formData.oppervlakte_wanden}m²</p>
                 <p><strong>Plafond oppervlakte:</strong> ${formData.oppervlakte_plafonds}m²</p>
+                <p><strong>Isolatie:</strong> ${formData.isolatie_gewenst ? 'Gewenst' : 'Niet gewenst'}</p>
               </div>
             </div>
 
@@ -100,11 +107,6 @@ const handler = async (req: Request): Promise<Response> => {
               <div class="note">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</div>
             </div>
 
-            <div class="breakdown">
-              <p><strong>Prijsopbouw:</strong></p>
-              ${breakdown.map(item => `<p>${item}</p>`).join('')}
-            </div>
-
             <div class="included">
               <h4>✅ Inbegrepen in de prijs:</h4>
               <ul>
@@ -119,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
 
             <div class="contact">
               <h4>📞 Bel direct voor een persoonlijk gesprek:</h4>
-              <a href="tel:085-1301578" class="phone-button">085-1301578</a>
+              <a href="tel:+085-44-44-255" class="phone-button">+085 44 44 255</a>
             </div>
 
             <p>Heeft u vragen over deze offerte of wilt u aanpassingen bespreken? Neem gerust contact met ons op. Wij staan klaar om u te helpen bij de realisatie van uw stukadoorsproject!</p>
@@ -128,7 +130,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div class="footer">
             <div class="company">Met vriendelijke groet,<br>Refurbish Totaal Nederland</div>
             <div class="details">📧 info@refurbishtotaalnederland.nl</div>
-            <div class="details">📞 085-1301578</div>
+            <div class="details">📞 +085 44 44 255</div>
             <div class="details">🌐 www.refurbishtotaalnederland.nl</div>
           </div>
         </div>
@@ -156,15 +158,13 @@ const handler = async (req: Request): Promise<Response> => {
 
       <h3>Project:</h3>
       <ul>
-        <li>Type: ${formData.werk_type}</li>
         <li>Bouwtype: ${formData.bouw_type}</li>
         <li>Stucwerk type: ${formData.stuc_type}</li>
         <li>Wand oppervlakte: ${formData.oppervlakte_wanden}m²</li>
         <li>Plafond oppervlakte: ${formData.oppervlakte_plafonds}m²</li>
+        <li>Isolatie gewenst: ${formData.isolatie_gewenst ? 'Ja' : 'Nee'}</li>
       </ul>
 
-      <h3>Prijsberekening:</h3>
-      ${breakdown.map(item => `<p>${item}</p>`).join('')}
       <p><strong>Totaal: €${totalPrice.toLocaleString()}</strong></p>
     `;
 

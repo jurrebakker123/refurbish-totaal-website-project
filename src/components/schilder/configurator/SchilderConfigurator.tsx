@@ -42,13 +42,11 @@ const SchilderConfigurator = () => {
     const aantalRamen = parseInt(formData.aantal_ramen) || 0;
     const meerderKleuren = formData.meerdere_kleuren;
     
-    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
     const wandPrijs = meerderKleuren ? 19.55 : 17.25;
     const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
     const deurPrijs = meerderKleuren ? 345.00 : 287.50;
     const raamPrijs = meerderKleuren ? 230.00 : 172.50;
     
-    // Bereken totaal excl. BTW
     const wandKosten = wandOppervlakte * wandPrijs;
     const plafondKosten = plafondOppervlakte * plafondPrijs;
     const deurKosten = aantalDeuren * deurPrijs;
@@ -56,47 +54,14 @@ const SchilderConfigurator = () => {
     
     const totaalExclBtw = wandKosten + plafondKosten + deurKosten + raamKosten;
     
-    // BTW percentage bepalen (9% voor renovatie, 21% voor nieuwbouw)
     const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
     
     return Math.round(totaalExclBtw * btwPercentage);
   };
 
-  const getPriceBreakdown = () => {
-    const wandOppervlakte = parseFloat(formData.oppervlakte) || 0;
-    const plafondOppervlakte = parseFloat(formData.plafond_oppervlakte) || 0;
-    const aantalDeuren = parseInt(formData.aantal_deuren) || 0;
-    const aantalRamen = parseInt(formData.aantal_ramen) || 0;
-    const meerderKleuren = formData.meerdere_kleuren;
-    
-    // CORRECTE PRIJZEN PER ONDERDEEL (excl. BTW)
-    const wandPrijs = meerderKleuren ? 19.55 : 17.25;
-    const plafondPrijs = meerderKleuren ? 21.85 : 19.55;
-    const deurPrijs = meerderKleuren ? 345.00 : 287.50;
-    const raamPrijs = meerderKleuren ? 230.00 : 172.50;
-    
-    const breakdown = [];
-    
-    if (wandOppervlakte > 0) {
-      breakdown.push(`Wanden: ${wandOppervlakte}m² × €${wandPrijs} = €${(wandOppervlakte * wandPrijs).toFixed(2)}`);
-    }
-    if (plafondOppervlakte > 0) {
-      breakdown.push(`Plafonds: ${plafondOppervlakte}m² × €${plafondPrijs} = €${(plafondOppervlakte * plafondPrijs).toFixed(2)}`);
-    }
-    if (aantalDeuren > 0) {
-      breakdown.push(`Deuren: ${aantalDeuren} × €${deurPrijs} = €${(aantalDeuren * deurPrijs).toFixed(2)}`);
-    }
-    if (aantalRamen > 0) {
-      breakdown.push(`Ramen: ${aantalRamen} × €${raamPrijs} = €${(aantalRamen * raamPrijs).toFixed(2)}`);
-    }
-    
-    return breakdown;
-  };
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
         return;
@@ -113,7 +78,6 @@ const SchilderConfigurator = () => {
     try {
       console.log('🎨 Starting schilder form submission...');
       const totalPrice = calculatePrice();
-      const breakdown = getPriceBreakdown();
       
       const customerData = {
         voornaam: formData.voornaam,
@@ -127,7 +91,6 @@ const SchilderConfigurator = () => {
       };
 
       console.log('💾 Saving to database...');
-      // Save to database
       const { error } = await supabase
         .from('schilder_aanvragen')
         .insert({
@@ -157,9 +120,13 @@ const SchilderConfigurator = () => {
       console.log('✅ Database save successful!');
 
       console.log('📧 Sending emails via edge function...');
-      // Call edge function to send emails
       const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
-        body: { customerData, formData, totalPrice, breakdown }
+        body: { 
+          customerData, 
+          formData, 
+          totalPrice, 
+          breakdown: [] // We're removing the breakdown display
+        }
       });
 
       if (emailError) {
@@ -204,7 +171,6 @@ const SchilderConfigurator = () => {
     }
   };
 
-  // Bepaal BTW percentage
   const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
   const hasAnyInput = parseFloat(formData.oppervlakte) > 0 || parseFloat(formData.plafond_oppervlakte) > 0 || parseInt(formData.aantal_deuren) > 0 || parseInt(formData.aantal_ramen) > 0;
 
@@ -353,7 +319,7 @@ const SchilderConfigurator = () => {
                   checked={formData.meerdere_kleuren}
                   onCheckedChange={(checked) => setFormData({...formData, meerdere_kleuren: checked as boolean})}
                 />
-                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken (hogere prijs)</Label>
+                <Label htmlFor="meerdere_kleuren">Meerdere kleuren gebruiken</Label>
               </div>
             </div>
 
@@ -473,12 +439,6 @@ const SchilderConfigurator = () => {
                     <p className="text-xs text-blue-600 mb-2">
                       {formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}
                     </p>
-                    <div className="text-xs text-blue-500 text-left">
-                      <p className="font-semibold mb-1">Prijsopbouw:</p>
-                      {getPriceBreakdown().map((item, index) => (
-                        <p key={index}>{item}</p>
-                      ))}
-                    </div>
                   </div>
                 </CardContent>
               </Card>

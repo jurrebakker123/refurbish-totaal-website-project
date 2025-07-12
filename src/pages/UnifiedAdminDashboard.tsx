@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,19 +67,10 @@ const UnifiedAdminDashboard = () => {
         
         if (error) {
           console.error('❌ Error fetching schilder aanvragen:', error);
-          console.error('Error details:', {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
           throw error;
         }
         
         console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
-        if (data && data.length > 0) {
-          console.log('First schilder record:', data[0]);
-        }
         return data || [];
       } catch (err) {
         console.error('❌ Exception in schilder query:', err);
@@ -104,19 +94,10 @@ const UnifiedAdminDashboard = () => {
         
         if (error) {
           console.error('❌ Error fetching stukadoor aanvragen:', error);
-          console.error('Error details:', {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
           throw error;
         }
         
         console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
-        if (data && data.length > 0) {
-          console.log('First stukadoor record:', data[0]);
-        }
         return data || [];
       } catch (err) {
         console.error('❌ Exception in stukadoor query:', err);
@@ -362,6 +343,25 @@ const UnifiedAdminDashboard = () => {
               </div>
             </div>
 
+            {/* Debug Information */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h3 className="font-semibold mb-2">Debug Info:</h3>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <strong>Dakkapel:</strong> {configuraties?.length || 0} records
+                  {configurationsError && <span className="text-red-600 block">Error: {configurationsError.message}</span>}
+                </div>
+                <div>
+                  <strong>Schilder:</strong> {schilderAanvragen?.length || 0} records
+                  {schilderError && <span className="text-red-600 block">Error: {schilderError.message}</span>}
+                </div>
+                <div>
+                  <strong>Stukadoor:</strong> {stukadoorAanvragen?.length || 0} records
+                  {stukadoorError && <span className="text-red-600 block">Error: {stukadoorError.message}</span>}
+                </div>
+              </div>
+            </div>
+
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
               <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
@@ -416,7 +416,7 @@ const UnifiedAdminDashboard = () => {
                           setFilters({
                             status: newFilters.status,
                             dateRange: newFilters.dateFilter,
-                            searchTerm: newFilters.search,
+                            searchTerm: newFilters.searchTerm,
                             priceRange: filters.priceRange
                           });
                         }}
