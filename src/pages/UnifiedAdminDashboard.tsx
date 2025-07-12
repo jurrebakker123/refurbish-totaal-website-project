@@ -28,7 +28,7 @@ const UnifiedAdminDashboard = () => {
   const [filters, setFilters] = useState({
     status: 'all',
     dateRange: 'all',
-    searchTerm: '',
+    search: '',
     priceRange: { min: 0, max: 100000 }
   });
   const [refreshing, setRefreshing] = useState(false);
@@ -406,7 +406,7 @@ const UnifiedAdminDashboard = () => {
                       </div>
                       <AdminFilters
                         filters={{
-                          search: filters.searchTerm,
+                          search: filters.search,
                           status: filters.status,
                           dateFilter: filters.dateRange,
                           sortBy: 'created_at',
@@ -416,7 +416,7 @@ const UnifiedAdminDashboard = () => {
                           setFilters({
                             status: newFilters.status,
                             dateRange: newFilters.dateFilter,
-                            searchTerm: newFilters.searchTerm,
+                            search: newFilters.search,
                             priceRange: filters.priceRange
                           });
                         }}
@@ -425,7 +425,7 @@ const UnifiedAdminDashboard = () => {
                     <CardContent>
                       <ResponsiveRequestTable
                         items={getCurrentData()}
-                        searchTerm={filters.searchTerm}
+                        searchTerm={filters.search}
                         selectedStatus={filters.status}
                         onEdit={handleViewDetails}
                         onDataChange={refetchData}
