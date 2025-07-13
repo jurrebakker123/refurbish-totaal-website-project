@@ -82,6 +82,10 @@ serve(async (req) => {
             <h3 style="color: #1f2937; margin: 0 0 1rem;">📋 Jouw Aanvraag Details:</h3>
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Nieuwbouw of Renovatie:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.bouw_type || 'Niet opgegeven'}</td>
+              </tr>
+              <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Project Type:</td>
                 <td style="padding: 0.5rem 0; color: #1f2937;">${formData.project_type} - ${formData.bouw_type}</td>
               </tr>
@@ -91,7 +95,7 @@ serve(async (req) => {
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Muren Oppervlakte:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.oppervlakte} m²</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.oppervlakte || 0} m²</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Plafond Oppervlakte:</td>
@@ -109,6 +113,10 @@ serve(async (req) => {
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Gewenste uitvoertermijn:</td>
                 <td style="padding: 0.5rem 0; color: #1f2937;">${formData.uitvoertermijn || formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Reden van aanvraag:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.reden_aanvraag || 'Niet opgegeven'}</td>
+              </tr>
               ${totalPrice ? `
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Geschatte Prijs:</td>
@@ -116,6 +124,13 @@ serve(async (req) => {
               </tr>
               ` : ''}
             </table>
+
+            ${formData.bericht ? `
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+              <h4 style="color: #1f2937; margin: 0 0 0.5rem;">💬 Aanvullende opmerkingen:</h4>
+              <p style="color: #1f2937; margin: 0; line-height: 1.6;">${formData.bericht}</p>
+            </div>
+            ` : ''}
           </div>
           
           <div style="background: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;">
@@ -183,7 +198,11 @@ serve(async (req) => {
             <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">🎨 Project Details</h2>
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Project Type:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Nieuwbouw of Renovatie:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.bouw_type || 'Niet opgegeven'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Project Type:</td>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.project_type} - ${formData.bouw_type}</td>
               </tr>
               <tr>
@@ -192,7 +211,7 @@ serve(async (req) => {
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Muren Oppervlakte:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.oppervlakte} m²</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.oppervlakte || 0} m²</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Plafond Oppervlakte:</td>
@@ -209,6 +228,10 @@ serve(async (req) => {
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Gewenste Uitvoertermijn:</td>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.uitvoertermijn || formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Reden van aanvraag:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.reden_aanvraag || 'Niet opgegeven'}</td>
               </tr>
             </table>
           </div>

@@ -20,14 +20,13 @@ const StukadoorConfigurator = () => {
     huisnummer: '',
     postcode: '',
     plaats: '',
-    bouw_type: 'renovatie',
     stuc_type: 'glad_stucwerk',
     oppervlakte_wanden: '',
     oppervlakte_plafonds: '',
+    isolatie_gewenst: false,
     uitvoertermijn: '',
     reden_aanvraag: '',
-    bericht: '',
-    isolatie_gewenst: false
+    bericht: ''
   });
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -36,39 +35,35 @@ const StukadoorConfigurator = () => {
   const calculatePrice = () => {
     const wandOppervlakte = parseFloat(formData.oppervlakte_wanden) || 0;
     const plafondOppervlakte = parseFloat(formData.oppervlakte_plafonds) || 0;
-    const isolatieGewenst = formData.isolatie_gewenst;
+    const totaalOppervlakte = wandOppervlakte + plafondOppervlakte;
     
-    let wandPrijs = 0;
-    let plafondPrijs = 0;
+    if (totaalOppervlakte === 0) return 0;
     
+    let prijs_per_m2 = 0;
+    
+    // Prijzen per m² op basis van stucwerk type
     switch (formData.stuc_type) {
       case 'glad_stucwerk':
-        wandPrijs = 18.50;
-        plafondPrijs = 21.00;
+        prijs_per_m2 = 22.50;
         break;
       case 'spachtelputz':
-        wandPrijs = 22.50;
-        plafondPrijs = 25.00;
+        prijs_per_m2 = 28.00;
         break;
-      case 'decoratief_stuc':
-        wandPrijs = 35.00;
-        plafondPrijs = 38.00;
+      case 'decoratief_stucwerk':
+        prijs_per_m2 = 35.00;
         break;
       default:
-        wandPrijs = 18.50;
-        plafondPrijs = 21.00;
+        prijs_per_m2 = 22.50;
     }
     
-    const isolatieToeslag = isolatieGewenst ? 8.50 : 0;
+    let totaal = totaalOppervlakte * prijs_per_m2;
     
-    const wandKosten = wandOppervlakte * (wandPrijs + isolatieToeslag);
-    const plafondKosten = plafondOppervlakte * (plafondPrijs + isolatieToeslag);
+    // Extra kosten voor isolatie
+    if (formData.isolatie_gewenst) {
+      totaal += totaalOppervlakte * 15; // €15 per m² extra voor isolatie
+    }
     
-    const totaalExclBtw = wandKosten + plafondKosten;
-    
-    const btwPercentage = formData.bouw_type === 'nieuwbouw' ? 1.21 : 1.09;
-    
-    return Math.round(totaalExclBtw * btwPercentage);
+    return Math.round(totaal);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +83,7 @@ const StukadoorConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🏗️ Starting stukadoor form submission...');
+      console.log('🔨 Starting stukadoor form submission...');
       const totalPrice = calculatePrice();
       
       const customerData = {
@@ -134,11 +129,7 @@ const StukadoorConfigurator = () => {
       const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
         body: { 
           customerData, 
-          formData: {
-            ...formData,
-            oppervlakte_wanden: formData.oppervlakte_wanden,
-            oppervlakte_plafonds: formData.oppervlakte_plafonds
-          }, 
+          formData, 
           totalPrice, 
           breakdown: []
         }
@@ -165,14 +156,13 @@ const StukadoorConfigurator = () => {
         huisnummer: '',
         postcode: '',
         plaats: '',
-        bouw_type: 'renovatie',
         stuc_type: 'glad_stucwerk',
         oppervlakte_wanden: '',
         oppervlakte_plafonds: '',
+        isolatie_gewenst: false,
         uitvoertermijn: '',
         reden_aanvraag: '',
-        bericht: '',
-        isolatie_gewenst: false
+        bericht: ''
       });
       setUploadedFile(null);
 
@@ -184,16 +174,15 @@ const StukadoorConfigurator = () => {
     }
   };
 
-  const btw = formData.bouw_type === 'nieuwbouw' ? 21 : 9;
   const hasAnyInput = parseFloat(formData.oppervlakte_wanden) > 0 || parseFloat(formData.oppervlakte_plafonds) > 0;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Stukadoorswerk Configurator</CardTitle>
+          <CardTitle className="text-2xl text-center">Stucwerk Configurator</CardTitle>
           <p className="text-center text-gray-600">
-            Configureer uw stukadoorsproject en ontvang direct een prijsindicatie
+            Configureer je stucwerk project en ontvang direct een prijsindicatie
           </p>
         </CardHeader>
         <CardContent>
@@ -285,26 +274,30 @@ const StukadoorConfigurator = () => {
               </div>
             </div>
 
-            {/* Build Type Selection */}
+            {/* Stuc Type Selection */}
             <div>
-              <Label className="text-base font-medium">Nieuwbouw of renovatie? *</Label>
+              <Label className="text-base font-medium">Type stucwerk *</Label>
               <RadioGroup
-                value={formData.bouw_type}
-                onValueChange={(value) => setFormData({...formData, bouw_type: value})}
+                value={formData.stuc_type}
+                onValueChange={(value) => setFormData({...formData, stuc_type: value})}
                 className="flex flex-col space-y-2 mt-2"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="renovatie" id="renovatie" />
-                  <Label htmlFor="renovatie">Renovatie (9% BTW)</Label>
+                  <RadioGroupItem value="glad_stucwerk" id="glad_stucwerk" />
+                  <Label htmlFor="glad_stucwerk">Glad stucwerk (€22,50/m²)</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="nieuwbouw" id="nieuwbouw" />
-                  <Label htmlFor="nieuwbouw">Nieuwbouw (21% BTW)</Label>
+                  <RadioGroupItem value="spachtelputz" id="spachtelputz" />
+                  <Label htmlFor="spachtelputz">Spachtelputz (€28,00/m²)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="decoratief_stucwerk" id="decoratief_stucwerk" />
+                  <Label htmlFor="decoratief_stucwerk">Decoratief stucwerk (€35,00/m²)</Label>
                 </div>
               </RadioGroup>
             </div>
 
-            {/* Surface Areas */}
+            {/* Project Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="oppervlakte_wanden">Wand oppervlakte (m²)</Label>
@@ -328,16 +321,16 @@ const StukadoorConfigurator = () => {
               </div>
             </div>
 
-            {/* Isolation Option */}
+            {/* Isolatie Option */}
             <div>
-              <Label className="text-base font-medium">Extra opties</Label>
+              <Label className="text-base font-medium">Extra optie</Label>
               <div className="flex items-center space-x-2 mt-2">
                 <Checkbox
                   id="isolatie_gewenst"
                   checked={formData.isolatie_gewenst}
                   onCheckedChange={(checked) => setFormData({...formData, isolatie_gewenst: checked as boolean})}
                 />
-                <Label htmlFor="isolatie_gewenst">Isolatie gewenst</Label>
+                <Label htmlFor="isolatie_gewenst">Isolatie gewenst (+€15/m²)</Label>
               </div>
             </div>
 
@@ -347,7 +340,7 @@ const StukadoorConfigurator = () => {
                 id="uitvoertermijn"
                 value={formData.uitvoertermijn}
                 onChange={(e) => setFormData({...formData, uitvoertermijn: e.target.value})}
-                placeholder="Bijvoorbeeld: binnen 3 weken, flexibel"
+                placeholder="Bijvoorbeeld: binnen 4 weken, flexibel"
                 required
               />
             </div>
@@ -377,7 +370,7 @@ const StukadoorConfigurator = () => {
                 <p className="text-sm text-green-600 mt-1">
                   Bestand geüpload: {uploadedFile.name}
                 </p>
-              )}
+                )}
               <p className="text-xs text-gray-500 mt-1">
                 Ondersteunde formaten: PDF, JPG, PNG, DOC, DOCX (max 10MB)
               </p>
@@ -396,20 +389,22 @@ const StukadoorConfigurator = () => {
 
             {/* Price Display */}
             {hasAnyInput && (
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-green-50 border-green-200">
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <h3 className="text-lg font-semibold text-blue-800">Geschatte Prijs (Indicatief)</h3>
-                    <p className="text-3xl font-bold text-blue-600">€{calculatePrice().toLocaleString()}</p>
-                    <p className="text-sm text-blue-700 mb-2">
+                    <h3 className="text-lg font-semibold text-green-800">Geschatte Prijs (Indicatief)</h3>
+                    <p className="text-3xl font-bold text-green-600">€{calculatePrice().toLocaleString()}</p>
+                    <p className="text-sm text-green-700 mb-2">
                       Inclusief materiaal en arbeid
                     </p>
-                    <p className="text-xs text-blue-600 mb-2">
-                      {formData.bouw_type === 'nieuwbouw' ? 'Nieuwbouw' : 'Renovatie'} - {btw}% BTW
+                    <p className="text-xs text-green-600 mb-2">
+                      Type: {formData.stuc_type.replace('_', ' ')}
                     </p>
-                    <p className="text-xs text-blue-600 mb-2">
-                      {formData.stuc_type.replace('_', ' ')} - {formData.isolatie_gewenst ? 'Met isolatie' : 'Zonder isolatie'}
-                    </p>
+                    {formData.isolatie_gewenst && (
+                      <p className="text-xs text-green-600 mb-2">
+                        Inclusief isolatie
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
