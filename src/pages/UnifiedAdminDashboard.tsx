@@ -60,18 +60,25 @@ const UnifiedAdminDashboard = () => {
     queryFn: async () => {
       console.log('🎨 Fetching schilder aanvragen...');
       
-      const { data, error } = await supabase
-        .from('schilder_aanvragen')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('❌ Error fetching schilder aanvragen:', error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('schilder_aanvragen')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('❌ Error fetching schilder aanvragen:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          throw error;
+        }
+        
+        console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
+        console.log('First few records:', data?.slice(0, 3));
+        return data || [];
+      } catch (err) {
+        console.error('❌ Exception in schilder query:', err);
+        throw err;
       }
-      
-      console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
-      return data || [];
     },
     refetchOnWindowFocus: false,
     retry: 3,
@@ -83,18 +90,25 @@ const UnifiedAdminDashboard = () => {
     queryFn: async () => {
       console.log('🔨 Fetching stukadoor aanvragen...');
       
-      const { data, error } = await supabase
-        .from('stukadoor_aanvragen')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('❌ Error fetching stukadoor aanvragen:', error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('stukadoor_aanvragen')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('❌ Error fetching stukadoor aanvragen:', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          throw error;
+        }
+        
+        console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
+        console.log('First few records:', data?.slice(0, 3));
+        return data || [];
+      } catch (err) {
+        console.error('❌ Exception in stukadoor query:', err);
+        throw err;
       }
-      
-      console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
-      return data || [];
     },
     refetchOnWindowFocus: false,
     retry: 3,

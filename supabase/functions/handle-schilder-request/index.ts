@@ -147,19 +147,19 @@ const handler = async (req: Request): Promise<Response> => {
       html: customerEmailHtml,
     });
 
-    // Send detailed notification to admin emails with SAME colors as customer template
+    // Send detailed notification to admin emails - FIXED STYLING WITH PROPER COLORS
     const adminEmailHtml = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; color: #333; }
           .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
           .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 20px; text-align: center; }
-          .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
-          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
-          .content { padding: 30px; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: bold; color: white; }
+          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; color: white; }
+          .content { padding: 30px; color: #333; }
           .greeting { font-size: 18px; margin-bottom: 20px; color: #333; }
           .section { margin: 25px 0; }
           .section h3 { color: #059669; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
@@ -168,9 +168,9 @@ const handler = async (req: Request): Promise<Response> => {
           .details li { margin: 5px 0; color: #555; }
           .details p { margin: 5px 0; color: #555; }
           .price-box { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; }
-          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
-          .price-box .note { font-size: 14px; opacity: 0.8; }
+          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; color: white; }
+          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: white; }
+          .price-box .note { font-size: 14px; opacity: 0.8; color: white; }
           .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
           .included h4 { color: #059669; margin: 0 0 10px 0; }
           .included ul { margin: 0; padding-left: 20px; }
