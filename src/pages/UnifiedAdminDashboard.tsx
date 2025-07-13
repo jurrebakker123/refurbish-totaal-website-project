@@ -61,18 +61,6 @@ const UnifiedAdminDashboard = () => {
     queryFn: async () => {
       console.log('🎨 Fetching schilder requests...');
       
-      // First check if table exists and is accessible
-      const { count, error: countError } = await supabase
-        .from('schilder_aanvragen')
-        .select('*', { count: 'exact', head: true });
-        
-      if (countError) {
-        console.error('❌ Schilder count error:', countError);
-        throw countError;
-      }
-      
-      console.log('📊 Schilder table count:', count);
-      
       const { data, error } = await supabase
         .from('schilder_aanvragen')
         .select('*')
@@ -95,18 +83,6 @@ const UnifiedAdminDashboard = () => {
     queryKey: ['stukadoor_requests'],
     queryFn: async () => {
       console.log('🔨 Fetching stukadoor requests...');
-      
-      // First check if table exists and is accessible
-      const { count, error: countError } = await supabase
-        .from('stukadoor_aanvragen')
-        .select('*', { count: 'exact', head: true });
-        
-      if (countError) {
-        console.error('❌ Stukadoor count error:', countError);
-        throw countError;
-      }
-      
-      console.log('📊 Stukadoor table count:', count);
       
       const { data, error } = await supabase
         .from('stukadoor_aanvragen')
