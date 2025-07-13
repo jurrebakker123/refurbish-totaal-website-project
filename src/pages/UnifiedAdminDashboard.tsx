@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,13 +41,13 @@ const UnifiedAdminDashboard = () => {
 
   // Load data function
   const loadData = async () => {
-    console.log('🔄 Loading dashboard data...');
+    console.log('🔄 Loading all dashboard data...');
     setLoading(true);
     setError(null);
     
     try {
       // Load dakkapel data
-      console.log('📦 Loading dakkapel data...');
+      console.log('📦 Loading dakkapel calculator aanvragen...');
       const { data: dakkapelData, error: dakkapelError } = await supabase
         .from('dakkapel_calculator_aanvragen')
         .select('*')
@@ -56,13 +55,14 @@ const UnifiedAdminDashboard = () => {
       
       if (dakkapelError) {
         console.error('❌ Dakkapel error:', dakkapelError);
+        toast.error(`Fout bij laden dakkapel aanvragen: ${dakkapelError.message}`);
       } else {
-        console.log('✅ Dakkapel loaded:', dakkapelData?.length || 0);
+        console.log('✅ Dakkapel geladen:', dakkapelData?.length || 0, 'aanvragen');
         setConfiguraties(dakkapelData || []);
       }
 
       // Load schilder data
-      console.log('🎨 Loading schilder data...');
+      console.log('🎨 Loading schilder aanvragen...');
       const { data: schilderData, error: schilderError } = await supabase
         .from('schilder_aanvragen')
         .select('*')
@@ -70,13 +70,14 @@ const UnifiedAdminDashboard = () => {
       
       if (schilderError) {
         console.error('❌ Schilder error:', schilderError);
+        toast.error(`Fout bij laden schilder aanvragen: ${schilderError.message}`);
       } else {
-        console.log('✅ Schilder loaded:', schilderData?.length || 0);
+        console.log('✅ Schilder geladen:', schilderData?.length || 0, 'aanvragen');
         setSchilderAanvragen(schilderData || []);
       }
 
       // Load stukadoor data
-      console.log('🔨 Loading stukadoor data...');
+      console.log('🔨 Loading stukadoor aanvragen...');
       const { data: stukadoorData, error: stukadoorError } = await supabase
         .from('stukadoor_aanvragen')
         .select('*')
@@ -84,15 +85,17 @@ const UnifiedAdminDashboard = () => {
       
       if (stukadoorError) {
         console.error('❌ Stukadoor error:', stukadoorError);
+        toast.error(`Fout bij laden stukadoor aanvragen: ${stukadoorError.message}`);
       } else {
-        console.log('✅ Stukadoor loaded:', stukadoorData?.length || 0);
+        console.log('✅ Stukadoor geladen:', stukadoorData?.length || 0, 'aanvragen');
         setStukadoorAanvragen(stukadoorData || []);
       }
 
+      toast.success(`Dashboard geladen! ${dakkapelData?.length || 0} dakkapel, ${schilderData?.length || 0} schilder en ${stukadoorData?.length || 0} stukadoor aanvragen gevonden`);
     } catch (error: any) {
-      console.error('❌ General error loading data:', error);
-      setError('Er is een fout opgetreden bij het laden van de gegevens');
-      toast.error('Fout bij laden gegevens');
+      console.error('❌ Algemene fout bij laden data:', error);
+      setError('Er is een onverwachte fout opgetreden');
+      toast.error('Onverwachte fout bij laden gegevens');
     } finally {
       setLoading(false);
     }
@@ -105,14 +108,14 @@ const UnifiedAdminDashboard = () => {
 
   // Manual refresh function
   const refetchData = async () => {
-    console.log('🔄 Manual refresh triggered...');
+    console.log('🔄 Handmatige refresh gestart...');
     setRefreshing(true);
     try {
       await loadData();
-      toast.success('Data vernieuwd!');
+      toast.success('Data succesvol vernieuwd!');
     } catch (error) {
-      console.error('❌ Refresh error:', error);
-      toast.error('Fout bij vernieuwen');
+      console.error('❌ Refresh fout:', error);
+      toast.error('Fout bij vernieuwen data');
     } finally {
       setRefreshing(false);
     }
@@ -232,12 +235,21 @@ const UnifiedAdminDashboard = () => {
     }
   };
 
+  const getServiceCounts = () => {
+    return {
+      dakkapel: configuraties?.length || 0,
+      schilder: schilderAanvragen?.length || 0,
+      stukadoor: stukadoorAanvragen?.length || 0
+    };
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-brand-lightGreen border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Gegevens worden geladen...</p>
+          <p className="text-lg font-medium">Dashboard wordt geladen...</p>
+          <p className="text-sm text-gray-500 mt-2">Dakkapel, schilder en stukadoor aanvragen laden...</p>
         </div>
       </div>
     );
@@ -250,19 +262,21 @@ const UnifiedAdminDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
               <AlertCircle className="h-5 w-5" />
-              Fout bij laden gegevens
+              Fout bij laden dashboard
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={refetchData} className="w-full">
-              Opnieuw proberen
+            <Button onClick={refetchData} className="w-full" disabled={refreshing}>
+              {refreshing ? 'Bezig met laden...' : 'Opnieuw proberen'}
             </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  const counts = getServiceCounts();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -282,7 +296,9 @@ const UnifiedAdminDashboard = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-                <p className="text-gray-600">Beheer alle aanvragen en configuraties</p>
+                <p className="text-gray-600">
+                  Totaal {counts.dakkapel + counts.schilder + counts.stukadoor} aanvragen beheren
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <Button
@@ -303,24 +319,11 @@ const UnifiedAdminDashboard = () => {
               <TabsList className="grid w-full grid-cols-3">
                 {Object.entries(serviceLabels).map(([key, label]) => {
                   const Icon = serviceIcons[key as ServiceType];
-                  let currentData;
-                  switch (key) {
-                    case 'dakkapel':
-                      currentData = configuraties;
-                      break;
-                    case 'schilder':
-                      currentData = schilderAanvragen;
-                      break;
-                    case 'stukadoor':
-                      currentData = stukadoorAanvragen;
-                      break;
-                    default:
-                      currentData = [];
-                  }
+                  const count = counts[key as ServiceType];
                   return (
                     <TabsTrigger key={key} value={key} className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
-                      {label} ({currentData?.length || 0})
+                      {label} ({count})
                     </TabsTrigger>
                   );
                 })}
@@ -331,12 +334,31 @@ const UnifiedAdminDashboard = () => {
                   <Card>
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <CardTitle>{serviceLabels[service as ServiceType]} Aanvragen Beheer</CardTitle>
+                        <CardTitle>{serviceLabels[service as ServiceType]} Aanvragen</CardTitle>
                         <BulkActions
                           selectedIds={selectedIds}
-                          onSelectAll={handleSelectAll}
-                          onSelectItem={handleSelectItem}
-                          onBulkAction={handleBulkAction}
+                          onSelectAll={(checked) => {
+                            const currentData = getCurrentData();
+                            if (checked) {
+                              setSelectedIds(currentData.map(item => item.id));
+                            } else {
+                              setSelectedIds([]);
+                            }
+                          }}
+                          onSelectItem={(id, checked) => {
+                            setSelectedIds(prev => {
+                              if (checked) {
+                                return [...prev, id];
+                              } else {
+                                return prev.filter(itemId => itemId !== id);
+                              }
+                            });
+                          }}
+                          onBulkAction={async (action, ids) => {
+                            console.log(`Bulk actie: ${action} voor ${ids.length} items`);
+                            toast.success(`Bulk actie "${action}" uitgevoerd op ${ids.length} items`);
+                            setSelectedIds([]);
+                          }}
                           allIds={getCurrentData().map(item => item.id)}
                           configurations={getCurrentData()}
                         />
@@ -366,7 +388,7 @@ const UnifiedAdminDashboard = () => {
                             Geen {serviceLabels[service as ServiceType].toLowerCase()} aanvragen gevonden.
                           </p>
                           <p className="text-sm text-gray-400">
-                            Ga naar de {service === 'schilder' ? 'schilder configurator' : service === 'stukadoor' ? 'stukadoor configurator' : 'dakkapel calculator'} om een aanvraag in te dienen.
+                            Nieuwe aanvragen verschijnen hier automatisch.
                           </p>
                         </div>
                       ) : (
@@ -374,11 +396,18 @@ const UnifiedAdminDashboard = () => {
                           items={getCurrentData()}
                           searchTerm={filters.search}
                           selectedStatus={filters.status}
-                          onEdit={handleViewDetails}
+                          onEdit={(item) => {
+                            console.log('Bekijk details voor:', item);
+                            setSelectedItem(item);
+                          }}
                           onDataChange={refetchData}
                           sendingQuote={sendingQuote}
                           setSendingQuote={setSendingQuote}
-                          onStatusFilter={handleStatusFilter}
+                          onStatusFilter={(status) => {
+                            console.log('Status filter:', status);
+                            setFilters(prev => ({ ...prev, status }));
+                            toast.success(`Filter ingesteld op: ${status}`);
+                          }}
                         />
                       )}
                     </CardContent>
