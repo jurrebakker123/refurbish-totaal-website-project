@@ -90,7 +90,7 @@ const SchilderConfigurator = () => {
         plaats: formData.plaats
       };
 
-      console.log('💾 Saving to database...');
+      console.log('💾 Saving to schilder_aanvragen database...');
       const { error } = await supabase
         .from('schilder_aanvragen')
         .insert({
@@ -117,7 +117,7 @@ const SchilderConfigurator = () => {
         throw error;
       }
 
-      console.log('✅ Database save successful!');
+      console.log('✅ Database save successful! Data saved to schilder_aanvragen table');
 
       console.log('📧 Sending emails via edge function...');
       const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
@@ -125,7 +125,7 @@ const SchilderConfigurator = () => {
           customerData, 
           formData, 
           totalPrice, 
-          breakdown: [] // We're removing the breakdown display
+          breakdown: []
         }
       });
 

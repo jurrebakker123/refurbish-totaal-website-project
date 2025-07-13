@@ -102,7 +102,7 @@ const StukadoorConfigurator = () => {
         plaats: formData.plaats
       };
 
-      console.log('💾 Saving to database...');
+      console.log('💾 Saving to stukadoor_aanvragen database...');
       const { error } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
@@ -128,7 +128,7 @@ const StukadoorConfigurator = () => {
         throw error;
       }
 
-      console.log('✅ Database save successful!');
+      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table');
 
       console.log('📧 Sending emails via edge function...');
       const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
@@ -140,7 +140,7 @@ const StukadoorConfigurator = () => {
             oppervlakte_plafonds: formData.oppervlakte_plafonds
           }, 
           totalPrice, 
-          breakdown: [] // We're removing the breakdown display
+          breakdown: []
         }
       });
 
