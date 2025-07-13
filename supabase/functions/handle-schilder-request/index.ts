@@ -147,35 +147,112 @@ const handler = async (req: Request): Promise<Response> => {
       html: customerEmailHtml,
     });
 
-    // Send notification to admin emails
+    // Send detailed notification to admin emails with same template as customer
     const adminEmailHtml = `
-      <h2>Nieuwe Schilderwerk Aanvraag</h2>
-      <h3>Klantgegevens:</h3>
-      <ul>
-        <li>${customerData.voornaam} ${customerData.achternaam}</li>
-        <li>${customerData.emailadres}</li>
-        <li>${customerData.telefoon}</li>
-        <li>${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
-      </ul>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+          .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+          .header { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; padding: 40px 20px; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
+          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
+          .content { padding: 30px; }
+          .greeting { font-size: 18px; margin-bottom: 20px; color: #333; }
+          .section { margin: 25px 0; }
+          .section h3 { color: #dc2626; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #dc2626; padding-bottom: 5px; }
+          .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
+          .details ul { margin: 0; padding-left: 20px; }
+          .details li { margin: 5px 0; color: #555; }
+          .price-box { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; }
+          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+          .price-box .note { font-size: 14px; opacity: 0.8; }
+          .included { background-color: #fef2f2; padding: 15px; border-radius: 6px; margin: 20px 0; }
+          .included h4 { color: #dc2626; margin: 0 0 10px 0; }
+          .included ul { margin: 0; padding-left: 20px; }
+          .included li { color: #dc2626; margin: 5px 0; }
+          .footer { background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; }
+          .footer .company { color: #dc2626; font-weight: bold; font-size: 18px; }
+          .footer .details { color: #6b7280; font-size: 14px; margin: 5px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎨 Nieuwe Schilderwerk Aanvraag</h1>
+            <div class="subtitle">Admin Notificatie</div>
+          </div>
+          
+          <div class="content">
+            <div class="greeting">Nieuwe aanvraag ontvangen van ${customerData.voornaam} ${customerData.achternaam}</div>
+            
+            <div class="section">
+              <h3>📋 Overzicht van de configuratie</h3>
+              
+              <div class="details">
+                <p><strong>Project type:</strong> ${formatFieldName(formData.project_type)}</p>
+                <p><strong>Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
+                <p><strong>Oppervlakte:</strong> ${formData.oppervlakte}m² wanden</p>
+                ${formData.plafond_oppervlakte ? `<p><strong>Plafond oppervlakte:</strong> ${formData.plafond_oppervlakte}m²</p>` : ''}
+                ${formData.aantal_deuren ? `<p><strong>Aantal deuren:</strong> ${formData.aantal_deuren}</p>` : ''}
+                ${formData.aantal_ramen ? `<p><strong>Aantal ramen:</strong> ${formData.aantal_ramen}</p>` : ''}
+                <p><strong>Kleuren:</strong> ${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}</p>
+                ${formData.uitvoertermijn ? `<p><strong>Uitvoertermijn:</strong> ${formData.uitvoertermijn}</p>` : ''}
+                ${formData.reden_aanvraag ? `<p><strong>Reden aanvraag:</strong> ${formData.reden_aanvraag}</p>` : ''}
+                ${formData.bericht ? `<p><strong>Bericht:</strong> ${formData.bericht}</p>` : ''}
+              </div>
+            </div>
 
-      <h3>Project:</h3>
-      <ul>
-        <li>Type: ${formData.project_type}</li>
-        <li>Bouwtype: ${formData.bouw_type}</li>
-        <li>Oppervlakte: ${formData.oppervlakte}m²</li>
-        <li>Meerdere kleuren: ${formData.meerdere_kleuren ? 'Ja' : 'Nee'}</li>
-      </ul>
+            <div class="section">
+              <h3>👤 Contactgegevens klant:</h3>
+              <div class="details">
+                <ul>
+                  <li><strong>Naam:</strong> ${customerData.voornaam} ${customerData.achternaam}</li>
+                  <li><strong>E-mail:</strong> ${customerData.emailadres}</li>
+                  <li><strong>Telefoon:</strong> ${customerData.telefoon}</li>
+                  <li><strong>Adres:</strong> ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
+                </ul>
+              </div>
+            </div>
 
-      <p><strong>Totaal: €${totalPrice.toLocaleString()}</strong></p>
+            <div class="price-box">
+              <div class="label">💰 Totaalprijs:</div>
+              <div class="amount">€${totalPrice.toLocaleString()}</div>
+              <div class="note">Prijsindicatie inclusief BTW</div>
+            </div>
+
+            <div class="included">
+              <h4>✅ Inbegrepen in de prijs:</h4>
+              <ul>
+                <li>Complete levering en toepassing van hoogwaardige verf</li>
+                <li>Professionele voorbehandeling van het oppervlak</li>
+                <li>Vakkundige afwerking door ervaren schilders</li>
+                <li>Opruimen en schoonmaken na afloop</li>
+                <li>Garantie op het uitgevoerde werk</li>
+                <li>Deskundig advies over kleurkeuze</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <div class="company">Admin Notificatie<br>Refurbish Totaal Nederland</div>
+            <div class="details">Neem zo snel mogelijk contact op met de klant!</div>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
     const adminEmails = ['info@refurbishtotaalnederland.nl', 'mazenaddas95@gmail.com'];
     
     for (const email of adminEmails) {
       await resend.emails.send({
-        from: `${customerData.voornaam} ${customerData.achternaam} <noreply@refurbishtotaalnederland.nl>`,
+        from: `Nieuwe Schilderwerk Aanvraag <noreply@refurbishtotaalnederland.nl>`,
         to: [email],
-        subject: `Nieuwe schilderwerk aanvraag van ${customerData.voornaam} ${customerData.achternaam}`,
+        subject: `Nieuwe schilderwerk aanvraag van ${customerData.voornaam} ${customerData.achternaam} - €${totalPrice.toLocaleString()}`,
         html: adminEmailHtml,
         reply_to: customerData.emailadres
       });
