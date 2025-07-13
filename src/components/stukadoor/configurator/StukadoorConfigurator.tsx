@@ -284,15 +284,15 @@ const StukadoorConfigurator = () => {
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="glad_stucwerk" id="glad_stucwerk" />
-                  <Label htmlFor="glad_stucwerk">Glad stucwerk (€22,50/m²)</Label>
+                  <Label htmlFor="glad_stucwerk">Glad stucwerk</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="spachtelputz" id="spachtelputz" />
-                  <Label htmlFor="spachtelputz">Spachtelputz (€28,00/m²)</Label>
+                  <Label htmlFor="spachtelputz">Spachtelputz</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="decoratief_stucwerk" id="decoratief_stucwerk" />
-                  <Label htmlFor="decoratief_stucwerk">Decoratief stucwerk (€35,00/m²)</Label>
+                  <Label htmlFor="decoratief_stucwerk">Decoratief stucwerk</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -330,7 +330,7 @@ const StukadoorConfigurator = () => {
                   checked={formData.isolatie_gewenst}
                   onCheckedChange={(checked) => setFormData({...formData, isolatie_gewenst: checked as boolean})}
                 />
-                <Label htmlFor="isolatie_gewenst">Isolatie gewenst (+€15/m²)</Label>
+                <Label htmlFor="isolatie_gewenst">Isolatie gewenst</Label>
               </div>
             </div>
 
