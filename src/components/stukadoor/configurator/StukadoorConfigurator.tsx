@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -87,7 +88,7 @@ const StukadoorConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🏗️ Starting stukadoor form submission process...');
+      console.log('🏗️ Starting stukadoor form submission...');
       const totalPrice = calculatePrice();
       
       const customerData = {
@@ -101,43 +102,36 @@ const StukadoorConfigurator = () => {
         plaats: formData.plaats
       };
 
-      // Simplified insert data to avoid RLS issues
-      const insertData = {
-        voornaam: formData.voornaam,
-        achternaam: formData.achternaam,
-        emailadres: formData.emailadres,
-        telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats,
-        werk_type: 'nieuw_stucwerk',
-        afwerking: formData.stuc_type,
-        oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
-        isolatie_gewenst: formData.isolatie_gewenst,
-        bericht: formData.bericht || '',
-        totaal_prijs: totalPrice,
-        status: 'nieuw'
-      };
-
       console.log('💾 Saving to stukadoor_aanvragen database...');
-      console.log('📊 Data to be saved:', insertData);
-
-      const { data: savedData, error } = await supabase
+      const { error } = await supabase
         .from('stukadoor_aanvragen')
-        .insert(insertData)
-        .select();
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          emailadres: formData.emailadres,
+          telefoon: formData.telefoon,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          werk_type: 'nieuw_stucwerk',
+          afwerking: formData.stuc_type,
+          oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
+          isolatie_gewenst: formData.isolatie_gewenst,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw'
+        });
 
       if (error) {
-        console.error('❌ Database save error:', error);
+        console.error('❌ Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful!');
-      console.log('📋 Saved record:', savedData);
+      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table');
 
-      console.log('📧 Sending notification emails via edge function...');
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
+      console.log('📧 Sending emails via edge function...');
+      const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
         body: { 
           customerData, 
           formData: {
@@ -151,15 +145,13 @@ const StukadoorConfigurator = () => {
       });
 
       if (emailError) {
-        console.error('❌ Email sending error:', emailError);
-        // Don't throw error for email issues, as the main data was saved
-        console.warn('⚠️ Data was saved but emails might not have been sent');
-      } else {
-        console.log('✅ Emails sent successfully!');
-        console.log('📧 Email response:', emailData);
+        console.error('❌ Email error:', emailError);
+        throw emailError;
       }
+      
+      console.log('✅ Emails sent successfully!');
 
-      toast.success('Bedankt voor uw aanvraag! U ontvangt zo een bevestiging per email en wij nemen binnen 24 uur contact met u op.', {
+      toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000
       });
       
@@ -185,8 +177,8 @@ const StukadoorConfigurator = () => {
       setUploadedFile(null);
 
     } catch (error) {
-      console.error('❌ Complete form submission error:', error);
-      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw of neem contact met ons op.');
+      console.error('❌ Form submission error:', error);
+      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }

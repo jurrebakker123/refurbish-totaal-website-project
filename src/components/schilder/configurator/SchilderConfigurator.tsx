@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -75,7 +76,7 @@ const SchilderConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🎨 Starting schilder form submission process...');
+      console.log('🎨 Starting schilder form submission...');
       const totalPrice = calculatePrice();
       
       const customerData = {
@@ -89,44 +90,37 @@ const SchilderConfigurator = () => {
         plaats: formData.plaats
       };
 
-      const insertData = {
-        voornaam: formData.voornaam,
-        achternaam: formData.achternaam,
-        emailadres: formData.emailadres,
-        telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats,
-        project_type: `${formData.project_type} - ${formData.bouw_type}`,
-        verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: parseInt(formData.oppervlakte) || 0,
-        bericht: formData.bericht || '',
-        totaal_prijs: totalPrice,
-        status: 'nieuw',
-        plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-        kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
-        voorbewerking_nodig: false
-      };
-
       console.log('💾 Saving to schilder_aanvragen database...');
-      console.log('📊 Data to be saved:', insertData);
-
-      const { data: savedData, error } = await supabase
+      const { error } = await supabase
         .from('schilder_aanvragen')
-        .insert(insertData)
-        .select();
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          emailadres: formData.emailadres,
+          telefoon: formData.telefoon,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          project_type: `${formData.project_type} - ${formData.bouw_type}`,
+          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
+          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw',
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
+        });
 
       if (error) {
-        console.error('❌ Database save error:', error);
+        console.error('❌ Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful!');
-      console.log('📋 Saved record:', savedData);
+      console.log('✅ Database save successful! Data saved to schilder_aanvragen table');
 
-      console.log('📧 Sending notification emails via edge function...');
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
+      console.log('📧 Sending emails via edge function...');
+      const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
         body: { 
           customerData, 
           formData, 
@@ -136,17 +130,17 @@ const SchilderConfigurator = () => {
       });
 
       if (emailError) {
-        console.error('❌ Email sending error:', emailError);
-        console.warn('⚠️ Data was saved but emails might not have been sent');
-      } else {
-        console.log('✅ Emails sent successfully!');
-        console.log('📧 Email response:', emailData);
+        console.error('❌ Email error:', emailError);
+        throw emailError;
       }
+      
+      console.log('✅ Emails sent successfully!');
 
-      toast.success('Bedankt voor uw aanvraag! U ontvangt zo een bevestiging per email en wij nemen binnen 24 uur contact met u op.', {
+      toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000
       });
       
+      // Reset form
       setFormData({
         voornaam: '',
         achternaam: '',
@@ -170,8 +164,8 @@ const SchilderConfigurator = () => {
       setUploadedFile(null);
 
     } catch (error) {
-      console.error('❌ Complete form submission error:', error);
-      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw of neem contact met ons op.');
+      console.error('❌ Form submission error:', error);
+      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw.');
     } finally {
       setIsSubmitting(false);
     }
