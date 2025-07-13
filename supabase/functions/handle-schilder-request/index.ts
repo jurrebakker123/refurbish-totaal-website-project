@@ -25,36 +25,44 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Insert into database
-    const { data: insertedData, error: insertError } = await supabase
-      .from("schilder_aanvragen")
-      .insert({
-        voornaam: customerData.voornaam,
-        achternaam: customerData.achternaam,
-        emailadres: customerData.emailadres,
-        telefoon: customerData.telefoon,
-        straatnaam: customerData.straatnaam,
-        huisnummer: customerData.huisnummer,
-        postcode: customerData.postcode,
-        plaats: customerData.plaats,
-        project_type: `${formData.project_type} - ${formData.bouw_type}`,
-        verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: parseInt(formData.oppervlakte) || 0,
-        bericht: formData.bericht,
-        totaal_prijs: totalPrice,
-        status: 'nieuw',
-        plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-        kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
-      })
-      .select()
-      .single();
+    // Insert into database - We'll continue even if this fails
+    let insertedData = null;
+    try {
+      const { data, error: insertError } = await supabase
+        .from("schilder_aanvragen")
+        .insert({
+          voornaam: customerData.voornaam,
+          achternaam: customerData.achternaam,
+          emailadres: customerData.emailadres,
+          telefoon: customerData.telefoon,
+          straatnaam: customerData.straatnaam,
+          huisnummer: customerData.huisnummer,
+          postcode: customerData.postcode,
+          plaats: customerData.plaats,
+          project_type: `${formData.project_type} - ${formData.bouw_type}`,
+          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
+          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw',
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
+        })
+        .select()
+        .single();
 
-    if (insertError) {
-      console.error("❌ Database insert error:", insertError);
-      throw insertError;
+      if (insertError) {
+        console.error("❌ Database insert error:", insertError);
+      } else {
+        insertedData = data;
+        console.log("✅ Schilder request inserted successfully:", insertedData);
+      }
+    } catch (dbError) {
+      console.error("❌ Database operation failed:", dbError);
     }
 
-    console.log("✅ Schilder request inserted successfully:", insertedData);
+    // Always send emails regardless of database success
+    console.log("📧 Sending emails...");
 
     // Send confirmation email to customer
     const customerEmailHtml = `
@@ -105,20 +113,20 @@ serve(async (req) => {
           </div>
           
           <p style="color: #4b5563; line-height: 1.6;">
-            Heb je vragen? Neem gerust contact met ons op via <a href="mailto:info@refurbishdakkapel.nl" style="color: #3b82f6;">info@refurbishdakkapel.nl</a> of bel ons op <a href="tel:+31123456789" style="color: #3b82f6;">+31 123 456 789</a>.
+            Heb je vragen? Neem gerust contact met ons op via <a href="mailto:info@refurbishtotaalnederland.nl" style="color: #3b82f6;">info@refurbishtotaalnederland.nl</a> of bel ons op <a href="tel:+31123456789" style="color: #3b82f6;">+31 123 456 789</a>.
           </p>
         </div>
         
         <div style="background-color: #1f2937; padding: 1.5rem; text-align: center;">
           <p style="color: #9ca3af; margin: 0; font-size: 0.9rem;">
-            © 2024 Refurbish Dakkapel - Schilderwerk Specialist
+            © 2024 Refurbish Totaal Nederland - Schilderwerk Specialist
           </p>
         </div>
       </div>
     `;
 
     await resend.emails.send({
-      from: "Refurbish Dakkapel <info@refurbishdakkapel.nl>",
+      from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
       to: [customerData.emailadres],
       subject: "🎨 Bevestiging van je schilderwerk aanvraag",
       html: customerEmailHtml,
@@ -206,8 +214,8 @@ serve(async (req) => {
     `;
 
     await resend.emails.send({
-      from: "Refurbish Dakkapel <admin@refurbishdakkapel.nl>",
-      to: ["admin@refurbishdakkapel.nl", "info@refurbishdakkapel.nl"],
+      from: "Refurbish Totaal Nederland <admin@refurbishtotaalnederland.nl>",
+      to: ["info@refurbishtotaalnederland.nl", "mazenaddas95@gmail.com"],
       subject: "🎨 Nieuwe Schilderwerk Aanvraag - Actie Vereist",
       html: adminEmailHtml,
     });

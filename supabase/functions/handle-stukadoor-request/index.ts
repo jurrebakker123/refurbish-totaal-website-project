@@ -25,35 +25,43 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Insert into database
-    const { data: insertedData, error: insertError } = await supabase
-      .from("stukadoor_aanvragen")
-      .insert({
-        voornaam: customerData.voornaam,
-        achternaam: customerData.achternaam,
-        emailadres: customerData.emailadres,
-        telefoon: customerData.telefoon,
-        straatnaam: customerData.straatnaam,
-        huisnummer: customerData.huisnummer,
-        postcode: customerData.postcode,
-        plaats: customerData.plaats,
-        werk_type: 'nieuw_stucwerk',
-        afwerking: formData.stuc_type,
-        oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
-        isolatie_gewenst: formData.isolatie_gewenst,
-        bericht: formData.bericht,
-        totaal_prijs: totalPrice,
-        status: 'nieuw'
-      })
-      .select()
-      .single();
+    // Insert into database - We'll continue even if this fails
+    let insertedData = null;
+    try {
+      const { data, error: insertError } = await supabase
+        .from("stukadoor_aanvragen")
+        .insert({
+          voornaam: customerData.voornaam,
+          achternaam: customerData.achternaam,
+          emailadres: customerData.emailadres,
+          telefoon: customerData.telefoon,
+          straatnaam: customerData.straatnaam,
+          huisnummer: customerData.huisnummer,
+          postcode: customerData.postcode,
+          plaats: customerData.plaats,
+          werk_type: 'nieuw_stucwerk',
+          afwerking: formData.stuc_type,
+          oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
+          isolatie_gewenst: formData.isolatie_gewenst,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw'
+        })
+        .select()
+        .single();
 
-    if (insertError) {
-      console.error("❌ Database insert error:", insertError);
-      throw insertError;
+      if (insertError) {
+        console.error("❌ Database insert error:", insertError);
+      } else {
+        insertedData = data;
+        console.log("✅ Stukadoor request inserted successfully:", insertedData);
+      }
+    } catch (dbError) {
+      console.error("❌ Database operation failed:", dbError);
     }
 
-    console.log("✅ Stukadoor request inserted successfully:", insertedData);
+    // Always send emails regardless of database success
+    console.log("📧 Sending emails...");
 
     // Send confirmation email to customer
     const customerEmailHtml = `
@@ -104,20 +112,20 @@ serve(async (req) => {
           </div>
           
           <p style="color: #4b5563; line-height: 1.6;">
-            Heb je vragen? Neem gerust contact met ons op via <a href="mailto:info@refurbishdakkapel.nl" style="color: #10b981;">info@refurbishdakkapel.nl</a> of bel ons op <a href="tel:+31123456789" style="color: #10b981;">+31 123 456 789</a>.
+            Heb je vragen? Neem gerust contact met ons op via <a href="mailto:info@refurbishtotaalnederland.nl" style="color: #10b981;">info@refurbishtotaalnederland.nl</a> of bel ons op <a href="tel:+31123456789" style="color: #10b981;">+31 123 456 789</a>.
           </p>
         </div>
         
         <div style="background-color: #1f2937; padding: 1.5rem; text-align: center;">
           <p style="color: #9ca3af; margin: 0; font-size: 0.9rem;">
-            © 2024 Refurbish Dakkapel - Stukadoor Specialist
+            © 2024 Refurbish Totaal Nederland - Stukadoor Specialist
           </p>
         </div>
       </div>
     `;
 
     await resend.emails.send({
-      from: "Refurbish Dakkapel <info@refurbishdakkapel.nl>",
+      from: "Refurbish Totaal Nederland <info@refurbishtotaalnederland.nl>",
       to: [customerData.emailadres],
       subject: "🔨 Bevestiging van je stukadoor aanvraag",
       html: customerEmailHtml,
@@ -201,8 +209,8 @@ serve(async (req) => {
     `;
 
     await resend.emails.send({
-      from: "Refurbish Dakkapel <admin@refurbishdakkapel.nl>",
-      to: ["admin@refurbishdakkapel.nl", "info@refurbishdakkapel.nl"],
+      from: "Refurbish Totaal Nederland <admin@refurbishtotaalnederland.nl>",
+      to: ["info@refurbishtotaalnederland.nl", "mazenaddas95@gmail.com"],
       subject: "🔨 Nieuwe Stukadoor Aanvraag - Actie Vereist",
       html: adminEmailHtml,
     });
