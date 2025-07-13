@@ -60,26 +60,18 @@ const UnifiedAdminDashboard = () => {
     queryFn: async () => {
       console.log('🎨 Fetching schilder aanvragen...');
       
-      // Create a simple supabase client instance without authentication restrictions
-      const supabaseSimple = supabase;
+      const { data, error } = await supabase
+        .from('schilder_aanvragen')
+        .select('*')
+        .order('created_at', { ascending: false });
       
-      try {
-        const { data, error } = await supabaseSimple
-          .from('schilder_aanvragen')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (error) {
-          console.error('❌ Error fetching schilder aanvragen:', error);
-          throw error;
-        }
-        
-        console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
-        return data || [];
-      } catch (err) {
-        console.error('❌ Exception in schilder query:', err);
-        throw err;
+      if (error) {
+        console.error('❌ Error fetching schilder aanvragen:', error);
+        throw error;
       }
+      
+      console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
+      return data || [];
     },
     refetchOnWindowFocus: false,
     retry: 3,
@@ -91,26 +83,18 @@ const UnifiedAdminDashboard = () => {
     queryFn: async () => {
       console.log('🔨 Fetching stukadoor aanvragen...');
       
-      // Create a simple supabase client instance without authentication restrictions
-      const supabaseSimple = supabase;
+      const { data, error } = await supabase
+        .from('stukadoor_aanvragen')
+        .select('*')
+        .order('created_at', { ascending: false });
       
-      try {
-        const { data, error } = await supabaseSimple
-          .from('stukadoor_aanvragen')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (error) {
-          console.error('❌ Error fetching stukadoor aanvragen:', error);
-          throw error;
-        }
-        
-        console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
-        return data || [];
-      } catch (err) {
-        console.error('❌ Exception in stukadoor query:', err);
-        throw err;
+      if (error) {
+        console.error('❌ Error fetching stukadoor aanvragen:', error);
+        throw error;
       }
+      
+      console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
+      return data || [];
     },
     refetchOnWindowFocus: false,
     retry: 3,
