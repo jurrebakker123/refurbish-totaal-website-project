@@ -16,9 +16,10 @@ serve(async (req) => {
   }
 
   try {
-    const requestData = await req.json();
-    console.log("🔨 Received stukadoor request:", requestData);
+    const { customerData, formData, totalPrice } = await req.json();
+    console.log("🔨 Received stukadoor request:", { customerData, formData, totalPrice });
 
+    // Create Supabase client with service role key for database operations
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -27,7 +28,23 @@ serve(async (req) => {
     // Insert into database
     const { data: insertedData, error: insertError } = await supabase
       .from("stukadoor_aanvragen")
-      .insert([requestData])
+      .insert({
+        voornaam: customerData.voornaam,
+        achternaam: customerData.achternaam,
+        emailadres: customerData.emailadres,
+        telefoon: customerData.telefoon,
+        straatnaam: customerData.straatnaam,
+        huisnummer: customerData.huisnummer,
+        postcode: customerData.postcode,
+        plaats: customerData.plaats,
+        werk_type: 'nieuw_stucwerk',
+        afwerking: formData.stuc_type,
+        oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
+        isolatie_gewenst: formData.isolatie_gewenst,
+        bericht: formData.bericht,
+        totaal_prijs: totalPrice,
+        status: 'nieuw'
+      })
       .select()
       .single();
 
@@ -47,7 +64,7 @@ serve(async (req) => {
         </div>
         
         <div style="padding: 2rem; background-color: #f8fafc;">
-          <h2 style="color: #1f2937; margin-bottom: 1rem;">Hallo ${requestData.voornaam},</h2>
+          <h2 style="color: #1f2937; margin-bottom: 1rem;">Hallo ${customerData.voornaam},</h2>
           <p style="color: #4b5563; line-height: 1.6;">
             Dank je wel voor je interesse in onze stukadoor diensten. We hebben je aanvraag ontvangen en zullen zo spoedig mogelijk contact met je opnemen.
           </p>
@@ -57,26 +74,20 @@ serve(async (req) => {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Werk Type:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.werk_type}</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">Nieuw stucwerk</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Afwerking:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.afwerking}</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.stuc_type.replace('_', ' ')}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Oppervlakte:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.oppervlakte} m²</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${(parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0)} m²</td>
               </tr>
-              ${requestData.aantal_kamers ? `
-              <tr>
-                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Aantal Kamers:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.aantal_kamers}</td>
-              </tr>
-              ` : ''}
-              ${requestData.totaal_prijs ? `
+              ${totalPrice ? `
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Geschatte Prijs:</td>
-                <td style="padding: 0.5rem 0; color: #059669; font-weight: 600;">€${requestData.totaal_prijs}</td>
+                <td style="padding: 0.5rem 0; color: #059669; font-weight: 600;">€${totalPrice}</td>
               </tr>
               ` : ''}
             </table>
@@ -107,12 +118,12 @@ serve(async (req) => {
 
     await resend.emails.send({
       from: "Refurbish Dakkapel <info@refurbishdakkapel.nl>",
-      to: [requestData.emailadres],
+      to: [customerData.emailadres],
       subject: "🔨 Bevestiging van je stukadoor aanvraag",
       html: customerEmailHtml,
     });
 
-    // Send admin notification email with BLACK TEXT
+    // Send admin notification email
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
         <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 2rem; text-align: center;">
@@ -126,19 +137,19 @@ serve(async (req) => {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Naam:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.voornaam} ${requestData.achternaam}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${customerData.voornaam} ${customerData.achternaam}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Email:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.emailadres}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${customerData.emailadres}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Telefoon:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.telefoon}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${customerData.telefoon}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Adres:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</td>
               </tr>
             </table>
           </div>
@@ -148,53 +159,35 @@ serve(async (req) => {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Werk Type:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.werk_type}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">Nieuw stucwerk</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Afwerking:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.afwerking}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.stuc_type.replace('_', ' ')}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Oppervlakte:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.oppervlakte} m²</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${(parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0)} m²</td>
               </tr>
-              ${requestData.aantal_kamers ? `
-              <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Aantal Kamers:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.aantal_kamers}</td>
-              </tr>
-              ` : ''}
-              ${requestData.huidige_staat ? `
-              <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Huidige Staat:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.huidige_staat}</td>
-              </tr>
-              ` : ''}
-              ${requestData.voorbewerking ? `
-              <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Voorbewerking:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.voorbewerking}</td>
-              </tr>
-              ` : ''}
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Isolatie Gewenst:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.isolatie_gewenst ? 'Ja' : 'Nee'}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.isolatie_gewenst ? 'Ja' : 'Nee'}</td>
               </tr>
             </table>
           </div>
           
-          ${requestData.totaal_prijs ? `
+          ${totalPrice ? `
           <div style="background: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #10b981; text-align: center;">
             <h2 style="color: #000000; margin: 0 0 0.5rem; font-size: 1.2rem;">💰 Totaalprijs:</h2>
-            <p style="color: #059669; font-size: 2rem; font-weight: 700; margin: 0;">€${requestData.totaal_prijs}</p>
+            <p style="color: #059669; font-size: 2rem; font-weight: 700; margin: 0;">€${totalPrice}</p>
             <p style="color: #000000; margin: 0.5rem 0 0; font-size: 0.9rem;">Prijsindicatie inclusief BTW</p>
           </div>
           ` : ''}
           
-          ${requestData.bericht ? `
+          ${formData.bericht ? `
           <div style="background: #fffbeb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
             <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">💬 Aanvullende Informatie</h2>
-            <p style="color: #000000; line-height: 1.6; margin: 0;">${requestData.bericht}</p>
+            <p style="color: #000000; line-height: 1.6; margin: 0;">${formData.bericht}</p>
           </div>
           ` : ''}
           
