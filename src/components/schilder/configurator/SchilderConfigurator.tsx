@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,7 +75,7 @@ const SchilderConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🎨 Starting schilder form submission...');
+      console.log('🎨 Starting schilder form submission process...');
       const totalPrice = calculatePrice();
       
       const customerData = {
@@ -91,6 +90,12 @@ const SchilderConfigurator = () => {
       };
 
       console.log('💾 Saving to schilder_aanvragen database...');
+      console.log('📊 Data to be saved:', {
+        customer: customerData,
+        project: formData.project_type,
+        price: totalPrice
+      });
+
       const { data: insertData, error } = await supabase
         .from('schilder_aanvragen')
         .insert({
@@ -114,14 +119,20 @@ const SchilderConfigurator = () => {
         .select();
 
       if (error) {
-        console.error('❌ Database error:', error);
+        console.error('❌ Database save error:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details
+        });
         throw error;
       }
 
-      console.log('✅ Database save successful! Data saved to schilder_aanvragen table:', insertData);
+      console.log('✅ Database save successful!');
+      console.log('📋 Saved record:', insertData);
 
-      console.log('📧 Sending emails via edge function...');
-      const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
+      console.log('📧 Sending notification emails via edge function...');
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
         body: { 
           customerData, 
           formData, 
@@ -131,13 +142,18 @@ const SchilderConfigurator = () => {
       });
 
       if (emailError) {
-        console.error('❌ Email error:', emailError);
+        console.error('❌ Email sending error:', emailError);
+        console.error('❌ Email error details:', {
+          message: emailError.message,
+          stack: emailError.stack
+        });
         throw emailError;
       }
       
       console.log('✅ Emails sent successfully!');
+      console.log('📧 Email response:', emailData);
 
-      toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
+      toast.success('Bedankt voor uw aanvraag! U ontvangt zo een bevestiging per email en wij nemen binnen 24 uur contact met u op.', {
         duration: 5000
       });
       
@@ -165,8 +181,8 @@ const SchilderConfigurator = () => {
       setUploadedFile(null);
 
     } catch (error) {
-      console.error('❌ Form submission error:', error);
-      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw.');
+      console.error('❌ Complete form submission error:', error);
+      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw of neem contact met ons op.');
     } finally {
       setIsSubmitting(false);
     }

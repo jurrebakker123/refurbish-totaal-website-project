@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -88,7 +87,7 @@ const StukadoorConfigurator = () => {
     setIsSubmitting(true);
 
     try {
-      console.log('🏗️ Starting stukadoor form submission...');
+      console.log('🏗️ Starting stukadoor form submission process...');
       const totalPrice = calculatePrice();
       
       const customerData = {
@@ -103,6 +102,12 @@ const StukadoorConfigurator = () => {
       };
 
       console.log('💾 Saving to stukadoor_aanvragen database...');
+      console.log('📊 Data to be saved:', {
+        customer: customerData,
+        workType: formData.stuc_type,
+        price: totalPrice
+      });
+
       const { data: insertData, error } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
@@ -125,14 +130,20 @@ const StukadoorConfigurator = () => {
         .select();
 
       if (error) {
-        console.error('❌ Database error:', error);
+        console.error('❌ Database save error:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details
+        });
         throw error;
       }
 
-      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table:', insertData);
+      console.log('✅ Database save successful!');
+      console.log('📋 Saved record:', insertData);
 
-      console.log('📧 Sending emails via edge function...');
-      const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
+      console.log('📧 Sending notification emails via edge function...');
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
         body: { 
           customerData, 
           formData: {
@@ -146,13 +157,18 @@ const StukadoorConfigurator = () => {
       });
 
       if (emailError) {
-        console.error('❌ Email error:', emailError);
+        console.error('❌ Email sending error:', emailError);
+        console.error('❌ Email error details:', {
+          message: emailError.message,
+          stack: emailError.stack
+        });
         throw emailError;
       }
       
       console.log('✅ Emails sent successfully!');
+      console.log('📧 Email response:', emailData);
 
-      toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
+      toast.success('Bedankt voor uw aanvraag! U ontvangt zo een bevestiging per email en wij nemen binnen 24 uur contact met u op.', {
         duration: 5000
       });
       
@@ -178,8 +194,8 @@ const StukadoorConfigurator = () => {
       setUploadedFile(null);
 
     } catch (error) {
-      console.error('❌ Form submission error:', error);
-      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw.');
+      console.error('❌ Complete form submission error:', error);
+      toast.error('Er ging iets mis bij het verzenden van uw aanvraag. Probeer het opnieuw of neem contact met ons op.');
     } finally {
       setIsSubmitting(false);
     }
