@@ -56,50 +56,25 @@ const UnifiedAdminDashboard = () => {
     retryDelay: 1000
   });
 
-  // SCHILDER QUERY - COMPLETELY REBUILT
+  // SCHILDER QUERY - VOLLEDIG OPNIEUW OPGEBOUWD
   const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
-    queryKey: ['schilder_aanvragen_direct'],
+    queryKey: ['schilder_aanvragen_final'],
     queryFn: async () => {
-      console.log('🎨 DIRECT FETCH: Starting schilder aanvragen query...');
+      console.log('🎨 FINAL: Starting schilder aanvragen query...');
       
       try {
-        console.log('🎨 Creating supabase connection...');
-        
         const { data, error } = await supabase
           .from('schilder_aanvragen')
-          .select(`
-            id,
-            created_at,
-            updated_at,
-            voornaam,
-            achternaam,
-            emailadres,
-            telefoon,
-            straatnaam,
-            huisnummer,
-            postcode,
-            plaats,
-            project_type,
-            bericht,
-            oppervlakte,
-            totaal_prijs,
-            status,
-            notities
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
         
         if (error) {
-          console.error('❌ SCHILDER QUERY ERROR:', error);
-          console.error('❌ Error code:', error.code);
-          console.error('❌ Error message:', error.message);
-          console.error('❌ Error details:', error.details);
-          throw new Error(`Schilder query failed: ${error.message}`);
+          console.error('❌ SCHILDER ERROR:', error);
+          throw error;
         }
         
-        console.log('✅ SCHILDER SUCCESS: Retrieved', data?.length || 0, 'records');
-        if (data && data.length > 0) {
-          console.log('🎨 First schilder record:', JSON.stringify(data[0], null, 2));
-        }
+        console.log('✅ SCHILDER SUCCES - Data loaded:', data?.length || 0, 'records');
+        console.log('🎨 First 3 schilder records:', data?.slice(0, 3));
         
         return data || [];
       } catch (err) {
@@ -108,55 +83,29 @@ const UnifiedAdminDashboard = () => {
       }
     },
     refetchOnWindowFocus: false,
-    retry: 2,
-    retryDelay: 2000,
-    staleTime: 30000
+    retry: 1,
+    retryDelay: 1000
   });
 
-  // STUKADOOR QUERY - COMPLETELY REBUILT  
+  // STUKADOOR QUERY - VOLLEDIG OPNIEUW OPGEBOUWD  
   const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
-    queryKey: ['stukadoor_aanvragen_direct'],
+    queryKey: ['stukadoor_aanvragen_final'],
     queryFn: async () => {
-      console.log('🔨 DIRECT FETCH: Starting stukadoor aanvragen query...');
+      console.log('🔨 FINAL: Starting stukadoor aanvragen query...');
       
       try {
-        console.log('🔨 Creating supabase connection...');
-        
         const { data, error } = await supabase
           .from('stukadoor_aanvragen')
-          .select(`
-            id,
-            created_at,
-            updated_at,
-            voornaam,
-            achternaam,
-            emailadres,
-            telefoon,
-            straatnaam,
-            huisnummer,
-            postcode,
-            plaats,
-            werk_type,
-            bericht,
-            oppervlakte,
-            totaal_prijs,
-            status,
-            notities
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
         
         if (error) {
-          console.error('❌ STUKADOOR QUERY ERROR:', error);
-          console.error('❌ Error code:', error.code);
-          console.error('❌ Error message:', error.message);
-          console.error('❌ Error details:', error.details);
-          throw new Error(`Stukadoor query failed: ${error.message}`);
+          console.error('❌ STUKADOOR ERROR:', error);
+          throw error;
         }
         
-        console.log('✅ STUKADOOR SUCCESS: Retrieved', data?.length || 0, 'records');
-        if (data && data.length > 0) {
-          console.log('🔨 First stukadoor record:', JSON.stringify(data[0], null, 2));
-        }
+        console.log('✅ STUKADOOR SUCCES - Data loaded:', data?.length || 0, 'records');
+        console.log('🔨 First 3 stukadoor records:', data?.slice(0, 3));
         
         return data || [];
       } catch (err) {
@@ -165,9 +114,8 @@ const UnifiedAdminDashboard = () => {
       }
     },
     refetchOnWindowFocus: false,
-    retry: 2,
-    retryDelay: 2000,
-    staleTime: 30000
+    retry: 1,
+    retryDelay: 1000
   });
 
   // Manual refresh function
@@ -343,9 +291,9 @@ const UnifiedAdminDashboard = () => {
     }
   }, [configurationsError, schilderError, stukadoorError]);
 
-  // Debug logging for data changes
+  // Debug logging voor data changes
   useEffect(() => {
-    console.log('📊 DASHBOARD DATA STATUS:', {
+    console.log('📊 DASHBOARD STATUS UPDATE:', {
       activeService,
       dakkapelCount: configuraties?.length || 0,
       schilderCount: schilderAanvragen?.length || 0,

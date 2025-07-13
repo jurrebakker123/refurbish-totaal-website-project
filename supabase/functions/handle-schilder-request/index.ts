@@ -147,102 +147,102 @@ const handler = async (req: Request): Promise<Response> => {
       html: customerEmailHtml,
     });
 
-    // Send detailed notification to admin emails - FIXED ALL WHITE TEXT TO BLACK/GREEN
+    // Send detailed notification to admin emails - ALLE TEKST NU ZWART OF GROEN
     const adminEmailHtml = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; color: #333; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; color: #333333; }
           .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 20px; text-align: center; }
-          .header h1 { margin: 0; font-size: 28px; font-weight: bold; color: white; }
-          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; color: white; }
-          .content { padding: 30px; color: #333; }
-          .greeting { font-size: 18px; margin-bottom: 20px; color: #333; }
+          .header { background: linear-gradient(135deg, #10b981, #059669); color: #333333 !important; padding: 40px 20px; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: bold; color: #333333 !important; }
+          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 1; color: #333333 !important; }
+          .content { padding: 30px; color: #333333; }
+          .greeting { font-size: 18px; margin-bottom: 20px; color: #333333 !important; }
           .section { margin: 25px 0; }
-          .section h3 { color: #059669; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
+          .section h3 { color: #059669 !important; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
           .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
           .details ul { margin: 0; padding-left: 20px; }
-          .details li { margin: 5px 0; color: #333; }
-          .details li strong { color: #333; }
-          .details p { margin: 5px 0; color: #333; }
-          .details p strong { color: #333; }
-          .price-box { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; color: white; }
-          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: white; }
-          .price-box .note { font-size: 14px; opacity: 0.8; color: white; }
+          .details li { margin: 5px 0; color: #333333 !important; }
+          .details li strong { color: #333333 !important; }
+          .details p { margin: 5px 0; color: #333333 !important; }
+          .details p strong { color: #333333 !important; }
+          .price-box { background: linear-gradient(135deg, #10b981, #059669); color: #333333 !important; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 1; color: #333333 !important; }
+          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: #333333 !important; }
+          .price-box .note { font-size: 14px; opacity: 1; color: #333333 !important; }
           .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
-          .included h4 { color: #059669; margin: 0 0 10px 0; }
+          .included h4 { color: #059669 !important; margin: 0 0 10px 0; }
           .included ul { margin: 0; padding-left: 20px; }
-          .included li { color: #059669; margin: 5px 0; }
+          .included li { color: #059669 !important; margin: 5px 0; }
           .footer { background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; }
-          .footer .company { color: #10b981; font-weight: bold; font-size: 18px; }
-          .footer .details { color: #6b7280; font-size: 14px; margin: 5px 0; }
+          .footer .company { color: #10b981 !important; font-weight: bold; font-size: 18px; }
+          .footer .details { color: #6b7280 !important; font-size: 14px; margin: 5px 0; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1 style="color: white;">🎨 Nieuwe Schilderwerk Aanvraag</h1>
-            <div class="subtitle" style="color: white;">Admin Notificatie</div>
+            <h1 style="color: #333333 !important;">🎨 Nieuwe Schilderwerk Aanvraag</h1>
+            <div class="subtitle" style="color: #333333 !important;">Admin Notificatie</div>
           </div>
           
           <div class="content">
-            <div class="greeting" style="color: #333;">Nieuwe aanvraag ontvangen van ${customerData.voornaam} ${customerData.achternaam}</div>
+            <div class="greeting" style="color: #333333 !important;">Nieuwe aanvraag ontvangen van ${customerData.voornaam} ${customerData.achternaam}</div>
             
             <div class="section">
-              <h3 style="color: #059669;">📋 Overzicht van de configuratie</h3>
+              <h3 style="color: #059669 !important;">📋 Overzicht van de configuratie</h3>
               
               <div class="details">
-                <p style="color: #333;"><strong style="color: #333;">Project type:</strong> ${formatFieldName(formData.project_type)}</p>
-                <p style="color: #333;"><strong style="color: #333;">Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
-                <p style="color: #333;"><strong style="color: #333;">Oppervlakte:</strong> ${formData.oppervlakte}m² wanden</p>
-                ${formData.plafond_oppervlakte ? `<p style="color: #333;"><strong style="color: #333;">Plafond oppervlakte:</strong> ${formData.plafond_oppervlakte}m²</p>` : ''}
-                ${formData.aantal_deuren ? `<p style="color: #333;"><strong style="color: #333;">Aantal deuren:</strong> ${formData.aantal_deuren}</p>` : ''}
-                ${formData.aantal_ramen ? `<p style="color: #333;"><strong style="color: #333;">Aantal ramen:</strong> ${formData.aantal_ramen}</p>` : ''}
-                <p style="color: #333;"><strong style="color: #333;">Kleuren:</strong> ${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}</p>
-                ${formData.uitvoertermijn ? `<p style="color: #333;"><strong style="color: #333;">Uitvoertermijn:</strong> ${formData.uitvoertermijn}</p>` : ''}
-                ${formData.reden_aanvraag ? `<p style="color: #333;"><strong style="color: #333;">Reden aanvraag:</strong> ${formData.reden_aanvraag}</p>` : ''}
-                ${formData.bericht ? `<p style="color: #333;"><strong style="color: #333;">Bericht:</strong> ${formData.bericht}</p>` : ''}
+                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Project type:</strong> ${formatFieldName(formData.project_type)}</p>
+                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
+                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Oppervlakte:</strong> ${formData.oppervlakte}m² wanden</p>
+                ${formData.plafond_oppervlakte ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Plafond oppervlakte:</strong> ${formData.plafond_oppervlakte}m²</p>` : ''}
+                ${formData.aantal_deuren ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Aantal deuren:</strong> ${formData.aantal_deuren}</p>` : ''}
+                ${formData.aantal_ramen ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Aantal ramen:</strong> ${formData.aantal_ramen}</p>` : ''}
+                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Kleuren:</strong> ${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}</p>
+                ${formData.uitvoertermijn ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Uitvoertermijn:</strong> ${formData.uitvoertermijn}</p>` : ''}
+                ${formData.reden_aanvraag ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Reden aanvraag:</strong> ${formData.reden_aanvraag}</p>` : ''}
+                ${formData.bericht ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Bericht:</strong> ${formData.bericht}</p>` : ''}
               </div>
             </div>
 
             <div class="section">
-              <h3 style="color: #059669;">👤 Contactgegevens klant:</h3>
+              <h3 style="color: #059669 !important;">👤 Contactgegevens klant:</h3>
               <div class="details">
                 <ul>
-                  <li style="color: #333;"><strong style="color: #333;">Naam:</strong> ${customerData.voornaam} ${customerData.achternaam}</li>
-                  <li style="color: #333;"><strong style="color: #333;">E-mail:</strong> ${customerData.emailadres}</li>
-                  <li style="color: #333;"><strong style="color: #333;">Telefoon:</strong> ${customerData.telefoon}</li>
-                  <li style="color: #333;"><strong style="color: #333;">Adres:</strong> ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
+                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">Naam:</strong> ${customerData.voornaam} ${customerData.achternaam}</li>
+                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">E-mail:</strong> ${customerData.emailadres}</li>
+                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">Telefoon:</strong> ${customerData.telefoon}</li>
+                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">Adres:</strong> ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
                 </ul>
               </div>
             </div>
 
             <div class="price-box">
-              <div class="label" style="color: white;">💰 Totaalprijs:</div>
-              <div class="amount" style="color: white;">€${totalPrice.toLocaleString()}</div>
-              <div class="note" style="color: white;">Prijsindicatie inclusief BTW</div>
+              <div class="label" style="color: #333333 !important;">💰 Totaalprijs:</div>
+              <div class="amount" style="color: #333333 !important;">€${totalPrice.toLocaleString()}</div>
+              <div class="note" style="color: #333333 !important;">Prijsindicatie inclusief BTW</div>
             </div>
 
             <div class="included">
-              <h4 style="color: #059669;">✅ Inbegrepen in de prijs:</h4>
+              <h4 style="color: #059669 !important;">✅ Inbegrepen in de prijs:</h4>
               <ul>
-                <li style="color: #059669;">Complete levering en toepassing van hoogwaardige verf</li>
-                <li style="color: #059669;">Professionele voorbehandeling van het oppervlak</li>
-                <li style="color: #059669;">Vakkundige afwerking door ervaren schilders</li>
-                <li style="color: #059669;">Opruimen en schoonmaken na afloop</li>
-                <li style="color: #059669;">Garantie op het uitgevoerde werk</li>
-                <li style="color: #059669;">Deskundig advies over kleurkeuze</li>
+                <li style="color: #059669 !important;">Complete levering en toepassing van hoogwaardige verf</li>
+                <li style="color: #059669 !important;">Professionele voorbehandeling van het oppervlak</li>
+                <li style="color: #059669 !important;">Vakkundige afwerking door ervaren schilders</li>
+                <li style="color: #059669 !important;">Opruimen en schoonmaken na afloop</li>
+                <li style="color: #059669 !important;">Garantie op het uitgevoerde werk</li>
+                <li style="color: #059669 !important;">Deskundig advies over kleurkeuze</li>
               </ul>
             </div>
           </div>
           
           <div class="footer">
-            <div class="company" style="color: #10b981;">Admin Notificatie<br>Refurbish Totaal Nederland</div>
-            <div class="details" style="color: #6b7280;">Neem zo snel mogelijk contact op met de klant!</div>
+            <div class="company" style="color: #10b981 !important;">Admin Notificatie<br>Refurbish Totaal Nederland</div>
+            <div class="details" style="color: #6b7280 !important;">Neem zo snel mogelijk contact op met de klant!</div>
           </div>
         </div>
       </body>
