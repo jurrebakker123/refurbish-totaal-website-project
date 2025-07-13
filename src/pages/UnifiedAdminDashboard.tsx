@@ -33,6 +33,7 @@ const UnifiedAdminDashboard = () => {
   });
   const [refreshing, setRefreshing] = useState(false);
 
+  // DAKKAPEL QUERY
   const { data: configuraties, isLoading: isLoadingConfigurations, error: configurationsError, refetch: refetchConfigurations } = useQuery({
     queryKey: ['dakkapel_calculator_aanvragen'],
     queryFn: async () => {
@@ -55,64 +56,118 @@ const UnifiedAdminDashboard = () => {
     retryDelay: 1000
   });
 
+  // SCHILDER QUERY - COMPLETELY REBUILT
   const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
-    queryKey: ['schilder_aanvragen'],
+    queryKey: ['schilder_aanvragen_direct'],
     queryFn: async () => {
-      console.log('🎨 Fetching schilder aanvragen...');
+      console.log('🎨 DIRECT FETCH: Starting schilder aanvragen query...');
       
       try {
+        console.log('🎨 Creating supabase connection...');
+        
         const { data, error } = await supabase
           .from('schilder_aanvragen')
-          .select('*')
+          .select(`
+            id,
+            created_at,
+            updated_at,
+            voornaam,
+            achternaam,
+            emailadres,
+            telefoon,
+            straatnaam,
+            huisnummer,
+            postcode,
+            plaats,
+            project_type,
+            bericht,
+            oppervlakte,
+            totaal_prijs,
+            status,
+            notities
+          `)
           .order('created_at', { ascending: false });
         
         if (error) {
-          console.error('❌ Error fetching schilder aanvragen:', error);
-          console.error('Error details:', JSON.stringify(error, null, 2));
-          throw error;
+          console.error('❌ SCHILDER QUERY ERROR:', error);
+          console.error('❌ Error code:', error.code);
+          console.error('❌ Error message:', error.message);
+          console.error('❌ Error details:', error.details);
+          throw new Error(`Schilder query failed: ${error.message}`);
         }
         
-        console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
-        console.log('First few records:', data?.slice(0, 3));
+        console.log('✅ SCHILDER SUCCESS: Retrieved', data?.length || 0, 'records');
+        if (data && data.length > 0) {
+          console.log('🎨 First schilder record:', JSON.stringify(data[0], null, 2));
+        }
+        
         return data || [];
       } catch (err) {
-        console.error('❌ Exception in schilder query:', err);
+        console.error('❌ SCHILDER EXCEPTION:', err);
         throw err;
       }
     },
     refetchOnWindowFocus: false,
-    retry: 3,
-    retryDelay: 1000
+    retry: 2,
+    retryDelay: 2000,
+    staleTime: 30000
   });
 
+  // STUKADOOR QUERY - COMPLETELY REBUILT  
   const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
-    queryKey: ['stukadoor_aanvragen'],
+    queryKey: ['stukadoor_aanvragen_direct'],
     queryFn: async () => {
-      console.log('🔨 Fetching stukadoor aanvragen...');
+      console.log('🔨 DIRECT FETCH: Starting stukadoor aanvragen query...');
       
       try {
+        console.log('🔨 Creating supabase connection...');
+        
         const { data, error } = await supabase
           .from('stukadoor_aanvragen')
-          .select('*')
+          .select(`
+            id,
+            created_at,
+            updated_at,
+            voornaam,
+            achternaam,
+            emailadres,
+            telefoon,
+            straatnaam,
+            huisnummer,
+            postcode,
+            plaats,
+            werk_type,
+            bericht,
+            oppervlakte,
+            totaal_prijs,
+            status,
+            notities
+          `)
           .order('created_at', { ascending: false });
         
         if (error) {
-          console.error('❌ Error fetching stukadoor aanvragen:', error);
-          console.error('Error details:', JSON.stringify(error, null, 2));
-          throw error;
+          console.error('❌ STUKADOOR QUERY ERROR:', error);
+          console.error('❌ Error code:', error.code);
+          console.error('❌ Error message:', error.message);
+          console.error('❌ Error details:', error.details);
+          throw new Error(`Stukadoor query failed: ${error.message}`);
         }
         
-        console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
-        console.log('First few records:', data?.slice(0, 3));
+        console.log('✅ STUKADOOR SUCCESS: Retrieved', data?.length || 0, 'records');
+        if (data && data.length > 0) {
+          console.log('🔨 First stukadoor record:', JSON.stringify(data[0], null, 2));
+        }
+        
         return data || [];
       } catch (err) {
-        console.error('❌ Exception in stukadoor query:', err);
+        console.error('❌ STUKADOOR EXCEPTION:', err);
         throw err;
       }
     },
     refetchOnWindowFocus: false,
-    retry: 3,
-    retryDelay: 1000
+    retry: 2,
+    retryDelay: 2000,
+    staleTime: 30000
   });
 
   // Manual refresh function
@@ -242,20 +297,20 @@ const UnifiedAdminDashboard = () => {
     switch (activeService) {
       case 'dakkapel':
         data = configuraties || [];
-        console.log('Dakkapel data:', data.length, 'items');
+        console.log('📊 Dakkapel data:', data.length, 'items');
         break;
       case 'schilder':
         data = schilderAanvragen || [];
-        console.log('Schilder data:', data.length, 'items');
+        console.log('📊 Schilder data:', data.length, 'items');
         break;
       case 'stukadoor':
         data = stukadoorAanvragen || [];
-        console.log('Stukadoor data:', data.length, 'items');
+        console.log('📊 Stukadoor data:', data.length, 'items');
         break;
       default:
         data = [];
     }
-    console.log('Current data for', activeService, ':', data);
+    console.log('📊 Current data for', activeService, ':', data);
     return data;
   };
 
@@ -280,28 +335,33 @@ const UnifiedAdminDashboard = () => {
     }
     if (schilderError) {
       console.error('Schilder error:', schilderError);
-      toast.error('Fout bij laden schilder aanvragen');
+      toast.error('Fout bij laden schilder aanvragen: ' + schilderError.message);
     }
     if (stukadoorError) {
       console.error('Stukadoor error:', stukadoorError);
-      toast.error('Fout bij laden stukadoor aanvragen');
+      toast.error('Fout bij laden stukadoor aanvragen: ' + stukadoorError.message);
     }
   }, [configurationsError, schilderError, stukadoorError]);
 
   // Debug logging for data changes
   useEffect(() => {
-    console.log('📊 Dashboard Data Status:', {
+    console.log('📊 DASHBOARD DATA STATUS:', {
       activeService,
       dakkapelCount: configuraties?.length || 0,
       schilderCount: schilderAanvragen?.length || 0,
       stukadoorCount: stukadoorAanvragen?.length || 0,
+      loadingStates: {
+        dakkapel: isLoadingConfigurations,
+        schilder: isLoadingSchilder,
+        stukadoor: isLoadingStukadoor
+      },
       errors: {
         dakkapel: !!configurationsError,
         schilder: !!schilderError,
         stukadoor: !!stukadoorError
       }
     });
-  }, [activeService, configuraties, schilderAanvragen, stukadoorAanvragen, configurationsError, schilderError, stukadoorError]);
+  }, [activeService, configuraties, schilderAanvragen, stukadoorAanvragen, isLoadingConfigurations, isLoadingSchilder, isLoadingStukadoor, configurationsError, schilderError, stukadoorError]);
 
   if (getLoadingState()) {
     return (

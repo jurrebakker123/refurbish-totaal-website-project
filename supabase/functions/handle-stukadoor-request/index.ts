@@ -145,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
       html: customerEmailHtml,
     });
 
-    // Send detailed notification to admin emails - FIXED STYLING WITH PROPER COLORS
+    // Send detailed notification to admin emails - FIXED ALL WHITE TEXT TO BLACK/GREEN
     const adminEmailHtml = `
       <!DOCTYPE html>
       <html>
@@ -163,8 +163,10 @@ const handler = async (req: Request): Promise<Response> => {
           .section h3 { color: #059669; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
           .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
           .details ul { margin: 0; padding-left: 20px; }
-          .details li { margin: 5px 0; color: #555; }
-          .details p { margin: 5px 0; color: #555; }
+          .details li { margin: 5px 0; color: #333; }
+          .details li strong { color: #333; }
+          .details p { margin: 5px 0; color: #333; }
+          .details p strong { color: #333; }
           .price-box { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
           .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; color: white; }
           .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: white; }
@@ -181,62 +183,62 @@ const handler = async (req: Request): Promise<Response> => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🔨 Nieuwe Stukadoorswerk Aanvraag</h1>
-            <div class="subtitle">Admin Notificatie</div>
+            <h1 style="color: white;">🔨 Nieuwe Stukadoorswerk Aanvraag</h1>
+            <div class="subtitle" style="color: white;">Admin Notificatie</div>
           </div>
           
           <div class="content">
-            <div class="greeting">Nieuwe aanvraag ontvangen van ${customerData.voornaam} ${customerData.achternaam}</div>
+            <div class="greeting" style="color: #333;">Nieuwe aanvraag ontvangen van ${customerData.voornaam} ${customerData.achternaam}</div>
             
             <div class="section">
-              <h3>📋 Overzicht van de configuratie</h3>
+              <h3 style="color: #059669;">📋 Overzicht van de configuratie</h3>
               
               <div class="details">
-                <p><strong>Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
-                <p><strong>Stucwerk type:</strong> ${formatFieldName(formData.stuc_type)}</p>
-                <p><strong>Wand oppervlakte:</strong> ${formData.oppervlakte_wanden}m²</p>
-                <p><strong>Plafond oppervlakte:</strong> ${formData.oppervlakte_plafonds}m²</p>
-                <p><strong>Isolatie:</strong> ${formData.isolatie_gewenst ? 'Gewenst' : 'Niet gewenst'}</p>
-                ${formData.uitvoertermijn ? `<p><strong>Uitvoertermijn:</strong> ${formData.uitvoertermijn}</p>` : ''}
-                ${formData.reden_aanvraag ? `<p><strong>Reden aanvraag:</strong> ${formData.reden_aanvraag}</p>` : ''}
-                ${formData.bericht ? `<p><strong>Bericht:</strong> ${formData.bericht}</p>` : ''}
+                <p style="color: #333;"><strong style="color: #333;">Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
+                <p style="color: #333;"><strong style="color: #333;">Stucwerk type:</strong> ${formatFieldName(formData.stuc_type)}</p>
+                <p style="color: #333;"><strong style="color: #333;">Wand oppervlakte:</strong> ${formData.oppervlakte_wanden}m²</p>
+                <p style="color: #333;"><strong style="color: #333;">Plafond oppervlakte:</strong> ${formData.oppervlakte_plafonds}m²</p>
+                <p style="color: #333;"><strong style="color: #333;">Isolatie:</strong> ${formData.isolatie_gewenst ? 'Gewenst' : 'Niet gewenst'}</p>
+                ${formData.uitvoertermijn ? `<p style="color: #333;"><strong style="color: #333;">Uitvoertermijn:</strong> ${formData.uitvoertermijn}</p>` : ''}
+                ${formData.reden_aanvraag ? `<p style="color: #333;"><strong style="color: #333;">Reden aanvraag:</strong> ${formData.reden_aanvraag}</p>` : ''}
+                ${formData.bericht ? `<p style="color: #333;"><strong style="color: #333;">Bericht:</strong> ${formData.bericht}</p>` : ''}
               </div>
             </div>
 
             <div class="section">
-              <h3>👤 Contactgegevens klant:</h3>
+              <h3 style="color: #059669;">👤 Contactgegevens klant:</h3>
               <div class="details">
                 <ul>
-                  <li><strong>Naam:</strong> ${customerData.voornaam} ${customerData.achternaam}</li>
-                  <li><strong>E-mail:</strong> ${customerData.emailadres}</li>
-                  <li><strong>Telefoon:</strong> ${customerData.telefoon}</li>
-                  <li><strong>Adres:</strong> ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
+                  <li style="color: #333;"><strong style="color: #333;">Naam:</strong> ${customerData.voornaam} ${customerData.achternaam}</li>
+                  <li style="color: #333;"><strong style="color: #333;">E-mail:</strong> ${customerData.emailadres}</li>
+                  <li style="color: #333;"><strong style="color: #333;">Telefoon:</strong> ${customerData.telefoon}</li>
+                  <li style="color: #333;"><strong style="color: #333;">Adres:</strong> ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
                 </ul>
               </div>
             </div>
 
             <div class="price-box">
-              <div class="label">💰 Totaalprijs:</div>
-              <div class="amount">€${totalPrice.toLocaleString()}</div>
-              <div class="note">Prijsindicatie inclusief BTW</div>
+              <div class="label" style="color: white;">💰 Totaalprijs:</div>
+              <div class="amount" style="color: white;">€${totalPrice.toLocaleString()}</div>
+              <div class="note" style="color: white;">Prijsindicatie inclusief BTW</div>
             </div>
 
             <div class="included">
-              <h4>✅ Inbegrepen in de prijs:</h4>
+              <h4 style="color: #059669;">✅ Inbegrepen in de prijs:</h4>
               <ul>
-                <li>Complete levering en verwerking van hoogwaardige stucmaterialen</li>
-                <li>Professionele voorbehandeling van het oppervlak</li>
-                <li>Vakkundige afwerking door ervaren stukadoors</li>
-                <li>Opruimen en schoonmaken na afloop</li>
-                <li>Garantie op het uitgevoerde werk</li>
-                <li>Deskundig advies over afwerking en textuur</li>
+                <li style="color: #059669;">Complete levering en verwerking van hoogwaardige stucmaterialen</li>
+                <li style="color: #059669;">Professionele voorbehandeling van het oppervlak</li>
+                <li style="color: #059669;">Vakkundige afwerking door ervaren stukadoors</li>
+                <li style="color: #059669;">Opruimen en schoonmaken na afloop</li>
+                <li style="color: #059669;">Garantie op het uitgevoerde werk</li>
+                <li style="color: #059669;">Deskundig advies over afwerking en textuur</li>
               </ul>
             </div>
           </div>
           
           <div class="footer">
-            <div class="company">Admin Notificatie<br>Refurbish Totaal Nederland</div>
-            <div class="details">Neem zo snel mogelijk contact op met de klant!</div>
+            <div class="company" style="color: #10b981;">Admin Notificatie<br>Refurbish Totaal Nederland</div>
+            <div class="details" style="color: #6b7280;">Neem zo snel mogelijk contact op met de klant!</div>
           </div>
         </div>
       </body>
