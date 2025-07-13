@@ -91,19 +91,19 @@ const StukadoorConfigurator = () => {
       console.log('🏗️ Starting stukadoor form submission...');
       const totalPrice = calculatePrice();
       
-      const customerData = {
+      console.log('💾 Saving to stukadoor_aanvragen database...');
+      console.log('Form data being saved:', {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
         emailadres: formData.emailadres,
         telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats
-      };
+        werk_type: 'nieuw_stucwerk',
+        afwerking: formData.stuc_type,
+        oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
+        totaal_prijs: totalPrice
+      });
 
-      console.log('💾 Saving to stukadoor_aanvragen database...');
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -117,18 +117,38 @@ const StukadoorConfigurator = () => {
           werk_type: 'nieuw_stucwerk',
           afwerking: formData.stuc_type,
           oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
+          aantal_kamers: null,
+          huidige_staat: null,
+          voorbewerking: null,
           isolatie_gewenst: formData.isolatie_gewenst,
-          bericht: formData.bericht,
+          bericht: formData.bericht || null,
           totaal_prijs: totalPrice,
-          status: 'nieuw'
-        });
+          status: 'nieuw',
+          notities: null,
+          offerte_verzonden_op: null,
+          op_locatie_op: null,
+          in_aanbouw_op: null,
+          afgehandeld_op: null
+        })
+        .select();
 
       if (error) {
         console.error('❌ Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table');
+      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table:', data);
+
+      const customerData = {
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        emailadres: formData.emailadres,
+        telefoon: formData.telefoon,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats
+      };
 
       console.log('📧 Sending emails via edge function...');
       const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
@@ -146,10 +166,11 @@ const StukadoorConfigurator = () => {
 
       if (emailError) {
         console.error('❌ Email error:', emailError);
-        throw emailError;
+        // Don't throw email error, as the database save was successful
+        console.log('⚠️ Email failed but continuing as database save was successful');
+      } else {
+        console.log('✅ Emails sent successfully!');
       }
-      
-      console.log('✅ Emails sent successfully!');
 
       toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000

@@ -79,19 +79,18 @@ const SchilderConfigurator = () => {
       console.log('🎨 Starting schilder form submission...');
       const totalPrice = calculatePrice();
       
-      const customerData = {
+      console.log('💾 Saving to schilder_aanvragen database...');
+      console.log('Form data being saved:', {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
         emailadres: formData.emailadres,
         telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats
-      };
+        project_type: `${formData.project_type} - ${formData.bouw_type}`,
+        oppervlakte: parseInt(formData.oppervlakte) || 0,
+        totaal_prijs: totalPrice
+      });
 
-      console.log('💾 Saving to schilder_aanvragen database...');
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('schilder_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -105,19 +104,40 @@ const SchilderConfigurator = () => {
           project_type: `${formData.project_type} - ${formData.bouw_type}`,
           verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
           oppervlakte: parseInt(formData.oppervlakte) || 0,
-          bericht: formData.bericht,
+          aantal_kamers: null,
+          voorbewerking_nodig: false,
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
+          huidige_kleur: null,
+          gewenste_kleur: null,
+          bericht: formData.bericht || null,
           totaal_prijs: totalPrice,
           status: 'nieuw',
-          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
-        });
+          notities: null,
+          offerte_verzonden_op: null,
+          op_locatie_op: null,
+          in_aanbouw_op: null,
+          afgehandeld_op: null
+        })
+        .select();
 
       if (error) {
         console.error('❌ Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful! Data saved to schilder_aanvragen table');
+      console.log('✅ Database save successful! Data saved to schilder_aanvragen table:', data);
+
+      const customerData = {
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        emailadres: formData.emailadres,
+        telefoon: formData.telefoon,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats
+      };
 
       console.log('📧 Sending emails via edge function...');
       const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
@@ -131,10 +151,11 @@ const SchilderConfigurator = () => {
 
       if (emailError) {
         console.error('❌ Email error:', emailError);
-        throw emailError;
+        // Don't throw email error, as the database save was successful
+        console.log('⚠️ Email failed but continuing as database save was successful');
+      } else {
+        console.log('✅ Emails sent successfully!');
       }
-      
-      console.log('✅ Emails sent successfully!');
 
       toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000
