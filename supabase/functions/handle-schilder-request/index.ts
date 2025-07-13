@@ -107,7 +107,7 @@ serve(async (req) => {
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Gewenste uitvoertermijn:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.uitvoertermijn || formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
               ${totalPrice ? `
               <tr>
@@ -208,7 +208,7 @@ serve(async (req) => {
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Gewenste Uitvoertermijn:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.uitvoertermijn || formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
             </table>
           </div>
