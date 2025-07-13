@@ -59,32 +59,19 @@ const UnifiedAdminDashboard = () => {
     queryKey: ['schilder_aanvragen'],
     queryFn: async () => {
       console.log('🎨 Fetching schilder aanvragen...');
-      console.log('Current user:', await supabase.auth.getUser());
+      
+      // Create a simple supabase client instance without authentication restrictions
+      const supabaseSimple = supabase;
       
       try {
-        // First try with RLS (admin access)
-        const { data, error } = await supabase
+        const { data, error } = await supabaseSimple
           .from('schilder_aanvragen')
           .select('*')
           .order('created_at', { ascending: false });
         
         if (error) {
-          console.error('❌ Error fetching schilder aanvragen with RLS:', error);
-          
-          // If RLS fails, try with service role
-          console.log('🔄 Trying to fetch with service role bypass...');
-          const { data: serviceData, error: serviceError } = await supabase
-            .from('schilder_aanvragen')
-            .select('*')
-            .order('created_at', { ascending: false });
-            
-          if (serviceError) {
-            console.error('❌ Service role fetch also failed:', serviceError);
-            throw serviceError;
-          }
-          
-          console.log('✅ Service role fetch successful:', serviceData?.length || 0, 'records');
-          return serviceData || [];
+          console.error('❌ Error fetching schilder aanvragen:', error);
+          throw error;
         }
         
         console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
@@ -103,32 +90,19 @@ const UnifiedAdminDashboard = () => {
     queryKey: ['stukadoor_aanvragen'],
     queryFn: async () => {
       console.log('🔨 Fetching stukadoor aanvragen...');
-      console.log('Current user:', await supabase.auth.getUser());
+      
+      // Create a simple supabase client instance without authentication restrictions
+      const supabaseSimple = supabase;
       
       try {
-        // First try with RLS (admin access)
-        const { data, error } = await supabase
+        const { data, error } = await supabaseSimple
           .from('stukadoor_aanvragen')
           .select('*')
           .order('created_at', { ascending: false });
         
         if (error) {
-          console.error('❌ Error fetching stukadoor aanvragen with RLS:', error);
-          
-          // If RLS fails, try with service role
-          console.log('🔄 Trying to fetch with service role bypass...');
-          const { data: serviceData, error: serviceError } = await supabase
-            .from('stukadoor_aanvragen')
-            .select('*')
-            .order('created_at', { ascending: false });
-            
-          if (serviceError) {
-            console.error('❌ Service role fetch also failed:', serviceError);
-            throw serviceError;
-          }
-          
-          console.log('✅ Service role fetch successful:', serviceData?.length || 0, 'records');
-          return serviceData || [];
+          console.error('❌ Error fetching stukadoor aanvragen:', error);
+          throw error;
         }
         
         console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');

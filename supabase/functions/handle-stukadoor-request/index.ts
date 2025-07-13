@@ -145,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
       html: customerEmailHtml,
     });
 
-    // Send detailed notification to admin emails with same template as customer
+    // Send detailed notification to admin emails with SAME colors as customer template
     const adminEmailHtml = `
       <!DOCTYPE html>
       <html>
@@ -154,26 +154,27 @@ const handler = async (req: Request): Promise<Response> => {
         <style>
           body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
           .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-          .header { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 40px 20px; text-align: center; }
+          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 20px; text-align: center; }
           .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
           .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
           .content { padding: 30px; }
           .greeting { font-size: 18px; margin-bottom: 20px; color: #333; }
           .section { margin: 25px 0; }
-          .section h3 { color: #f59e0b; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #f59e0b; padding-bottom: 5px; }
+          .section h3 { color: #059669; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
           .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
           .details ul { margin: 0; padding-left: 20px; }
           .details li { margin: 5px 0; color: #555; }
-          .price-box { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+          .details p { margin: 5px 0; color: #555; }
+          .price-box { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
           .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; }
           .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
           .price-box .note { font-size: 14px; opacity: 0.8; }
-          .included { background-color: #fffbeb; padding: 15px; border-radius: 6px; margin: 20px 0; }
-          .included h4 { color: #f59e0b; margin: 0 0 10px 0; }
+          .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
+          .included h4 { color: #059669; margin: 0 0 10px 0; }
           .included ul { margin: 0; padding-left: 20px; }
-          .included li { color: #f59e0b; margin: 5px 0; }
+          .included li { color: #059669; margin: 5px 0; }
           .footer { background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; }
-          .footer .company { color: #f59e0b; font-weight: bold; font-size: 18px; }
+          .footer .company { color: #10b981; font-weight: bold; font-size: 18px; }
           .footer .details { color: #6b7280; font-size: 14px; margin: 5px 0; }
         </style>
       </head>
