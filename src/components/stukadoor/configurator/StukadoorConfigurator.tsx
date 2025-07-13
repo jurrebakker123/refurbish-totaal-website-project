@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -90,49 +91,6 @@ const StukadoorConfigurator = () => {
       console.log('🏗️ Starting stukadoor form submission...');
       const totalPrice = calculatePrice();
       
-      console.log('💾 Saving to stukadoor_aanvragen database...');
-      
-      const insertData = {
-        voornaam: formData.voornaam,
-        achternaam: formData.achternaam,
-        emailadres: formData.emailadres,
-        telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats,
-        werk_type: 'nieuw_stucwerk',
-        afwerking: formData.stuc_type,
-        oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
-        aantal_kamers: null,
-        huidige_staat: null,
-        voorbewerking: null,
-        isolatie_gewenst: formData.isolatie_gewenst,
-        bericht: formData.bericht || null,
-        totaal_prijs: totalPrice,
-        status: 'nieuw',
-        notities: null,
-        offerte_verzonden_op: null,
-        op_locatie_op: null,
-        in_aanbouw_op: null,
-        afgehandeld_op: null
-      };
-
-      console.log('📝 Data to insert:', insertData);
-
-      const { data, error } = await supabase
-        .from('stukadoor_aanvragen')
-        .insert(insertData)
-        .select();
-
-      if (error) {
-        console.error('❌ Database error:', error);
-        throw error;
-      }
-
-      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table:', data);
-
-      // Send emails via edge function
       const customerData = {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -144,31 +102,54 @@ const StukadoorConfigurator = () => {
         plaats: formData.plaats
       };
 
-      console.log('📧 Sending emails via edge function...');
-      try {
-        const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
-          body: { 
-            customerData, 
-            formData: {
-              ...formData,
-              oppervlakte_wanden: formData.oppervlakte_wanden,
-              oppervlakte_plafonds: formData.oppervlakte_plafonds
-            }, 
-            totalPrice, 
-            breakdown: []
-          }
+      console.log('💾 Saving to stukadoor_aanvragen database...');
+      const { error } = await supabase
+        .from('stukadoor_aanvragen')
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          emailadres: formData.emailadres,
+          telefoon: formData.telefoon,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          werk_type: 'nieuw_stucwerk',
+          afwerking: formData.stuc_type,
+          oppervlakte: (parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0),
+          isolatie_gewenst: formData.isolatie_gewenst,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw'
         });
 
-        if (emailError) {
-          console.error('❌ Email error:', emailError);
-          console.log('⚠️ Email failed but continuing as database save was successful');
-        } else {
-          console.log('✅ Emails sent successfully!');
-        }
-      } catch (emailError) {
-        console.error('❌ Email send failed:', emailError);
-        console.log('⚠️ Continuing as database save was successful');
+      if (error) {
+        console.error('❌ Database error:', error);
+        throw error;
       }
+
+      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table');
+
+      console.log('📧 Sending emails via edge function...');
+      const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {
+        body: { 
+          customerData, 
+          formData: {
+            ...formData,
+            oppervlakte_wanden: formData.oppervlakte_wanden,
+            oppervlakte_plafonds: formData.oppervlakte_plafonds
+          }, 
+          totalPrice, 
+          breakdown: []
+        }
+      });
+
+      if (emailError) {
+        console.error('❌ Email error:', emailError);
+        throw emailError;
+      }
+      
+      console.log('✅ Emails sent successfully!');
 
       toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,51 +79,6 @@ const SchilderConfigurator = () => {
       console.log('🎨 Starting schilder form submission...');
       const totalPrice = calculatePrice();
       
-      console.log('💾 Saving to schilder_aanvragen database...');
-      
-      const insertData = {
-        voornaam: formData.voornaam,
-        achternaam: formData.achternaam,
-        emailadres: formData.emailadres,
-        telefoon: formData.telefoon,
-        straatnaam: formData.straatnaam,
-        huisnummer: formData.huisnummer,
-        postcode: formData.postcode,
-        plaats: formData.plaats,
-        project_type: `${formData.project_type} - ${formData.bouw_type}`,
-        verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-        oppervlakte: parseInt(formData.oppervlakte) || 0,
-        aantal_kamers: null,
-        voorbewerking_nodig: false,
-        plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-        kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
-        huidige_kleur: null,
-        gewenste_kleur: null,
-        bericht: formData.bericht || null,
-        totaal_prijs: totalPrice,
-        status: 'nieuw',
-        notities: null,
-        offerte_verzonden_op: null,
-        op_locatie_op: null,
-        in_aanbouw_op: null,
-        afgehandeld_op: null
-      };
-
-      console.log('📝 Data to insert:', insertData);
-
-      const { data, error } = await supabase
-        .from('schilder_aanvragen')
-        .insert(insertData)
-        .select();
-
-      if (error) {
-        console.error('❌ Database error:', error);
-        throw error;
-      }
-
-      console.log('✅ Database save successful! Data saved to schilder_aanvragen table:', data);
-
-      // Send emails via edge function
       const customerData = {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -134,27 +90,51 @@ const SchilderConfigurator = () => {
         plaats: formData.plaats
       };
 
-      console.log('📧 Sending emails via edge function...');
-      try {
-        const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
-          body: { 
-            customerData, 
-            formData, 
-            totalPrice, 
-            breakdown: []
-          }
+      console.log('💾 Saving to schilder_aanvragen database...');
+      const { error } = await supabase
+        .from('schilder_aanvragen')
+        .insert({
+          voornaam: formData.voornaam,
+          achternaam: formData.achternaam,
+          emailadres: formData.emailadres,
+          telefoon: formData.telefoon,
+          straatnaam: formData.straatnaam,
+          huisnummer: formData.huisnummer,
+          postcode: formData.postcode,
+          plaats: formData.plaats,
+          project_type: `${formData.project_type} - ${formData.bouw_type}`,
+          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
+          oppervlakte: parseInt(formData.oppervlakte) || 0,
+          bericht: formData.bericht,
+          totaal_prijs: totalPrice,
+          status: 'nieuw',
+          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
         });
 
-        if (emailError) {
-          console.error('❌ Email error:', emailError);
-          console.log('⚠️ Email failed but continuing as database save was successful');
-        } else {
-          console.log('✅ Emails sent successfully!');
-        }
-      } catch (emailError) {
-        console.error('❌ Email send failed:', emailError);
-        console.log('⚠️ Continuing as database save was successful');
+      if (error) {
+        console.error('❌ Database error:', error);
+        throw error;
       }
+
+      console.log('✅ Database save successful! Data saved to schilder_aanvragen table');
+
+      console.log('📧 Sending emails via edge function...');
+      const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
+        body: { 
+          customerData, 
+          formData, 
+          totalPrice, 
+          breakdown: []
+        }
+      });
+
+      if (emailError) {
+        console.error('❌ Email error:', emailError);
+        throw emailError;
+      }
+      
+      console.log('✅ Emails sent successfully!');
 
       toast.success('Bedankt voor uw aanvraag, wij nemen zo snel mogelijk contact met u op!', {
         duration: 5000
