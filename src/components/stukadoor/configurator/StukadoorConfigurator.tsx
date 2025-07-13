@@ -103,7 +103,7 @@ const StukadoorConfigurator = () => {
       };
 
       console.log('💾 Saving to stukadoor_aanvragen database...');
-      const { error } = await supabase
+      const { data: insertData, error } = await supabase
         .from('stukadoor_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -121,14 +121,15 @@ const StukadoorConfigurator = () => {
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
           status: 'nieuw'
-        });
+        })
+        .select();
 
       if (error) {
         console.error('❌ Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table');
+      console.log('✅ Database save successful! Data saved to stukadoor_aanvragen table:', insertData);
 
       console.log('📧 Sending emails via edge function...');
       const { error: emailError } = await supabase.functions.invoke('handle-stukadoor-request', {

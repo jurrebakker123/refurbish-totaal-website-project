@@ -91,7 +91,7 @@ const SchilderConfigurator = () => {
       };
 
       console.log('💾 Saving to schilder_aanvragen database...');
-      const { error } = await supabase
+      const { data: insertData, error } = await supabase
         .from('schilder_aanvragen')
         .insert({
           voornaam: formData.voornaam,
@@ -110,14 +110,15 @@ const SchilderConfigurator = () => {
           status: 'nieuw',
           plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
           kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
-        });
+        })
+        .select();
 
       if (error) {
         console.error('❌ Database error:', error);
         throw error;
       }
 
-      console.log('✅ Database save successful! Data saved to schilder_aanvragen table');
+      console.log('✅ Database save successful! Data saved to schilder_aanvragen table:', insertData);
 
       console.log('📧 Sending emails via edge function...');
       const { error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
