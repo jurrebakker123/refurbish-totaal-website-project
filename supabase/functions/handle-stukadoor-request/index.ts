@@ -89,8 +89,24 @@ serve(async (req) => {
                 <td style="padding: 0.5rem 0; color: #1f2937;">${formData.stuc_type.replace('_', ' ')}</td>
               </tr>
               <tr>
-                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Wand Oppervlakte (m²):</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${parseFloat(formData.oppervlakte_wanden) || 0} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Plafond Oppervlakte (m²):</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${parseFloat(formData.oppervlakte_plafonds) || 0} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Totaal Oppervlakte:</td>
                 <td style="padding: 0.5rem 0; color: #1f2937;">${(parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0)} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Extra opties:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">Isolatie gewenst: ${formData.isolatie_gewenst ? 'Ja' : 'Nee'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Gewenste uitvoertermijn:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
               ${totalPrice ? `
               <tr>
@@ -135,8 +151,8 @@ serve(async (req) => {
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
         <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 2rem; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 1.8rem;">🔨 Nieuwe Stukadoorswerk Aanvraag</h1>
-          <p style="color: #ffffff; margin: 0.5rem 0 0; font-size: 1rem;">Admin Notificatie</p>
+          <h1 style="color: #000000; margin: 0; font-size: 1.8rem;">🔨 Nieuwe Stukadoorswerk Aanvraag</h1>
+          <p style="color: #000000; margin: 0.5rem 0 0; font-size: 1rem;">Admin Notificatie</p>
         </div>
         
         <div style="padding: 2rem; background-color: #ffffff;">
@@ -174,12 +190,24 @@ serve(async (req) => {
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.stuc_type.replace('_', ' ')}</td>
               </tr>
               <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Wand Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${parseFloat(formData.oppervlakte_wanden) || 0} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Plafond Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${parseFloat(formData.oppervlakte_plafonds) || 0} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Totaal Oppervlakte:</td>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${(parseFloat(formData.oppervlakte_wanden) || 0) + (parseFloat(formData.oppervlakte_plafonds) || 0)} m²</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Isolatie Gewenst:</td>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.isolatie_gewenst ? 'Ja' : 'Nee'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Gewenste Uitvoertermijn:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
             </table>
           </div>

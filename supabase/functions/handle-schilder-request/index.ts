@@ -90,8 +90,24 @@ serve(async (req) => {
                 <td style="padding: 0.5rem 0; color: #1f2937;">${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}</td>
               </tr>
               <tr>
-                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Muren Oppervlakte:</td>
                 <td style="padding: 0.5rem 0; color: #1f2937;">${formData.oppervlakte} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Plafond Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${parseFloat(formData.plafond_oppervlakte) || 0} m²</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Aantal Deuren:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${parseInt(formData.aantal_deuren) || 0}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Aantal Ramen:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${parseInt(formData.aantal_ramen) || 0}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Gewenste uitvoertermijn:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
               ${totalPrice ? `
               <tr>
@@ -136,8 +152,8 @@ serve(async (req) => {
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
         <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 2rem; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 1.8rem;">🎨 Nieuwe Schilderwerk Aanvraag</h1>
-          <p style="color: #ffffff; margin: 0.5rem 0 0; font-size: 1rem;">Admin Notificatie</p>
+          <h1 style="color: #000000; margin: 0; font-size: 1.8rem;">🎨 Nieuwe Schilderwerk Aanvraag</h1>
+          <p style="color: #000000; margin: 0.5rem 0 0; font-size: 1rem;">Admin Notificatie</p>
         </div>
         
         <div style="padding: 2rem; background-color: #ffffff;">
@@ -175,16 +191,24 @@ serve(async (req) => {
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur'}</td>
               </tr>
               <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Muren Oppervlakte:</td>
                 <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.oppervlakte} m²</td>
               </tr>
               <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Plafond Meeverven:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${parseFloat(formData.plafond_oppervlakte) > 0 ? 'Ja' : 'Nee'}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Plafond Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${parseFloat(formData.plafond_oppervlakte) || 0} m²</td>
               </tr>
               <tr>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Kozijnen Meeverven:</td>
-                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${((parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0)) > 0 ? 'Ja' : 'Nee'}</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Aantal Deuren:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${parseInt(formData.aantal_deuren) || 0}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Aantal Ramen:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${parseInt(formData.aantal_ramen) || 0}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Gewenste Uitvoertermijn:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${formData.gewenste_uitvoertermijn || 'Niet opgegeven'}</td>
               </tr>
             </table>
           </div>
