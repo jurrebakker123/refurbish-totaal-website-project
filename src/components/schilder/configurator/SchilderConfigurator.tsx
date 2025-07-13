@@ -89,47 +89,41 @@ const SchilderConfigurator = () => {
         plaats: formData.plaats
       };
 
-      console.log('💾 Saving to schilder_aanvragen database...');
-      console.log('📊 Data to be saved:', {
-        customer: customerData,
-        project: formData.project_type,
-        price: totalPrice
-      });
+      const insertData = {
+        voornaam: formData.voornaam,
+        achternaam: formData.achternaam,
+        emailadres: formData.emailadres,
+        telefoon: formData.telefoon,
+        straatnaam: formData.straatnaam,
+        huisnummer: formData.huisnummer,
+        postcode: formData.postcode,
+        plaats: formData.plaats,
+        project_type: `${formData.project_type} - ${formData.bouw_type}`,
+        verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
+        oppervlakte: parseInt(formData.oppervlakte) || 0,
+        bericht: formData.bericht || '',
+        totaal_prijs: totalPrice,
+        status: 'nieuw',
+        plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
+        kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
+        voorbewerking_nodig: false
+      };
 
-      const { data: insertData, error } = await supabase
+      console.log('💾 Saving to schilder_aanvragen database...');
+      console.log('📊 Data to be saved:', insertData);
+
+      const { data: savedData, error } = await supabase
         .from('schilder_aanvragen')
-        .insert({
-          voornaam: formData.voornaam,
-          achternaam: formData.achternaam,
-          emailadres: formData.emailadres,
-          telefoon: formData.telefoon,
-          straatnaam: formData.straatnaam,
-          huisnummer: formData.huisnummer,
-          postcode: formData.postcode,
-          plaats: formData.plaats,
-          project_type: `${formData.project_type} - ${formData.bouw_type}`,
-          verf_type: formData.meerdere_kleuren ? 'Meerdere kleuren' : 'Één kleur',
-          oppervlakte: parseInt(formData.oppervlakte) || 0,
-          bericht: formData.bericht,
-          totaal_prijs: totalPrice,
-          status: 'nieuw',
-          plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
-        })
+        .insert(insertData)
         .select();
 
       if (error) {
         console.error('❌ Database save error:', error);
-        console.error('❌ Error details:', {
-          message: error.message,
-          code: error.code,
-          details: error.details
-        });
         throw error;
       }
 
       console.log('✅ Database save successful!');
-      console.log('📋 Saved record:', insertData);
+      console.log('📋 Saved record:', savedData);
 
       console.log('📧 Sending notification emails via edge function...');
       const { data: emailData, error: emailError } = await supabase.functions.invoke('handle-schilder-request', {
@@ -143,21 +137,16 @@ const SchilderConfigurator = () => {
 
       if (emailError) {
         console.error('❌ Email sending error:', emailError);
-        console.error('❌ Email error details:', {
-          message: emailError.message,
-          stack: emailError.stack
-        });
-        throw emailError;
+        console.warn('⚠️ Data was saved but emails might not have been sent');
+      } else {
+        console.log('✅ Emails sent successfully!');
+        console.log('📧 Email response:', emailData);
       }
-      
-      console.log('✅ Emails sent successfully!');
-      console.log('📧 Email response:', emailData);
 
       toast.success('Bedankt voor uw aanvraag! U ontvangt zo een bevestiging per email en wij nemen binnen 24 uur contact met u op.', {
         duration: 5000
       });
       
-      // Reset form
       setFormData({
         voornaam: '',
         achternaam: '',
