@@ -17,43 +17,17 @@ serve(async (req) => {
 
   try {
     const requestData = await req.json();
-    console.log("🎨 Received schilder request:", JSON.stringify(requestData, null, 2));
+    console.log("🎨 Received schilder request:", requestData);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Ensure all required fields are present and properly formatted
-    const insertData = {
-      voornaam: requestData.voornaam || requestData.naam?.split(' ')[0] || 'Onbekend',
-      achternaam: requestData.achternaam || requestData.naam?.split(' ').slice(1).join(' ') || 'Onbekend',
-      emailadres: requestData.emailadres || requestData.email,
-      telefoon: requestData.telefoon,
-      straatnaam: requestData.straatnaam || requestData.adres?.split(' ')[0] || 'Onbekend',
-      huisnummer: requestData.huisnummer || requestData.adres?.split(' ')[1] || '1',
-      postcode: requestData.postcode,
-      plaats: requestData.plaats,
-      project_type: requestData.project_type || 'Schilderwerk',
-      verf_type: requestData.verf_type || 'Latexverf',
-      oppervlakte: parseInt(requestData.oppervlakte) || 50,
-      aantal_kamers: requestData.aantal_kamers ? parseInt(requestData.aantal_kamers) : null,
-      voorbewerking_nodig: requestData.voorbewerking_nodig || false,
-      plafond_meeverven: requestData.plafond_meeverven || false,
-      kozijnen_meeverven: requestData.kozijnen_meeverven || false,
-      huidige_kleur: requestData.huidige_kleur || null,
-      gewenste_kleur: requestData.gewenste_kleur || null,
-      bericht: requestData.bericht || null,
-      totaal_prijs: requestData.totaal_prijs ? parseFloat(requestData.totaal_prijs) : null,
-      status: 'nieuw'
-    };
-
-    console.log("🎨 Inserting data:", JSON.stringify(insertData, null, 2));
-
     // Insert into database
     const { data: insertedData, error: insertError } = await supabase
       .from("schilder_aanvragen")
-      .insert([insertData])
+      .insert([requestData])
       .select()
       .single();
 
@@ -73,7 +47,7 @@ serve(async (req) => {
         </div>
         
         <div style="padding: 2rem; background-color: #f8fafc;">
-          <h2 style="color: #1f2937; margin-bottom: 1rem;">Hallo ${insertData.voornaam},</h2>
+          <h2 style="color: #1f2937; margin-bottom: 1rem;">Hallo ${requestData.voornaam},</h2>
           <p style="color: #4b5563; line-height: 1.6;">
             Dank je wel voor je interesse in onze schilderwerk diensten. We hebben je aanvraag ontvangen en zullen zo spoedig mogelijk contact met je opnemen.
           </p>
@@ -83,33 +57,175 @@ serve(async (req) => {
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Project Type:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${insertData.project_type}</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.project_type}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Verf Type:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${insertData.verf_type}</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.verf_type}</td>
               </tr>
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Oppervlakte:</td>
-                <td style="padding: 0.5rem 0; color: #1f2937;">${insertData.oppervlakte} m²</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.oppervlakte} m²</td>
               </tr>
-              ${insertData.totaal_prijs ? `
+              ${requestData.aantal_kamers ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Aantal Kamers:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.aantal_kamers}</td>
+              </tr>
+              ` : ''}
+              ${requestData.gewenste_kleur ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Gewenste Kleur:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.gewenste_kleur}</td>
+              </tr>
+              ` : ''}
+              ${requestData.totaal_prijs ? `
               <tr>
                 <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Geschatte Prijs:</td>
-                <td style="padding: 0.5rem 0; color: #1d4ed8; font-weight: 600;">€${insertData.totaal_prijs}</td>
+                <td style="padding: 0.5rem 0; color: #1d4ed8; font-weight: 600;">€${requestData.totaal_prijs}</td>
               </tr>
               ` : ''}
             </table>
           </div>
+          
+          <div style="background: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;">
+            <h3 style="color: #0369a1; margin: 0 0 1rem;">📞 Wat gebeurt er nu?</h3>
+            <ul style="color: #0369a1; margin: 0; padding-left: 1.5rem;">
+              <li>We beoordelen je aanvraag binnen 24 uur</li>
+              <li>Je ontvangt een persoonlijke offerte</li>
+              <li>We plannen een afspraak op locatie</li>
+              <li>We starten met de schilderwerk</li>
+            </ul>
+          </div>
+          
+          <p style="color: #4b5563; line-height: 1.6;">
+            Heb je vragen? Neem gerust contact met ons op via <a href="mailto:info@refurbishdakkapel.nl" style="color: #3b82f6;">info@refurbishdakkapel.nl</a> of bel ons op <a href="tel:+31123456789" style="color: #3b82f6;">+31 123 456 789</a>.
+          </p>
+        </div>
+        
+        <div style="background-color: #1f2937; padding: 1.5rem; text-align: center;">
+          <p style="color: #9ca3af; margin: 0; font-size: 0.9rem;">
+            © 2024 Refurbish Dakkapel - Schilderwerk Specialist
+          </p>
         </div>
       </div>
     `;
 
     await resend.emails.send({
       from: "Refurbish Dakkapel <info@refurbishdakkapel.nl>",
-      to: [insertData.emailadres],
+      to: [requestData.emailadres],
       subject: "🎨 Bevestiging van je schilderwerk aanvraag",
       html: customerEmailHtml,
+    });
+
+    // Send admin notification email with BLACK TEXT
+    const adminEmailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 2rem; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 1.8rem;">🎨 Nieuwe Schilderwerk Aanvraag</h1>
+          <p style="color: #ffffff; margin: 0.5rem 0 0; font-size: 1rem;">Admin Notificatie</p>
+        </div>
+        
+        <div style="padding: 2rem; background-color: #ffffff;">
+          <div style="background: #fef2f2; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #dc2626;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">🎯 Klant Informatie</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Naam:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.voornaam} ${requestData.achternaam}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Email:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.emailadres}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Telefoon:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.telefoon}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Adres:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}</td>
+              </tr>
+            </table>
+          </div>
+          
+          <div style="background: #f0f9ff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #0ea5e9;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">🎨 Project Details</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Project Type:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.project_type}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Verf Type:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.verf_type}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.oppervlakte} m²</td>
+              </tr>
+              ${requestData.aantal_kamers ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Aantal Kamers:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.aantal_kamers}</td>
+              </tr>
+              ` : ''}
+              ${requestData.huidige_kleur ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Huidige Kleur:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.huidige_kleur}</td>
+              </tr>
+              ` : ''}
+              ${requestData.gewenste_kleur ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Gewenste Kleur:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.gewenste_kleur}</td>
+              </tr>
+              ` : ''}
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Voorbewerking:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.voorbewerking_nodig ? 'Ja' : 'Nee'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Plafond Meeverven:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.plafond_meeverven ? 'Ja' : 'Nee'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Kozijnen Meeverven:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.kozijnen_meeverven ? 'Ja' : 'Nee'}</td>
+              </tr>
+            </table>
+          </div>
+          
+          ${requestData.totaal_prijs ? `
+          <div style="background: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #10b981; text-align: center;">
+            <h2 style="color: #000000; margin: 0 0 0.5rem; font-size: 1.2rem;">💰 Totaalprijs:</h2>
+            <p style="color: #059669; font-size: 2rem; font-weight: 700; margin: 0;">€${requestData.totaal_prijs}</p>
+            <p style="color: #000000; margin: 0.5rem 0 0; font-size: 0.9rem;">Prijsindicatie inclusief BTW</p>
+          </div>
+          ` : ''}
+          
+          ${requestData.bericht ? `
+          <div style="background: #fffbeb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">💬 Aanvullende Informatie</h2>
+            <p style="color: #000000; line-height: 1.6; margin: 0;">${requestData.bericht}</p>
+          </div>
+          ` : ''}
+          
+          <div style="background: #1f2937; border-radius: 8px; padding: 1.5rem; text-align: center;">
+            <p style="color: #ffffff; margin: 0; font-size: 1rem;">
+              🚨 <strong>ACTIE VEREIST:</strong> Log in op het admin dashboard om deze aanvraag te verwerken
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    await resend.emails.send({
+      from: "Refurbish Dakkapel <admin@refurbishdakkapel.nl>",
+      to: ["admin@refurbishdakkapel.nl", "info@refurbishdakkapel.nl"],
+      subject: "🎨 Nieuwe Schilderwerk Aanvraag - Actie Vereist",
+      html: adminEmailHtml,
     });
 
     console.log("✅ Schilder emails sent successfully");
