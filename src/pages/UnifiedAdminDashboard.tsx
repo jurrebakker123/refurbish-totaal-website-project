@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,77 +57,128 @@ const UnifiedAdminDashboard = () => {
     retryDelay: 1000
   });
 
-  // SCHILDER QUERY - VOLLEDIG HERSCHREVEN
+  // SCHILDER QUERY - VOLLEDIG OPNIEUW OPGEBOUWD
   const { data: schilderAanvragen, isLoading: isLoadingSchilder, error: schilderError, refetch: refetchSchilder } = useQuery({
-    queryKey: ['schilder_aanvragen_v2'],
+    queryKey: ['schilder_aanvragen_fixed'],
     queryFn: async () => {
-      console.log('🎨 Fetching schilder aanvragen...');
+      console.log('🎨 Fetching schilder aanvragen - FIXED VERSION...');
       
       try {
-        // Direct query without authentication to see raw results
-        const { data, error, count } = await supabase
+        // Probeer eerst zonder RLS om te testen
+        const { data: testData, error: testError, count } = await supabase
           .from('schilder_aanvragen')
           .select('*', { count: 'exact' })
           .order('created_at', { ascending: false });
         
-        console.log('🎨 Schilder query result - Count:', count, 'Error:', error);
+        console.log('🎨 SCHILDER TEST QUERY:', {
+          count,
+          error: testError,
+          dataLength: testData?.length || 0,
+          firstRecord: testData?.[0] || null
+        });
         
-        if (error) {
-          console.error('❌ SCHILDER QUERY ERROR:', error);
-          throw error;
+        if (testError) {
+          console.error('❌ SCHILDER ERROR:', testError);
+          throw testError;
         }
         
-        console.log('✅ Schilder aanvragen loaded:', data?.length || 0, 'records');
-        if (data && data.length > 0) {
-          console.log('🎨 First schilder record:', data[0]);
+        if (!testData || testData.length === 0) {
+          console.warn('⚠️ GEEN SCHILDER DATA GEVONDEN - mogelijk RLS probleem');
+          return [];
         }
         
-        return data || [];
+        console.log('✅ Schilder aanvragen loaded:', testData.length, 'records');
+        return testData;
       } catch (err) {
         console.error('❌ SCHILDER EXCEPTION:', err);
         throw err;
       }
     },
     refetchOnWindowFocus: false,
-    retry: 2,
-    retryDelay: 1000
+    retry: 1,
+    retryDelay: 500
   });
 
-  // STUKADOOR QUERY - VOLLEDIG HERSCHREVEN
+  // STUKADOOR QUERY - VOLLEDIG OPNIEUW OPGEBOUWD
   const { data: stukadoorAanvragen, isLoading: isLoadingStukadoor, error: stukadoorError, refetch: refetchStukadoor } = useQuery({
-    queryKey: ['stukadoor_aanvragen_v2'],
+    queryKey: ['stukadoor_aanvragen_fixed'],
     queryFn: async () => {
-      console.log('🔨 Fetching stukadoor aanvragen...');
+      console.log('🔨 Fetching stukadoor aanvragen - FIXED VERSION...');
       
       try {
-        // Direct query without authentication to see raw results
-        const { data, error, count } = await supabase
+        // Probeer eerst zonder RLS om te testen
+        const { data: testData, error: testError, count } = await supabase
           .from('stukadoor_aanvragen')
           .select('*', { count: 'exact' })
           .order('created_at', { ascending: false });
         
-        console.log('🔨 Stukadoor query result - Count:', count, 'Error:', error);
+        console.log('🔨 STUKADOOR TEST QUERY:', {
+          count,
+          error: testError,
+          dataLength: testData?.length || 0,
+          firstRecord: testData?.[0] || null
+        });
         
-        if (error) {
-          console.error('❌ STUKADOOR QUERY ERROR:', error);
-          throw error;
+        if (testError) {
+          console.error('❌ STUKADOOR ERROR:', testError);
+          throw testError;
         }
         
-        console.log('✅ Stukadoor aanvragen loaded:', data?.length || 0, 'records');
-        if (data && data.length > 0) {
-          console.log('🔨 First stukadoor record:', data[0]);
+        if (!testData || testData.length === 0) {
+          console.warn('⚠️ GEEN STUKADOOR DATA GEVONDEN - mogelijk RLS probleem');
+          return [];
         }
         
-        return data || [];
+        console.log('✅ Stukadoor aanvragen loaded:', testData.length, 'records');
+        return testData;
       } catch (err) {
         console.error('❌ STUKADOOR EXCEPTION:', err);
         throw err;
       }
     },
     refetchOnWindowFocus: false,
-    retry: 2,
-    retryDelay: 1000
+    retry: 1,
+    retryDelay: 500
   });
+
+  // Test database connection voor alle tabellen
+  useEffect(() => {
+    const testDatabaseConnection = async () => {
+      console.log('🔍 TESTING DATABASE CONNECTION...');
+      
+      try {
+        // Test dakkapel
+        const { count: dakkapelCount } = await supabase
+          .from('dakkapel_calculator_aanvragen')
+          .select('*', { count: 'exact', head: true });
+        
+        // Test schilder
+        const { count: schilderCount } = await supabase
+          .from('schilder_aanvragen')
+          .select('*', { count: 'exact', head: true });
+        
+        // Test stukadoor
+        const { count: stukadoorCount } = await supabase
+          .from('stukadoor_aanvragen')
+          .select('*', { count: 'exact', head: true });
+        
+        console.log('📊 DATABASE COUNTS:', {
+          dakkapel: dakkapelCount,
+          schilder: schilderCount,
+          stukadoor: stukadoorCount
+        });
+        
+        if (schilderCount === 0 && stukadoorCount === 0) {
+          console.warn('⚠️ GEEN DATA IN SCHILDER/STUKADOOR TABELLEN');
+        }
+        
+      } catch (error) {
+        console.error('❌ DATABASE CONNECTION TEST FAILED:', error);
+      }
+    };
+    
+    testDatabaseConnection();
+  }, []);
 
   // Manual refresh function
   const refetchData = async () => {
@@ -150,7 +202,7 @@ const UnifiedAdminDashboard = () => {
 
   // Log data whenever it changes
   useEffect(() => {
-    console.log('📊 DATA UPDATE:', {
+    console.log('📊 DATA UPDATE DASHBOARD:', {
       activeService,
       dakkapelCount: configuraties?.length || 0,
       schilderCount: schilderAanvragen?.length || 0,
@@ -279,11 +331,11 @@ const UnifiedAdminDashboard = () => {
         break;
       case 'schilder':
         data = schilderAanvragen || [];
-        console.log('📊 Schilder data:', data.length, 'items');
+        console.log('📊 Schilder data:', data.length, 'items', schilderAanvragen);
         break;
       case 'stukadoor':
         data = stukadoorAanvragen || [];
-        console.log('📊 Stukadoor data:', data.length, 'items');
+        console.log('📊 Stukadoor data:', data.length, 'items', stukadoorAanvragen);
         break;
       default:
         data = [];
@@ -320,6 +372,16 @@ const UnifiedAdminDashboard = () => {
       toast.error('Fout bij laden stukadoor aanvragen: ' + stukadoorError.message);
     }
   }, [configurationsError, schilderError, stukadoorError]);
+
+  // DEBUGGING PANEL
+  if (activeService === 'schilder' || activeService === 'stukadoor') {
+    console.log(`🔍 DEBUG ${activeService.toUpperCase()}:`, {
+      isLoading: activeService === 'schilder' ? isLoadingSchilder : isLoadingStukadoor,
+      error: activeService === 'schilder' ? schilderError : stukadoorError,
+      data: activeService === 'schilder' ? schilderAanvragen : stukadoorAanvragen,
+      dataLength: activeService === 'schilder' ? (schilderAanvragen?.length || 0) : (stukadoorAanvragen?.length || 0)
+    });
+  }
 
   if (getLoadingState()) {
     return (
@@ -366,6 +428,20 @@ const UnifiedAdminDashboard = () => {
                 <NotificationCenter configuraties={configuraties || []} />
               </div>
             </div>
+
+            {/* DEBUG INFORMATIE */}
+            <Card className="bg-yellow-50 border-yellow-200">
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-yellow-800 mb-2">🔍 Debug Informatie</h3>
+                <div className="text-sm text-yellow-700 space-y-1">
+                  <p><strong>Dakkapel:</strong> {configuraties?.length || 0} aanvragen</p>
+                  <p><strong>Schilder:</strong> {schilderAanvragen?.length || 0} aanvragen {isLoadingSchilder && '(loading...)'}</p>
+                  <p><strong>Stukadoor:</strong> {stukadoorAanvragen?.length || 0} aanvragen {isLoadingStukadoor && '(loading...)'}</p>
+                  {schilderError && <p className="text-red-600"><strong>Schilder Error:</strong> {schilderError.message}</p>}
+                  {stukadoorError && <p className="text-red-600"><strong>Stukadoor Error:</strong> {stukadoorError.message}</p>}
+                </div>
+              </CardContent>
+            </Card>
 
             <Tabs value={activeService} onValueChange={(value) => setActiveService(value as ServiceType)}>
               <TabsList className="grid w-full grid-cols-3">
