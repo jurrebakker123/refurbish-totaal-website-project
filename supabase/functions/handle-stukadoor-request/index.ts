@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { Resend } from "npm:resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -10,267 +10,227 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const handler = async (req: Request): Promise<Response> => {
+serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { customerData, formData, totalPrice } = await req.json();
-    
-    console.log('🔨 Processing stukadoor request:', customerData);
+    const requestData = await req.json();
+    console.log("🔨 Received stukadoor request:", requestData);
 
-    // Format form data for display
-    const formatFieldName = (fieldName: string) => {
-      return fieldName
-        .replace(/_/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    };
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
 
-    // Send confirmation email to customer with dakkapel-style template
+    // Insert into database
+    const { data: insertedData, error: insertError } = await supabase
+      .from("stukadoor_aanvragen")
+      .insert([requestData])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error("❌ Database insert error:", insertError);
+      throw insertError;
+    }
+
+    console.log("✅ Stukadoor request inserted successfully:", insertedData);
+
+    // Send confirmation email to customer
     const customerEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
-          .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 20px; text-align: center; }
-          .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
-          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
-          .content { padding: 30px; }
-          .greeting { font-size: 18px; margin-bottom: 20px; color: #333; }
-          .section { margin: 25px 0; }
-          .section h3 { color: #059669; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
-          .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
-          .details ul { margin: 0; padding-left: 20px; }
-          .details li { margin: 5px 0; color: #555; }
-          .price-box { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 0.9; }
-          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
-          .price-box .note { font-size: 14px; opacity: 0.8; }
-          .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
-          .included h4 { color: #059669; margin: 0 0 10px 0; }
-          .included ul { margin: 0; padding-left: 20px; }
-          .included li { color: #059669; margin: 5px 0; }
-          .contact { background-color: #f8f9fa; padding: 20px; border-radius: 6px; text-align: center; margin: 20px 0; }
-          .contact h4 { color: #333; margin: 0 0 10px 0; }
-          .phone-button { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; margin: 10px 0; }
-          .footer { background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; }
-          .footer .company { color: #10b981; font-weight: bold; font-size: 18px; }
-          .footer .details { color: #6b7280; font-size: 14px; margin: 5px 0; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>🔨 Stukadoorswerk Offerte</h1>
-            <div class="subtitle">Refurbish Totaal Nederland</div>
-          </div>
-          
-          <div class="content">
-            <div class="greeting">Beste ${customerData.voornaam} ${customerData.achternaam},</div>
-            
-            <p>Hartelijk dank voor uw interesse in ons stukadoorswerk! Wij hebben uw configuratie ontvangen en zijn verheugd u hierbij een offerte te kunnen aanbieden.</p>
-            
-            <div class="section">
-              <h3>📋 Overzicht van uw samenstelling</h3>
-              
-              <div class="details">
-                <p><strong>Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
-                <p><strong>Stucwerk type:</strong> ${formatFieldName(formData.stuc_type)}</p>
-                <p><strong>Wand oppervlakte:</strong> ${formData.oppervlakte_wanden}m²</p>
-                <p><strong>Plafond oppervlakte:</strong> ${formData.oppervlakte_plafonds}m²</p>
-                <p><strong>Isolatie:</strong> ${formData.isolatie_gewenst ? 'Gewenst' : 'Niet gewenst'}</p>
-              </div>
-            </div>
-
-            <div class="section">
-              <h3>Contactgegevens:</h3>
-              <div class="details">
-                <ul>
-                  <li>Naam: ${customerData.voornaam} ${customerData.achternaam}</li>
-                  <li>E-mail: ${customerData.emailadres}</li>
-                  <li>Telefoon: ${customerData.telefoon}</li>
-                  <li>Adres: ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="price-box">
-              <div class="label">💰 Totaalprijs:</div>
-              <div class="amount">€${totalPrice.toLocaleString()}</div>
-              <div class="note">Prijsindicatie inclusief BTW</div>
-              <div class="note">*Deze prijs is indicatief en kan worden aangepast na een locatiebezoek</div>
-            </div>
-
-            <div class="included">
-              <h4>✅ Inbegrepen in de prijs:</h4>
-              <ul>
-                <li>Complete levering en verwerking van hoogwaardige stucmaterialen</li>
-                <li>Professionele voorbehandeling van het oppervlak</li>
-                <li>Vakkundige afwerking door ervaren stukadoors</li>
-                <li>Opruimen en schoonmaken na afloop</li>
-                <li>Garantie op het uitgevoerde werk</li>
-                <li>Deskundig advies over afwerking en textuur</li>
-              </ul>
-            </div>
-
-            <div class="contact">
-              <h4>📞 Bel direct voor een persoonlijk gesprek:</h4>
-              <a href="tel:+085-44-44-255" class="phone-button">+085 44 44 255</a>
-            </div>
-
-            <p>Heeft u vragen over deze offerte of wilt u aanpassingen bespreken? Neem gerust contact met ons op. Wij staan klaar om u te helpen bij de realisatie van uw stukadoorsproject!</p>
-          </div>
-          
-          <div class="footer">
-            <div class="company">Met vriendelijke groet,<br>Refurbish Totaal Nederland</div>
-            <div class="details">📧 info@refurbishtotaalnederland.nl</div>
-            <div class="details">📞 +085 44 44 255</div>
-            <div class="details">🌐 www.refurbishtotaalnederland.nl</div>
-          </div>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 2rem; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 2rem;">🔨 Bedankt voor je aanvraag!</h1>
+          <p style="color: white; margin: 0.5rem 0 0; font-size: 1.1rem;">Je stukadoor aanvraag is succesvol ontvangen</p>
         </div>
-      </body>
-      </html>
+        
+        <div style="padding: 2rem; background-color: #f8fafc;">
+          <h2 style="color: #1f2937; margin-bottom: 1rem;">Hallo ${requestData.voornaam},</h2>
+          <p style="color: #4b5563; line-height: 1.6;">
+            Dank je wel voor je interesse in onze stukadoor diensten. We hebben je aanvraag ontvangen en zullen zo spoedig mogelijk contact met je opnemen.
+          </p>
+          
+          <div style="background: white; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #10b981;">
+            <h3 style="color: #1f2937; margin: 0 0 1rem;">📋 Jouw Aanvraag Details:</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Werk Type:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.werk_type}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Afwerking:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.afwerking}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.oppervlakte} m²</td>
+              </tr>
+              ${requestData.aantal_kamers ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Aantal Kamers:</td>
+                <td style="padding: 0.5rem 0; color: #1f2937;">${requestData.aantal_kamers}</td>
+              </tr>
+              ` : ''}
+              ${requestData.totaal_prijs ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #6b7280; font-weight: 500;">Geschatte Prijs:</td>
+                <td style="padding: 0.5rem 0; color: #059669; font-weight: 600;">€${requestData.totaal_prijs}</td>
+              </tr>
+              ` : ''}
+            </table>
+          </div>
+          
+          <div style="background: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;">
+            <h3 style="color: #0369a1; margin: 0 0 1rem;">📞 Wat gebeurt er nu?</h3>
+            <ul style="color: #0369a1; margin: 0; padding-left: 1.5rem;">
+              <li>We beoordelen je aanvraag binnen 24 uur</li>
+              <li>Je ontvangt een persoonlijke offerte</li>
+              <li>We plannen een afspraak op locatie</li>
+              <li>We starten met de werkzaamheden</li>
+            </ul>
+          </div>
+          
+          <p style="color: #4b5563; line-height: 1.6;">
+            Heb je vragen? Neem gerust contact met ons op via <a href="mailto:info@refurbishdakkapel.nl" style="color: #10b981;">info@refurbishdakkapel.nl</a> of bel ons op <a href="tel:+31123456789" style="color: #10b981;">+31 123 456 789</a>.
+          </p>
+        </div>
+        
+        <div style="background-color: #1f2937; padding: 1.5rem; text-align: center;">
+          <p style="color: #9ca3af; margin: 0; font-size: 0.9rem;">
+            © 2024 Refurbish Dakkapel - Stukadoor Specialist
+          </p>
+        </div>
+      </div>
     `;
 
     await resend.emails.send({
-      from: "Refurbish Totaal Nederland <noreply@refurbishtotaalnederland.nl>",
-      to: [customerData.emailadres],
-      subject: "Bevestiging stukadoorswerk aanvraag",
+      from: "Refurbish Dakkapel <info@refurbishdakkapel.nl>",
+      to: [requestData.emailadres],
+      subject: "🔨 Bevestiging van je stukadoor aanvraag",
       html: customerEmailHtml,
     });
 
-    // Send detailed notification to admin emails - ALLE TEKST NU ZWART OF GROEN
+    // Send admin notification email with BLACK TEXT
     const adminEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; color: #333333; }
-          .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-          .header { background: linear-gradient(135deg, #10b981, #059669); color: #333333 !important; padding: 40px 20px; text-align: center; }
-          .header h1 { margin: 0; font-size: 28px; font-weight: bold; color: #333333 !important; }
-          .header .subtitle { margin: 10px 0 0 0; font-size: 18px; opacity: 1; color: #333333 !important; }
-          .content { padding: 30px; color: #333333; }
-          .greeting { font-size: 18px; margin-bottom: 20px; color: #333333 !important; }
-          .section { margin: 25px 0; }
-          .section h3 { color: #059669 !important; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #10b981; padding-bottom: 5px; }
-          .details { background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
-          .details ul { margin: 0; padding-left: 20px; }
-          .details li { margin: 5px 0; color: #333333 !important; }
-          .details li strong { color: #333333 !important; }
-          .details p { margin: 5px 0; color: #333333 !important; }
-          .details p strong { color: #333333 !important; }
-          .price-box { background: linear-gradient(135deg, #10b981, #059669); color: #333333 !important; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-          .price-box .label { font-size: 18px; margin-bottom: 10px; opacity: 1; color: #333333 !important; }
-          .price-box .amount { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: #333333 !important; }
-          .price-box .note { font-size: 14px; opacity: 1; color: #333333 !important; }
-          .included { background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0; }
-          .included h4 { color: #059669 !important; margin: 0 0 10px 0; }
-          .included ul { margin: 0; padding-left: 20px; }
-          .included li { color: #059669 !important; margin: 5px 0; }
-          .footer { background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; }
-          .footer .company { color: #10b981 !important; font-weight: bold; font-size: 18px; }
-          .footer .details { color: #6b7280 !important; font-size: 14px; margin: 5px 0; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1 style="color: #333333 !important;">🔨 Nieuwe Stukadoorswerk Aanvraag</h1>
-            <div class="subtitle" style="color: #333333 !important;">Admin Notificatie</div>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 2rem; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 1.8rem;">🔨 Nieuwe Stukadoorswerk Aanvraag</h1>
+          <p style="color: #ffffff; margin: 0.5rem 0 0; font-size: 1rem;">Admin Notificatie</p>
+        </div>
+        
+        <div style="padding: 2rem; background-color: #ffffff;">
+          <div style="background: #fef2f2; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #dc2626;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">🎯 Klant Informatie</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Naam:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.voornaam} ${requestData.achternaam}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Email:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.emailadres}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Telefoon:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.telefoon}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Adres:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.straatnaam} ${requestData.huisnummer}, ${requestData.postcode} ${requestData.plaats}</td>
+              </tr>
+            </table>
           </div>
           
-          <div class="content">
-            <div class="greeting" style="color: #333333 !important;">Nieuwe aanvraag ontvangen van ${customerData.voornaam} ${customerData.achternaam}</div>
-            
-            <div class="section">
-              <h3 style="color: #059669 !important;">📋 Overzicht van de configuratie</h3>
-              
-              <div class="details">
-                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Bouwtype:</strong> ${formatFieldName(formData.bouw_type)}</p>
-                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Stucwerk type:</strong> ${formatFieldName(formData.stuc_type)}</p>
-                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Wand oppervlakte:</strong> ${formData.oppervlakte_wanden}m²</p>
-                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Plafond oppervlakte:</strong> ${formData.oppervlakte_plafonds}m²</p>
-                <p style="color: #333333 !important;"><strong style="color: #333333 !important;">Isolatie:</strong> ${formData.isolatie_gewenst ? 'Gewenst' : 'Niet gewenst'}</p>
-                ${formData.uitvoertermijn ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Uitvoertermijn:</strong> ${formData.uitvoertermijn}</p>` : ''}
-                ${formData.reden_aanvraag ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Reden aanvraag:</strong> ${formData.reden_aanvraag}</p>` : ''}
-                ${formData.bericht ? `<p style="color: #333333 !important;"><strong style="color: #333333 !important;">Bericht:</strong> ${formData.bericht}</p>` : ''}
-              </div>
-            </div>
-
-            <div class="section">
-              <h3 style="color: #059669 !important;">👤 Contactgegevens klant:</h3>
-              <div class="details">
-                <ul>
-                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">Naam:</strong> ${customerData.voornaam} ${customerData.achternaam}</li>
-                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">E-mail:</strong> ${customerData.emailadres}</li>
-                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">Telefoon:</strong> ${customerData.telefoon}</li>
-                  <li style="color: #333333 !important;"><strong style="color: #333333 !important;">Adres:</strong> ${customerData.straatnaam} ${customerData.huisnummer}, ${customerData.postcode} ${customerData.plaats}</li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="price-box">
-              <div class="label" style="color: #333333 !important;">💰 Totaalprijs:</div>
-              <div class="amount" style="color: #333333 !important;">€${totalPrice.toLocaleString()}</div>
-              <div class="note" style="color: #333333 !important;">Prijsindicatie inclusief BTW</div>
-            </div>
-
-            <div class="included">
-              <h4 style="color: #059669 !important;">✅ Inbegrepen in de prijs:</h4>
-              <ul>
-                <li style="color: #059669 !important;">Complete levering en verwerking van hoogwaardige stucmaterialen</li>
-                <li style="color: #059669 !important;">Professionele voorbehandeling van het oppervlak</li>
-                <li style="color: #059669 !important;">Vakkundige afwerking door ervaren stukadoors</li>
-                <li style="color: #059669 !important;">Opruimen en schoonmaken na afloop</li>
-                <li style="color: #059669 !important;">Garantie op het uitgevoerde werk</li>
-                <li style="color: #059669 !important;">Deskundig advies over afwerking en textuur</li>
-              </ul>
-            </div>
+          <div style="background: #f0f9ff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #0ea5e9;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">🔨 Project Details</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600; width: 30%;">Werk Type:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.werk_type}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Afwerking:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.afwerking}</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Oppervlakte:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.oppervlakte} m²</td>
+              </tr>
+              ${requestData.aantal_kamers ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Aantal Kamers:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.aantal_kamers}</td>
+              </tr>
+              ` : ''}
+              ${requestData.huidige_staat ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Huidige Staat:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.huidige_staat}</td>
+              </tr>
+              ` : ''}
+              ${requestData.voorbewerking ? `
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Voorbewerking:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.voorbewerking}</td>
+              </tr>
+              ` : ''}
+              <tr>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 600;">Isolatie Gewenst:</td>
+                <td style="padding: 0.5rem 0; color: #000000; font-weight: 400;">${requestData.isolatie_gewenst ? 'Ja' : 'Nee'}</td>
+              </tr>
+            </table>
           </div>
           
-          <div class="footer">
-            <div class="company" style="color: #10b981 !important;">Admin Notificatie<br>Refurbish Totaal Nederland</div>
-            <div class="details" style="color: #6b7280 !important;">Neem zo snel mogelijk contact op met de klant!</div>
+          ${requestData.totaal_prijs ? `
+          <div style="background: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #10b981; text-align: center;">
+            <h2 style="color: #000000; margin: 0 0 0.5rem; font-size: 1.2rem;">💰 Totaalprijs:</h2>
+            <p style="color: #059669; font-size: 2rem; font-weight: 700; margin: 0;">€${requestData.totaal_prijs}</p>
+            <p style="color: #000000; margin: 0.5rem 0 0; font-size: 0.9rem;">Prijsindicatie inclusief BTW</p>
+          </div>
+          ` : ''}
+          
+          ${requestData.bericht ? `
+          <div style="background: #fffbeb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">💬 Aanvullende Informatie</h2>
+            <p style="color: #000000; line-height: 1.6; margin: 0;">${requestData.bericht}</p>
+          </div>
+          ` : ''}
+          
+          <div style="background: #1f2937; border-radius: 8px; padding: 1.5rem; text-align: center;">
+            <p style="color: #ffffff; margin: 0; font-size: 1rem;">
+              🚨 <strong>ACTIE VEREIST:</strong> Log in op het admin dashboard om deze aanvraag te verwerken
+            </p>
           </div>
         </div>
-      </body>
-      </html>
+      </div>
     `;
 
-    const adminEmails = ['info@refurbishtotaalnederland.nl', 'mazenaddas95@gmail.com'];
-    
-    for (const email of adminEmails) {
-      await resend.emails.send({
-        from: `Nieuwe Stukadoorswerk Aanvraag <noreply@refurbishtotaalnederland.nl>`,
-        to: [email],
-        subject: `Nieuwe stukadoorswerk aanvraag van ${customerData.voornaam} ${customerData.achternaam} - €${totalPrice.toLocaleString()}`,
-        html: adminEmailHtml,
-        reply_to: customerData.emailadres
-      });
-    }
-
-    console.log('✅ Stukadoor emails sent successfully');
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+    await resend.emails.send({
+      from: "Refurbish Dakkapel <admin@refurbishdakkapel.nl>",
+      to: ["admin@refurbishdakkapel.nl", "info@refurbishdakkapel.nl"],
+      subject: "🔨 Nieuwe Stukadoor Aanvraag - Actie Vereist",
+      html: adminEmailHtml,
     });
 
-  } catch (error: any) {
-    console.error('❌ Stukadoor request error:', error);
+    console.log("✅ Stukadoor emails sent successfully");
+
+    return new Response(
+      JSON.stringify({ success: true, data: insertedData }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
+  } catch (error) {
+    console.error("❌ Error processing stukadoor request:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
     );
   }
-};
-
-serve(handler);
+});
