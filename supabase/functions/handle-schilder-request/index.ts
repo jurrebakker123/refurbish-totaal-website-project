@@ -44,7 +44,7 @@ serve(async (req) => {
           oppervlakte: parseInt(formData.oppervlakte) || 0,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
-          status: 'nieuw',
+          status: 'offerte_verzonden',
           plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
           kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
         })

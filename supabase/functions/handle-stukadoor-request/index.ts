@@ -45,7 +45,7 @@ serve(async (req) => {
           isolatie_gewenst: formData.isolatie_gewenst,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
-          status: 'nieuw'
+          status: 'offerte_verzonden'
         })
         .select()
         .single();
