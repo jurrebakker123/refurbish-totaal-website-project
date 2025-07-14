@@ -16,8 +16,8 @@ serve(async (req) => {
   }
 
   try {
-    const { customerData, formData, totalPrice } = await req.json();
-    console.log("🔨 Received stukadoor request:", { customerData, formData, totalPrice });
+    const { customerData, formData, totalPrice, fileUrl } = await req.json();
+    console.log("🔨 Received stukadoor request:", { customerData, formData, totalPrice, fileUrl });
 
     // Create Supabase client with service role key for database operations
     const supabase = createClient(
@@ -45,7 +45,8 @@ serve(async (req) => {
           isolatie_gewenst: formData.isolatie_gewenst,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
-          status: 'offerte_verzonden'
+          status: 'offerte_verzonden',
+          file_url: fileUrl
         })
         .select()
         .single();
@@ -62,6 +63,26 @@ serve(async (req) => {
 
     // Always send emails regardless of database success
     console.log("📧 Sending emails...");
+
+    // Prepare file attachment if exists
+    let attachments = [];
+    if (fileUrl) {
+      try {
+        const fileResponse = await fetch(fileUrl);
+        if (fileResponse.ok) {
+          const fileBuffer = await fileResponse.arrayBuffer();
+          const fileName = fileUrl.split('/').pop()?.split('?')[0] || 'bijlage';
+          
+          attachments.push({
+            filename: fileName,
+            content: Buffer.from(fileBuffer)
+          });
+          console.log("📎 File attachment prepared:", fileName);
+        }
+      } catch (error) {
+        console.error("Error fetching file for attachment:", error);
+      }
+    }
 
     // Send confirmation email to customer
     const customerEmailHtml = `
@@ -126,6 +147,12 @@ serve(async (req) => {
               <p style="color: #1f2937; margin: 0; line-height: 1.6;">${formData.bericht}</p>
             </div>
             ` : ''}
+            ${fileUrl ? `
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+              <h4 style="color: #1f2937; margin: 0 0 0.5rem;">📎 Bijlage:</h4>
+              <p style="color: #1f2937; margin: 0;">Zie bijlage in deze email</p>
+            </div>
+            ` : ''}
           </div>
           
           <div style="background: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;">
@@ -156,6 +183,7 @@ serve(async (req) => {
       to: [customerData.emailadres],
       subject: "🔨 Bevestiging van je stukadoor aanvraag",
       html: customerEmailHtml,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
 
     // Send admin notification email
@@ -242,6 +270,13 @@ serve(async (req) => {
           </div>
           ` : ''}
           
+          ${fileUrl ? `
+          <div style="background: #fef3c7; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
+            <h2 style="color: #000000; margin: 0 0 1rem; font-size: 1.2rem;">📎 Bijlage</h2>
+            <p style="color: #000000; margin: 0;"><a href="${fileUrl}" target="_blank" style="color: #f59e0b;">Download bijlage</a> (ook als attachment in deze email)</p>
+          </div>
+          ` : ''}
+          
           <div style="background: #1f2937; border-radius: 8px; padding: 1.5rem; text-align: center;">
             <p style="color: #ffffff; margin: 0; font-size: 1rem;">
               🚨 <strong>ACTIE VEREIST:</strong> Log in op het admin dashboard om deze aanvraag te verwerken
@@ -256,6 +291,7 @@ serve(async (req) => {
       to: ["info@refurbishtotaalnederland.nl", "mazenaddas95@gmail.com"],
       subject: "🔨 Nieuwe Stukadoor Aanvraag - Actie Vereist",
       html: adminEmailHtml,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
 
     console.log("✅ Stukadoor emails sent successfully");

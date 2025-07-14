@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { updateRequestStatus, updateRequestDetails, sendQuoteEmail, deleteQuote } from '@/utils/adminUtils';
-import { Mail, Phone, MapPin, Calendar, Euro, FileText, Edit, Trash2, Save } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Euro, FileText, Edit, Trash2, Save, Download, Paperclip } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
@@ -293,6 +293,20 @@ const RequestDetailDialog: React.FC<RequestDetailDialogProps> = ({
                       <div>{item.adres || `${item.straatnaam} ${item.huisnummer}`}</div>
                       <div>{item.postcode} {item.plaats}</div>
                     </div>
+                  </div>
+                )}
+                {item.file_url && (
+                  <div className="flex items-center gap-2">
+                    <Paperclip className="h-4 w-4 text-gray-500" />
+                    <a 
+                      href={item.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                    >
+                      <Download className="h-3 w-3" />
+                      Download bijlage
+                    </a>
                   </div>
                 )}
                 {item.totaal_prijs && (

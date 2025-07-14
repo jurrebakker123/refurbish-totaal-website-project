@@ -79,6 +79,29 @@ const SchilderConfigurator = () => {
       console.log('🎨 Starting schilder form submission...');
       const totalPrice = calculatePrice();
       
+      let fileUrl = null;
+      
+      // Upload file if provided
+      if (uploadedFile) {
+        console.log('📁 Uploading file to Supabase storage...');
+        const fileName = `${Date.now()}_${uploadedFile.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('configurator-uploads')
+          .upload(`schilder/${fileName}`, uploadedFile);
+          
+        if (uploadError) {
+          console.error('❌ File upload error:', uploadError);
+          throw uploadError;
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('configurator-uploads')
+          .getPublicUrl(`schilder/${fileName}`);
+        
+        fileUrl = publicUrl;
+        console.log('✅ File uploaded successfully:', fileUrl);
+      }
+      
       const customerData = {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -109,7 +132,8 @@ const SchilderConfigurator = () => {
           totaal_prijs: totalPrice,
           status: 'nieuw',
           plafond_meeverven: parseFloat(formData.plafond_oppervlakte) > 0,
-          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0
+          kozijnen_meeverven: (parseInt(formData.aantal_deuren) || 0) + (parseInt(formData.aantal_ramen) || 0) > 0,
+          file_url: fileUrl
         });
 
       if (error) {
@@ -125,7 +149,8 @@ const SchilderConfigurator = () => {
           customerData, 
           formData, 
           totalPrice, 
-          breakdown: []
+          breakdown: [],
+          fileUrl
         }
       });
 

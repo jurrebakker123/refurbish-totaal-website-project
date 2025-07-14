@@ -94,6 +94,7 @@ export type Database = {
           dakhelling: number
           dakhellingtype: string
           emailadres: string
+          file_url: string | null
           hoogte: number
           huisnummer: string
           id: string
@@ -127,6 +128,7 @@ export type Database = {
           dakhelling: number
           dakhellingtype: string
           emailadres: string
+          file_url?: string | null
           hoogte: number
           huisnummer: string
           id?: string
@@ -160,6 +162,7 @@ export type Database = {
           dakhelling?: number
           dakhellingtype?: string
           emailadres?: string
+          file_url?: string | null
           hoogte?: number
           huisnummer?: string
           id?: string
@@ -195,6 +198,7 @@ export type Database = {
           dakhelling: number | null
           dakhelling_type: string | null
           email: string
+          file_url: string | null
           id: string
           in_aanbouw_op: string | null
           insectscreens: boolean | null
@@ -228,6 +232,7 @@ export type Database = {
           dakhelling?: number | null
           dakhelling_type?: string | null
           email: string
+          file_url?: string | null
           id?: string
           in_aanbouw_op?: string | null
           insectscreens?: boolean | null
@@ -261,6 +266,7 @@ export type Database = {
           dakhelling?: number | null
           dakhelling_type?: string | null
           email?: string
+          file_url?: string | null
           id?: string
           in_aanbouw_op?: string | null
           insectscreens?: boolean | null
@@ -540,6 +546,7 @@ export type Database = {
           dak_materiaal: string | null
           dak_type: string
           email: string
+          file_url: string | null
           id: string
           in_aanbouw_op: string | null
           interest_response_at: string | null
@@ -569,6 +576,7 @@ export type Database = {
           dak_materiaal?: string | null
           dak_type: string
           email: string
+          file_url?: string | null
           id?: string
           in_aanbouw_op?: string | null
           interest_response_at?: string | null
@@ -598,6 +606,7 @@ export type Database = {
           dak_materiaal?: string | null
           dak_type?: string
           email?: string
+          file_url?: string | null
           id?: string
           in_aanbouw_op?: string | null
           interest_response_at?: string | null
@@ -680,6 +689,7 @@ export type Database = {
           bericht: string | null
           created_at: string
           emailadres: string
+          file_url: string | null
           gewenste_kleur: string | null
           huidige_kleur: string | null
           huisnummer: string
@@ -710,6 +720,7 @@ export type Database = {
           bericht?: string | null
           created_at?: string
           emailadres: string
+          file_url?: string | null
           gewenste_kleur?: string | null
           huidige_kleur?: string | null
           huisnummer: string
@@ -740,6 +751,7 @@ export type Database = {
           bericht?: string | null
           created_at?: string
           emailadres?: string
+          file_url?: string | null
           gewenste_kleur?: string | null
           huidige_kleur?: string | null
           huisnummer?: string
@@ -851,6 +863,7 @@ export type Database = {
           bericht: string | null
           created_at: string
           emailadres: string
+          file_url: string | null
           huidige_staat: string | null
           huisnummer: string
           id: string
@@ -879,6 +892,7 @@ export type Database = {
           bericht?: string | null
           created_at?: string
           emailadres: string
+          file_url?: string | null
           huidige_staat?: string | null
           huisnummer: string
           id?: string
@@ -907,6 +921,7 @@ export type Database = {
           bericht?: string | null
           created_at?: string
           emailadres?: string
+          file_url?: string | null
           huidige_staat?: string | null
           huisnummer?: string
           id?: string

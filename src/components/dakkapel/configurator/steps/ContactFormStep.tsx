@@ -27,6 +27,7 @@ export const ContactFormStep: React.FC<StepProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const { 
     register, 
@@ -44,6 +45,18 @@ export const ContactFormStep: React.FC<StepProps> = ({
       comments: configuration.contact?.comments || '',
     }
   });
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Bestand is te groot. Maximaal 10MB toegestaan.');
+        return;
+      }
+      setUploadedFile(file);
+      toast.success('Bestand succesvol geüpload');
+    }
+  };
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
@@ -66,6 +79,29 @@ export const ContactFormStep: React.FC<StepProps> = ({
       console.log('Contact data:', data);
       console.log('Configuration:', configuration);
       console.log('Current price:', currentPrice);
+      
+      let fileUrl = null;
+      
+      // Upload file if provided
+      if (uploadedFile) {
+        console.log('📁 Uploading file to Supabase storage...');
+        const fileName = `${Date.now()}_${uploadedFile.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('configurator-uploads')
+          .upload(`dakkapel/${fileName}`, uploadedFile);
+          
+        if (uploadError) {
+          console.error('❌ File upload error:', uploadError);
+          throw uploadError;
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('configurator-uploads')
+          .getPublicUrl(`dakkapel/${fileName}`);
+        
+        fileUrl = publicUrl;
+        console.log('✅ File uploaded successfully:', fileUrl);
+      }
       
       // Save to the correct dakkapel_calculator_aanvragen table (not dakkapel_configuraties)
       const requestData = {
@@ -93,7 +129,8 @@ export const ContactFormStep: React.FC<StepProps> = ({
         rcwaarde: 'Standaard',
         opties: configuration.extras ? Object.keys(configuration.extras).filter(key => configuration.extras?.[key]).join(', ') : 'Geen extra opties',
         status: 'nieuw',
-        totaal_prijs: currentPrice
+        totaal_prijs: currentPrice,
+        file_url: fileUrl
       };
 
       console.log('Saving to dakkapel_calculator_aanvragen...');
@@ -226,6 +263,26 @@ export const ContactFormStep: React.FC<StepProps> = ({
             {...register("comments")}
             placeholder="Heeft u nog specifieke wensen of vragen?"
           />
+        </div>
+
+        {/* File Upload */}
+        <div>
+          <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">Bijlage uploaden (optioneel)</label>
+          <input
+            id="file-upload"
+            type="file"
+            onChange={handleFileUpload}
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-brand-lightGreen file:text-white hover:file:bg-brand-darkGreen"
+          />
+          {uploadedFile && (
+            <p className="text-sm text-green-600 mt-1">
+              Bestand geüpload: {uploadedFile.name}
+            </p>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            Ondersteunde formaten: PDF, JPG, PNG, DOC, DOCX (max 10MB)
+          </p>
         </div>
 
         <div className="flex justify-end mt-8">

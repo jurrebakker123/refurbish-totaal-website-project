@@ -86,6 +86,29 @@ const StukadoorConfigurator = () => {
       console.log('🔨 Starting stukadoor form submission...');
       const totalPrice = calculatePrice();
       
+      let fileUrl = null;
+      
+      // Upload file if provided
+      if (uploadedFile) {
+        console.log('📁 Uploading file to Supabase storage...');
+        const fileName = `${Date.now()}_${uploadedFile.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('configurator-uploads')
+          .upload(`stukadoor/${fileName}`, uploadedFile);
+          
+        if (uploadError) {
+          console.error('❌ File upload error:', uploadError);
+          throw uploadError;
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('configurator-uploads')
+          .getPublicUrl(`stukadoor/${fileName}`);
+        
+        fileUrl = publicUrl;
+        console.log('✅ File uploaded successfully:', fileUrl);
+      }
+      
       const customerData = {
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -115,7 +138,8 @@ const StukadoorConfigurator = () => {
           isolatie_gewenst: formData.isolatie_gewenst,
           bericht: formData.bericht,
           totaal_prijs: totalPrice,
-          status: 'nieuw'
+          status: 'nieuw',
+          file_url: fileUrl
         });
 
       if (error) {
@@ -131,7 +155,8 @@ const StukadoorConfigurator = () => {
           customerData, 
           formData, 
           totalPrice, 
-          breakdown: []
+          breakdown: [],
+          fileUrl
         }
       });
 
