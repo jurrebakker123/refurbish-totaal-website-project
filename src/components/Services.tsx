@@ -4,7 +4,10 @@ import { Brush, Home, Construction, Wrench, Building, SquareGanttChart, Wallpape
 import React from 'react';
 import { OptimizedImage } from './ui/optimized-image';
 
-const services = [
+// Toggle om alle diensten te tonen of alleen de gefocuste diensten
+const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer te tonen
+
+const allServices = [
   {
     id: 'kozijntechniek',
     icon: <Shield className="h-12 w-12 text-brand-lightGreen mb-4" />,
@@ -33,7 +36,7 @@ const services = [
     id: 'schilderwerk',
     icon: <Brush className="h-12 w-12 text-brand-lightGreen mb-4" />,
     title: 'Schilderwerk',
-    description: 'Professionele binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
+    description: 'Professioneel binnen- en buitenschilderwerken met hoogwaardige verfsoorten voor een duurzaam resultaat.',
     link: '/diensten/schilderwerk',
     image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
@@ -87,15 +90,23 @@ const services = [
   }
 ];
 
+// Gefocuste diensten die altijd zichtbaar zijn
+const focusedServiceIds = ['dakkapel', 'schilderwerk', 'stukadoren'];
+
+// Filter diensten op basis van de toggle
+const services = SHOW_ALL_SERVICES 
+  ? allServices 
+  : allServices.filter(service => focusedServiceIds.includes(service.id));
+
 const Services = () => {
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="container">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <h2 className="section-title">Onze Diensten</h2>
+          <h2 className="section-title">Onze Specialisaties</h2>
           <p className="text-lg text-gray-600">
-            Bij Refurbish Totaal Nederland bieden wij een compleet pakket aan renovatie- en verbouwdiensten. 
-            Al onze werkzaamheden worden uitgevoerd door ervaren vakmensen.
+            Wij focussen ons op drie kerngebieden waar wij uitblinken in vakmanschap en kwaliteit. 
+            Voor elk project bieden wij maatwerkoplossingen die perfect aansluiten bij uw wensen.
           </p>
           <div className="inline-block bg-brand-lightGreen text-white text-lg font-medium px-6 py-3 rounded-full mt-4 animate-pulse">
             ✓ Gratis inspectie & advies
@@ -133,11 +144,24 @@ const Services = () => {
           ))}
         </div>
         
-        <div className="mt-12 text-center">
-          <Link to="/diensten" className="btn-primary hover:animate-pulse">
-            Alle Diensten Bekijken
-          </Link>
-        </div>
+        {!SHOW_ALL_SERVICES && (
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-4">
+              Wij bieden ook andere diensten aan. Neem contact op voor meer informatie over onze volledige dienstverlening.
+            </p>
+            <Link to="/contact" className="btn-primary hover:animate-pulse">
+              Contact Opnemen
+            </Link>
+          </div>
+        )}
+        
+        {SHOW_ALL_SERVICES && (
+          <div className="mt-12 text-center">
+            <Link to="/diensten" className="btn-primary hover:animate-pulse">
+              Alle Diensten Bekijken
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

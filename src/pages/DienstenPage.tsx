@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -9,7 +10,10 @@ import { Separator } from '@/components/ui/separator';
 import CallToActionSection from '@/components/CallToActionSection';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 
-const diensten = [{
+// Toggle om alle diensten te tonen of alleen de gefocuste diensten
+const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer te tonen
+
+const allDiensten = [{
   id: 'kozijntechniek',
   icon: <Shield size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Kozijntechniek',
@@ -81,6 +85,14 @@ const diensten = [{
   image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }];
 
+// Gefocuste diensten die altijd zichtbaar zijn
+const focusedServiceIds = ['dakkapel', 'schilderwerk', 'stukadoren'];
+
+// Filter diensten op basis van de toggle
+const diensten = SHOW_ALL_SERVICES 
+  ? allDiensten 
+  : allDiensten.filter(dienst => focusedServiceIds.includes(dienst.id));
+
 const DienstenPage = () => {
   return <div className="min-h-screen flex flex-col">
       <Header />
@@ -92,12 +104,16 @@ const DienstenPage = () => {
             <div className="absolute inset-0 bg-brand-darkGreen bg-opacity-60"></div>
           </div>
           <div className="container text-center relative z-10">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Onze Diensten</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">
+              {SHOW_ALL_SERVICES ? 'Onze Diensten' : 'Onze Specialisaties'}
+            </h1>
             <p className="text-xl max-w-3xl mx-auto animate-fade-in" style={{
             animationDelay: '0.2s'
           }}>
-              Bij Refurbish Totaal Nederland bieden wij een breed scala aan renovatie- en verbouwdiensten,
-              uitgevoerd door ervaren vakmensen met oog voor detail.
+              {SHOW_ALL_SERVICES 
+                ? 'Bij Refurbish Totaal Nederland bieden wij een breed scala aan renovatie- en verbouwdiensten, uitgevoerd door ervaren vakmensen met oog voor detail.'
+                : 'Wij focussen ons op drie kerngebieden waar wij uitblinken in vakmanschap en kwaliteit. Voor elk project bieden wij maatwerkoplossingen die perfect aansluiten bij uw wensen.'
+              }
             </p>
           </div>
         </section>
@@ -147,6 +163,19 @@ const DienstenPage = () => {
                 </div>
                 {index < diensten.length - 1 && <Separator className="my-12 bg-gray-200" />}
               </div>)}
+
+            {!SHOW_ALL_SERVICES && (
+              <div className="mt-16 text-center bg-white p-8 rounded-lg shadow-md">
+                <h3 className="text-2xl font-bold mb-4 text-brand-darkGreen">Meer diensten beschikbaar</h3>
+                <p className="text-lg text-gray-700 mb-6">
+                  Naast onze specialisaties bieden wij ook andere diensten aan zoals isolatietechniek, 
+                  kozijntechniek, installatietechniek, aan- en verbouw, behangen en PVC vloeren.
+                </p>
+                <Link to="/contact" className="btn-primary hover:animate-pulse">
+                  Contact voor Meer Informatie
+                </Link>
+              </div>
+            )}
           </div>
         </section>
 

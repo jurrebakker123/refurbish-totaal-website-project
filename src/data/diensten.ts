@@ -11,7 +11,10 @@ import dakkapel from './diensten/dakkapel';
 import kozijntechniek from './diensten/kozijntechniek';
 import isolatietechniek from './diensten/isolatietechniek';
 
-const diensten: DienstenRecord = {
+// Toggle om alle diensten beschikbaar te maken of alleen de gefocuste diensten
+const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer beschikbaar te maken
+
+const allDiensten: DienstenRecord = {
   'kozijntechniek': kozijntechniek,
   'isolatietechniek': isolatietechniek,
   'dakkapel': dakkapel,
@@ -23,5 +26,15 @@ const diensten: DienstenRecord = {
   'behangen': behangen,
   'pvc-vloeren': pvcVloeren
 };
+
+// Gefocuste diensten die altijd beschikbaar zijn
+const focusedServices = ['dakkapel', 'schilderwerk', 'stukadoren'];
+
+// Filter diensten op basis van de toggle
+const diensten: DienstenRecord = SHOW_ALL_SERVICES 
+  ? allDiensten 
+  : Object.fromEntries(
+      Object.entries(allDiensten).filter(([key]) => focusedServices.includes(key))
+    );
 
 export default diensten;
