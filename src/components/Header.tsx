@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Mail, ChevronDown, MapPin } from 'lucide-react';
@@ -6,7 +5,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const dienstenItems = [{
+// Toggle om alle diensten beschikbaar te maken of alleen de gefocuste diensten
+const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer beschikbaar te maken
+
+const allDienstenItems = [{
   title: 'Kozijntechniek',
   path: '/diensten/kozijntechniek'
 }, {
@@ -37,6 +39,14 @@ const dienstenItems = [{
   title: 'PVC Vloeren',
   path: '/diensten/pvc-vloeren'
 }];
+
+// Gefocuste diensten die altijd beschikbaar zijn
+const focusedServices = ['Dakkapel', 'Schilderwerk', 'Stukadoren'];
+
+// Filter diensten op basis van de toggle
+const dienstenItems = SHOW_ALL_SERVICES 
+  ? allDienstenItems 
+  : allDienstenItems.filter(dienst => focusedServices.includes(dienst.title));
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

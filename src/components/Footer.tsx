@@ -2,6 +2,30 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
+// Toggle om alle diensten beschikbaar te maken of alleen de gefocuste diensten
+const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer beschikbaar te maken
+
+const allServices = [
+  { title: 'Kozijntechniek', path: '/diensten/kozijntechniek' },
+  { title: 'Isolatietechniek', path: '/diensten/isolatietechniek' },
+  { title: 'Dakkapel', path: '/diensten/dakkapel' },
+  { title: 'Schilderwerk', path: '/diensten/schilderwerk' },
+  { title: 'Dakrenovatie', path: '/diensten/dakrenovatie' },
+  { title: 'Stukadoren', path: '/diensten/stukadoren' },
+  { title: 'Installatietechniek', path: '/diensten/installatietechniek' },
+  { title: 'Aan- en verbouw', path: '/diensten/aan-en-verbouw' },
+  { title: 'Behangen', path: '/diensten/behangen' },
+  { title: 'PVC Vloeren', path: '/diensten/pvc-vloeren' }
+];
+
+// Gefocuste diensten die altijd beschikbaar zijn
+const focusedServices = ['Dakkapel', 'Schilderwerk', 'Stukadoren'];
+
+// Filter diensten op basis van de toggle
+const visibleServices = SHOW_ALL_SERVICES 
+  ? allServices 
+  : allServices.filter(service => focusedServices.includes(service.title));
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -77,36 +101,11 @@ const Footer = () => {
         }}>
             <h3 className="text-xl font-bold mb-4">Onze Diensten</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/diensten/kozijntechniek" className="hover:text-brand-lightGreen transition-colors hover-underline">Kozijntechniek</Link>
-              </li>
-              <li>
-                <Link to="/diensten/isolatietechniek" className="hover:text-brand-lightGreen transition-colors hover-underline">Isolatietechniek</Link>
-              </li>
-              <li>
-                <Link to="/diensten/dakkapel" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakkapel</Link>
-              </li>
-              <li>
-                <Link to="/diensten/schilderwerk" className="hover:text-brand-lightGreen transition-colors hover-underline">Schilderwerk</Link>
-              </li>
-              <li>
-                <Link to="/diensten/dakrenovatie" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakrenovatie</Link>
-              </li>
-              <li>
-                <Link to="/diensten/stukadoren" className="hover:text-brand-lightGreen transition-colors hover-underline">Stukadoren</Link>
-              </li>
-              <li>
-                <Link to="/diensten/installatietechniek" className="hover:text-brand-lightGreen transition-colors hover-underline">Installatietechniek</Link>
-              </li>
-              <li>
-                <Link to="/diensten/aan-en-verbouw" className="hover:text-brand-lightGreen transition-colors hover-underline">Aan- en verbouw</Link>
-              </li>
-              <li>
-                <Link to="/diensten/behangen" className="hover:text-brand-lightGreen transition-colors hover-underline">Behangen</Link>
-              </li>
-              <li>
-                <Link to="/diensten/pvc-vloeren" className="hover:text-brand-lightGreen transition-colors hover-underline">PVC Vloeren</Link>
-              </li>
+              {visibleServices.map((service) => (
+                <li key={service.path}>
+                  <Link to={service.path} className="hover:text-brand-lightGreen transition-colors hover-underline">{service.title}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
