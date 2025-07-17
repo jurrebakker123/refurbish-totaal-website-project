@@ -46,6 +46,7 @@ import PrivacyPage from '@/pages/PrivacyPage';
 import VoorwaardenPage from '@/pages/VoorwaardenPage';
 import CertificaatPage from '@/pages/CertificaatPage';
 import NotFound from '@/pages/NotFound';
+import WordPressAdminPage from '@/pages/WordPressAdminPage';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -122,6 +123,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/voorwaarden" element={<VoorwaardenPage />} />
             <Route path="/certificaat" element={<CertificaatPage />} />
+            <Route path="/wp-admin/*" element={<WordPressAdminPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
