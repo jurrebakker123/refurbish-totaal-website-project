@@ -6,29 +6,11 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
-import ProjectsPreview from '@/components/ProjectsPreview';
 import Testimonials from '@/components/Testimonials';
 import CallToActionSection from '@/components/CallToActionSection';
 import { Link } from 'react-router-dom';
-import ReusableForm from '@/components/common/ReusableForm';
+
 const Index = () => {
-  const benefits = [{
-    title: "Slimmer dan Renoveren",
-    description: "Wij kijken verder dan gewone renovatie. Refurbish betekent: verbeteren, vernieuwen én verduurzamen – in één slimme aanpak.",
-    icon: <Check className="h-10 w-10 text-brand-lightGreen" />
-  }, {
-    title: "Integrale Totaaloplossing",
-    description: "We pakken alles in samenhang aan: bouwkundige verbeteringen, moderne isolatietechniek en energiezuinige installaties.",
-    icon: <Check className="h-10 w-10 text-brand-lightGreen" />
-  }, {
-    title: "Één Aanspreekpunt",
-    description: "Geen losse schakels, maar één team met één resultaatgerichte aanpak voor efficiënte uitvoering en korte doorlooptijd.",
-    icon: <Check className="h-10 w-10 text-brand-lightGreen" />
-  }, {
-    title: "Toekomstgericht",
-    description: "Een woning die niet alleen weer jaren mee kan, maar ook comfortabeler, zuiniger én mooier is.",
-    icon: <Check className="h-10 w-10 text-brand-lightGreen" />
-  }];
   const certifications = [{
     name: 'VCA',
     description: 'Veiligheid voor uitvoerenden en leidinggevenden'
@@ -55,74 +37,6 @@ const Index = () => {
         </section>
         <Services />
         
-        {/* Benefits Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="container">
-            <motion.div className="text-center max-w-3xl mx-auto mb-16 mt-4 md:mt-0" initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            duration: 0.5
-          }}>
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-brand-darkGreen leading-tight md:leading-snug">
-                Waarom Refurbish Totaal Nederland anders is
-              </h2>
-              <p className="text-base md:text-lg text-gray-700">
-                Refurbish is geen renovatie. Het is een herstart van uw woning, helemaal klaar voor de toekomst.
-                Wij denken niet alleen in werk, maar in waarde: voor bewoners, gebruikers én de toekomst van het gebouw.
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {benefits.map((benefit, index) => <motion.div key={index} className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow flex" initial={{
-              opacity: 0,
-              y: 20
-            }} whileInView={{
-              opacity: 1,
-              y: 0
-            }} viewport={{
-              once: true
-            }} transition={{
-              duration: 0.5,
-              delay: index * 0.1
-            }} whileHover={{
-              y: -5
-            }}>
-                  <div className="mr-4 mt-1">
-                    {benefit.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">{benefit.title}</h3>
-                    <p className="text-gray-700">{benefit.description}</p>
-                  </div>
-                </motion.div>)}
-            </div>
-            
-            <motion.div className="text-center mt-12" initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            duration: 0.5,
-            delay: 0.4
-          }}>
-              <Link to="/over-ons" className="btn-primary hover:animate-pulse inline-flex items-center">
-                Meer Over Ons <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </motion.div>
-          </div>
-        </section>
-
-        <ProjectsPreview />
         <Testimonials />
         
         {/* Map Section */}
@@ -203,9 +117,9 @@ const Index = () => {
           }} transition={{
             duration: 0.5
           }}>
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-brand-darkGreen">Voor Wie is Refurbish Ideaal?</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-brand-darkGreen">Voor Wie zijn Onze Diensten Ideaal?</h2>
               <p className="text-lg text-gray-700">
-                Onze integrale aanpak is perfect voor:
+                Onze specialistische aanpak is perfect voor:
               </p>
             </motion.div>
 
@@ -225,7 +139,7 @@ const Index = () => {
             }}>
                 <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
                 <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Particuliere Woningen</h3>
-                <p className="text-gray-600">Vrijstaand of 2-onder-1-kap, wij maken uw woning klaar voor de toekomst</p>
+                <p className="text-gray-600">Dakkapellen, schilderwerk en stucwerk voor uw woning</p>
               </motion.div>
               <motion.div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center" initial={{
               opacity: 0,
@@ -243,7 +157,7 @@ const Index = () => {
             }}>
                 <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
                 <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Kleinschalige Utiliteitsbouw</h3>
-                <p className="text-gray-600">Strategisch vernieuwen voor optimaal resultaat</p>
+                <p className="text-gray-600">Professionele afwerking voor bedrijfspanden</p>
               </motion.div>
               <motion.div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center" initial={{
               opacity: 0,
@@ -260,8 +174,8 @@ const Index = () => {
               y: -5
             }}>
                 <ShieldCheck className="h-12 w-12 text-brand-lightGreen mb-4" />
-                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Verduurzamingsprojecten</h3>
-                <p className="text-gray-600">Slimme integratie van bouw, techniek en energie</p>
+                <h3 className="text-xl font-bold mb-3 text-brand-darkGreen">Renovatieprojecten</h3>
+                <p className="text-gray-600">Specialistische vakmanschap voor uw renovatie</p>
               </motion.div>
             </div>
           </div>
@@ -385,8 +299,6 @@ const Index = () => {
             </motion.div>
           </div>
         </section>
-
-        {/* Form Section removed from here */}
 
         <CallToActionSection />
       </main>

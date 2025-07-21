@@ -46,7 +46,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Slimmer dan Renoveren: Wonen in de Toekomst Begint Nu
+              Specialist in Dakkapellen, Schilderwerk & Stukadoorsdiensten
             </motion.h1>
             
             <motion.p 
@@ -55,8 +55,8 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Waar een gewone renovatie vaak stopt bij herstel of vervanging, kijken wij verder. 
-              Met onze integrale refurbish-aanpak maken we uw woning comfortabeler, zuiniger én mooier.
+              Met onze specialistische aanpak maken we uw woning comfortabeler, mooier en functioneler. 
+              Vakmanschap en kwaliteit staan bij ons voorop.
             </motion.p>
             
             <motion.div 

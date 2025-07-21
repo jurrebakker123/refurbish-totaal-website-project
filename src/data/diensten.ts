@@ -12,7 +12,7 @@ import kozijntechniek from './diensten/kozijntechniek';
 import isolatietechniek from './diensten/isolatietechniek';
 
 // Toggle om alle diensten beschikbaar te maken of alleen de gefocuste diensten
-const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer beschikbaar te maken
+const SHOW_ALL_SERVICES = false; // Blijft op false om alleen de drie hoofddiensten te tonen
 
 const allDiensten: DienstenRecord = {
   'kozijntechniek': kozijntechniek,
