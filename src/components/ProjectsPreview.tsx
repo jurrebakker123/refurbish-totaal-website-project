@@ -7,9 +7,9 @@ import { motion } from 'framer-motion';
 const projects = [
   {
     id: 1,
-    title: 'Volledige woningrenovatie',
+    title: 'Dakkapel plaatsing',
     location: 'Amsterdam',
-    category: 'Renovatie',
+    category: 'Dakkapel',
     imageUrl: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png',
     beforeImageUrl: '/lovable-uploads/86f735a8-487e-43c0-9703-193520a0aec0.png',
   },
@@ -23,10 +23,10 @@ const projects = [
   },
   {
     id: 3,
-    title: 'Dakrenovatie jaren \'30 woning',
+    title: 'Stucwerk woonkamer',
     location: 'Rotterdam',
-    category: 'Dakrenovatie',
-    imageUrl: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    category: 'Stukadoor',
+    imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80',
     beforeImageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
 ];
@@ -71,7 +71,7 @@ const ProjectsPreview = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Bekijk enkele van onze recente renovatie- en verbouwprojecten. 
+              Bekijk enkele van onze recente dakkapel-, schilderwerk- en stukadoorprojecten. 
               Laat u inspireren door onze werkzaamheden en de transformaties die we hebben gerealiseerd.
             </motion.p>
           </div>

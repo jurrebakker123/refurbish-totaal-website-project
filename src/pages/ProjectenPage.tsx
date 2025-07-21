@@ -9,11 +9,11 @@ import { OptimizedImage } from '@/components/ui/optimized-image';
 const projects = [
   {
     id: 1,
-    title: 'Volledige woningrenovatie',
+    title: 'Volledige woningrenovatie - Stukadoorwerk',
     location: 'Amsterdam',
-    category: 'Renovatie',
-    description: 'Complete renovatie van een jaren 30 woning, inclusief nieuwe badkamer, keuken, en stucwerk in alle ruimtes. De woning is volledig gemoderniseerd met behoud van authentieke elementen.',
-    challenges: 'Uitdagingen waren het behouden van originele ornamenten terwijl moderne installaties werden geïntegreerd.',
+    category: 'Stukadoor',
+    description: 'Complete stucwerk renovatie van een jaren 30 woning, inclusief gladpleisterwerk in alle ruimtes. De woning is volledig voorzien van nieuw stucwerk met behoud van authentieke elementen.',
+    challenges: 'Uitdagingen waren het behouden van originele ornamenten terwijl moderne stuctechnieken werden geïntegreerd.',
     imageUrl: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
     beforeImageUrl: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
@@ -29,31 +29,31 @@ const projects = [
   },
   {
     id: 3,
-    title: 'Dakrenovatie jaren \'30 woning',
+    title: 'Dakkapel plaatsing jaren \'30 woning',
     location: 'Rotterdam',
-    category: 'Dakrenovatie',
-    description: 'Complete renovatie van het dak van een karakteristieke jaren 30 woning. Inclusief vervanging van dakpannen, isolatie en nieuwe dakramen voor meer natuurlijk licht.',
-    challenges: 'De uitdaging lag in het behouden van het authentieke karakter van het dak terwijl moderne isolatie werd toegepast.',
+    category: 'Dakkapel',
+    description: 'Complete plaatsing van een nieuwe dakkapel op een karakteristieke jaren 30 woning. Inclusief isolatie en nieuwe dakramen voor meer natuurlijk licht en ruimte.',
+    challenges: 'De uitdaging lag in het behouden van het authentieke karakter van het dak terwijl een moderne dakkapel werd geïntegreerd.',
     imageUrl: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
     beforeImageUrl: 'https://images.unsplash.com/photo-1625602812206-5ec545ca1231?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
     id: 4,
-    title: 'Badkamerrenovatie',
-    location: 'Amsterdam',
-    category: 'Verbouwing',
-    description: 'Volledige renovatie van een verouderde badkamer naar een moderne wellnessruimte. Inclusief inloopdouche, vrijstaand bad en op maat gemaakt badkamermeubel.',
-    challenges: 'In een beperkte ruimte hebben we optimaal gebruik gemaakt van slimme indelingen en materialen.',
-    imageUrl: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
+    title: 'Interieur schilderwerk appartement',
+    location: 'Den Haag',
+    category: 'Schilderwerk',
+    description: 'Volledige binnenschildering van een modern appartement. Inclusief wanden, plafonds en al het houtwerk. Professionele afwerking met hoogwaardige muurverf.',
+    challenges: 'In een beperkte ruimte hebben we efficiënt gewerkt met minimale overlast voor de bewoners.',
+    imageUrl: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
     beforeImageUrl: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
     id: 5,
-    title: 'PVC vloer installatie kantoorpand',
+    title: 'Moderne dakkapel met zonnepanelen',
     location: 'Eindhoven',
-    category: 'PVC Vloeren',
-    description: 'Installatie van hoogwaardige PVC vloeren in een modern kantoorpand van 500m². De vloer combineert praktische eigenschappen met een stijlvolle uitstraling.',
-    challenges: 'Door een strakke planning en efficiënte werkwijze hebben we het project binnen 3 dagen kunnen afronden zonder bedrijfsactiviteiten te verstoren.',
+    category: 'Dakkapel',
+    description: 'Plaatsing van een moderne dakkapel met geïntegreerde zonnepanelen. De dakkapel combineert extra woonruimte met duurzame energieopwekking.',
+    challenges: 'Door een strakke planning en samenwerking met elektriciens hebben we dakkapel en zonnepanelen perfect geïntegreerd.',
     imageUrl: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
     beforeImageUrl: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
@@ -98,7 +98,7 @@ const ProjectenPage = () => {
             >
               <h1 className="text-5xl font-bold mb-6 leading-tight">Onze Projecten</h1>
               <p className="text-xl mb-8 text-gray-200">
-                Ontdek een selectie van onze recente renovatie- en verbouwingsprojecten. 
+                Ontdek een selectie van onze recente dakkapel-, schilderwerk- en stukadoorprojecten. 
                 Van kleine transformaties tot complete metamorfoses, wij zorgen voor vakkundig uitgevoerd werk dat uw verwachtingen overtreft.
               </p>
             </motion.div>
