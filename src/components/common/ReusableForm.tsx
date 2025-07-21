@@ -74,7 +74,7 @@ const ReusableForm = ({
     { name: 'plaats', label: 'Plaats', type: 'text', required: true },
   ];
 
-  // Add service field if requested
+  // Add service field if requested with only the three main services
   if (showServiceInput) {
     defaultFields.push({
       name: 'dienst',
@@ -83,11 +83,8 @@ const ReusableForm = ({
       required: true,
       options: [
         { value: 'Dakkapel', label: 'Dakkapel' },
-        { value: 'Zonnepanelen', label: 'Zonnepanelen' },
         { value: 'Schilderwerk', label: 'Schilderwerk' },
-        { value: 'Stukadoorswerk', label: 'Stukadoorswerk' },
-        { value: 'Isolatie', label: 'Isolatie' },
-        { value: 'Anders', label: 'Anders' }
+        { value: 'Stukadoor', label: 'Stukadoor' }
       ]
     });
   }
