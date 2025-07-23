@@ -56,9 +56,43 @@ const Testimonials = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex(current => (current + 1) % testimonials.length);
-    }, 6000); // Increased to 6 seconds for a more relaxed pace
+    }, 8000); // Increased to 8 seconds for more relaxed pace
     return () => clearInterval(interval);
   }, []);
+
+  // Function to render stars with 4.8 rating
+  const renderStars = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasPartialStar = rating % 1 !== 0;
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
+      );
+    }
+    
+    if (hasPartialStar) {
+      const partialWidth = (rating % 1) * 100;
+      stars.push(
+        <div key="partial" className="relative w-4 h-4">
+          <Star className="w-4 h-4 text-gray-300 absolute" />
+          <div className="overflow-hidden absolute" style={{ width: `${partialWidth}%` }}>
+            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+          </div>
+        </div>
+      );
+    }
+    
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(
+        <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
+      );
+    }
+    
+    return stars;
+  };
 
   return (
     <section className="py-16 md:py-24 bg-white">
@@ -90,15 +124,15 @@ const Testimonials = () => {
               {testimonials.map((testimonial) => (
                 <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
                   <motion.div 
-                    className="h-full bg-gray-50 p-6 rounded-lg border border-gray-100 hover:shadow-lg transition-shadow"
+                    className="relative h-full bg-gray-50 p-6 rounded-lg border border-gray-100 hover:shadow-lg transition-shadow"
                     whileHover={{ y: -5 }}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                   >
-                    <div className="absolute -top-3 -left-3 w-10 h-10 bg-brand-lightGreen rounded-full flex items-center justify-center text-white shadow-lg">
-                      <Quote className="h-5 w-5" />
+                    <div className="absolute -top-2 -left-2 w-8 h-8 bg-brand-lightGreen rounded-full flex items-center justify-center text-white shadow-lg z-10">
+                      <Quote className="h-4 w-4" />
                     </div>
                     
                     <div className="flex mb-4 mt-2">
@@ -134,11 +168,9 @@ const Testimonials = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <div className="bg-gray-50 p-8 rounded-lg max-w-2xl text-center">
-            <div className="text-5xl font-bold text-brand-darkGreen mb-4">9.5</div>
+            <div className="text-5xl font-bold text-brand-darkGreen mb-4">4.8/5.0</div>
             <div className="flex justify-center mb-4">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
-              ))}
+              {renderStars(4.8)}
             </div>
             <p className="text-lg text-gray-600 mb-6">
               Gemiddelde klantwaardering op basis van echte klantreviews
