@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -152,7 +153,7 @@ export default function Testimonials() {
               Gemiddelde klantwaardering op basis van echte klantreviews
             </p>
             <a
-              href="https://www.google.com/search?q=refurbish+totaal+nederland+reviews"
+              href="https://g.page/r/CaugvSM-hsKnEAI/review"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-brand-lightGreen text-white px-6 py-3 rounded-lg hover:bg-brand-darkGreen transition-colors"
