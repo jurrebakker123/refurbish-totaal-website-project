@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Star, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import type { CarouselApi } from '@/components/ui/carousel';
 
 const testimonials = [
   {
@@ -50,14 +50,35 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
+
+    api.on('select', onSelect);
+    onSelect();
+
+    return () => api?.off('select', onSelect);
+  }, [api]);
+
+  useEffect(() => {
+    if (!api) return;
+
     const interval = setInterval(() => {
-      setActiveIndex(current => (current + 1) % testimonials.length);
-    }, 8000);
+      if (api.canScrollNext()) {
+        api.scrollNext();
+      } else {
+        api.scrollTo(0);
+      }
+    }, 5000); // Increased from 3000ms to 5000ms for slower scrolling
+
     return () => clearInterval(interval);
-  }, []);
+  }, [api]);
 
   return (
     <section className="py-16 md:py-24 bg-white">
@@ -72,11 +93,19 @@ export default function Testimonials() {
         </div>
 
         <div className="mb-12">
-          <Carousel className="w-full">
+          <Carousel 
+            setApi={setApi}
+            className="w-full"
+            opts={{
+              align: "start",
+              loop: true,
+              duration: 20, // Slower transition duration
+            }}
+          >
             <CarouselContent className="-ml-4">
               {testimonials.map((testimonial) => (
                 <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
-                  <div className="relative h-full bg-gray-50 p-6 rounded-lg border border-gray-100 hover:shadow-lg transition-shadow">
+                  <div className="relative h-full bg-gray-50 p-6 rounded-lg border border-gray-100 hover:shadow-lg transition-shadow duration-300">
                     <div className="absolute -top-3 -left-3 w-10 h-10 bg-brand-lightGreen rounded-full flex items-center justify-center text-white shadow-lg z-10">
                       <Quote className="h-5 w-5" />
                     </div>
