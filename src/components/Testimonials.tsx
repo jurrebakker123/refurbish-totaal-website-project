@@ -59,78 +59,26 @@ export default function Testimonials() {
     return () => clearInterval(interval);
   }, []);
 
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasPartialStar = rating % 1 !== 0;
-    
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-      );
-    }
-    
-    if (hasPartialStar) {
-      const partialWidth = (rating % 1) * 100;
-      stars.push(
-        <div key="partial" className="relative w-4 h-4">
-          <Star className="w-4 h-4 text-gray-300 absolute" />
-          <div className="overflow-hidden absolute" style={{ width: `${partialWidth}%` }}>
-            <Star className="w-4 h-4 text-yellow-500 fill-current" />
-          </div>
-        </div>
-      );
-    }
-    
-    const emptyStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
-      );
-    }
-    
-    return stars;
-  };
-
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-brand-darkGreen mb-4">
             Wat Anderen Zeggen
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Ontdek wat onze klanten te zeggen hebben over onze diensten
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
+        <div className="mb-12">
           <Carousel className="w-full">
             <CarouselContent className="-ml-4">
               {testimonials.map((testimonial) => (
                 <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3 pl-4">
-                  <motion.div 
-                    className="relative h-full bg-gray-50 p-6 rounded-lg border border-gray-100 hover:shadow-lg transition-shadow"
-                    whileHover={{ y: -5 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <div className="absolute -top-2 -left-2 w-8 h-8 bg-brand-lightGreen rounded-full flex items-center justify-center text-white shadow-lg z-10">
-                      <Quote className="h-4 w-4" />
+                  <div className="relative h-full bg-gray-50 p-6 rounded-lg border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div className="absolute -top-3 -left-3 w-10 h-10 bg-brand-lightGreen rounded-full flex items-center justify-center text-white shadow-lg z-10">
+                      <Quote className="h-5 w-5" />
                     </div>
                     
                     <div className="flex mb-4 mt-2">
@@ -147,24 +95,27 @@ export default function Testimonials() {
                       <p className="font-semibold text-brand-darkGreen">{testimonial.name}</p>
                       <p className="text-sm text-gray-600">{testimonial.service}</p>
                     </div>
-                  </motion.div>
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
           </Carousel>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="flex justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
+        <div className="flex justify-center">
           <div className="bg-gray-50 p-8 rounded-lg max-w-2xl text-center">
             <div className="text-5xl font-bold text-brand-darkGreen mb-4">4.8/5.0</div>
             <div className="flex justify-center mb-4 gap-1">
-              {renderStars(4.8)}
+              <Star className="w-5 h-5 text-yellow-400 fill-current" />
+              <Star className="w-5 h-5 text-yellow-400 fill-current" />
+              <Star className="w-5 h-5 text-yellow-400 fill-current" />
+              <Star className="w-5 h-5 text-yellow-400 fill-current" />
+              <div className="relative w-5 h-5">
+                <Star className="w-5 h-5 text-gray-300 absolute" />
+                <div className="overflow-hidden absolute w-4/5">
+                  <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                </div>
+              </div>
             </div>
             <p className="text-lg text-gray-600 mb-6">
               Gemiddelde klantwaardering op basis van echte klantreviews
@@ -179,7 +130,7 @@ export default function Testimonials() {
               Bekijk alle Google Reviews
             </a>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
