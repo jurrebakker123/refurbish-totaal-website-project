@@ -63,7 +63,9 @@ export default function Testimonials() {
     api.on('select', onSelect);
     onSelect();
 
-    return () => api?.off('select', onSelect);
+    return () => {
+      api?.off('select', onSelect);
+    };
   }, [api]);
 
   useEffect(() => {
