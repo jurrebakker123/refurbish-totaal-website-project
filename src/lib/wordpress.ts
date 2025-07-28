@@ -1,9 +1,9 @@
 
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, gql } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 // WordPress GraphQL endpoint - vervang dit door je eigen WordPress URL
-const WORDPRESS_URL = process.env.REACT_APP_WORDPRESS_URL || 'https://your-wordpress-site.com/graphql';
+const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://your-wordpress-site.com/graphql';
 
 const httpLink = createHttpLink({
   uri: WORDPRESS_URL,
@@ -24,7 +24,7 @@ export const wordpressClient = new ApolloClient({
 });
 
 // WordPress GraphQL queries
-export const GET_PAGES = `
+export const GET_PAGES = gql`
   query GetPages {
     pages {
       nodes {
@@ -44,7 +44,7 @@ export const GET_PAGES = `
   }
 `;
 
-export const GET_PAGE_BY_SLUG = `
+export const GET_PAGE_BY_SLUG = gql`
   query GetPageBySlug($slug: String!) {
     pageBy(slug: $slug) {
       id
@@ -62,7 +62,7 @@ export const GET_PAGE_BY_SLUG = `
   }
 `;
 
-export const GET_POSTS = `
+export const GET_POSTS = gql`
   query GetPosts {
     posts {
       nodes {
@@ -90,7 +90,7 @@ export const GET_POSTS = `
   }
 `;
 
-export const GET_SERVICES = `
+export const GET_SERVICES = gql`
   query GetServices {
     services {
       nodes {

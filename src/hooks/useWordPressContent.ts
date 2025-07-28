@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { wordpressClient } from '@/lib/wordpress';
+import { wordpressClient, GET_PAGES, GET_PAGE_BY_SLUG, GET_POSTS } from '@/lib/wordpress';
 
 interface WordPressPage {
   id: string;
