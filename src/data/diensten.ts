@@ -28,7 +28,7 @@ const allDiensten: DienstenRecord = {
 };
 
 // Gefocuste diensten die altijd beschikbaar zijn
-const focusedServices = ['dakkapel', 'schilderwerk', 'stukadoren'];
+const focusedServices = ['schilderwerk', 'stukadoren'];
 
 // Filter diensten op basis van de toggle
 const diensten: DienstenRecord = SHOW_ALL_SERVICES 
