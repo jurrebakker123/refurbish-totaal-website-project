@@ -91,7 +91,7 @@ const allServices = [
 ];
 
 // Gefocuste diensten die altijd zichtbaar zijn
-const focusedServiceIds = ['dakkapel', 'schilderwerk', 'stukadoren'];
+const focusedServiceIds = ['schilderwerk', 'stukadoren'];
 
 // Filter diensten op basis van de toggle
 const services = SHOW_ALL_SERVICES 

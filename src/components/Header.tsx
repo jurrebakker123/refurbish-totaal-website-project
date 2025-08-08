@@ -15,9 +15,6 @@ const allDienstenItems = [{
   title: 'Isolatietechniek',
   path: '/diensten/isolatietechniek'
 }, {
-  title: 'Dakkapel',
-  path: '/diensten/dakkapel'
-}, {
   title: 'Schilderwerk',
   path: '/diensten/schilderwerk'
 }, {
@@ -41,7 +38,7 @@ const allDienstenItems = [{
 }];
 
 // Gefocuste diensten die altijd beschikbaar zijn
-const focusedServices = ['Dakkapel', 'Schilderwerk', 'Stukadoren'];
+const focusedServices = ['Schilderwerk', 'Stukadoren'];
 
 // Filter diensten op basis van de toggle
 const dienstenItems = SHOW_ALL_SERVICES 

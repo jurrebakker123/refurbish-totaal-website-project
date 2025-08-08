@@ -107,7 +107,7 @@ const CityServiceOptimization: React.FC<CityServiceOptimizationProps> = ({
         `aanbouw specialist ${formattedCityName}`,
         `verbouwing woning ${formattedCityName}`,
         `renovatie jaren 30 woning ${formattedCityName}`,
-        `dakkapel specialist ${formattedCityName}`
+        
       ];
     } else if (serviceType.includes('behang')) {
       relatedKeywords = [

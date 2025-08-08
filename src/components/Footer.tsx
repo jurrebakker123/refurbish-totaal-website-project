@@ -8,7 +8,6 @@ const SHOW_ALL_SERVICES = false; // Zet op true om alle diensten weer beschikbaa
 const allServices = [
   { title: 'Kozijntechniek', path: '/diensten/kozijntechniek' },
   { title: 'Isolatietechniek', path: '/diensten/isolatietechniek' },
-  { title: 'Dakkapel', path: '/diensten/dakkapel' },
   { title: 'Schilderwerk', path: '/diensten/schilderwerk' },
   { title: 'Dakrenovatie', path: '/diensten/dakrenovatie' },
   { title: 'Stukadoren', path: '/diensten/stukadoren' },
@@ -19,7 +18,7 @@ const allServices = [
 ];
 
 // Gefocuste diensten die altijd beschikbaar zijn
-const focusedServices = ['Dakkapel', 'Schilderwerk', 'Stukadoren'];
+const focusedServices = ['Schilderwerk', 'Stukadoren'];
 
 // Filter diensten op basis van de toggle
 const visibleServices = SHOW_ALL_SERVICES 
@@ -85,9 +84,6 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/contact" className="hover:text-brand-lightGreen transition-colors hover-underline">Contact</Link>
-              </li>
-              <li>
-                <Link to="/dakkapel-calculator" className="hover:text-brand-lightGreen transition-colors hover-underline">Dakkapel Calculator</Link>
               </li>
               <li>
                 <Link to="/service-selector" className="hover:text-brand-lightGreen transition-colors hover-underline">Schilder & Stucwerk</Link>

@@ -100,7 +100,7 @@ const CallToActionSection = () => {
           <div className="animate-fade-in">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Klaar om uw project te starten?</h2>
             <p className="text-lg mb-8 text-gray-300">
-              Of u nu een dakkapel, schilderwerk of stukadoorwerk plant, 
+              Of u nu schilderwerk of stukadoorwerk plant, 
               Refurbish Totaal Nederland staat voor u klaar met deskundig advies en 
               professionele uitvoering.
             </p>
@@ -177,7 +177,7 @@ const CallToActionSection = () => {
                   required
                 >
                   <option value="">Selecteer een dienst</option>
-                  <option value="dakkapel">Dakkapel</option>
+                  
                   <option value="schilderwerk">Schilderwerk</option>
                   <option value="stukadoor">Stukadoor</option>
                 </select>

@@ -7,14 +7,6 @@ import { motion } from 'framer-motion';
 const projects = [
   {
     id: 1,
-    title: 'Dakkapel plaatsing',
-    location: 'Amsterdam',
-    category: 'Dakkapel',
-    imageUrl: '/lovable-uploads/70e348ca-19f6-4888-9cf4-4ba36b481d5a.png',
-    beforeImageUrl: '/lovable-uploads/86f735a8-487e-43c0-9703-193520a0aec0.png',
-  },
-  {
-    id: 2,
     title: 'Buitenschilderwerk villa',
     location: 'Utrecht',
     category: 'Schilderwerk',
@@ -22,7 +14,7 @@ const projects = [
     beforeImageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
-    id: 3,
+    id: 2,
     title: 'Stucwerk woonkamer',
     location: 'Rotterdam',
     category: 'Stukadoor',
@@ -71,7 +63,7 @@ const ProjectsPreview = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Bekijk enkele van onze recente dakkapel-, schilderwerk- en stukadoorprojecten. 
+              Bekijk enkele van onze recente schilderwerk- en stukadoorprojecten. 
               Laat u inspireren door onze werkzaamheden en de transformaties die we hebben gerealiseerd.
             </motion.p>
           </div>

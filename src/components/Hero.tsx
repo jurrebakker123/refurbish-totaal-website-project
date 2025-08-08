@@ -46,7 +46,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Specialist in Dakkapellen, Schilderwerk & Stukadoorsdiensten
+              Specialist in Schilderwerk & Stukadoorsdiensten
             </motion.h1>
             
             <motion.p 

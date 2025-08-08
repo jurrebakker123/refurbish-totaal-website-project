@@ -35,7 +35,7 @@ const services = [
   },
   {
     name: "Aan- en verbouw",
-    keywords: "aannemer, verbouwing, aanbouw, uitbouw, renovatie, dakkapel plaatsen",
+    keywords: "aannemer, verbouwing, aanbouw, uitbouw, renovatie",
     description: "Totaaloplossing voor aan- en verbouwprojecten. Van kleine renovaties tot complete woninguitbreidingen met alle benodigde disciplines.",
     price: "Op aanvraag"
   },
@@ -51,12 +51,6 @@ const services = [
     description: "Hoogwaardige PVC vloeren voor elke ruimte. Professioneel gelegd met garantie en inclusief voorbereidend werk.",
     price: "€20-40 per m²"
   },
-  {
-    name: "Dakkapel",
-    keywords: "dakkapel plaatsen, dakkapel kosten, dakkapel vergunning, dakkapel isolatie",
-    description: "Professionele dakkapel plaatsing voor meer ruimte en licht. Inclusief vergunningaanvraag en volledige afbouw.",
-    price: "€8.500-15.000"
-  }
 ];
 
 const SEOStructuredData: React.FC = () => {
@@ -224,7 +218,7 @@ const SEOStructuredData: React.FC = () => {
         "name": "Welke renovatie- en verbouwdiensten biedt Refurbish Totaal Nederland?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Wij bieden een compleet pakket aan diensten: schilderwerk (€25-45/m²), dakrenovatie (€45-85/m²), stukadoren (€15-25/m²), installatietechniek (€45-75/uur), aan- en verbouw (op aanvraag), behangen (€8-15/m²), PVC vloeren (€20-40/m²), en dakkapel plaatsing (€8.500-15.000). Elk van deze diensten wordt uitgevoerd door vakkundige specialisten."
+          "text": "Wij bieden een compleet pakket aan diensten: schilderwerk (€25-45/m²), dakrenovatie (€45-85/m²), stukadoren (€15-25/m²), installatietechniek (€45-75/uur), aan- en verbouw (op aanvraag), behangen (€8-15/m²), en PVC vloeren (€20-40/m²). Elk van deze diensten wordt uitgevoerd door vakkundige specialisten."
         }
       },
       {
@@ -232,7 +226,7 @@ const SEOStructuredData: React.FC = () => {
         "name": "Wat zijn de kosten voor renovatie en verbouwing?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Onze tarieven variëren per dienst: Schilderwerk €25-45 per m², Dakrenovatie €45-85 per m², Stukadoren €15-25 per m², Installatietechniek €45-75 per uur, Behangen €8-15 per m², PVC Vloeren €20-40 per m², Dakkapel €8.500-15.000. Voor aan- en verbouw maken wij een offerte op maat. Alle prijzen zijn inclusief BTW."
+          "text": "Onze tarieven variëren per dienst: Schilderwerk €25-45 per m², Dakrenovatie €45-85 per m², Stukadoren €15-25 per m², Installatietechniek €45-75 per uur, Behangen €8-15 per m², PVC Vloeren €20-40 per m². Voor aan- en verbouw maken wij een offerte op maat. Alle prijzen zijn inclusief BTW."
         }
       },
       {
