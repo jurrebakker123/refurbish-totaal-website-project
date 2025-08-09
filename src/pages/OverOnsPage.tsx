@@ -24,7 +24,7 @@ const OverOnsPage = () => {
           <div className="container relative z-10 text-white">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fade-in">Over Ons</h1>
             <p className="text-xl max-w-3xl animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Refurbish Totaal Nederland is uw betrouwbare partner voor dakkapellen, schilderwerk en stukadoorsdiensten, 
+              Refurbish Totaal Nederland is uw betrouwbare partner voor schilderwerk en stukadoorsdiensten, 
               met focus op kwaliteit en klanttevredenheid.
             </p>
           </div>
@@ -39,10 +39,10 @@ const OverOnsPage = () => {
                 <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Ons Verhaal</h2>
                   <p className="text-lg text-gray-700 mb-6">
-                    Refurbish Totaal Nederland is in 2025 opgericht door Gerard Groeneveld en Mazen Addas, met als doel om dakkapel-, schilderwerk- en stukadoorsprojecten uit te voeren volgens hoge kwaliteitsnormen én met persoonlijke aandacht voor de klant. Vanuit hun jarenlange ervaring in de bouwsector merkten zij dat er behoefte was aan een partij die vakmanschap, betrouwbaarheid en complete ontzorging kon combineren op deze drie specifieke vakgebieden.
+                    Refurbish Totaal Nederland is in 2025 opgericht door Gerard Groeneveld en Mazen Addas, met als doel om schilderwerk- en stukadoorsprojecten uit te voeren volgens hoge kwaliteitsnormen én met persoonlijke aandacht voor de klant. Vanuit hun jarenlange ervaring in de bouwsector merkten zij dat er behoefte was aan een partij die vakmanschap, betrouwbaarheid en complete ontzorging kon combineren op deze specifieke vakgebieden.
                   </p>
                   <p className="text-lg text-gray-700 mb-6">
-                    Wat begon als een visie van twee ondernemers, groeide al snel uit tot een krachtig netwerk van zelfstandige vakspecialisten. Samen vormen wij een multidisciplinair team dat klaarstaat voor zowel particuliere als zakelijke opdrachtgevers. Onze expertise beslaat dakkapellen, professioneel schilderwerk en hoogwaardig stucwerk.
+                    Wat begon als een visie van twee ondernemers, groeide al snel uit tot een krachtig netwerk van zelfstandige vakspecialisten. Samen vormen wij een multidisciplinair team dat klaarstaat voor zowel particuliere als zakelijke opdrachtgevers. Onze expertise beslaat professioneel schilderwerk en hoogwaardig stucwerk.
                   </p>
                   <p className="text-lg text-gray-700">
                     Hoewel we als bedrijf nog jong zijn, bundelen we tientallen jaren aan praktijkervaring. Wij geloven in samenwerken op basis van vertrouwen, vakkennis en gedeelde verantwoordelijkheid — en dat merkt u in elk project dat we uitvoeren. Refurbish Totaal Nederland staat voor heldere communicatie, kwalitatieve uitvoering en een duurzaam resultaat.
@@ -52,17 +52,10 @@ const OverOnsPage = () => {
                 <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.5s' }}>
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Onze Specialisaties</h2>
                   <p className="text-lg text-gray-700 mb-6">
-                    Bij Refurbish Totaal Nederland focussen wij ons op drie kernspecialisaties waar wij uitblinken 
+                    Bij Refurbish Totaal Nederland focussen wij ons op twee kernspecialisaties waar wij uitblinken 
                     in vakmanschap en kwaliteit:
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
-                    <div className="flex items-start">
-                      <CheckCircle className="h-6 w-6 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
-                      <div>
-                        <h3 className="font-semibold text-lg">Dakkapellen</h3>
-                        <p className="text-gray-600">Professionele plaatsing van dakkapellen voor meer ruimte en licht in uw woning. Van advies tot oplevering zorgen wij voor een perfecte uitvoering.</p>
-                      </div>
-                    </div>
                     <div className="flex items-start">
                       <CheckCircle className="h-6 w-6 text-brand-lightGreen mr-2 mt-1 flex-shrink-0" />
                       <div>
@@ -87,7 +80,7 @@ const OverOnsPage = () => {
                 <div className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
                   <h2 className="text-3xl font-bold mb-6 text-brand-darkGreen">Onze Aanpak</h2>
                   <p className="text-lg text-gray-700 mb-6">
-                    Bij Refurbish Totaal Nederland staat de klant écht centraal. Wij geloven dat succesvolle dakkapel-, schilderwerk- en stukadoorsprojecten beginnen met heldere communicatie, vakmanschap en wederzijds vertrouwen. Onze aanpak is transparant, gestructureerd en resultaatgericht — met oog voor detail én de mens achter het project.
+                    Bij Refurbish Totaal Nederland staat de klant écht centraal. Wij geloven dat succesvolle schilderwerk- en stukadoorsprojecten beginnen met heldere communicatie, vakmanschap en wederzijds vertrouwen. Onze aanpak is transparant, gestructureerd en resultaatgericht — met oog voor detail én de mens achter het project.
                   </p>
                   <div className="space-y-6">
                     <div className="flex items-start">
@@ -105,7 +98,7 @@ const OverOnsPage = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-xl mb-2">Kwaliteit als standaard</h3>
-                        <p className="text-gray-700">Wij werken uitsluitend met hoogwaardige materialen en ervaren vakspecialisten. Of het nu gaat om dakkapellen, schilderwerk of stucwerk — wij leveren vakwerk dat staat en blijft staan.</p>
+                        <p className="text-gray-700">Wij werken uitsluitend met hoogwaardige materialen en ervaren vakspecialisten. Of het nu gaat om schilderwerk of stucwerk — wij leveren vakwerk dat staat en blijft staan.</p>
                       </div>
                     </div>
                     <div className="flex items-start">

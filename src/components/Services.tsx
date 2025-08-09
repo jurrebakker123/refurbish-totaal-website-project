@@ -25,14 +25,6 @@ const allServices = [
     image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
   },
   {
-    id: 'dakkapel',
-    icon: <Home className="h-12 w-12 text-brand-lightGreen mb-4" />,
-    title: 'Dakkapel',
-    description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
-    link: '/diensten/dakkapel',
-    image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
-  },
-  {
     id: 'schilderwerk',
     icon: <Brush className="h-12 w-12 text-brand-lightGreen mb-4" />,
     title: 'Schilderwerk',
@@ -105,7 +97,7 @@ const Services = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
           <h2 className="section-title">Onze Specialisaties</h2>
           <p className="text-lg text-gray-600">
-            Wij focussen ons op drie kerngebieden waar wij uitblinken in vakmanschap en kwaliteit. 
+            Wij focussen ons op twee kerngebieden waar wij uitblinken in vakmanschap en kwaliteit. 
             Voor elk project bieden wij maatwerkoplossingen die perfect aansluiten bij uw wensen.
           </p>
           <div className="inline-block bg-brand-lightGreen text-white text-lg font-medium px-6 py-3 rounded-full mt-4 animate-pulse">
@@ -147,7 +139,7 @@ const Services = () => {
         {!SHOW_ALL_SERVICES && (
           <div className="mt-12 text-center">
             <p className="text-gray-600 mb-4">
-              Wij bieden ook andere diensten aan. Neem contact op voor meer informatie over onze volledige dienstverlening.
+              Naast onze specialisaties bieden wij ook andere diensten aan zoals isolatietechniek, kozijntechniek, installatietechniek, aan- en verbouw, behangen en PVC vloeren.
             </p>
             <Link to="/contact" className="btn-primary hover:animate-pulse">
               Contact Opnemen
