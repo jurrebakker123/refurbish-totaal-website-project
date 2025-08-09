@@ -25,15 +25,8 @@ const allDiensten = [{
   icon: <Thermometer size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Isolatietechniek',
   description: 'Energie besparen begint bij goede isolatie. Refurbish Totaal Nederland biedt doeltreffende isolatieoplossingen voor woningen en bedrijfspanden die comfort verhogen en energiekosten verlagen. Onze aanpak is technisch onderbouwd, duurzaam en afgestemd op uw situatie.',
-  features: ['Spouwmuurisolatie met hoogwaardige inblaas- of schuimisolatie', 'Vloerisolatie met drukvaste isolatieplaten of gespoten schuim', 'Dak- en zolderisolatie (aan de binnen- of buitenzijde)', 'Isolatie van dakkapellen, uitbouwen en houten vloeren', 'Thermografische inspecties en advies op maat', 'Erkende producten en systemen zoals het ATI Pro Isolatie Systeem'],
+  features: ['Spouwmuurisolatie met hoogwaardige inblaas- of schuimisolatie', 'Vloerisolatie met drukvaste isolatieplaten of gespoten schuim', 'Dak- en zolderisolatie (aan de binnen- of buitenzijde)', 'Isolatie van uitbouwen en houten vloeren', 'Thermografische inspecties en advies op maat', 'Erkende producten en systemen zoals het ATI Pro Isolatie Systeem'],
   image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
-}, {
-  id: 'dakkapel',
-  icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
-  title: 'Dakkapel',
-  description: 'Professionele plaatsing en renovatie van dakkapellen voor meer ruimte en licht in uw woning.',
-  features: ['Ontwerp en plaatsing van nieuwe dakkapellen', 'Renovatie en isolatie van bestaande dakkapellen', 'Diverse stijlen en afwerkingsmogelijkheden', 'Compleet met dakbedekking en zinkwerk', 'Snelle en efficiënte plaatsing', 'Garantie op materialen en werkzaamheden'],
-  image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'schilderwerk',
   icon: <Brush size={48} className="text-brand-lightGreen mb-6" />,
@@ -46,7 +39,7 @@ const allDiensten = [{
   icon: <Home size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Dakrenovatie',
   description: 'Complete dakrenovaties, reparaties en onderhoud voor een waterdicht en energiezuinig dak.',
-  features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakkapellen plaatsen of renoveren', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen'],
+  features: ['Vernieuwen van dakbedekking (pannen, leien, bitumen)', 'Isolatie van hellende en platte daken', 'Dakgoten repareren of vervangen', 'Lood- en zinkwerk vernieuwen', 'Velux dakramen plaatsen', 'Reparatie van dakconstructies'],
   image: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80'
 }, {
   id: 'stukadoren',
@@ -67,7 +60,7 @@ const allDiensten = [{
   icon: <Building size={48} className="text-brand-lightGreen mb-6" />,
   title: 'Aan- en verbouw',
   description: 'Van kleine verbouwingen tot complete aanbouwen en uitbreidingen van uw woning.',
-  features: ['Uitbouwen en aanbouwen realiseren', 'Dakkapellen en dakopbouwen', 'Muren doorbreken en dragende constructies', 'Garage ombouwen tot woonruimte', 'Indeling van woning wijzigen', 'Funderingsherstel'],
+  features: ['Uitbouwen en aanbouwen realiseren', 'Dakopbouwen en uitbreidingen', 'Muren doorbreken en dragende constructies', 'Garage ombouwen tot woonruimte', 'Indeling van woning wijzigen', 'Funderingsherstel'],
   image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.1&auto=format&fit=crop&w=2071&q=80'
 }, {
   id: 'behangen',
@@ -86,7 +79,7 @@ const allDiensten = [{
 }];
 
 // Gefocuste diensten die altijd zichtbaar zijn
-const focusedServiceIds = ['dakkapel', 'schilderwerk', 'stukadoren'];
+const focusedServiceIds = ['schilderwerk', 'stukadoren'];
 
 // Filter diensten op basis van de toggle
 const diensten = SHOW_ALL_SERVICES 
@@ -112,7 +105,7 @@ const DienstenPage = () => {
           }}>
               {SHOW_ALL_SERVICES 
                 ? 'Bij Refurbish Totaal Nederland bieden wij een breed scala aan renovatie- en verbouwdiensten, uitgevoerd door ervaren vakmensen met oog voor detail.'
-                : 'Wij focussen ons op drie kerngebieden waar wij uitblinken in vakmanschap en kwaliteit. Voor elk project bieden wij maatwerkoplossingen die perfect aansluiten bij uw wensen.'
+                : 'Wij focussen ons op twee kerngebieden waar wij uitblinken in vakmanschap en kwaliteit. Voor elk project bieden wij maatwerkoplossingen die perfect aansluiten bij uw wensen.'
               }
             </p>
           </div>
