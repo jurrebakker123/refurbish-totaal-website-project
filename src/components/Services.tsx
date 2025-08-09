@@ -136,16 +136,6 @@ const Services = () => {
           ))}
         </div>
         
-        {!SHOW_ALL_SERVICES && (
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-4">
-              Naast onze specialisaties bieden wij ook andere diensten aan zoals isolatietechniek, kozijntechniek, installatietechniek, aan- en verbouw, behangen en PVC vloeren.
-            </p>
-            <Link to="/contact" className="btn-primary hover:animate-pulse">
-              Contact Opnemen
-            </Link>
-          </div>
-        )}
         
         {SHOW_ALL_SERVICES && (
           <div className="mt-12 text-center">

@@ -157,18 +157,6 @@ const DienstenPage = () => {
                 {index < diensten.length - 1 && <Separator className="my-12 bg-gray-200" />}
               </div>)}
 
-            {!SHOW_ALL_SERVICES && (
-              <div className="mt-16 text-center bg-white p-8 rounded-lg shadow-md">
-                <h3 className="text-2xl font-bold mb-4 text-brand-darkGreen">Meer diensten beschikbaar</h3>
-                <p className="text-lg text-gray-700 mb-6">
-                  Naast onze specialisaties bieden wij ook andere diensten aan zoals isolatietechniek, 
-                  kozijntechniek, installatietechniek, aan- en verbouw, behangen en PVC vloeren.
-                </p>
-                <Link to="/contact" className="btn-primary hover:animate-pulse">
-                  Contact voor Meer Informatie
-                </Link>
-              </div>
-            )}
           </div>
         </section>
 
