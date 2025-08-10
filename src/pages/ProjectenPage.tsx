@@ -28,16 +28,6 @@ const projects = [
     beforeImageUrl: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
   {
-    id: 3,
-    title: 'Dakkapel plaatsing jaren \'30 woning',
-    location: 'Rotterdam',
-    category: 'Dakkapel',
-    description: 'Complete plaatsing van een nieuwe dakkapel op een karakteristieke jaren 30 woning. Inclusief isolatie en nieuwe dakramen voor meer natuurlijk licht en ruimte.',
-    challenges: 'De uitdaging lag in het behouden van het authentieke karakter van het dak terwijl een moderne dakkapel werd geïntegreerd.',
-    imageUrl: 'https://images.unsplash.com/photo-1593696140826-c58b021acf8b?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1625602812206-5ec545ca1231?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-  },
-  {
     id: 4,
     title: 'Interieur schilderwerk appartement',
     location: 'Den Haag',
@@ -46,16 +36,6 @@ const projects = [
     challenges: 'In een beperkte ruimte hebben we efficiënt gewerkt met minimale overlast voor de bewoners.',
     imageUrl: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
     beforeImageUrl: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-  },
-  {
-    id: 5,
-    title: 'Moderne dakkapel met zonnepanelen',
-    location: 'Eindhoven',
-    category: 'Dakkapel',
-    description: 'Plaatsing van een moderne dakkapel met geïntegreerde zonnepanelen. De dakkapel combineert extra woonruimte met duurzame energieopwekking.',
-    challenges: 'Door een strakke planning en samenwerking met elektriciens hebben we dakkapel en zonnepanelen perfect geïntegreerd.',
-    imageUrl: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
-    beforeImageUrl: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?ixlib=rb-4.0.1&auto=format&fit=crop&w=2070&q=80',
   },
 ];
 
@@ -98,7 +78,7 @@ const ProjectenPage = () => {
             >
               <h1 className="text-5xl font-bold mb-6 leading-tight">Onze Projecten</h1>
               <p className="text-xl mb-8 text-gray-200">
-                Ontdek een selectie van onze recente dakkapel-, schilderwerk- en stukadoorprojecten. 
+                Ontdek een selectie van onze recente schilderwerk- en stukadoorprojecten. 
                 Van kleine transformaties tot complete metamorfoses, wij zorgen voor vakkundig uitgevoerd werk dat uw verwachtingen overtreft.
               </p>
             </motion.div>
