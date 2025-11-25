@@ -23,7 +23,8 @@ interface DashboardStats {
   totalRequests: number;
   pendingRequests: number;
   totalRevenue: number;
-  monthlyVisitors: number;
+  monthlyRequests: number;
+  conversionRate: number;
   recentActivity: Array<{
     id: string;
     type: string;
@@ -37,7 +38,8 @@ const WordPressAdminDashboard = () => {
     totalRequests: 0,
     pendingRequests: 0,
     totalRevenue: 0,
-    monthlyVisitors: 0,
+    monthlyRequests: 0,
+    conversionRate: 0,
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
@@ -48,6 +50,9 @@ const WordPressAdminDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      
       // Load dakkapel requests
       const { data: dakkapelRequests } = await supabase
         .from('dakkapel_configuraties')
@@ -62,23 +67,44 @@ const WordPressAdminDashboard = () => {
       const { data: stukadoorRequests } = await supabase
         .from('stukadoor_aanvragen')
         .select('*');
+      
+      // Load zonnepanelen requests
+      const { data: zonnepanelenRequests } = await supabase
+        .from('refurbished_zonnepanelen')
+        .select('*');
 
-      const totalRequests = (dakkapelRequests?.length || 0) + 
-                           (schilderRequests?.length || 0) + 
-                           (stukadoorRequests?.length || 0);
+      const allRequests = [
+        ...(dakkapelRequests || []),
+        ...(schilderRequests || []),
+        ...(stukadoorRequests || []),
+        ...(zonnepanelenRequests || [])
+      ];
+      
+      const totalRequests = allRequests.length;
+      
+      // Calculate monthly requests
+      const monthlyRequests = allRequests.filter(r => 
+        new Date(r.created_at) >= firstDayOfMonth
+      ).length;
 
-      const pendingRequests = [
-        ...(dakkapelRequests?.filter(r => r.status === 'offerte_verzonden') || []),
-        ...(schilderRequests?.filter(r => r.status === 'offerte_verzonden') || []),
-        ...(stukadoorRequests?.filter(r => r.status === 'offerte_verzonden') || [])
-      ].length;
+      const pendingRequests = allRequests.filter(r => 
+        r.status === 'offerte_verzonden'
+      ).length;
 
       // Calculate total revenue from completed projects
-      const totalRevenue = [
-        ...(dakkapelRequests?.filter(r => r.status === 'afgehandeld') || []),
-        ...(schilderRequests?.filter(r => r.status === 'afgehandeld') || []),
-        ...(stukadoorRequests?.filter(r => r.status === 'afgehandeld') || [])
-      ].reduce((sum, request) => sum + (Number(request.totaal_prijs) || 0), 0);
+      const completedRequests = allRequests.filter(r => r.status === 'afgehandeld');
+      const totalRevenue = completedRequests.reduce((sum, request) => 
+        sum + (Number(request.totaal_prijs) || 0), 0
+      );
+      
+      // Calculate conversion rate (akkoord + in_aanbouw + afgehandeld / total)
+      const convertedRequests = allRequests.filter(r => 
+        r.status === 'akkoord' || r.status === 'op_locatie' || 
+        r.status === 'in_aanbouw' || r.status === 'afgehandeld'
+      ).length;
+      const conversionRate = totalRequests > 0 
+        ? (convertedRequests / totalRequests) * 100 
+        : 0;
 
       // Create recent activity
       const recentActivity = [
@@ -106,7 +132,8 @@ const WordPressAdminDashboard = () => {
         totalRequests,
         pendingRequests,
         totalRevenue,
-        monthlyVisitors: 2547, // Mock data for now
+        monthlyRequests,
+        conversionRate,
         recentActivity
       });
     } catch (error) {
@@ -186,7 +213,7 @@ const WordPressAdminDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalRequests}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% van vorige maand
+              Alle aanvragen sinds start
             </p>
           </CardContent>
         </Card>
@@ -210,22 +237,22 @@ const WordPressAdminDashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">€{stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">€{stats.totalRevenue.toLocaleString('nl-NL')}</div>
             <p className="text-xs text-muted-foreground">
-              +18.2% van vorige maand
+              Van afgehandelde projecten
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Website Bezoekers</CardTitle>
+            <CardTitle className="text-sm font-medium">Conversieratio</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.monthlyVisitors.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{stats.conversionRate.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground">
-              Deze maand
+              {stats.monthlyRequests} aanvragen deze maand
             </p>
           </CardContent>
         </Card>
